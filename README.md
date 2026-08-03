@@ -53,6 +53,40 @@ npm run build
 
 Python 3.14 non è attualmente supportato dalla catena di dipendenze Pydantic/PyO3 a versioni fisse.
 
+### Avvio con Docker Compose
+
+L'intera pila (Redis, API, frontend, worker Celery e reverse proxy) si avvia con un solo comando:
+
+```bash
+docker compose up --build
+```
+
+I servizi definiti in `docker-compose.yml`:
+
+| Servizio | Esposizione | Ruolo |
+|---|---|---|
+| `redis` | `6379` | Broker dei messaggi per Celery |
+| `backend` | `8000` | API FastAPI (uvicorn) |
+| `frontend` | `3000` | UI React (nginx interno) |
+| `worker` | — | Celery worker (`celery -A app.tasks worker`) |
+| `nginx` | `80` | Proxy non richiesto per lo sviluppo locale |
+
+### Celery / task asincroni
+
+Gli endpoint sincroni (CRUD, schema, populate) non richiedono alcuna infrastruttura esterna. Celery + Redis servono **solo** per le operazioni asincrone:
+
+- `POST /api/projects/{id}/generate-async` — generazione schema asincrona
+- `POST /api/projects/{id}/populate-async` — popolamento asincrono
+- `POST /api/projects/{id}/export-async` — export asincrono
+- `GET /api/tasks/{id}` — polling dello stato del task
+
+Per lo sviluppo locale puoi avviare un worker a parte:
+
+```bash
+cd backend
+celery -A app.tasks worker --loglevel=info
+```
+
 ---
 
 ## English
@@ -106,6 +140,40 @@ python -m pytest
 cd ../frontend
 npm run test
 npm run build
+```
+
+### Docker Compose setup
+
+The full stack (Redis, API, frontend, Celery worker, reverse proxy) starts with a single command:
+
+```bash
+docker compose up --build
+```
+
+Services defined in `docker-compose.yml`:
+
+| Service | Exposed | Role |
+|---|---|---|
+| `redis` | `6379` | Message broker for Celery |
+| `backend` | `8000` | FastAPI (uvicorn) |
+| `frontend` | `3000` | React UI (internal nginx) |
+| `worker` | — | Celery worker (`celery -A app.tasks worker`) |
+| `nginx` | `80` | Reverse proxy (optional for local development) |
+
+### Celery / async tasks
+
+Synchronous endpoints (CRUD, schema, populate) need no external infrastructure. Celery + Redis are required **only** for async operations:
+
+- `POST /api/projects/{id}/generate-async` — async schema generation
+- `POST /api/projects/{id}/populate-async` — async population
+- `POST /api/projects/{id}/export-async` — async export
+- `GET /api/tasks/{id}` — task status polling
+
+For local development you can run a worker separately:
+
+```bash
+cd backend
+celery -A app.tasks worker --loglevel=info
 ```
 
 Python 3.14 is not currently supported by the pinned Pydantic/PyO3 dependency chain.
