@@ -1,0 +1,25 @@
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+.pytest_cache/
+node_modules/
+dist/
+coverage/
+backend/uploads/
+backend/projects/
+backend/logs/
+backend/filedb/
+logs/
+*.db
+*.sqlite
+.venv/
+backend/.venv/
+
+# auto-generati da npm audit / checks
+frontend/NPM_AUDIT_REPORT.json
+frontend/NPM_AUDIT_REPORT.md
+backend/pytest_out.txt
+backend/pytest_run*.txt
+
