@@ -79,3 +79,15 @@ def test_adjudicate_int_casts_string_scores(monkeypatch):
     result = asyncio.run(adj.adjudicate(schema, schema, {}, {}))
     assert result["scores"]["schema_equivalence"] == 85
     assert result["scores"]["value_accuracy"] == 90
+
+
+def test_adjudicate_returns_error_status_on_none_result(monkeypatch):
+    async def fake_chain(prompt_values):
+        return None
+
+    monkeypatch.setattr(adj, "_invoke_chain", fake_chain)
+    schema = _schema()
+    result = asyncio.run(adj.adjudicate(schema, schema, {}, {}))
+    assert result["status"] == "error"
+    assert result["scores"] is None
+    assert result["error"]

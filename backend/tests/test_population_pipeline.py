@@ -61,7 +61,7 @@ def test_full_llm_is_called_for_structured_csv(tmp_path, monkeypatch):
     service = PopulationService()
     document_id = add_csv(service, tmp_path, "p1", "structured.csv")
     captured = {}
-    async def generated_sql(_schema, document_content):
+    async def generated_sql(_schema, document_content, temperature=None):
         captured["content"] = document_content
         return "INSERT INTO persone (id, nome) VALUES (1, 'Ada');"
     monkeypatch.setattr("app.services.population_service.generate_sql_for_population", generated_sql)
@@ -170,7 +170,7 @@ def test_unstructured_llm_input_is_truncated_per_document_and_warned(tmp_path, m
     service = PopulationService()
     document_id = add_text(service, tmp_path, "p1", content="Z" * 7000)
     captured = {}
-    async def generated_sql(_schema, document_content):
+    async def generated_sql(_schema, document_content, temperature=None):
         captured["content"] = document_content
         return "INSERT INTO persone (id, nome) VALUES (1, 'Ada');"
     monkeypatch.setattr("app.services.population_service.generate_sql_for_population", generated_sql)

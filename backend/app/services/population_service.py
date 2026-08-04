@@ -121,7 +121,8 @@ class PopulationService:
                         if idx not in llm_mapping[other_tn]:
                             llm_mapping[other_tn][idx] = rel.from_column
 
-    async def populate(self, project_id, db_path, schema, document_ids):
+    async def populate(self, project_id, db_path, schema, document_ids,
+                       temperature: float | None = None):
         # Validate the complete ownership set before touching the target database
         # or its parent directory. A 404 must be side-effect free.
         session = get_session(self.engine)
@@ -192,7 +193,8 @@ class PopulationService:
         # no usable SQL or no documents were provided.
         if all_docs_text.strip():
             log.info(f"Generating population SQL via LLM for project {project_id}...")
-            sql_script = await generate_sql_for_population(schema, all_docs_text)
+            sql_script = await generate_sql_for_population(schema, all_docs_text,
+                                                            temperature=temperature)
             if sql_script.strip():
                 clean_sql = re.sub(r'```\w*', '', sql_script).replace('```', '').strip()
                 statements = split_sql_statements(clean_sql)

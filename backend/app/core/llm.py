@@ -6,8 +6,55 @@ from app.config import settings
 from app.models.schema_models import NormalizedSchema, QueryResponse
 from app.utils.exceptions import LLMException
 from app.utils.logger import log
+import asyncio
+import time
 import re
 from app.utils.research import sha256_text
+
+
+class AsyncRateLimiter:
+    """Sliding-window rate limiter for outbound LLM API calls.
+
+    Guarantees at most ``max_per_minute`` acquisitions per rolling window,
+    coordinating across concurrent coroutines (the FastAPI app and the batch
+    benchmark runner share one instance). Callers ``await limiter.acquire()``
+    before issuing a request.
+    """
+
+    def __init__(self, max_per_minute: int = 15, window_seconds: float = 60.0):
+        self.max_per_minute = max_per_minute
+        self.window = window_seconds
+        self._lock = asyncio.Lock()
+        self._timestamps: list[float] = []
+
+    async def acquire(self) -> None:
+        if self.max_per_minute <= 0:
+            return
+        while True:
+            async with self._lock:
+                now = time.monotonic()
+                self._timestamps = [
+                    ts for ts in self._timestamps
+                    if now - ts < self.window
+                ]
+                if len(self._timestamps) < self.max_per_minute:
+                    self._timestamps.append(now)
+                    return
+                # Wait until the oldest timestamp slides out of the window.
+                wait = self._timestamps[0] + self.window - now
+            if wait > 0:
+                await asyncio.sleep(wait)
+
+
+_llm_rate_limiter = AsyncRateLimiter(
+    max_per_minute=settings.llm_max_requests_per_minute,
+)
+
+
+async def _invoke(chain, payload: dict):
+    """Await the shared rate limit, then run a LangChain runnable."""
+    await _llm_rate_limiter.acquire()
+    return await chain.ainvoke(payload)
 
 
 def _get_llm(temperature: float = 0.1, force_local: bool = False):
@@ -77,11 +124,12 @@ QUERY_PROMPT = ChatPromptTemplate.from_messages([
 ])
 
 
-async def generate_schema(prompt: str, document_context: str = "") -> NormalizedSchema:
+async def generate_schema(prompt: str, document_context: str = "",
+                          temperature: float | None = None) -> NormalizedSchema:
     try:
-        llm = _get_llm()
+        llm = _get_llm(temperature=0.1 if temperature is None else temperature)
         chain = SCHEMA_PROMPT | llm | schema_parser
-        result = await chain.ainvoke({
+        result = await _invoke(chain, {
             "prompt": prompt,
             "document_context": document_context,
             "format_instructions": schema_parser.get_format_instructions(),
@@ -111,7 +159,7 @@ async def generate_data_for_table(table_def, text_content: str) -> list[dict]:
     try:
         llm = _get_llm(temperature=0.0)
         chain = prompt | llm | JsonOutputParser()
-        result = await chain.ainvoke({
+        result = await _invoke(chain, {
             "table_name": table_def.name,
             "columns": "\n".join(f"- {c.name} ({c.data_type}){' PK' if c.is_primary_key else ''}{' FK → '+c.foreign_key_table+'.'+c.foreign_key_column if c.is_foreign_key else ''}" for c in table_def.columns),
             "document_text": text_content[:20000],
@@ -169,7 +217,7 @@ async def map_columns_to_tables(headers: list[str], sample_rows: list[list], sch
     try:
         llm = _get_llm(temperature=0.0)
         chain = prompt | llm | JsonOutputParser()
-        result = await chain.ainvoke({
+        result = await _invoke(chain, {
             "tables": "\n".join(tables_desc),
             "relationships": "\n".join(rels_desc) if rels_desc else "none",
             "headers": " | ".join(f"[{i}] {h}" for i, h in enumerate(headers)),
@@ -189,7 +237,7 @@ async def generate_query(prompt: str, schema: str, dialect: str = "sqlite") -> Q
     try:
         llm = _get_llm(temperature=0.0)
         chain = QUERY_PROMPT | llm
-        result = await chain.ainvoke({
+        result = await _invoke(chain, {
             "prompt": prompt,
             "schema": schema,
             "dialect": dialect,
@@ -266,7 +314,8 @@ Rules:
 ])
 
 
-async def generate_sql_for_population(schema: NormalizedSchema, document_content: str) -> str:
+async def generate_sql_for_population(schema: NormalizedSchema, document_content: str,
+                                      temperature: float | None = None) -> str:
     """Use LLM to generate SQL INSERT statements for populating the database from documents."""
     schema_parts = []
     for t in schema.tables:
@@ -290,9 +339,9 @@ async def generate_sql_for_population(schema: NormalizedSchema, document_content
     schema_info = "\n\n".join(schema_parts)
 
     try:
-        llm = _get_llm(temperature=0.1)
+        llm = _get_llm(temperature=0.1 if temperature is None else temperature)
         chain = POPULATE_SQL_PROMPT | llm
-        result = await chain.ainvoke({
+        result = await _invoke(chain, {
             "schema_info": schema_info,
             "doc_content": document_content[:40000],
         })

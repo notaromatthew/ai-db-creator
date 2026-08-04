@@ -127,8 +127,9 @@ async def _invoke_chain(prompt_values: dict) -> dict:
     parser = JsonOutputParser()
     llm = _get_llm(temperature=0.0)
     chain = ADJUDICATION_PROMPT | llm | parser
-    return await chain.ainvoke({**prompt_values,
-                                "format_instructions": parser.get_format_instructions()})
+    from app.core.llm import _invoke
+    return await _invoke(chain, {**prompt_values,
+                                 "format_instructions": parser.get_format_instructions()})
 
 
 async def adjudicate(schema: NormalizedSchema, generated_schema: NormalizedSchema,
@@ -151,6 +152,15 @@ async def adjudicate(schema: NormalizedSchema, generated_schema: NormalizedSchem
         return {
             "status": "error",
             "error": f"{type(exc).__name__}: {exc}",
+            "scores": None,
+            "notes": None,
+        }
+
+    if not isinstance(result, dict):
+        log.warning("LLM adjudication returned no usable result")
+        return {
+            "status": "error",
+            "error": "adjudication returned a non-dict result",
             "scores": None,
             "notes": None,
         }

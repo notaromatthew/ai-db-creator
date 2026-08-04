@@ -25,6 +25,10 @@ class Settings(BaseSettings):
     log_level: str = "DEBUG"
     experiment_mode: bool = False
 
+    # Global throttle applied to every LLM API call made by the app. Guards
+    # against exceeding provider rate limits (default 15 requests/minute).
+    llm_max_requests_per_minute: int = 15
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

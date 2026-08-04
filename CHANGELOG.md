@@ -58,6 +58,26 @@ Questa iterazione consolida AI-DB-Creator come piattaforma di ricerca per la gen
 - Le metriche automatiche sono euristiche riproducibili pensate per ricerca e confronto sperimentale, non per validazione autonoma.
 - Le parti che prevedono il confronto con l'intervento umano restano intenzionalmente incomplete (segnaposto).
 
+## 2026-08-04 - Rate limit LLM e temperatura di campionamento
+
+### Aggiunto
+
+- `AsyncRateLimiter` in `app/core/llm.py` con setting `llm_max_requests_per_minute` (default 15/min, da `.env`): strozzatura a finestra scorrevole applicata a ogni chiamata LLM dell'app (schema, population, adjudication), coordinata tra coroutine concorrenti (FastAPI + benchmark runner). Coperto da `tests/test_rate_limiter.py`.
+- Parametro `--temperature` in `run_benchmark.py`, threadato come `temperature` opzionale attraverso `SchemaService.generate_from_prompt` e `PopulationService.populate` fino a `llm.generate_schema` / `llm.generate_sql_for_population`. Default `None` (usa i default pipeline 0.1) per non alterare il comportamento esistente. L'adjudication resta sempre a 0.0 (giudice stabile).
+
+### Impatto sulla comparabilità sperimentale
+
+- A `temperature` bassa (0.1) i run ripetuti di una condizione producono output quasi identici (verificato via hash degli schemi): la media/CI su N run riflette poco la variabilità LLM. Alzando la temperatura (es. 0.5) i run campionano la distribuzione reale; il parametro è registrato per-run e per-condizione nel report per la riproducibilità. Scelta documentata: temperatura alta = misura di distribuzione; bassa = riproducibilità byte-for-byte.
+
+### Validazione eseguita
+
+- Backend: 56/56 test `pytest` verdi (nuovi test rate limiter + firme service aggiornate).
+- Smoke test university/full_llm a `--temperature 0.5`: F1 0.31 vs 0.45 su 2 run (varianza reale, prima ~identici a 0.1); adjudication registrata a 0.0.
+
+### Fix
+
+- `llm_adjudication.py`: guardia per risultato `None`/non-dict dal parser LLM (caso osservato in un run del benchmark a temperatura 0.5). Prima un adjudication fallito faceva risalire un `AttributeError` fino al runner marcando l'intero run come errore e perdendo l'F1 deterministico già calcolato. Ora il run resta `ok` con F1, e l'adjudication è registrata con `status:error` e `scores:None`; l'aggregazione filtra i score mancanti. Coperto da `test_adjudicate_returns_error_status_on_none_result`.
+
 ## 2026-08-04 - Batch runner benchmark e fix integrità FK
 
 ### Aggiunto

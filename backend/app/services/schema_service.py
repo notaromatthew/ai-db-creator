@@ -40,7 +40,8 @@ class SchemaService:
         session.close()
         return projects
     
-    async def generate_from_prompt(self, project_id: str, request: GenerateRequest) -> NormalizedSchema:
+    async def generate_from_prompt(self, project_id: str, request: GenerateRequest,
+                                   temperature: float | None = None) -> NormalizedSchema:
         project = self.get_project(project_id)
         project.prompt = request.prompt
         
@@ -58,7 +59,7 @@ class SchemaService:
             session.close()
             doc_context = "\n\n".join(parts)
         
-        schema = await generate_schema(request.prompt, doc_context)
+        schema = await generate_schema(request.prompt, doc_context, temperature=temperature)
         
         project_dir = Path(project.db_path or "").parent if project.db_path else None
         if not project_dir:
