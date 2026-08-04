@@ -1,0 +1,6 @@
+OPERATIONAL NOTES
+=================
+1. Doctor departments map one-to-one to wards: Cardiology department -> Reparto A, Neurology -> Reparto B, Orthopedics -> Reparto C, Pediatrics -> Reparto D, Dermatology -> Reparto E, Gynecology -> Reparto F.
+2. Invoicing: every appointment that leads to a treatment is billed; the amount is the treatment fee plus a 15% co-payment.
+3. Pharmacy: medications are prescribed per treatment; a treatment can require multiple medications and a medication can be used across treatments.
+4. Prescriptions always carry a dosage instruction.

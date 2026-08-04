@@ -1,0 +1,21 @@
+member_id,full_name,email,joined_on
+1,Federico Ferrari,member1@example.com,2022-09-14
+2,Chiara Gallo,member2@example.com,2024-01-11
+3,Luca Costa,member3@example.com,2023-05-20
+4,Valentina Gallo,member4@example.com,2024-03-11
+5,Francesca Colombo,member5@example.com,2023-02-14
+6,Giulia Bianchi,member6@example.com,2021-08-11
+7,Marco Giordano,member7@example.com,2024-03-04
+8,Andrea Bruno,member8@example.com,2020-03-15
+9,Martina Greco,member9@example.com,2021-03-21
+10,Francesca Ricci,member10@example.com,2025-03-27
+11,Chiara Esposito,member11@example.com,2020-09-04
+12,Valentina Bianchi,member12@example.com,2020-10-25
+13,Francesca Rossi,member13@example.com,2024-11-08
+14,Elena Greco,member14@example.com,2025-07-07
+15,Giulia Greco,member15@example.com,2020-09-08
+16,Valentina Bruno,member16@example.com,2022-03-23
+17,Martina Bianchi,member17@example.com,2022-10-22
+18,Federico Bianchi,member18@example.com,2020-10-17
+19,Giulia Conti,member19@example.com,2025-07-16
+20,Luca Ricci,member20@example.com,2024-05-01

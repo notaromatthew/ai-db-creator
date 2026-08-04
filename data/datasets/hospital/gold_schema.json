@@ -1,0 +1,152 @@
+{
+  "tables": [
+    {
+      "name": "patients",
+      "description": "Pazienti dell'ospedale",
+      "columns": [
+        {"name": "patient_id", "data_type": "INTEGER", "is_primary_key": true, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Identificativo unico del paziente"},
+        {"name": "fiscal_code", "data_type": "TEXT", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Codice fiscale"},
+        {"name": "full_name", "data_type": "TEXT", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
+         "default_value": null, "description": "Nome e cognome"},
+        {"name": "birth_date", "data_type": "DATE", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
+         "default_value": null, "description": "Data di nascita"}
+      ]
+    },
+    {
+      "name": "doctors",
+      "description": "Medici in servizio",
+      "columns": [
+        {"name": "doctor_id", "data_type": "INTEGER", "is_primary_key": true, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Identificativo unico del medico"},
+        {"name": "full_name", "data_type": "TEXT", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
+         "default_value": null, "description": "Nome e cognome"},
+        {"name": "specialty", "data_type": "TEXT", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
+         "default_value": null, "description": "Specializzazione (es. Cardiologia)"},
+        {"name": "department", "data_type": "TEXT", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
+         "default_value": null, "description": "Dipartimento di appartenenza (implica il reparto/ward)"}
+      ]
+    },
+    {
+      "name": "wards",
+      "description": "Reparti dell'ospedale",
+      "columns": [
+        {"name": "ward_id", "data_type": "INTEGER", "is_primary_key": true, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Identificativo unico del reparto"},
+        {"name": "name", "data_type": "TEXT", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Nome del reparto"},
+        {"name": "department", "data_type": "TEXT", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Dipartimento servito dal reparto"}
+      ]
+    },
+    {
+      "name": "appointments",
+      "description": "Appuntamenti clinici",
+      "columns": [
+        {"name": "appointment_id", "data_type": "INTEGER", "is_primary_key": true, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Identificativo unico dell'appuntamento"},
+        {"name": "patient_id", "data_type": "INTEGER", "is_primary_key": false, "is_foreign_key": true,
+         "foreign_key_table": "patients", "foreign_key_column": "patient_id", "is_unique": false,
+         "is_not_null": true, "default_value": null, "description": "Paziente"},
+        {"name": "doctor_id", "data_type": "INTEGER", "is_primary_key": false, "is_foreign_key": true,
+         "foreign_key_table": "doctors", "foreign_key_column": "doctor_id", "is_unique": false,
+         "is_not_null": true, "default_value": null, "description": "Medico"},
+        {"name": "ward_id", "data_type": "INTEGER", "is_primary_key": false, "is_foreign_key": true,
+         "foreign_key_table": "wards", "foreign_key_column": "ward_id", "is_unique": false,
+         "is_not_null": true, "default_value": null, "description": "Reparto di svolgimento"},
+        {"name": "scheduled_on", "data_type": "DATETIME", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
+         "default_value": null, "description": "Data e ora programmata"}
+      ]
+    },
+    {
+      "name": "treatments",
+      "description": "Trattamenti clinici somministrati",
+      "columns": [
+        {"name": "treatment_id", "data_type": "INTEGER", "is_primary_key": true, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Identificativo unico del trattamento"},
+        {"name": "appointment_id", "data_type": "INTEGER", "is_primary_key": false, "is_foreign_key": true,
+         "foreign_key_table": "appointments", "foreign_key_column": "appointment_id", "is_unique": false,
+         "is_not_null": true, "default_value": null, "description": "Appuntamento di riferimento"},
+        {"name": "description", "data_type": "TEXT", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
+         "default_value": null, "description": "Descrizione del trattamento"}
+      ]
+    },
+    {
+      "name": "medications",
+      "description": "Farmaci disponibili",
+      "columns": [
+        {"name": "medication_id", "data_type": "INTEGER", "is_primary_key": true, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Identificativo unico del farmaco"},
+        {"name": "name", "data_type": "TEXT", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Nome del farmaco"},
+        {"name": "active_ingredient", "data_type": "TEXT", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
+         "default_value": null, "description": "Principio attivo"}
+      ]
+    },
+    {
+      "name": "prescriptions",
+      "description": "Prescrizioni farmacologiche (junction many-to-many)",
+      "columns": [
+        {"name": "prescription_id", "data_type": "INTEGER", "is_primary_key": true, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Identificativo unico della prescrizione"},
+        {"name": "treatment_id", "data_type": "INTEGER", "is_primary_key": false, "is_foreign_key": true,
+         "foreign_key_table": "treatments", "foreign_key_column": "treatment_id", "is_unique": false,
+         "is_not_null": true, "default_value": null, "description": "Trattamento associato"},
+        {"name": "medication_id", "data_type": "INTEGER", "is_primary_key": false, "is_foreign_key": true,
+         "foreign_key_table": "medications", "foreign_key_column": "medication_id", "is_unique": false,
+         "is_not_null": true, "default_value": null, "description": "Farmaco prescritto"},
+        {"name": "dosage", "data_type": "TEXT", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
+         "default_value": null, "description": "Posologia"}
+      ]
+    },
+    {
+      "name": "invoices",
+      "description": "Fatture emesse per gli appuntamenti",
+      "columns": [
+        {"name": "invoice_id", "data_type": "INTEGER", "is_primary_key": true, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Identificativo unico della fattura"},
+        {"name": "appointment_id", "data_type": "INTEGER", "is_primary_key": false, "is_foreign_key": true,
+         "foreign_key_table": "appointments", "foreign_key_column": "appointment_id", "is_unique": false,
+         "is_not_null": true, "default_value": null, "description": "Appuntamento fatturato"},
+        {"name": "amount", "data_type": "REAL", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
+         "default_value": null, "description": "Importo in euro"},
+        {"name": "issued_on", "data_type": "DATE", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
+         "default_value": null, "description": "Data di emissione"}
+      ]
+    }
+  ],
+  "relationships": [
+    {"type": "one_to_many", "from_table": "appointments", "from_column": "patient_id", "to_table": "patients", "to_column": "patient_id"},
+    {"type": "one_to_many", "from_table": "appointments", "from_column": "doctor_id", "to_table": "doctors", "to_column": "doctor_id"},
+    {"type": "one_to_many", "from_table": "appointments", "from_column": "ward_id", "to_table": "wards", "to_column": "ward_id"},
+    {"type": "one_to_many", "from_table": "treatments", "from_column": "appointment_id", "to_table": "appointments", "to_column": "appointment_id"},
+    {"type": "many_to_many", "from_table": "prescriptions", "from_column": "treatment_id", "to_table": "treatments", "to_column": "treatment_id"},
+    {"type": "many_to_many", "from_table": "prescriptions", "from_column": "medication_id", "to_table": "medications", "to_column": "medication_id"},
+    {"type": "one_to_many", "from_table": "invoices", "from_column": "appointment_id", "to_table": "appointments", "to_column": "appointment_id"}
+  ],
+  "description": "Ospedale privato: pazienti, medici, reparti, appuntamenti, trattamenti, farmaci, prescrizioni e fatture."
+}

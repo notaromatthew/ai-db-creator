@@ -58,6 +58,24 @@ Questa iterazione consolida AI-DB-Creator come piattaforma di ricerca per la gen
 - Le metriche automatiche sono euristiche riproducibili pensate per ricerca e confronto sperimentale, non per validazione autonoma.
 - Le parti che prevedono il confronto con l'intervento umano restano intenzionalmente incomplete (segnaposto).
 
+## 2026-08-03 - Dataset benchmark RQ1/RQ2 (B e C)
+
+### Aggiunto
+
+- `data/datasets/library/` (Dataset B): gold-schema 5 tabelle, ground-truth con 50 libri/20 iscritti/60 prestiti, CSV sorgenti (`members.csv`, `books.csv`, `loans_members.csv`), PDF descrittivo, generatore riproducibile.
+- `data/datasets/hospital/` (Dataset C): gold-schema 8 tabelle (patients, doctors, wards, appointments, treatments, medications, prescriptions, invoices), ground-truth con 100 pazienti/200 appuntamenti, CSV sorgenti, note operative TXT, PDF a 3 pagine, generatore riproducibile.
+- Entrambi i generatori usano seed fisso (`20260803`) per riproducibilità byte-for-byte.
+
+### Validazione eseguita
+
+- `evaluate_population.py` su ciascun ground-truth contro sé stesso: F1=1.0.
+- Simulazione con errori introdotti (valori errati, righe mancanti/extra, violazioni FK): catturati come `wrong_value`, `missing_rows`, `extra_rows`, `fk_violations` con F1 coerente.
+
+### Deviazioni documentate
+
+- Dataset B: prestiti/multe generati a tempo di record; CSV `category_name` denormalizzato.
+- Dataset C: 37 colonne vs 42 del protocollo; medici/farmaci impliciti da descrizione/note (vedi README dei dataset).
+
 ## 2026-08-03 - Valutazione accuratezza population (RQ2)
 
 ### Aggiunto
