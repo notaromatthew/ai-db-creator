@@ -1,0 +1,46 @@
+student_name,student_email,course_code,course_title,credits,semester,grade
+Anna Costa,student23@university.example,CS-101,Introduction to Programming,6,2026-02,26
+Elena Ricci,student27@university.example,CS-101,Introduction to Programming,6,2026-01,28
+Francesca Colombo,student3@university.example,EN-101,Academic Writing,3,2026-01,22
+Federico Costa,student9@university.example,CS-202,Databases,9,2026-01,27
+Luca Ferrari,student11@university.example,EC-201,Microeconomics,6,2026-02,26
+Martina Bianchi,student25@university.example,EN-101,Academic Writing,3,2026-01,18
+Federico Rossi,student16@university.example,MA-101,Calculus I,9,2026-01,22
+Luca Gallo,student24@university.example,EC-201,Microeconomics,6,2026-02,18
+Federico Rossi,student16@university.example,EN-101,Academic Writing,3,2026-01,NS
+Andrea Conti,student18@university.example,MA-101,Calculus I,9,2026-01,26
+Andrea Conti,student18@university.example,CS-101,Introduction to Programming,6,2026-01,30
+Andrea Rizzo,student15@university.example,EC-201,Microeconomics,6,2026-01,18
+Matteo Greco,student21@university.example,CS-301,Operating Systems,9,2026-02,27
+Marco Rizzo,student22@university.example,MA-101,Calculus I,9,2026-01,18
+Matteo Greco,student21@university.example,PH-101,Physics I,9,2026-01,22
+Anna Costa,student23@university.example,CS-301,Operating Systems,9,2026-02,21
+Luca Costa,student4@university.example,CS-202,Databases,9,2026-02,23
+Francesca Colombo,student3@university.example,CS-301,Operating Systems,9,2026-01,30
+Martina Greco,student17@university.example,CS-202,Databases,9,2026-01,30
+Luca Costa,student4@university.example,EC-201,Microeconomics,6,2026-02,21
+Martina Greco,student17@university.example,MA-202,Linear Algebra,6,2026-01,30L
+Simone Rizzo,student8@university.example,CS-202,Databases,9,2026-02,30L
+Francesca Rossi,student26@university.example,CS-101,Introduction to Programming,6,2026-02,28
+Francesca Rossi,student26@university.example,MA-101,Calculus I,9,2026-01,30L
+Federico Rossi,student16@university.example,CS-301,Operating Systems,9,2026-01,27
+Francesca Colombo,student6@university.example,MA-101,Calculus I,9,2026-01,24
+Federico Rossi,student16@university.example,PH-101,Physics I,9,2026-01,21
+Marco Giordano,student12@university.example,CS-202,Databases,9,2026-02,18
+Anna Costa,student23@university.example,CS-202,Databases,9,2026-01,25
+Davide Bruno,student14@university.example,CS-202,Databases,9,2026-02,27
+Marco Rizzo,student22@university.example,CS-301,Operating Systems,9,2026-01,30
+Luca Costa,student4@university.example,CS-101,Introduction to Programming,6,2026-01,30
+Marco Giordano,student12@university.example,EC-201,Microeconomics,6,2026-02,18
+Anna Costa,student23@university.example,EC-201,Microeconomics,6,2026-02,25
+Luca Costa,student4@university.example,MA-101,Calculus I,9,2026-01,28
+Martina Greco,student17@university.example,EN-101,Academic Writing,3,2026-02,26
+Giulia Greco,student30@university.example,MA-101,Calculus I,9,2026-02,26
+Simone Rizzo,student8@university.example,MA-101,Calculus I,9,2026-02,26
+Chiara Gallo,student28@university.example,EN-101,Academic Writing,3,2026-02,27
+Federico Costa,student9@university.example,PH-101,Physics I,9,2026-02,21
+Andrea Rizzo,student15@university.example,PH-101,Physics I,9,2026-02,22
+Andrea Conti,student18@university.example,CS-202,Databases,9,2026-01,30
+Francesca Marino,student29@university.example,CS-202,Databases,9,2026-02,30L
+Andrea Rizzo,student15@university.example,CS-301,Operating Systems,9,2026-01,30L
+Andrea Conti,student18@university.example,MA-202,Linear Algebra,6,2026-01,30
