@@ -125,13 +125,31 @@ def _round_ci(ci: tuple[float, float]) -> list[float]:
     return [round(ci[0], 4), round(ci[1], 4)]
 
 
-def read_rows(conn: sqlite3.Connection, table: Any) -> list[dict]:
-    """Read all rows of a table as dicts keyed by column name."""
-    columns = [column.name for column in table.columns]
-    placeholders = ", ".join(f"[{c}]" for c in columns)
+def read_rows(conn: sqlite3.Connection, table: Any,
+              column_aliases: dict[str, str] | None = None) -> list[dict]:
+    """Read all rows of a table as dicts keyed by column name.
+
+    ``column_aliases`` maps gold column names to the column actually present in
+    the database (used when a generated schema has diverged from the gold
+    schema). Each aliased column is selected by its generated name but emitted
+    under the gold name so downstream comparison keeps using gold names.
+    """
+    aliases = column_aliases or {}
+    selected = [(column.name, aliases.get(column.name, column.name))
+                for column in table.columns]
+    present = [name for name in _table_columns(conn, table.name)]
+    usable = [(gold, gen) for gold, gen in selected if gen in present]
+    placeholders = ", ".join(f"[{gen}]" for _, gen in usable)
     cursor = conn.execute(f"SELECT {placeholders} FROM [{table.name}]")
     header = [description[0] for description in cursor.description]
-    return [dict(zip(header, row)) for row in cursor.fetchall()]
+    gold_names = [gold for gold, _ in usable]
+    if not usable:
+        return []
+    return [dict(zip(gold_names, row)) for row in cursor.fetchall()]
+
+
+def _table_columns(conn: sqlite3.Connection, table_name: str) -> list[str]:
+    return [row[1] for row in conn.execute(f"PRAGMA table_info([{table_name}])")]
 
 
 def _build_fk_targets(conn: sqlite3.Connection, schema: NormalizedSchema) -> set[tuple[str, str, str]]:
@@ -228,12 +246,21 @@ def _as_sortable(value: Any) -> str:
 
 
 def evaluate_generated(generated_conn: sqlite3.Connection, ground_conn: sqlite3.Connection,
-                       schema: NormalizedSchema) -> dict:
-    """Run the full cell-level comparison over all tables in the gold schema."""
+                       schema: NormalizedSchema,
+                       column_aliases: dict[str, dict[str, str]] | None = None) -> dict:
+    """Run the full cell-level comparison over all tables in the gold schema.
+
+    ``column_aliases`` maps ``gold_table -> {gold_column: generated_column}``
+    so a generated schema whose names diverge from the gold schema (full-LLM
+    condition) can still be compared cell-by-cell; see app/evaluation/
+    schema_alignment.py. Tables/columns without an alias use gold names.
+    """
+    column_aliases = column_aliases or {}
     fk_targets = _build_fk_targets(ground_conn, schema)
     per_table: dict[str, dict] = {}
     for table in schema.tables:
-        generated_rows = read_rows(generated_conn, table)
+        aliases = column_aliases.get(table.name, {})
+        generated_rows = read_rows(generated_conn, table, aliases)
         ground_rows = read_rows(ground_conn, table)
         per_table[table.name] = evaluate_table(generated_rows, ground_rows, table, fk_targets)
 

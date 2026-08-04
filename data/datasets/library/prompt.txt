@@ -1,0 +1,9 @@
+Design a fully normalized relational schema (3NF) for a library management system.
+
+Source documents describe: book categories, members, books (with ISBN, title,
+author, category), loans of books to members with loan and due dates, and fines
+linked to overdue loans.
+
+Infer tables, primary keys, foreign keys, column names, types, nullability and
+uniqueness constraints from the attached documents. Produce a clean relational
+schema ready to be populated.

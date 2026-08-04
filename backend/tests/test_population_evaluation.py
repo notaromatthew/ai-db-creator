@@ -137,3 +137,43 @@ def test_missing_extra_and_fk(tmp_path):
     assert enrollments["fk_violations"] == 1  # student_id 99 has no student
     assert result["global"]["missing_rows"] == 1
     assert result["global"]["extra_rows"] == 1
+
+
+def test_column_alignment_handles_generated_schema_with_different_names(tmp_path):
+    gold = tmp_path / "gold.json"
+    gold.write_text(json.dumps(GOLD_SCHEMA), encoding="utf-8")
+    schema = load_gold_schema(gold)
+
+    ground_sql = (
+        "CREATE TABLE students (id INTEGER PRIMARY KEY, name TEXT, gpa REAL, active BOOLEAN, enrolled_on DATE);"
+        "CREATE TABLE enrollments (id INTEGER PRIMARY KEY, student_id INTEGER);"
+    )
+    _make_db(tmp_path / "ground.db", ground_sql, {
+        "students": [(1, "Ada", 3.5, 1, "2024-01-05"), (2, "Bob", 2.9, 0, "2024-02-01")],
+        "enrollments": [(1, 1), (2, 2)],
+    })
+
+    gen_sql = (
+        "CREATE TABLE students (sid INTEGER PRIMARY KEY, full_name TEXT, gpa REAL, active BOOLEAN, enrolled_on DATE);"
+        "CREATE TABLE enrollments (id INTEGER PRIMARY KEY, student_fk INTEGER);"
+    )
+    _make_db(tmp_path / "gen.db", gen_sql, {
+        "students": [(1, "Ada", 3.5, 1, "2024-01-05"), (2, "Bob", 2.9, 0, "2024-02-01")],
+        "enrollments": [(1, 1), (2, 2)],
+    })
+
+    column_aliases = {
+        "students": {"id": "sid", "name": "full_name"},
+        "enrollments": {"student_id": "student_fk"},
+    }
+
+    with connect_database(tmp_path / "gen.db") as gc, connect_database(tmp_path / "ground.db") as gp:
+        result = evaluate_generated(gc, gp, schema, column_aliases)
+
+    students = result["per_table"]["students"]
+    assert students["missing_rows"] == 0
+    assert students["extra_rows"] == 0
+    assert students["wrong_value"] == 0
+    assert students["f1"] == 1.0
+    enrollments = result["per_table"]["enrollments"]
+    assert enrollments["fk_violations"] == 0

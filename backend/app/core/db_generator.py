@@ -34,17 +34,17 @@ def create_database_from_schema(schema: NormalizedSchema, db_path: str) -> str:
         cols = []
         for col_def in table_def.columns:
             col_type = _map_type(col_def.data_type)
+            col_args = []
             col_kwargs = {}
             if col_def.is_primary_key:
                 col_kwargs["primary_key"] = True
             if col_def.is_foreign_key and col_def.foreign_key_table and col_def.foreign_key_column:
-                col_kwargs["foreign_key"] = ForeignKey(f"{col_def.foreign_key_table}.{col_def.foreign_key_column}")
+                col_args.append(ForeignKey(f"{col_def.foreign_key_table}.{col_def.foreign_key_column}"))
             if col_def.is_unique:
                 col_kwargs["unique"] = True
             if col_def.is_not_null:
                 col_kwargs["nullable"] = False
-            col_type_kwargs = {**col_kwargs}
-            cols.append(SAColumn(col_def.name, col_type, **col_type_kwargs))
+            cols.append(SAColumn(col_def.name, col_type, *col_args, **col_kwargs))
 
         table = Table(table_def.name, metadata, *cols)
         sqlalchemy_tables.append(table)

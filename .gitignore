@@ -11,6 +11,7 @@ backend/uploads/
 backend/projects/
 backend/logs/
 backend/filedb/
+backend/reports/
 logs/
 *.db
 *.sqlite

@@ -1,0 +1,8 @@
+Design a fully normalized relational schema (3NF) for a university enrollment management system.
+
+Source documents describe: students (id, name, email), courses (code, title, credits),
+and enrollments linking students to courses with a semester and a grade.
+
+Infer tables, primary keys, foreign keys, column names, types, nullability and
+uniqueness constraints from the attached documents. Produce a clean relational
+schema ready to be populated.

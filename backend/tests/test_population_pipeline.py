@@ -204,3 +204,28 @@ def test_multi_row_llm_insert_is_rejected_without_execution(tmp_path, monkeypatc
     engine = create_engine(f"sqlite:///{tmp_path / 'database.sqlite'}")
     with engine.connect() as connection:
         assert connection.execute(text("SELECT COUNT(*) FROM persone")).scalar() == 0
+
+
+def test_foreign_keys_are_built_into_the_generated_database(tmp_path):
+    from app.core.db_generator import create_database_from_schema
+    from sqlalchemy import inspect
+    schema = NormalizedSchema(tables=[
+        TableDef(name="authors", columns=[
+            ColumnDef(name="id", data_type="INTEGER", is_primary_key=True),
+        ]),
+        TableDef(name="books", columns=[
+            ColumnDef(name="id", data_type="INTEGER", is_primary_key=True),
+            ColumnDef(name="author_id", data_type="INTEGER",
+                      is_foreign_key=True, foreign_key_table="authors",
+                      foreign_key_column="id"),
+        ]),
+    ], relationships=[])
+    db_path = str(tmp_path / "fk.sqlite")
+    create_database_from_schema(schema, db_path)
+    engine = create_engine(f"sqlite:///{db_path}")
+    inspector = inspect(engine)
+    books = inspector.get_foreign_keys("books")
+    assert len(books) == 1
+    assert books[0]["referred_table"] == "authors"
+    assert books[0]["constrained_columns"] == ["author_id"]
+    assert books[0]["referred_columns"] == ["id"]

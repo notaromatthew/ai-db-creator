@@ -58,6 +58,48 @@ Questa iterazione consolida AI-DB-Creator come piattaforma di ricerca per la gen
 - Le metriche automatiche sono euristiche riproducibili pensate per ricerca e confronto sperimentale, non per validazione autonoma.
 - Le parti che prevedono il confronto con l'intervento umano restano intenzionalmente incomplete (segnaposto).
 
+## 2026-08-04 - Batch runner benchmark e fix integrità FK
+
+### Aggiunto
+
+- `backend/run_benchmark.py`: esecutore batch che per ogni dataset × condizione × run crea un progetto isolato, carica i sorgenti, genera/popola lo schema e valuta contro la ground-truth. Output: `run<NN>.json` per run, `{condition}.csv` e `{condition}_summary.json` (media + CI di Wilson) per (dataset, condizione).
+- Condizioni supportate: `full_llm` (schema generato by LLM) e `baseline` (gold-schema deterministico, popolamento LLM). Ciascun dataset richiede `data/datasets/{name}/prompt.txt` (aggiunti per university, library, hospital).
+
+### Fix
+
+- `backend/app/core/db_generator.py`: i vincoli `FOREIGN KEY` non venivano mai creati nei database generati — `ForeignKey` era passato come kwarg `foreign_key=` (non accettato da SQLAlchemy) invece che posizionalmente. Corretto e coperto da `tests/test_population_pipeline.py::test_foreign_keys_are_built_into_the_generated_database`. Rilevante per RQ2 (le violazioni FK vengono punteggiate a livello di cella).
+
+### Validazione eseguita
+
+- Backend: 40/40 test `pytest` verdi (incluso il nuovo test FK).
+- Smoke test del runner sulla condizione `baseline` per il dataset `university` (pipeline end-to-end ok).
+
+## 2026-08-04 - Esecuzione benchmark reale e verifica dinamica LLM
+
+### Eseguito
+
+- Benchmark reale su 3 dataset (university, library, hospital) × 2 condizioni (`full_llm`, `baseline`) × 3 run: 18 progetti isolati, 18/18 completati, report in `backend/reports/benchmark/`.
+
+### Osservazioni sperimentali (separate dalle inferenze)
+
+- `library`: full_llm ≈ baseline (F1 ~0.73); dato tabellare da CSV diretti, ~24 missing sistematici.
+- `hospital`: full_llm ha precision più alta (0.84 stabile) e recall più basso; baseline più rumoroso tra i run.
+- `university`: full_llm molto più basso (F1 0.23–0.45 vs baseline 0.77). Verificato a mano: il sorgente è denormalizzato e l'LLM deve normalizzare + ricostruire chiavi (ha creato 22/30 studenti con chiavi sintetiche non coincidenti col gold).
+
+### Aggiunto
+
+- `backend/app/evaluation/schema_alignment.py`: allineamento colonne LLM→gold (match normalizzato nomi + fallback `column_alias.json` per-dataset), usato prima della comparazione cella-cella nei run `full_llm`. Registrato nel report per audit.
+- `backend/app/evaluation/llm_adjudication.py` + `run_benchmark.py --adjudicate`: verifica dinamica supplementare LLM-as-judge (rubric fissa schema_equivalence/value_accuracy/completeness su 0–100, temperature 0.0, provenance con hash). Eseguita su university/full_llm: F1 0.31 vs giudice 85/90/75 — il giudice discrimina "veramente sbagliato" da "rappresentato diversamente" ed evidenzia l'incompletezza (22/30 studenti).
+- `data/datasets/university/column_alias.json`: registry versionato di allineamento (generato `id` → gold `student_id` e `course_id`).
+
+### Validazione eseguita
+
+- Backend: 52/52 test `pytest` verdi (nuovi test per schema_alignment e llm_adjudication).
+
+### Nota metodologica
+
+- Il giudizio LLM è una misura **supplementare, non sostitutiva** del F1 deterministico ed è soggetto a bias di auto-valutazione (stesso modello); riportato con provenance esplicita e non incluso nelle statistiche primarie RQ2.
+
 ## 2026-08-03 - Dataset benchmark RQ1/RQ2 (B e C)
 
 ### Aggiunto
