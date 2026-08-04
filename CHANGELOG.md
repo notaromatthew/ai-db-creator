@@ -58,6 +58,18 @@ Questa iterazione consolida AI-DB-Creator come piattaforma di ricerca per la gen
 - Le metriche automatiche sono euristiche riproducibili pensate per ricerca e confronto sperimentale, non per validazione autonoma.
 - Le parti che prevedono il confronto con l'intervento umano restano intenzionalmente incomplete (segnaposto).
 
+## 2026-08-03 - Valutazione accuratezza population (RQ2)
+
+### Aggiunto
+
+- Script `backend/evaluate_population.py` per la valutazione cella-cella della population contro un database ground-truth, conforme al protocollo `docs/11-benchmark-protocol.md` (§§4–7, 9).
+- Modulo `backend/app/evaluation/population_evaluation.py` con normalizzazione per tipo (numerico, booleano, data), classificazione errori (OK/TC/NS/WV/FK/TM + righe mancanti/extra), allineamento per chiave primaria, verifica FK contro i PK del ground truth e intervalli di confidenza di Wilson.
+- Test `backend/tests/test_population_evaluation.py` (5 test: normalizzazione, classificazione, Wilson, confronto perfetto/imperfetto, FK/missing/extra).
+
+### Impatto sperimentale
+
+Rende misurabile RQ2 a livello di cella come definito nel protocollo. La granularità cella-cella richiede una ground-truth con PK allineate al gold schema; i run full-LLM registrano provenance `llm` ma non coordinate sorgente per singola cella (limite già annotato nel run di verifica).
+
 ## 2026-08-03 - Popolamento full-LLM come percorso primario
 
 ### Cambiamento

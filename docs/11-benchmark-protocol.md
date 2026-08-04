@@ -244,15 +244,18 @@ Total time commitment per expert: approximately 4–6 hours (10–12 minutes per
 
 ## 9. Automated Evaluation Pipeline
 
-The evaluation script (`evaluate_population.py`) is executed as:
+The evaluation script (`backend/evaluate_population.py`) implements the cell-level comparison in section 4, normalisation rules in section 4.2, error typology in section 5, and the precision/recall/F1 metrics (Wilson score intervals) in sections 6-7. It is executed as:
 
 ```bash
+cd backend
 python evaluate_population.py \
   --generated-db projects/{id}/database.sqlite \
   --ground-truth data/datasets/{dataset}/ground_truth.db \
   --gold-schema data/datasets/{dataset}/gold_schema.json \
   --output reports/{id}_report.json
 ```
+
+The core logic lives in `backend/app/evaluation/population_evaluation.py` and is covered by `backend/tests/test_population_evaluation.py`. Rows are aligned by primary-key columns from the gold schema (falling back to all columns when a table has no declared PK); foreign-key violations are detected against the ground-truth PK values.
 
 Output format:
 
