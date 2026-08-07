@@ -47,3 +47,10 @@ async def startup():
 @limiter.limit("60/minute")
 def health(request: Request):
     return {"status": "ok"}
+
+from fastapi.staticfiles import StaticFiles
+
+static_dir = Path("static")
+if static_dir.exists():
+    app.mount("/", StaticFiles(directory="static", html=True), name="static")
+
