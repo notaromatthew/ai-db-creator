@@ -889,6 +889,55 @@ async def list_ollama_models(
     return {"models": [settings.ollama_model]}
 
 
+class OllamaTestRequest(BaseModel):
+    prompt: str = "Rispondi in italiano: Che giorno è oggi?"
+    model: str | None = None
+
+@router.post("/settings/ollama-test")
+async def test_ollama_prompt(body: OllamaTestRequest, user: dict = Depends(get_current_user)):
+    target_url = settings.ollama_base_url
+    target_key = settings.ollama_api_key
+    model = body.model or settings.ollama_model or "gemma2:9b"
+
+    headers = {"Content-Type": "application/json"}
+    if target_key and target_key.strip():
+        headers["Authorization"] = f"Bearer {target_key.strip()}"
+
+    api_url = f"{target_url.rstrip('/')}/api/generate"
+    payload = {
+        "model": model,
+        "prompt": body.prompt,
+        "stream": False,
+    }
+
+    log.info(f"🧪 Ollama test: POST {api_url} model={model} prompt={body.prompt[:60]}...")
+    try:
+        async with httpx.AsyncClient(verify=False, timeout=60.0) as client:
+            res = await client.post(api_url, json=payload, headers=headers)
+            if res.status_code == 200:
+                data = res.json()
+                return {
+                    "success": True,
+                    "model": model,
+                    "response": data.get("response", ""),
+                    "total_duration_ms": round(data.get("total_duration", 0) / 1_000_000, 1),
+                    "eval_count": data.get("eval_count", 0),
+                }
+            else:
+                log.error(f"Ollama test failed: {res.status_code} - {res.text[:300]}")
+                return {
+                    "success": False,
+                    "model": model,
+                    "error": f"HTTP {res.status_code}: {res.text[:300]}",
+                }
+    except Exception as e:
+        log.error(f"Ollama test connection error: {e}")
+        return {
+            "success": False,
+            "model": model,
+            "error": f"Connessione fallita: {str(e)}",
+        }
+
 
 @router.get("/settings")
 

@@ -12,6 +12,12 @@ export default function SettingsPage() {
   const [ollamaModels, setOllamaModels] = useState<string[]>([])
   const [loadingModels, setLoadingModels] = useState(false)
 
+  const [testPrompt, setTestPrompt] = useState('Rispondi in italiano: Che giorno è oggi?')
+  const [testModel, setTestModel] = useState('')
+  const [testRunning, setTestRunning] = useState(false)
+  const [testResult, setTestResult] = useState<any>(null)
+
+
   useEffect(() => {
     loadSettings()
   }, [])
@@ -475,6 +481,102 @@ export default function SettingsPage() {
           </button>
         </div>
       </form>
+
+      {/* Test Prompt Ollama Section */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white">🧪 Test Connessione Provider</h2>
+        <p className="mt-1 text-xs text-slate-500">
+          Invia un prompt di test al provider corrente per verificare che la connessione funzioni correttamente.
+        </p>
+
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="sm:col-span-2">
+            <label className="block text-xs font-semibold text-slate-500">Prompt di Test</label>
+            <textarea
+              value={testPrompt}
+              onChange={(e) => setTestPrompt(e.target.value)}
+              rows={2}
+              className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+              placeholder="Scrivi un prompt di test..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-500">Modello</label>
+            <select
+              value={testModel || settingsData?.ollama_model || ''}
+              onChange={(e) => setTestModel(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-sm text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+            >
+              {ollamaModels.map((m) => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+              {!ollamaModels.length && (
+                <option value={settingsData?.ollama_model || 'gemma2:9b'}>
+                  {settingsData?.ollama_model || 'gemma2:9b'}
+                </option>
+              )}
+            </select>
+
+            <button
+              onClick={async () => {
+                setTestRunning(true)
+                setTestResult(null)
+                try {
+                  const res = await api.post('/settings/ollama-test', {
+                    prompt: testPrompt,
+                    model: testModel || settingsData?.ollama_model || 'gemma2:9b',
+                  })
+                  setTestResult(res)
+                } catch (e: any) {
+                  setTestResult({ success: false, error: e.message || 'Errore di connessione' })
+                } finally {
+                  setTestRunning(false)
+                }
+              }}
+              disabled={testRunning || !testPrompt.trim()}
+              className="mt-3 w-full rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 py-2.5 text-sm font-bold text-white shadow-md hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50"
+            >
+              {testRunning ? '⏳ Invio in corso...' : '🚀 Invia Prompt di Test'}
+            </button>
+          </div>
+        </div>
+
+        {testRunning && (
+          <div className="mt-4 flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50/60 p-4 dark:border-blue-900/50 dark:bg-blue-950/60">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
+            <span className="text-xs font-semibold text-blue-700 dark:text-blue-300">
+              In attesa di risposta da {testModel || settingsData?.ollama_model || 'modello'}...
+            </span>
+          </div>
+        )}
+
+        {testResult && !testRunning && (
+          <div className={`mt-4 rounded-xl border p-4 ${
+            testResult.success
+              ? 'border-green-200 bg-green-50 dark:border-green-900/50 dark:bg-green-950/50'
+              : 'border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-950/50'
+          }`}>
+            {testResult.success ? (
+              <>
+                <div className="flex items-center gap-2 text-xs font-bold text-green-700 dark:text-green-300">
+                  <span>✅ Risposta ricevuta da {testResult.model}</span>
+                  <span className="rounded-full bg-green-200 px-2 py-0.5 text-[10px] font-mono dark:bg-green-900/50">
+                    {testResult.total_duration_ms}ms · {testResult.eval_count} token
+                  </span>
+                </div>
+                <div className="mt-3 max-h-48 overflow-y-auto rounded-lg border border-green-100 bg-white p-3 text-sm text-slate-800 dark:border-green-900 dark:bg-slate-950 dark:text-slate-200">
+                  {testResult.response}
+                </div>
+              </>
+            ) : (
+              <div className="text-xs font-semibold text-red-700 dark:text-red-300">
+                ❌ Test fallito: {testResult.error}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

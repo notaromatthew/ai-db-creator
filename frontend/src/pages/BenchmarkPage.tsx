@@ -28,7 +28,18 @@ export default function BenchmarkPage() {
 
   useEffect(() => {
     loadData()
+    checkRunningBenchmark()
   }, [])
+
+  const checkRunningBenchmark = async () => {
+    try {
+      const prog = await api.get('/progress/benchmark')
+      if (prog && (prog.status === 'running' || prog.status === 'saving')) {
+        setRunning(true)
+        setProgressState(prog)
+      }
+    } catch {}
+  }
 
   useEffect(() => {
     let interval: any
@@ -38,16 +49,24 @@ export default function BenchmarkPage() {
           const prog = await api.get('/progress/benchmark')
           if (prog) {
             setProgressState(prog)
+            if (prog.status === 'completed') {
+              setRunning(false)
+              setRunSuccess(prog.message || 'Benchmark completato!')
+              loadData()
+              setTimeout(() => setRunSuccess(''), 6000)
+            } else if (prog.status === 'failed') {
+              setRunning(false)
+              setRunError(prog.message || 'Benchmark fallito')
+            }
           }
         } catch {}
-      }, 500)
-    } else {
-      setProgressState({ status: 'idle', progress: 0, message: '', etc_seconds: null })
+      }, 800)
     }
     return () => {
       if (interval) clearInterval(interval)
     }
   }, [running])
+
 
   const loadData = async () => {
 
