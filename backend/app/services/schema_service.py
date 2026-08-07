@@ -17,9 +17,9 @@ class SchemaService:
     def __init__(self):
         self.engine = init_db()
     
-    def create_project(self, name: str, prompt: str = "") -> Project:
+    def create_project(self, name: str, prompt: str = "", user_id: str | None = None) -> Project:
         session = get_session(self.engine)
-        project = Project(name=name, prompt=prompt)
+        project = Project(name=name, prompt=prompt, user_id=user_id)
         session.add(project)
         session.commit()
         project_id = project.id
@@ -34,11 +34,15 @@ class SchemaService:
             raise AppException(detail="Project not found", status_code=404)
         return project
     
-    def list_projects(self) -> list:
+    def list_projects(self, user_id: str | None = None) -> list:
         session = get_session(self.engine)
-        projects = session.query(Project).all()
+        query = session.query(Project)
+        if user_id:
+            query = query.filter((Project.user_id == user_id) | (Project.user_id == None))
+        projects = query.all()
         session.close()
         return projects
+
     
     async def generate_from_prompt(self, project_id: str, request: GenerateRequest,
                                    temperature: float | None = None) -> NormalizedSchema:

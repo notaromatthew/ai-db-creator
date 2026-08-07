@@ -26,10 +26,13 @@ AI-DB-Creator è una piattaforma di ricerca in AI applicata alla generazione di 
 ### Ordine di lettura consigliato
 
 1. `README.md`
-2. `docs/00-project-overview.md`
-3. `docs/01-multi-agent-playbook.md`
-4. `docs/02-technical-manual.md`
-5. `docs/09-api-dataflow-map.md`
+2. [docs/wiki/INDEX.md](file:///Users/davide/Documents/repos/ai-db-creator/docs/wiki/INDEX.md) (Wiki Scientifico ed Operativo)
+3. [docs/wiki/02-ai-agent-protocol-and-comments.md](file:///Users/davide/Documents/repos/ai-db-creator/docs/wiki/02-ai-agent-protocol-and-comments.md) (Protocollo & Registro Commenti / RFC Agenti AI)
+4. `docs/00-project-overview.md`
+5. `docs/01-multi-agent-playbook.md`
+6. `docs/02-technical-manual.md`
+7. `docs/09-api-dataflow-map.md`
+
 
 ### Aree della repo
 

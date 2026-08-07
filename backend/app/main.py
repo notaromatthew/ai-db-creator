@@ -15,7 +15,14 @@ limiter = Limiter(key_func=get_remote_address, default_limits=["1000/hour"])
 app = FastAPI(title="AI DB Creator", version="1.0.0")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin_regex=r"https?://.*",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.exception_handler(AppException)
 async def app_exception_handler(request: Request, exc: AppException):
@@ -24,11 +31,17 @@ async def app_exception_handler(request: Request, exc: AppException):
 app.include_router(router)
 app.include_router(progress_router)
 
+from app.core.keycloak_setup import setup_keycloak_realm
+from app.models.database import init_db
+
 @app.on_event("startup")
 async def startup():
     Path("uploads").mkdir(parents=True, exist_ok=True)
     Path("projects").mkdir(parents=True, exist_ok=True)
-    log.info("AI DB Creator started")
+    init_db()
+    await setup_keycloak_realm()
+    log.info("AI DB Creator started with PostgreSQL & Keycloak support")
+
 
 @app.get("/health")
 @limiter.limit("60/minute")

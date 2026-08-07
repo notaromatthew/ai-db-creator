@@ -62,11 +62,15 @@ def _get_llm(temperature: float = 0.1, force_local: bool = False):
 
     if provider == "ollama":
         model = _detect_local_model()
-        return ChatOllama(
-            base_url=settings.ollama_base_url,
-            model=model,
-            temperature=temperature,
-        )
+        kwargs = {
+            "base_url": settings.ollama_base_url,
+            "model": model,
+            "temperature": temperature,
+        }
+        if settings.ollama_api_key:
+            kwargs["headers"] = {"Authorization": f"Bearer {settings.ollama_api_key}"}
+        return ChatOllama(**kwargs)
+
 
     if provider == "groq":
         return ChatOpenAI(
@@ -248,42 +252,40 @@ async def generate_query(prompt: str, schema: str, dialect: str = "sqlite") -> Q
         raise LLMException(detail="Query generation failed") from e
 
 def _detect_local_model():
-    """Auto-detect available local LLM."""
-    try:
-        import ollama
-        client = ollama.Client(host=settings.ollama_base_url)
-        models = client.list()
-        if models and 'models' in models:
-            return models['models'][0]['name']
-    except:
-        pass
-    return settings.ollama_model
+    """Returns configured Ollama model without blocking network calls."""
+    return settings.ollama_model or "gemma2:9b"
+
+
+
 
 _PROVIDER_LABELS = {
     "openai": "OpenAI",
     "groq": "Groq",
     "openrouter": "OpenRouter",
     "google": "Google Gemini",
-    "ollama": "Ollama (locale)",
+    "ollama": "Ollama",
 }
 
 def get_llm_info():
     """Get current LLM configuration info."""
     provider = "ollama" if settings.use_ollama else settings.llm_provider
-    label = _PROVIDER_LABELS.get(provider, provider.capitalize())
-
-    models = {
-        "openai": settings.openai_model,
-        "groq": settings.groq_model,
-        "openrouter": settings.openrouter_model,
-        "google": settings.google_model,
-        "ollama": _detect_local_model(),
-    }
-    model = models.get(provider, settings.openai_model)
+    if provider == "ollama":
+        label = f"Ollama ({'Remoto' if settings.ollama_mode == 'remote' else 'Locale'})"
+        model = settings.ollama_model or _detect_local_model()
+    else:
+        label = _PROVIDER_LABELS.get(provider, provider.capitalize())
+        models = {
+            "openai": settings.openai_model,
+            "groq": settings.groq_model,
+            "openrouter": settings.openrouter_model,
+            "google": settings.google_model,
+        }
+        model = models.get(provider, settings.openai_model)
 
     return {
-        'provider': label,
-        'model': model,
+        "provider": label,
+        "model": model,
+        "use_ollama": settings.use_ollama,
     }
 
 

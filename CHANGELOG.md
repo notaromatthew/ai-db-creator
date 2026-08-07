@@ -2,7 +2,45 @@
 
 Tutte le modifiche rilevanti del progetto sono raccolte in questo file. Il formato segue una struttura orientata alla ricerca: ogni voce distingue funzionalità applicative, infrastruttura scientifica, riproducibilità, documentazione e validazione.
 
-## 2026-08-03 - Rilascio baseline per GitHub (app v1.0.0)
+## 2026-08-07 - Feature Fondamentali, Keycloak, PostgreSQL, SonarQube, Benchmark & Coolify (Branch Davide)
+
+### Sintesi
+
+Questa iterazione sul branch `Davide` introduce le funzionalità fondamentali per la segregazione multi-tenant, il salvataggio persistente su database PostgreSQL online, l'integrazione con Keycloak per la gestione utenti, il controllo qualità del codice con SonarQube, e una pagina dedicata ai Benchmark scientifici con supporto al voto degli utenti/esperti e all'esportazione di tabelle LaTeX per il Paper.
+
+### Autenticazione & Multi-Tenancy (Keycloak)
+
+- Integrazione OIDC con server Keycloak (`89.168.29.98:8080`) e provisioning automatico del Realm `aidbcreator` e Client `aidbcreator-app` via API Admin (`backend/app/core/keycloak_setup.py`).
+- Middleware FastAPI JWT Bearer in `backend/app/core/auth.py` per l'estrazione dell'utente autenticato e isolamento dei progetti via `user_id`.
+- `KeycloakContext.tsx` per il frontend React con supporto al SSO, token refresh e fallback dev-mode trasparente.
+
+### Persistenza (PostgreSQL Online)
+
+- Transizione della base dati di sistema verso PostgreSQL online (`89.168.29.98:12000`).
+- Fallback automatico in-memory / SQLite locale in caso di disconnessione di rete.
+
+### Qualità del Codice (SonarQube)
+
+- File di configurazione `sonar-project.properties` e script `scripts/run_sonar_scan.sh` per la scansione statica sia del backend Python che del frontend TypeScript.
+
+### UX & Aiuto
+
+- Modal `ProjectWizardModal.tsx` con scelta guidata tra **Flusso Rapido (Manuale)** e **Wizard Guidato (Step-by-Step)**.
+- Nuova sezione `/help` (`HelpPage.tsx`) con guida passo-passo interattiva.
+
+### Configurazione AI & Benchmark Scientifico
+
+- Nuova pagina `/settings` per variare dinamicamente Provider AI (Google Gemini, OpenAI, Groq, OpenRouter, Ollama) e iperparametri (temperatura, top_p, max_tokens, rate limit).
+- Nuova pagina `/benchmark` (`BenchmarkPage.tsx`) con 3 scenari Gold Standard predefiniti, metriche automatiche (3NF %, Rel F1, Cell Precision, Latency), form per la **valutazione soggettiva dell'esperto (Likert 1-5)** e pulsante di esportazione della tabella in sintassi **LaTeX** per il Paper.
+
+### Deploy su Coolify
+
+- `Dockerfile` multi-stage per la compilazione assets e il servizio unificato.
+- `docker-compose.coolify.yml` pronto per il deployment automatizzato su Coolify.
+
+---
+
+
 
 ### Sintesi
 

@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - KEYCLOAK_URL=${KEYCLOAK_URL:-https://keycloak-pw9ut4s1h3aodstrsw1gd84o.89.168.29.98.sslip.io}
+
+
+      - KEYCLOAK_REALM=${KEYCLOAK_REALM:-aidbcreator}
+      - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID:-aidbcreator-app}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    restart: always

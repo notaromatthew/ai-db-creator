@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { api } from '@/api/client'
 import { Project } from '@/types'
 import { useState } from 'react'
+import { ProjectWizardModal } from '@/components/ProjectWizardModal'
 
 export default function Dashboard() {
   const queryClient = useQueryClient()
@@ -10,6 +11,7 @@ export default function Dashboard() {
   const [name, setName] = useState('')
   const [prompt, setPrompt] = useState('')
   const [error, setError] = useState('')
+  const [isWizardOpen, setIsWizardOpen] = useState(false)
 
   const { data: projects, isLoading } = useQuery<Project[]>({ queryKey: ['projects'], queryFn: () => api.get('/projects') })
 
@@ -32,6 +34,10 @@ export default function Dashboard() {
     if (!name.trim()) return
     setError('')
     createMut.mutate({ name: name.trim(), prompt: prompt.trim() })
+  }
+
+  const handleWizardCreate = (wName: string, wPrompt: string, mode: 'quick' | 'wizard') => {
+    createMut.mutate({ name: wName, prompt: wPrompt })
   }
 
   const handleDelete = (event: React.MouseEvent, project: Project) => {
@@ -58,9 +64,17 @@ export default function Dashboard() {
       </header>
 
       <section className="surface mb-10 overflow-hidden" aria-labelledby="new-project-title">
-        <div className="border-b border-slate-100 bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-4 sm:px-7 dark:border-slate-800 dark:from-blue-950/40 dark:to-indigo-950/40">
-          <p className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Inizia qui</p>
-          <h2 id="new-project-title" className="mt-1 text-xl font-bold">Crea un nuovo progetto</h2>
+        <div className="flex items-center justify-between border-b border-slate-100 bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-4 sm:px-7 dark:border-slate-800 dark:from-blue-950/40 dark:to-indigo-950/40">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Inizia qui</p>
+            <h2 id="new-project-title" className="mt-1 text-xl font-bold">Crea un nuovo progetto</h2>
+          </div>
+          <button
+            onClick={() => setIsWizardOpen(true)}
+            className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-xs font-bold text-white shadow hover:from-blue-700 hover:to-indigo-700"
+          >
+            🧙‍♂️ Apri Wizard Guidato
+          </button>
         </div>
         <form onSubmit={handleCreate} className="space-y-5 p-5 sm:p-7">
           <div>
@@ -82,6 +96,13 @@ export default function Dashboard() {
           </button>
         </form>
       </section>
+
+      <ProjectWizardModal
+        isOpen={isWizardOpen}
+        onClose={() => setIsWizardOpen(false)}
+        onCreateProject={handleWizardCreate}
+      />
+
 
       <section aria-labelledby="projects-title">
         <div className="mb-4 flex items-end justify-between">

@@ -4,9 +4,22 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 export class ApiClient {
   private base: string
+  private token: string | null = null
 
   constructor(base: string = API_BASE) {
     this.base = base
+  }
+
+  setToken(token: string | null) {
+    this.token = token
+  }
+
+  private headers(custom: Record<string, string> = {}): Record<string, string> {
+    const h: Record<string, string> = { ...custom }
+    if (this.token) {
+      h['Authorization'] = `Bearer ${this.token}`
+    }
+    return h
   }
 
   private url(path: string) {
@@ -14,7 +27,7 @@ export class ApiClient {
   }
 
   async get(path: string) {
-    const res = await fetch(this.url(path))
+    const res = await fetch(this.url(path), { headers: this.headers() })
     await this._checkError(res)
     return res.json()
   }
@@ -22,7 +35,7 @@ export class ApiClient {
   async post(path: string, data: any) {
     const res = await fetch(this.url(path), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: this.headers({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(data),
     })
     await this._checkError(res)
@@ -30,9 +43,11 @@ export class ApiClient {
   }
 
   async delete(path: string, data?: any) {
-    const opts: RequestInit = { method: 'DELETE' }
+    const opts: RequestInit = {
+      method: 'DELETE',
+      headers: this.headers(data ? { 'Content-Type': 'application/json' } : {}),
+    }
     if (data) {
-      opts.headers = { 'Content-Type': 'application/json' }
       opts.body = JSON.stringify(data)
     }
     const res = await fetch(this.url(path), opts)
@@ -43,7 +58,7 @@ export class ApiClient {
   async put(path: string, data: any) {
     const res = await fetch(this.url(path), {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: this.headers({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(data),
     })
     await this._checkError(res)
@@ -55,12 +70,14 @@ export class ApiClient {
     if (file instanceof File) formData.append('file', file)
     const res = await fetch(this.url(path), {
       method: 'POST',
+      headers: this.headers(),
       body: formData,
     })
     await this._checkError(res)
     const contentType = res.headers.get('content-type') || ''
     return contentType.includes('application/json') ? res.json() : null
   }
+
 
   async _checkError(res: Response) {
     if (res.ok) return

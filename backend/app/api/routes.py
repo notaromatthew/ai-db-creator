@@ -1,8 +1,14 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, Body
+from fastapi import APIRouter, UploadFile, File, HTTPException, Body, Depends
 from pydantic import BaseModel, Field
 from sqlalchemy import create_engine, text
 import json
 import re
+import httpx
+
+from app.core.auth import get_current_user
+from app.config import settings
+from app.services.benchmark_service import run_model_benchmark, save_user_vote, BENCHMARK_SCENARIOS
+from app.models.database import get_session, init_db, BenchmarkResult, UserVote
 from app.models.schema_models import GenerateRequest, NormalizedSchema, QueryRequest, QueryResponse, SchemaUpdate, PopulateRequest, ExecuteQueryRequest, ExecuteQueryResponse
 from app.models.database import get_session, Project
 from app.services.schema_service import SchemaService
@@ -50,12 +56,15 @@ def _log_research_run(event_type: str, project_id: str, data: dict, run_id: str 
     return record_run(interaction_logger, project_id, event_type, run_id, data)
 
 @router.post("/projects")
-def create_project(name: str = Body(...), prompt: str = Body("")):
-    return schema_svc.create_project(name, prompt)
+def create_project(name: str = Body(...), prompt: str = Body(""), user: dict = Depends(get_current_user)):
+    user_id = user.get("sub") if user else None
+    return schema_svc.create_project(name, prompt, user_id=user_id)
 
 @router.get("/projects")
-def list_projects():
-    return schema_svc.list_projects()
+def list_projects(user: dict = Depends(get_current_user)):
+    user_id = user.get("sub") if user else None
+    return schema_svc.list_projects(user_id=user_id)
+
 
 @router.get("/projects/{project_id}")
 def get_project(project_id: str):
@@ -826,4 +835,240 @@ def get_task_status(task_id: str):
     from app.tasks import celery
     task = celery.AsyncResult(task_id)
     return {"task_id": task_id, "status": task.status, "result": task.result if task.ready() else None}
+
+
+# ==========================================
+# Settings & Configuration Endpoints
+# ==========================================
+
+class SettingsUpdateSchema(BaseModel):
+    llm_provider: str | None = None
+    openai_model: str | None = None
+    openai_api_key: str | None = None
+    google_model: str | None = None
+    google_api_key: str | None = None
+    groq_model: str | None = None
+    groq_api_key: str | None = None
+    openrouter_model: str | None = None
+    openrouter_api_key: str | None = None
+    ollama_mode: str | None = None
+    ollama_model: str | None = None
+    ollama_base_url: str | None = None
+    ollama_api_key: str | None = None
+    use_ollama: bool | None = None
+    llm_temperature: float | None = None
+    llm_top_p: float | None = None
+    llm_max_tokens: int | None = None
+    llm_max_requests_per_minute: int | None = None
+
+@router.get("/settings/ollama-models")
+
+async def list_ollama_models(
+    base_url: str | None = None,
+    api_key: str | None = None,
+    user: dict = Depends(get_current_user)
+):
+    target_url = base_url if base_url else settings.ollama_base_url
+    target_key = api_key if api_key is not None else settings.ollama_api_key
+    try:
+        headers = {}
+        if target_key and target_key.strip():
+            headers["Authorization"] = f"Bearer {target_key.strip()}"
+        url = f"{target_url.rstrip('/')}/api/tags"
+        async with httpx.AsyncClient(verify=False, timeout=5.0) as client:
+            res = await client.get(url, headers=headers)
+            if res.status_code == 200:
+                models = res.json().get("models", [])
+                model_names = [m["name"] for m in models if "name" in m]
+                if model_names:
+                    return {"models": model_names}
+            else:
+                log.warning(f"Ollama tags endpoint returned status {res.status_code}: {res.text[:200]}")
+    except Exception as e:
+        log.warning(f"Failed to fetch Ollama models from {target_url}: {e}")
+    return {"models": [settings.ollama_model]}
+
+
+
+@router.get("/settings")
+
+def get_app_settings(user: dict = Depends(get_current_user)):
+    info = get_llm_info()
+    return {
+        "provider": info["provider"],
+        "model": info["model"],
+        "llm_provider": settings.llm_provider,
+        "openai_model": settings.openai_model,
+        "openai_api_key": settings.openai_api_key,
+        "google_model": settings.google_model,
+        "google_api_key": settings.google_api_key,
+        "groq_model": settings.groq_model,
+        "groq_api_key": settings.groq_api_key,
+        "openrouter_model": settings.openrouter_model,
+        "openrouter_api_key": settings.openrouter_api_key,
+        "ollama_mode": settings.ollama_mode,
+        "ollama_model": settings.ollama_model,
+        "ollama_base_url": settings.ollama_base_url,
+        "ollama_api_key": settings.ollama_api_key,
+        "use_ollama": settings.use_ollama,
+        "llm_temperature": settings.llm_temperature,
+        "llm_top_p": settings.llm_top_p,
+        "llm_max_tokens": settings.llm_max_tokens,
+        "llm_max_requests_per_minute": settings.llm_max_requests_per_minute,
+        "user": user,
+    }
+
+@router.put("/settings")
+def update_app_settings(body: SettingsUpdateSchema, user: dict = Depends(get_current_user)):
+    if body.llm_provider is not None:
+        settings.llm_provider = body.llm_provider
+        settings.use_ollama = (body.llm_provider == "ollama")
+
+    if body.openai_model is not None:
+        settings.openai_model = body.openai_model
+    if body.openai_api_key is not None:
+        settings.openai_api_key = body.openai_api_key
+    if body.google_model is not None:
+        settings.google_model = body.google_model
+    if body.google_api_key is not None:
+        settings.google_api_key = body.google_api_key
+    if body.groq_model is not None:
+        settings.groq_model = body.groq_model
+    if body.groq_api_key is not None:
+        settings.groq_api_key = body.groq_api_key
+    if body.openrouter_model is not None:
+        settings.openrouter_model = body.openrouter_model
+    if body.openrouter_api_key is not None:
+        settings.openrouter_api_key = body.openrouter_api_key
+    if body.ollama_mode is not None:
+        settings.ollama_mode = body.ollama_mode
+        if body.ollama_mode == "local" and not body.ollama_base_url:
+            settings.ollama_base_url = "http://localhost:11434"
+        elif body.ollama_mode == "remote" and not body.ollama_base_url:
+            settings.ollama_base_url = "https://ollamaapi-u11fj34m2h9druz26hamz3xb.89.168.29.98.sslip.io"
+
+    if body.ollama_model is not None:
+        settings.ollama_model = body.ollama_model
+    if body.ollama_base_url is not None:
+        settings.ollama_base_url = body.ollama_base_url
+    if body.ollama_api_key is not None:
+        settings.ollama_api_key = body.ollama_api_key
+    if body.use_ollama is not None:
+        settings.use_ollama = body.use_ollama
+    if body.llm_temperature is not None:
+        settings.llm_temperature = body.llm_temperature
+
+    if body.llm_top_p is not None:
+        settings.llm_top_p = body.llm_top_p
+    if body.llm_max_tokens is not None:
+        settings.llm_max_tokens = body.llm_max_tokens
+    if body.llm_max_requests_per_minute is not None:
+        settings.llm_max_requests_per_minute = body.llm_max_requests_per_minute
+
+    # Persist updated settings directly to backend/.env
+    try:
+        env_path = Path(".env")
+        env_content = f"""LLM_PROVIDER={settings.llm_provider}
+USE_OLLAMA={'true' if settings.use_ollama else 'false'}
+OLLAMA_MODE={settings.ollama_mode}
+OLLAMA_BASE_URL={settings.ollama_base_url}
+OLLAMA_API_KEY={settings.ollama_api_key}
+OLLAMA_MODEL={settings.ollama_model}
+
+OPENAI_API_KEY={settings.openai_api_key}
+OPENAI_MODEL={settings.openai_model}
+
+GROQ_API_KEY={settings.groq_api_key}
+GROQ_MODEL={settings.groq_model}
+
+OPENROUTER_API_KEY={settings.openrouter_api_key}
+OPENROUTER_MODEL={settings.openrouter_model}
+
+GOOGLE_API_KEY={settings.google_api_key}
+GOOGLE_MODEL={settings.google_model}
+"""
+        env_path.write_text(env_content, encoding="utf-8")
+    except Exception as err:
+        log.warning(f"Could not persist settings to .env file: {err}")
+
+    return get_app_settings(user)
+
+
+
+
+# ==========================================
+# Benchmark & Expert Evaluation Endpoints
+# ==========================================
+
+class BenchmarkRunRequest(BaseModel):
+    scenario: str = "ecommerce"
+    temperature: float = 0.1
+
+class UserVoteRequest(BaseModel):
+    project_id: str | None = None
+    benchmark_id: str | None = None
+    schema_rating: int = Field(..., ge=1, le=5)
+    data_rating: int = Field(..., ge=1, le=5)
+    comment: str = ""
+
+@router.get("/benchmark/scenarios")
+def list_benchmark_scenarios():
+    return [
+        {"key": k, "title": v["title"], "prompt": v["prompt"], "gold_tables": v["gold_tables"]}
+        for k, v in BENCHMARK_SCENARIOS.items()
+    ]
+
+@router.post("/benchmark/run")
+async def run_benchmark(req: BenchmarkRunRequest, user: dict = Depends(get_current_user)):
+    res = await run_model_benchmark(scenario_key=req.scenario, temperature=req.temperature)
+    return res
+
+@router.get("/benchmark/results")
+def get_benchmark_results():
+    engine = init_db()
+    session = get_session(engine)
+    results = session.query(BenchmarkResult).order_by(BenchmarkResult.created_at.desc()).limit(50).all()
+    votes = session.query(UserVote).order_by(UserVote.created_at.desc()).limit(50).all()
+    return {
+        "results": [
+            {
+                "id": r.id,
+                "scenario": r.scenario_name,
+                "provider": r.provider,
+                "model": r.model_name,
+                "norm3_score": r.norm3_score,
+                "relationship_f1": r.relationship_f1,
+                "cell_precision": r.cell_precision,
+                "latency_seconds": r.latency_seconds,
+                "token_cost_estimate": r.token_cost_estimate,
+                "created_at": r.created_at.isoformat() if r.created_at else None,
+            }
+            for r in results
+        ],
+        "votes": [
+            {
+                "id": v.id,
+                "user_id": v.user_id,
+                "schema_rating": v.schema_rating,
+                "data_rating": v.data_rating,
+                "comment": v.comment,
+                "created_at": v.created_at.isoformat() if v.created_at else None,
+            }
+            for v in votes
+        ]
+    }
+
+@router.post("/surveys/vote")
+def submit_user_vote(req: UserVoteRequest, user: dict = Depends(get_current_user)):
+    user_id = user.get("sub", "anonymous")
+    vote = save_user_vote(
+        user_id=user_id,
+        schema_rating=req.schema_rating,
+        data_rating=req.data_rating,
+        comment=req.comment,
+        project_id=req.project_id,
+        benchmark_id=req.benchmark_id
+    )
+    return {"status": "saved", "vote_id": vote.id}
+
 

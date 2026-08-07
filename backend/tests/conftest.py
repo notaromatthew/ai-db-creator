@@ -4,14 +4,25 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from app.config import settings
+settings.database_url = "sqlite:///./test_app.db"
+
 import pytest
 from fastapi.testclient import TestClient
 from openpyxl import Workbook
+from app.models.database import init_db
+
+init_db(settings.database_url)
 
 
 @pytest.fixture()
 def client(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    test_db = f"sqlite:///{tmp_path}/test_app.db"
+    settings.database_url = test_db
+    init_db(test_db)
+
+
     from app.api import routes
     from app.main import app
     from app.services.backup_service import BackupService
@@ -27,10 +38,16 @@ def client(tmp_path, monkeypatch):
     routes.query_svc = QueryService()
     routes.metrics_svc = MetricsService()
     routes.backup_svc = BackupService()
+
+    from app.core.auth import get_current_user
+    app.dependency_overrides[get_current_user] = lambda: {"sub": "test-user", "username": "test-user"}
+
     routes.interaction_logger.persist_path = tmp_path / "projects" / "interactions_store.json"
     routes.interaction_logger.events = []
     with TestClient(app) as test_client:
         yield test_client, routes
+    app.dependency_overrides.clear()
+
 
 
 @pytest.fixture()
