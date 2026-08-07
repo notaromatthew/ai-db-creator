@@ -1,14 +1,23 @@
 import { QueryClient } from '@tanstack/react-query'
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const getApiBase = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL
+  }
+  if (typeof window !== 'undefined' && window.location && window.location.origin) {
+    return window.location.origin
+  }
+  return 'http://localhost:8000'
+}
 
 export class ApiClient {
   private base: string
   private token: string | null = null
 
-  constructor(base: string = API_BASE) {
-    this.base = base
+  constructor(base?: string) {
+    this.base = base || getApiBase()
   }
+
 
   setToken(token: string | null) {
     this.token = token
