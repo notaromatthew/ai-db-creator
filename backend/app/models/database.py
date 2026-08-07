@@ -67,17 +67,29 @@ class UserVote(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
+_engine = None
+
 def init_db(db_url: str | None = None):
+    global _engine
+    if _engine is not None and db_url is None:
+        return _engine
     from app.config import settings
     target_url = db_url or settings.database_url
-    engine = create_engine(target_url, echo=False, pool_pre_ping=True)
-    Base.metadata.create_all(engine)
+    _engine = create_engine(
+        target_url,
+        echo=False,
+        pool_pre_ping=True,
+        pool_size=10,
+        max_overflow=20,
+        pool_recycle=1800,
+    )
+    Base.metadata.create_all(_engine)
     log.info(f"Database PostgreSQL online inizializzato: {target_url.split('@')[-1]}")
-    return engine
+    return _engine
 
 
-
-def get_session(engine):
+def get_session(engine=None):
     from sqlalchemy.orm import sessionmaker
-    Session = sessionmaker(bind=engine)
+    target_engine = engine or init_db()
+    Session = sessionmaker(bind=target_engine)
     return Session()
