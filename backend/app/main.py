@@ -24,9 +24,21 @@ app.add_middleware(
 )
 
 
+from fastapi.responses import JSONResponse, FileResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
 @app.exception_handler(AppException)
 async def app_exception_handler(request: Request, exc: AppException):
     return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+
+@app.exception_handler(StarletteHTTPException)
+async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
+    if exc.status_code == 404 and not request.url.path.startswith("/api"):
+        index_file = Path("static/index.html")
+        if index_file.exists():
+            return FileResponse(index_file)
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+
 
 app.include_router(router)
 app.include_router(progress_router)

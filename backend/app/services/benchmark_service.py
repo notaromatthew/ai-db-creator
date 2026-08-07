@@ -45,14 +45,29 @@ BENCHMARK_SCENARIOS = {
     }
 }
 
-async def run_model_benchmark(scenario_key: str = "ecommerce", temperature: float = 0.1) -> dict:
+async def run_model_benchmark(
+    scenario_key: str = "ecommerce",
+    temperature: float = 0.1,
+    model_name: str | None = None,
+    provider: str | None = None
+) -> dict:
     scenario = BENCHMARK_SCENARIOS.get(scenario_key, BENCHMARK_SCENARIOS["ecommerce"])
+    from app.config import settings
+    if model_name:
+        settings.ollama_model = model_name
+    if provider:
+        settings.llm_provider = provider
+        settings.use_ollama = (provider == "ollama")
+
     llm_info = get_llm_info()
+    log.info(f"🚀 Starting benchmark scenario '{scenario_key}' with provider '{llm_info['provider']}', model '{llm_info['model']}', temp={temperature}")
 
     start_time = time.monotonic()
     try:
         schema: NormalizedSchema = await generate_schema(scenario["prompt"], temperature=temperature)
         latency = round(time.monotonic() - start_time, 3)
+        log.info(f"✅ Benchmark finished in {latency}s for model {llm_info['model']}")
+
 
         # 1. 3NF Score (% of tables with a PK and snake_case naming)
         tables = schema.tables

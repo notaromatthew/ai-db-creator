@@ -1003,6 +1003,8 @@ GOOGLE_MODEL={settings.google_model}
 class BenchmarkRunRequest(BaseModel):
     scenario: str = "ecommerce"
     temperature: float = 0.1
+    provider: str | None = None
+    model: str | None = None
 
 class UserVoteRequest(BaseModel):
     project_id: str | None = None
@@ -1020,8 +1022,16 @@ def list_benchmark_scenarios():
 
 @router.post("/benchmark/run")
 async def run_benchmark(req: BenchmarkRunRequest, user: dict = Depends(get_current_user)):
-    res = await run_model_benchmark(scenario_key=req.scenario, temperature=req.temperature)
+    res = await run_model_benchmark(
+        scenario_key=req.scenario,
+        temperature=req.temperature,
+        model_name=req.model,
+        provider=req.provider
+    )
+    if isinstance(res, dict) and "error" in res:
+        raise HTTPException(status_code=500, detail=res["error"])
     return res
+
 
 @router.get("/benchmark/results")
 def get_benchmark_results():

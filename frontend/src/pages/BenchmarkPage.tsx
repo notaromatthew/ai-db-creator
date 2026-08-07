@@ -5,8 +5,13 @@ export default function BenchmarkPage() {
   const [scenarios, setScenarios] = useState<any[]>([])
   const [resultsData, setResultsData] = useState<{ results: any[]; votes: any[] }>({ results: [], votes: [] })
   const [selectedScenario, setSelectedScenario] = useState('ecommerce')
+  const [selectedProvider, setSelectedProvider] = useState('ollama')
+  const [selectedModel, setSelectedModel] = useState('gemma2:9b')
+  const [ollamaModels, setOllamaModels] = useState<string[]>(['gemma2:9b', 'qwen3:0.6b', 'llama3.2:1b', 'gemma3:270m'])
   const [temperature, setTemperature] = useState(0.1)
   const [running, setRunning] = useState(false)
+  const [runError, setRunError] = useState('')
+  const [runSuccess, setRunSuccess] = useState('')
 
   // Expert Vote State
   const [schemaRating, setSchemaRating] = useState(5)
@@ -21,12 +26,19 @@ export default function BenchmarkPage() {
 
   const loadData = async () => {
     try {
-      const [scen, res] = await Promise.all([
+      const [scen, res, modelsRes] = await Promise.all([
         api.get('/benchmark/scenarios'),
         api.get('/benchmark/results'),
+        api.get('/settings/ollama-models').catch(() => ({ models: [] })),
       ])
       setScenarios(scen)
       setResultsData(res)
+      if (modelsRes?.models?.length) {
+        setOllamaModels(modelsRes.models)
+        if (!modelsRes.models.includes(selectedModel)) {
+          setSelectedModel(modelsRes.models[0])
+        }
+      }
     } catch (e) {
       console.error('Error loading benchmark data:', e)
     }
@@ -34,15 +46,26 @@ export default function BenchmarkPage() {
 
   const handleRunBenchmark = async () => {
     setRunning(true)
+    setRunError('')
+    setRunSuccess('')
     try {
-      await api.post('/benchmark/run', { scenario: selectedScenario, temperature })
+      const res = await api.post('/benchmark/run', {
+        scenario: selectedScenario,
+        temperature,
+        provider: selectedProvider,
+        model: selectedModel,
+      })
+      setRunSuccess(`Benchmark per ${res.model || selectedModel} completato in ${res.latency_seconds}s! (3NF: ${res.norm3_score}%)`)
       await loadData()
-    } catch (e) {
-      alert('Errore durante l\'esecuzione del benchmark')
+      setTimeout(() => setRunSuccess(''), 6000)
+    } catch (e: any) {
+      console.error('Benchmark execution error:', e)
+      setRunError(e.message || 'Errore durante l\'esecuzione del benchmark. Verifica la connessione al provider.')
     } finally {
       setRunning(false)
     }
   }
+
 
   const handleVoteSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -98,7 +121,21 @@ export default function BenchmarkPage() {
       {/* Benchmark Control Panel */}
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <h2 className="text-lg font-bold text-slate-900 dark:text-white">Esegui Nuovo Test di Benchmark</h2>
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <p className="mt-1 text-xs text-slate-500">Seleziona lo scenario, il provider ed il modello specifico da testare.</p>
+
+        {runError && (
+          <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 text-xs font-semibold text-red-700 dark:border-red-900/50 dark:bg-red-950/50 dark:text-red-300">
+            ⚠️ {runError}
+          </div>
+        )}
+
+        {runSuccess && (
+          <div className="mt-4 rounded-xl border border-green-200 bg-green-50 p-4 text-xs font-semibold text-green-700 dark:border-green-900/50 dark:bg-green-950/50 dark:text-green-300">
+            🎉 {runSuccess}
+          </div>
+        )}
+
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <label className="block text-xs font-semibold uppercase text-slate-500">Scenario Gold Standard</label>
             <select
@@ -115,6 +152,46 @@ export default function BenchmarkPage() {
           </div>
 
           <div>
+            <label className="block text-xs font-semibold uppercase text-slate-500">Provider IA</label>
+            <select
+              value={selectedProvider}
+              onChange={(e) => setSelectedProvider(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-sm text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+            >
+              <option value="ollama">Ollama (Remoto/Locale)</option>
+              <option value="google">Google Gemini</option>
+              <option value="openai">OpenAI</option>
+              <option value="groq">Groq</option>
+              <option value="openrouter">OpenRouter</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold uppercase text-slate-500">Modello da Valutare</label>
+            {selectedProvider === 'ollama' ? (
+              <select
+                value={selectedModel}
+                onChange={(e) => setSelectedModel(e.target.value)}
+                className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-sm text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+              >
+                {ollamaModels.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                value={selectedModel}
+                onChange={(e) => setSelectedModel(e.target.value)}
+                placeholder="es. gemini-2.0-flash"
+                className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-sm text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+              />
+            )}
+          </div>
+
+          <div>
             <label className="block text-xs font-semibold uppercase text-slate-500">Temperatura: {temperature}</label>
             <input
               type="range"
@@ -126,18 +203,19 @@ export default function BenchmarkPage() {
               className="mt-3 w-full accent-blue-600"
             />
           </div>
+        </div>
 
-          <div className="flex items-end">
-            <button
-              onClick={handleRunBenchmark}
-              disabled={running}
-              className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-2.5 text-sm font-bold text-white shadow-md hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50"
-            >
-              {running ? 'Esecuzione Benchmark in corso...' : '🚀 Esegui Test Benchmark'}
-            </button>
-          </div>
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={handleRunBenchmark}
+            disabled={running}
+            className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 text-sm font-bold text-white shadow-md hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50"
+          >
+            {running ? '🚀 Esecuzione Benchmark in corso...' : '🚀 Avvia Test Benchmark'}
+          </button>
         </div>
       </div>
+
 
       {/* Automated Benchmark Results Table */}
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
