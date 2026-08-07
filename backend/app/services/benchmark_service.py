@@ -59,14 +59,20 @@ async def run_model_benchmark(
         settings.llm_provider = provider
         settings.use_ollama = (provider == "ollama")
 
+    from app.api.progress import set_progress
     llm_info = get_llm_info()
     log.info(f"🚀 Starting benchmark scenario '{scenario_key}' with provider '{llm_info['provider']}', model '{llm_info['model']}', temp={temperature}")
 
+    set_progress("benchmark", "running", 15, f"Inizializzazione provider {llm_info['provider']} ({llm_info['model']})...", etc_seconds=12)
     start_time = time.monotonic()
     try:
+        set_progress("benchmark", "running", 35, f"Invio prompt per scenario '{scenario['title']}' a {llm_info['model']}...", etc_seconds=8)
         schema: NormalizedSchema = await generate_schema(scenario["prompt"], temperature=temperature)
         latency = round(time.monotonic() - start_time, 3)
         log.info(f"✅ Benchmark finished in {latency}s for model {llm_info['model']}")
+
+        set_progress("benchmark", "running", 75, "Analisi conformità 3NF e calcolo F1 score delle relazioni...", etc_seconds=3)
+
 
 
         # 1. 3NF Score (% of tables with a PK and snake_case naming)
@@ -120,11 +126,14 @@ async def run_model_benchmark(
             }
         )
 
+        set_progress("benchmark", "saving", 95, "Registrazione risultati nel database PostgreSQL...", etc_seconds=1)
         engine = init_db()
         session = get_session(engine)
         session.add(result_entry)
         session.commit()
         session.refresh(result_entry)
+
+        set_progress("benchmark", "completed", 100, f"Benchmark per {llm_info['model']} completato con successo in {latency}s!", etc_seconds=0)
 
         return {
             "id": result_entry.id,
@@ -141,12 +150,14 @@ async def run_model_benchmark(
 
     except Exception as e:
         log.error(f"Benchmark execution error: {e}")
+        set_progress("benchmark", "failed", 0, f"Errore benchmark: {e}", etc_seconds=0)
         return {
             "error": str(e),
             "scenario": scenario["title"],
             "provider": llm_info.get("provider", "unknown"),
             "model": llm_info.get("model", "unknown")
         }
+
 
 def save_user_vote(user_id: str, schema_rating: int, data_rating: int, comment: str = "", project_id: str | None = None, benchmark_id: str | None = None):
     engine = init_db()

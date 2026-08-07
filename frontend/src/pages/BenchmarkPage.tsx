@@ -12,6 +12,12 @@ export default function BenchmarkPage() {
   const [running, setRunning] = useState(false)
   const [runError, setRunError] = useState('')
   const [runSuccess, setRunSuccess] = useState('')
+  const [progressState, setProgressState] = useState<{
+    status: string
+    progress: number
+    message: string
+    etc_seconds: number | null
+  }>({ status: 'idle', progress: 0, message: '', etc_seconds: null })
 
   // Expert Vote State
   const [schemaRating, setSchemaRating] = useState(5)
@@ -24,7 +30,27 @@ export default function BenchmarkPage() {
     loadData()
   }, [])
 
+  useEffect(() => {
+    let interval: any
+    if (running) {
+      interval = setInterval(async () => {
+        try {
+          const prog = await api.get('/progress/benchmark')
+          if (prog) {
+            setProgressState(prog)
+          }
+        } catch {}
+      }, 500)
+    } else {
+      setProgressState({ status: 'idle', progress: 0, message: '', etc_seconds: null })
+    }
+    return () => {
+      if (interval) clearInterval(interval)
+    }
+  }, [running])
+
   const loadData = async () => {
+
     try {
       const [scen, res, modelsRes] = await Promise.all([
         api.get('/benchmark/scenarios'),
@@ -134,6 +160,30 @@ export default function BenchmarkPage() {
             🎉 {runSuccess}
           </div>
         )}
+
+        {running && (
+          <div className="mt-4 rounded-2xl border border-blue-200 bg-blue-50/60 p-4 dark:border-blue-900/50 dark:bg-blue-950/60">
+            <div className="flex items-center justify-between text-xs font-semibold text-blue-700 dark:text-blue-300">
+              <span className="flex items-center gap-2">
+                <span className="inline-block h-2 w-2 animate-ping rounded-full bg-blue-500"></span>
+                {progressState.message || `Esecuzione benchmark per ${selectedModel}...`}
+              </span>
+              <span>{progressState.progress || 15}%</span>
+            </div>
+            <div className="mt-2.5 h-2.5 w-full overflow-hidden rounded-full bg-blue-200/60 dark:bg-blue-900/40">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 transition-all duration-300"
+                style={{ width: `${Math.max(10, progressState.progress || 15)}%` }}
+              ></div>
+            </div>
+            {progressState.etc_seconds !== null && progressState.etc_seconds > 0 && (
+              <div className="mt-2 text-right text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                ⏱️ Tempo stimato al completamento (ETC): ~{Math.round(progressState.etc_seconds)} sec
+              </div>
+            )}
+          </div>
+        )}
+
 
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>

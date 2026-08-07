@@ -20,11 +20,12 @@ def _get_redis_client():
 def _redis_key(project_id: str) -> str:
     return f"progress:{project_id}"
 
-def set_progress(project_id: str, status: str, progress: int, message: str = ""):
+def set_progress(project_id: str, status: str, progress: int, message: str = "", etc_seconds: float | None = None):
     data = {
         "status": status,
         "progress": progress,
         "message": message,
+        "etc_seconds": etc_seconds,
         "updated_at": datetime.now().isoformat(),
     }
     r = _get_redis_client()
@@ -45,7 +46,8 @@ def get_progress_state(project_id: str) -> dict:
                 return json.loads(data)
         except Exception:
             pass
-    return _in_memory_store.get(project_id, {"status": "idle", "progress": 0, "message": ""})
+    return _in_memory_store.get(project_id, {"status": "idle", "progress": 0, "message": "", "etc_seconds": None})
+
 
 @router.get("/progress/{project_id}")
 def get_progress(project_id: str):
