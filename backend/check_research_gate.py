@@ -5,12 +5,12 @@ import argparse
 import json
 from pathlib import Path
 
-from validate_datasets import validate_dataset
+from validate_datasets import discover_dataset_dirs, validate_dataset
 
 
 def check(datasets: Path, expectations_path: Path) -> dict:
     expected = json.loads(expectations_path.read_text(encoding="utf-8"))
-    reports = {path.name: validate_dataset(path) for path in datasets.iterdir() if path.is_dir()}
+    reports = {path.name: validate_dataset(path) for path in discover_dataset_dirs(datasets)}
     mismatches = []
     expected_datasets = expected.get("datasets", {})
     if set(reports) != set(expected_datasets):

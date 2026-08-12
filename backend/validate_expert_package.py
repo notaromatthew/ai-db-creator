@@ -5,6 +5,7 @@ from pathlib import Path
 LEAK=re.compile(r"manual|ai[_ +-]?only|ai[_ +-]?interface|condition|participant",re.I)
 RATING_FIELDS=["artifact_id","rater_id","presentation_order","rubric_version","d1_3nf","d2_naming","d3_constraints","d4_relationships","d5_domain","comment","locked_at"]
 DIMENSIONS=RATING_FIELDS[4:9]
+REQUIRED_SUPPORT={"instructions.md","rubric.md","calibration-example.json","qualification-template.csv","blind-order.csv"}
 def validate(root:Path):
  failures=[]; manifest_path=root/"manifest.json"
  if not manifest_path.exists(): return {"status":"missing","failures":["manifest_missing"]}
@@ -13,6 +14,12 @@ def validate(root:Path):
  order=manifest.get("blind_order",[]); artifacts=manifest.get("artifacts",[]); artifact_ids={item.get("artifact_id") for item in artifacts}
  if not manifest.get("seed_hash") or len(order)!=len(set(order)): failures.append("blind_order_or_seed_invalid")
  if not artifact_ids or None in artifact_ids or set(order)!=artifact_ids: failures.append("blind_order_artifact_set_mismatch")
+ support=manifest.get("support_files",[]); support_names={item.get("path") for item in support}
+ if support_names!=REQUIRED_SUPPORT: failures.append("support_files_incomplete")
+ for item in support:
+  path=(root/item.get("path","")).resolve()
+  if root.resolve() not in path.parents or not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest()!=item.get("sha256"):
+   failures.append(f"support_file_hash_invalid:{item.get('path')}")
  for artifact in artifacts:
   path=(root/artifact.get("path","")).resolve()
   if root.resolve() not in path.parents or not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest()!=artifact.get("sha256"): failures.append(f"artifact_hash_invalid:{artifact.get('artifact_id')}")

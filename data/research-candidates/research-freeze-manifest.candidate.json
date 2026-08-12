@@ -1,0 +1,59 @@
+{
+  "status": "unapproved",
+  "technical_hash_status": "valid",
+  "manifest_version": "research-freeze-candidate-v1",
+  "approved_by": null,
+  "approved_at": null,
+  "human_approval_required": true,
+  "human_approval_inferred": false,
+  "artifacts": [
+    {
+      "path": "data/datasets/hospital/gold_schema.json",
+      "sha256": "622efaadb34b7985f32455c65222ba83068dae00f2979c9515ad689d302ecaaf"
+    },
+    {
+      "path": "data/datasets/hospital/ground_truth.db",
+      "sha256": "0f18e8e7165e696bf9dbc16e9be66aadf7c7d03efb1ae73d0730e5058ab903d6"
+    },
+    {
+      "path": "data/datasets/hospital/rq2_alignment.json",
+      "sha256": "c5ad7871c06b86d09b5811ab1f5938351c47ee3040345ee990037f723838a48f"
+    },
+    {
+      "path": "data/datasets/hospital/functional_workload.json",
+      "sha256": "05d4ff2a7093e29e5918a29cb12e67cc83b8f0b5f253347cda3f40f8a8cd565c"
+    },
+    {
+      "path": "data/datasets/library/gold_schema.json",
+      "sha256": "54131fb0f81e4672e09288f6c83d9e6ba82db98818d0af0d008983042e81460d"
+    },
+    {
+      "path": "data/datasets/library/ground_truth.db",
+      "sha256": "c4e09ec07f9adf9200a443c3a45938dae2df0dee620cf230a1b7c9a7e4ff7cb2"
+    },
+    {
+      "path": "data/datasets/library/rq2_alignment.json",
+      "sha256": "9439b3ec545e666051f5f0805a291534f295ec4392255109972c1ea34a52824c"
+    },
+    {
+      "path": "data/datasets/library/functional_workload.json",
+      "sha256": "4cbfc9100ab34b54ed9229040a877850d54f1b5b05d1e8a69f095ff4c5664d3b"
+    },
+    {
+      "path": "data/datasets/university/gold_schema.json",
+      "sha256": "45669a18e5134b3c118818f084e5c8a7211f93664b0cf8fa02269326e053348d"
+    },
+    {
+      "path": "data/datasets/university/ground_truth.db",
+      "sha256": "60fb716d243457033e5dd2218624a1c8bdcaea8aba16be08879da83db81c6c1e"
+    },
+    {
+      "path": "data/datasets/university/rq2_alignment.json",
+      "sha256": "ff0304c3aebe199c5808c058cf31b9d0cbc632aa4b8b00b8e179e021ddb3e239"
+    },
+    {
+      "path": "data/datasets/university/functional_workload.json",
+      "sha256": "3233ae7170e2e2333a6ddbc83b9e6735ea6c12d7c20c0cf8de9e2c0c66a99c26"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "schema_version": "allocation-candidate-v1",
+  "status": "candidate_unapproved",
+  "arms": ["manual", "ai_only", "ai_interface"],
+  "strata": ["dataset_id", "experience_stratum"],
+  "allowed_experience_strata": ["none", "some"],
+  "block_sizes": [3, 6],
+  "ratio": [1, 1, 1],
+  "seed_environment_variable": "EXPERIMENT_ASSIGNMENT_SEED",
+  "concealment": "future allocations are derived inside the atomic assignment lock and are never persisted",
+  "approval_status": "human_approval_missing"
+}

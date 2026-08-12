@@ -31,6 +31,14 @@
 
 Do not collect age, gender, disability, institution or IP address unless justified in the approved protocol. If collected, define bins/minimisation and access restrictions before deployment.
 
+The standalone allocation candidate requires `dataset_id` and the collapsed
+`experience_stratum` (`none` or `some`). Its versioned config is
+`backend/research_configs/allocation-candidate-v1.json`; the offline
+`candidate_allocation_dry_run.py` writes its audit atomically while exposing no
+future sequence. The seed is read only from `EXPERIMENT_ASSIGNMENT_SEED` and is
+never persisted. This dry-run design has `human_approval_missing`, is not wired
+to the active experiment API, and is not an approved randomisation protocol.
+
 ## Artifact/outcome table
 
 | Variable | Type | Definition |

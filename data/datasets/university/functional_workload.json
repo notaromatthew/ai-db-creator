@@ -1,1 +1,404 @@
-{"version":"draft-v1","approval_status":"draft","queries":[{"id":"student_count","use_case":"Count registered students","sql":"SELECT COUNT(*) AS count FROM students","expected":{"columns":["count"],"rows":[[30]]}}]}
+{
+  "protocol": "functional-workload-v1",
+  "version": "candidate-v2",
+  "approval_status": "candidate_unapproved",
+  "expected_result_status": "deterministic_gold_derived_candidate",
+  "human_approval_required": true,
+  "dataset": "university",
+  "canonicalisation_version": "functional-workload-v1",
+  "queries": [
+    {
+      "id": "U01",
+      "coverage_type": "lookup",
+      "requirement": "Find one student by the source-grounded institutional email.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": false,
+      "sql": "SELECT student_id, name, email FROM students WHERE email = 'student1@university.example'",
+      "expected": {
+        "columns": [
+          "student_id",
+          "name",
+          "email"
+        ],
+        "rows": [
+          [
+            1,
+            "Federico Ferrari",
+            "student1@university.example"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "U02",
+      "coverage_type": "filter",
+      "requirement": "List high-credit courses.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": true,
+      "sql": "SELECT course_code, title, credits FROM courses WHERE credits >= 9 ORDER BY course_code",
+      "expected": {
+        "columns": [
+          "course_code",
+          "title",
+          "credits"
+        ],
+        "rows": [
+          [
+            "CS-202",
+            "Databases",
+            9
+          ],
+          [
+            "CS-301",
+            "Operating Systems",
+            9
+          ],
+          [
+            "MA-101",
+            "Calculus I",
+            9
+          ],
+          [
+            "PH-101",
+            "Physics I",
+            9
+          ]
+        ]
+      }
+    },
+    {
+      "id": "U03",
+      "coverage_type": "join",
+      "requirement": "Resolve enrollment rows to student and course labels.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": true,
+      "sql": "SELECT s.email, c.course_code, e.semester, e.grade FROM enrollments e JOIN students s ON s.student_id=e.student_id JOIN courses c ON c.course_id=e.course_id ORDER BY s.email, c.course_code LIMIT 8",
+      "expected": {
+        "columns": [
+          "email",
+          "course_code",
+          "semester",
+          "grade"
+        ],
+        "rows": [
+          [
+            "student11@university.example",
+            "EC-201",
+            "2026-02",
+            "26"
+          ],
+          [
+            "student12@university.example",
+            "CS-202",
+            "2026-02",
+            "18"
+          ],
+          [
+            "student12@university.example",
+            "EC-201",
+            "2026-02",
+            "18"
+          ],
+          [
+            "student14@university.example",
+            "CS-202",
+            "2026-02",
+            "27"
+          ],
+          [
+            "student15@university.example",
+            "CS-301",
+            "2026-01",
+            "30L"
+          ],
+          [
+            "student15@university.example",
+            "EC-201",
+            "2026-01",
+            "18"
+          ],
+          [
+            "student15@university.example",
+            "PH-101",
+            "2026-02",
+            "22"
+          ],
+          [
+            "student16@university.example",
+            "CS-301",
+            "2026-01",
+            "27"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "U04",
+      "coverage_type": "aggregate",
+      "requirement": "Count enrollments per course, retaining courses with zero enrollments.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": true,
+      "sql": "SELECT c.course_code, COUNT(e.student_id) AS enrollment_count FROM courses c LEFT JOIN enrollments e ON e.course_id=c.course_id GROUP BY c.course_id, c.course_code ORDER BY c.course_code",
+      "expected": {
+        "columns": [
+          "course_code",
+          "enrollment_count"
+        ],
+        "rows": [
+          [
+            "CS-101",
+            5
+          ],
+          [
+            "CS-202",
+            9
+          ],
+          [
+            "CS-301",
+            6
+          ],
+          [
+            "EC-201",
+            6
+          ],
+          [
+            "EN-101",
+            5
+          ],
+          [
+            "MA-101",
+            8
+          ],
+          [
+            "MA-202",
+            2
+          ],
+          [
+            "PH-101",
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "id": "U05",
+      "coverage_type": "missing_value",
+      "requirement": "Identify students with no enrollment relationship.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": true,
+      "sql": "SELECT s.email FROM students s LEFT JOIN enrollments e ON e.student_id=s.student_id WHERE e.student_id IS NULL ORDER BY s.email",
+      "expected": {
+        "columns": [
+          "email"
+        ],
+        "rows": [
+          [
+            "student10@university.example"
+          ],
+          [
+            "student13@university.example"
+          ],
+          [
+            "student19@university.example"
+          ],
+          [
+            "student1@university.example"
+          ],
+          [
+            "student20@university.example"
+          ],
+          [
+            "student2@university.example"
+          ],
+          [
+            "student5@university.example"
+          ],
+          [
+            "student7@university.example"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "U06",
+      "coverage_type": "temporal",
+      "requirement": "Traverse the student-course many-to-many relation for semester 2026-01.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": true,
+      "sql": "SELECT s.email, c.course_code, e.grade FROM enrollments e JOIN students s ON s.student_id=e.student_id JOIN courses c ON c.course_id=e.course_id WHERE e.semester='2026-01' ORDER BY s.email, c.course_code",
+      "expected": {
+        "columns": [
+          "email",
+          "course_code",
+          "grade"
+        ],
+        "rows": [
+          [
+            "student15@university.example",
+            "CS-301",
+            "30L"
+          ],
+          [
+            "student15@university.example",
+            "EC-201",
+            "18"
+          ],
+          [
+            "student16@university.example",
+            "CS-301",
+            "27"
+          ],
+          [
+            "student16@university.example",
+            "EN-101",
+            "NS"
+          ],
+          [
+            "student16@university.example",
+            "MA-101",
+            "22"
+          ],
+          [
+            "student16@university.example",
+            "PH-101",
+            "21"
+          ],
+          [
+            "student17@university.example",
+            "CS-202",
+            "30"
+          ],
+          [
+            "student17@university.example",
+            "MA-202",
+            "30L"
+          ],
+          [
+            "student18@university.example",
+            "CS-101",
+            "30"
+          ],
+          [
+            "student18@university.example",
+            "CS-202",
+            "30"
+          ],
+          [
+            "student18@university.example",
+            "MA-101",
+            "26"
+          ],
+          [
+            "student18@university.example",
+            "MA-202",
+            "30"
+          ],
+          [
+            "student21@university.example",
+            "PH-101",
+            "22"
+          ],
+          [
+            "student22@university.example",
+            "CS-301",
+            "30"
+          ],
+          [
+            "student22@university.example",
+            "MA-101",
+            "18"
+          ],
+          [
+            "student23@university.example",
+            "CS-202",
+            "25"
+          ],
+          [
+            "student25@university.example",
+            "EN-101",
+            "18"
+          ],
+          [
+            "student26@university.example",
+            "MA-101",
+            "30L"
+          ],
+          [
+            "student27@university.example",
+            "CS-101",
+            "28"
+          ],
+          [
+            "student3@university.example",
+            "CS-301",
+            "30"
+          ],
+          [
+            "student3@university.example",
+            "EN-101",
+            "22"
+          ],
+          [
+            "student4@university.example",
+            "CS-101",
+            "30"
+          ],
+          [
+            "student4@university.example",
+            "MA-101",
+            "28"
+          ],
+          [
+            "student6@university.example",
+            "MA-101",
+            "24"
+          ],
+          [
+            "student9@university.example",
+            "CS-202",
+            "27"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "U07",
+      "coverage_type": "integrity",
+      "requirement": "Count enrollment rows whose student or course parent is missing.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": false,
+      "sql": "SELECT COUNT(*) AS orphan_count FROM enrollments e LEFT JOIN students s ON s.student_id=e.student_id LEFT JOIN courses c ON c.course_id=e.course_id WHERE s.student_id IS NULL OR c.course_id IS NULL",
+      "expected": {
+        "columns": [
+          "orphan_count"
+        ],
+        "rows": [
+          [
+            0
+          ]
+        ]
+      }
+    }
+  ]
+}

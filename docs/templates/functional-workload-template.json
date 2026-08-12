@@ -1,18 +1,26 @@
 {
   "protocol": "functional_workload_v1",
-  "approval_status": "draft",
-  "expected_result_status": "exploratory_only",
+  "approval_status": "candidate_unapproved",
+  "expected_result_status": "deterministic_gold_derived_candidate",
+  "human_approval_required": true,
   "dataset": "",
   "version": "",
   "canonicalisation_version": "",
   "queries": [
     {
       "id": "Q01",
+      "coverage_type": "lookup",
       "requirement": "",
-      "parameters": {},
-      "order_matters": false,
-      "expected_result_artifact": "",
-      "expected_result_sha256": ""
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": false,
+      "sql": "",
+      "expected": {
+        "columns": [],
+        "rows": []
+      }
     }
   ],
   "integrity_checks": [

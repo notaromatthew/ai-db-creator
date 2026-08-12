@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "analysis-input-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "records"],
+  "properties": {
+    "schema_version": {"const": "analysis-input-v1"},
+    "records": {
+      "type": "array",
+      "items": {"oneOf": [{"$ref": "#/$defs/participant"}, {"$ref": "#/$defs/benchmark_run"}]}
+    }
+  },
+  "$defs": {
+    "participant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unit", "participant_id", "assigned_arm", "dataset_id", "experience_stratum", "completion_status"],
+      "properties": {
+        "unit": {"const": "participant"},
+        "participant_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "assigned_arm": {"enum": ["manual", "ai_only", "ai_interface"]},
+        "dataset_id": {"type": "string", "pattern": "^[A-Za-z0-9_-]{1,64}$"},
+        "experience_stratum": {"enum": ["none", "some"]},
+        "completion_status": {"enum": ["completed", "partial", "abandoned", "technical_failure"]},
+        "schema_composite": {"type": "number", "minimum": 1, "maximum": 5},
+        "residual_error_count": {"type": "integer", "minimum": 0},
+        "d1_3nf": {"type": "number", "minimum": 1, "maximum": 5},
+        "d2_naming": {"type": "number", "minimum": 1, "maximum": 5},
+        "d3_constraints": {"type": "number", "minimum": 1, "maximum": 5},
+        "d4_relationships": {"type": "number", "minimum": 1, "maximum": 5},
+        "d5_domain": {"type": "number", "minimum": 1, "maximum": 5},
+        "final_improvement": {"type": "number"},
+        "baseline_quality": {"type": "number", "minimum": 1, "maximum": 5},
+        "active_time_ms": {"type": "integer", "minimum": 0},
+        "committed_constraint_fk_edits": {"type": "integer", "minimum": 0},
+        "suggestion_review_rate": {"type": "number", "minimum": 0, "maximum": 1},
+        "review_time_ms": {"type": "integer", "minimum": 0}
+      }
+    },
+    "benchmark_run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unit", "run_id", "condition", "dataset_id", "attempt_status"],
+      "properties": {
+        "unit": {"const": "benchmark_run"},
+        "run_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "condition": {"enum": ["full_llm", "baseline"]},
+        "dataset_id": {"type": "string", "pattern": "^[A-Za-z0-9_-]{1,64}$"},
+        "attempt_status": {"enum": ["success", "failed"]},
+        "canonical_fact_micro_f1": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    }
+  }
+}

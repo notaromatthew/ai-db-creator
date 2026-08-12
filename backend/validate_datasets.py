@@ -16,6 +16,17 @@ from app.evaluation.schema_alignment import load_alignment_config
 from app.utils.research import sha256_file, stable_hash
 
 
+def discover_dataset_dirs(root: Path) -> list[Path]:
+    """Return only versioned study datasets, never caches or adjacent artifacts."""
+    expectations = root / "research-gate-expectations.json"
+    if expectations.is_file():
+        names = sorted(json.loads(expectations.read_text(encoding="utf-8")).get("datasets", {}))
+        return [root / name for name in names]
+    return sorted(path for path in root.iterdir()
+                  if path.is_dir() and not path.name.startswith((".", "__"))
+                  and (path / "gold_schema.json").is_file())
+
+
 def _issue(code: str, severity: str, detail: str) -> dict:
     return {"code": code, "severity": severity, "detail": detail}
 
@@ -116,8 +127,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path)
     parser.add_argument("--check-build", action="store_true")
     args = parser.parse_args(argv)
-    reports = [validate_dataset(path, args.check_build) for path in sorted(args.datasets.iterdir()) if path.is_dir()]
-    result = {"status": "valid" if all(item["status"] == "valid" for item in reports) else "invalid", "datasets": reports}
+    reports = [validate_dataset(path, args.check_build) for path in discover_dataset_dirs(args.datasets)]
+    result = {"status": "valid" if reports and all(item["status"] == "valid" for item in reports) else "invalid",
+              "datasets": reports,
+              "failures": [] if reports else ["no_versioned_datasets_discovered"]}
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")

@@ -1,0 +1,22 @@
+{
+  "schema_version": "governance-evidence-v1",
+  "status": "unapproved",
+  "technical_status": "template_only",
+  "evidence_id": "",
+  "human_approval_required": true,
+  "human_approval_inferred": false,
+  "public_package": null,
+  "restricted_archive": null,
+  "retention_policy": {
+    "public_days": null,
+    "restricted_days": null,
+    "approved_by": null,
+    "approved_at": null
+  },
+  "withdrawal_erasure_verification": {
+    "procedure_version": null,
+    "tested_at": null,
+    "reviewed_by": null
+  },
+  "notes": "Template only. Missing evidence must remain fail-closed."
+}

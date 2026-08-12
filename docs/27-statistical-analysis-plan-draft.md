@@ -46,3 +46,16 @@ Families: two human primary contrasts (Holm); five RQ1 dimensions (Holm); stated
 ## Reproducible outputs
 
 One locked script creates analysis tables/figures from an immutable package. Record software/session info, random seeds, package lock, input/output hashes and warnings. Generate a machine-readable decision log for deviations and a results table that distinguishes preregistered, secondary and exploratory analyses.
+
+## Implemented locked candidate (unapproved)
+
+`backend/research_configs/sap-locked-candidate-v1.json` and
+`backend/research_configs/analysis-input-v1.schema.json` are a versioned,
+machine-readable implementation candidate for this draft. The offline command
+`python locked_candidate_analysis.py --input <package.json> --output <directory>`
+validates controlled values and units, keeps failed benchmark attempts in the
+flow, emits deterministic hashed outputs, and records the RQ0, RQ3, RQ2 and RQ4
+model/contrast commitments above. Until external protocol/SAP approval and a
+verified freeze are supplied, inferential execution is disabled and every
+output is labelled `locked_candidate_unapproved`; technical readiness does not
+make it confirmatory evidence.

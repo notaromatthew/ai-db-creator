@@ -1,0 +1,19 @@
+{
+  "schema_version": "sap-locked-candidate-v1",
+  "input_schema_version": "analysis-input-v1",
+  "status": "locked_candidate_unapproved",
+  "seed": 20260812,
+  "primary_family": {
+    "multiplicity": "holm",
+    "alpha": 0.05,
+    "analyses": [
+      {"id": "rq0", "outcome": "schema_composite", "model": "linear_hc3", "contrast": ["ai_interface", "manual"], "covariates": ["dataset_id", "experience_stratum"]},
+      {"id": "rq3", "outcome": "residual_error_count", "model": "negative_binomial", "fallback": "robust_poisson", "contrast": ["ai_interface", "ai_only"], "covariates": ["dataset_id", "experience_stratum"]}
+    ]
+  },
+  "rq1": {"outcomes": ["d1_3nf", "d2_naming", "d3_constraints", "d4_relationships", "d5_domain"], "model": "ordinal_mixed_candidate", "multiplicity": "holm"},
+  "rq2": {"outcome": "canonical_fact_micro_f1", "model": "stratified_bootstrap_and_randomisation_contrast", "stratum": "dataset_id"},
+  "rq4": {"arm": "ai_interface", "outcome": "final_improvement", "features": ["committed_constraint_fk_edits", "suggestion_review_rate", "review_time_ms"], "covariates": ["baseline_quality", "dataset_id", "experience_stratum", "active_time_ms"], "model": "linear_hc3", "multiplicity": "bh_fdr"},
+  "missingness": {"primary_population": "intention_to_treat", "primary_handling": "likelihood_under_mar", "sensitivity": ["complete_case", "multiple_imputation", "technical_failure_bounds"], "single_value_imputation": false},
+  "approval_status": "human_approval_missing"
+}

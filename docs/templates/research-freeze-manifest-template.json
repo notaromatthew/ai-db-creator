@@ -1,5 +1,11 @@
 {
-  "status": "draft_unapproved",
+  "status": "unapproved",
+  "manifest_version": "research-freeze-candidate-v1",
+  "technical_hash_status": "not_computed",
+  "human_approval_required": true,
+  "human_approval_inferred": false,
+  "approved_by": null,
+  "approved_at": null,
   "protocol_version": "",
   "frozen_at_utc": "",
   "owner": "",

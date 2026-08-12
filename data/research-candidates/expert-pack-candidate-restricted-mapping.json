@@ -1,0 +1,18 @@
+{
+  "status": "candidate_unapproved_restricted",
+  "human_release_required": true,
+  "mapping": {
+    "B001": {
+      "dataset": "hospital",
+      "source_sha256": "622efaadb34b7985f32455c65222ba83068dae00f2979c9515ad689d302ecaaf"
+    },
+    "B002": {
+      "dataset": "library",
+      "source_sha256": "54131fb0f81e4672e09288f6c83d9e6ba82db98818d0af0d008983042e81460d"
+    },
+    "B003": {
+      "dataset": "university",
+      "source_sha256": "45669a18e5134b3c118818f084e5c8a7211f93664b0cf8fa02269326e053348d"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": "analysis-input-v1",
+  "records": [
+    {"unit":"participant","participant_id":"p1","assigned_arm":"manual","dataset_id":"university","experience_stratum":"none","completion_status":"completed","schema_composite":3.0,"residual_error_count":4},
+    {"unit":"participant","participant_id":"p2","assigned_arm":"ai_interface","dataset_id":"university","experience_stratum":"none","completion_status":"completed","schema_composite":4.0,"residual_error_count":2,"final_improvement":1.0,"baseline_quality":3.0,"active_time_ms":1000,"committed_constraint_fk_edits":2,"suggestion_review_rate":0.5,"review_time_ms":300},
+    {"unit":"participant","participant_id":"p3","assigned_arm":"ai_only","dataset_id":"university","experience_stratum":"none","completion_status":"completed","schema_composite":3.5,"residual_error_count":4},
+    {"unit":"benchmark_run","run_id":"r1","condition":"baseline","dataset_id":"university","attempt_status":"success","canonical_fact_micro_f1":0.5},
+    {"unit":"benchmark_run","run_id":"r2","condition":"full_llm","dataset_id":"university","attempt_status":"success","canonical_fact_micro_f1":0.8},
+    {"unit":"benchmark_run","run_id":"r3","condition":"full_llm","dataset_id":"hospital","attempt_status":"failed"}
+  ]
+}

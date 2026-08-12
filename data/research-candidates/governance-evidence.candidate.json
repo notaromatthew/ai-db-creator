@@ -1,0 +1,32 @@
+{
+  "schema_version": "governance-evidence-v1",
+  "status": "candidate_unapproved",
+  "technical_status": "template_complete_evidence_missing",
+  "evidence_id": "local-research-governance-candidate-v1",
+  "human_approval_required": true,
+  "human_approval_inferred": false,
+  "public_package": null,
+  "restricted_archive": null,
+  "retention_policy": {
+    "public_days": null,
+    "restricted_days": null,
+    "approved_by": null,
+    "approved_at": null
+  },
+  "withdrawal_erasure_verification": {
+    "procedure_version": null,
+    "tested_at": null,
+    "reviewed_by": null
+  },
+  "notes": "Template only. Missing evidence must remain fail-closed.",
+  "candidate_artifacts": [
+    {
+      "path": "data/research-candidates/research-freeze-manifest.candidate.json",
+      "sha256": "6b106b1228aef7faeb8d93586a114e98003e246b13452987597f4c19cf26ecfd"
+    },
+    {
+      "path": "data/research-candidates/expert-pack-candidate/manifest.json",
+      "sha256": "800472e11158f73188a9aceed5dafc400ad6511e48bb821677c6e7eec34d70eb"
+    }
+  ]
+}

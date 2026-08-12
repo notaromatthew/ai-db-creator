@@ -303,6 +303,19 @@ The proposed RQ0 comparison is Manual vs AI + Interface; the proposed RQ3 compar
 
 Offline checks are available from `backend/`: `python validate_datasets.py --datasets ../data/datasets`, `python participant_simulator.py`, and `python validate_reproducibility.py --root .. --gate software|pilot|confirmatory`. Each selected gate returns nonzero on failure; the default software gate may pass while pilot and confirmatory gates remain blocked. No command invokes a remote LLM.
 
+Research-review candidates can be regenerated without network or LLM calls:
+
+```bash
+python data/datasets/build_research_candidates.py
+cd backend
+python validate_research_candidates.py
+$env:EXPERIMENT_ASSIGNMENT_SEED="local-dry-run-only"  # PowerShell; never use this value for a study
+python candidate_allocation_dry_run.py --input tests/fixtures/allocation_enrolments.json --output reports/allocation-candidate.json
+python locked_candidate_analysis.py --input tests/fixtures/analysis_input_v1.json --output reports/analysis-candidate
+```
+
+These artifacts are deliberately labelled `candidate_unapproved`. Successful technical validation never represents expert, governance, ethics, preregistration or freeze approval.
+
 CI and deployment distinguish software health from research readiness: a green software pipeline does not imply pilot or confirmatory eligibility. See `docs/29-ci-deployment-readiness.md` for the versioned expected-blocker gate, secret handling, container healthchecks, retention boundary and migration policy.
 
 ### Raccolta metriche / Metrics

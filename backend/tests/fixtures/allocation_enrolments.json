@@ -1,0 +1,7 @@
+{
+  "enrolments": [
+    {"participant_id": "candidate-p001", "dataset_id": "university", "experience_stratum": "none"},
+    {"participant_id": "candidate-p002", "dataset_id": "university", "experience_stratum": "none"},
+    {"participant_id": "candidate-p003", "dataset_id": "university", "experience_stratum": "none"}
+  ]
+}

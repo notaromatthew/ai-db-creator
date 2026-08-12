@@ -1,0 +1,12 @@
+{
+  "status": "synthetic_excluded_candidate",
+  "tables": [
+    {
+      "name": "example_entities",
+      "columns": [
+        "id",
+        "label"
+      ]
+    }
+  ]
+}

@@ -8,7 +8,7 @@ from pathlib import Path
 from analyze_experiment import analyze, write_outputs
 from export_benchmark_package import export_package, verify_package
 from participant_simulator import simulate
-from validate_datasets import validate_dataset
+from validate_datasets import discover_dataset_dirs, validate_dataset
 from check_research_gate import check as check_research_gate
 
 
@@ -24,7 +24,7 @@ def synthetic_records() -> list[dict]:
 
 def run(root: Path, output: Path, check_build: bool = False) -> dict:
     output.mkdir(parents=True, exist_ok=True)
-    datasets = [validate_dataset(path, check_build) for path in sorted((root / "data" / "datasets").iterdir()) if path.is_dir()]
+    datasets = [validate_dataset(path, check_build) for path in discover_dataset_dirs(root / "data" / "datasets")]
     simulation = simulate(output / "simulation")
     analysis = analyze(synthetic_records())
     write_outputs(analysis, output / "analysis")

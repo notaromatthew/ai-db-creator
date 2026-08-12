@@ -1,1 +1,386 @@
-{"version":"draft-v1","approval_status":"draft","queries":[{"id":"book_count","use_case":"Count catalogued books","sql":"SELECT COUNT(*) AS count FROM books","expected":{"columns":["count"],"rows":[[50]]}}]}
+{
+  "protocol": "functional-workload-v1",
+  "version": "candidate-v2",
+  "approval_status": "candidate_unapproved",
+  "expected_result_status": "deterministic_gold_derived_candidate",
+  "human_approval_required": true,
+  "dataset": "library",
+  "canonicalisation_version": "functional-workload-v1",
+  "queries": [
+    {
+      "id": "L01",
+      "coverage_type": "lookup",
+      "requirement": "Find one book by its source-grounded ISBN.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": false,
+      "sql": "SELECT book_id, isbn, title, author FROM books WHERE isbn='978-0536-660-9539'",
+      "expected": {
+        "columns": [
+          "book_id",
+          "isbn",
+          "title",
+          "author"
+        ],
+        "rows": [
+          [
+            1,
+            "978-0536-660-9539",
+            "Radici Fuochi",
+            "Umberto Eco"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "L02",
+      "coverage_type": "filter",
+      "requirement": "List unpaid fines above five euros.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": true,
+      "sql": "SELECT fine_id, loan_id, amount FROM fines WHERE paid_on IS NULL AND amount > 5 ORDER BY fine_id",
+      "expected": {
+        "columns": [
+          "fine_id",
+          "loan_id",
+          "amount"
+        ],
+        "rows": [
+          [
+            6,
+            6,
+            14.75
+          ],
+          [
+            19,
+            19,
+            11.98
+          ],
+          [
+            20,
+            20,
+            11.36
+          ],
+          [
+            22,
+            22,
+            6.65
+          ],
+          [
+            24,
+            24,
+            8.48
+          ],
+          [
+            26,
+            26,
+            7.51
+          ],
+          [
+            47,
+            47,
+            7.25
+          ],
+          [
+            59,
+            59,
+            11.8
+          ]
+        ]
+      }
+    },
+    {
+      "id": "L03",
+      "coverage_type": "join",
+      "requirement": "Resolve loans to member and book labels.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": true,
+      "sql": "SELECT l.loan_id, m.email, b.isbn, l.loan_date, l.due_date FROM loans l JOIN members m ON m.member_id=l.member_id JOIN books b ON b.book_id=l.book_id ORDER BY l.loan_id LIMIT 8",
+      "expected": {
+        "columns": [
+          "loan_id",
+          "email",
+          "isbn",
+          "loan_date",
+          "due_date"
+        ],
+        "rows": [
+          [
+            1,
+            "member9@example.com",
+            "978-0698-226-5110",
+            "2026-01-12",
+            "2026-01-26"
+          ],
+          [
+            2,
+            "member7@example.com",
+            "978-0668-513-5116",
+            "2026-03-17",
+            "2026-04-16"
+          ],
+          [
+            3,
+            "member12@example.com",
+            "978-0629-235-4312",
+            "2026-06-28",
+            "2026-07-31"
+          ],
+          [
+            4,
+            "member15@example.com",
+            "978-0622-401-8832",
+            "2026-06-20",
+            "2026-07-16"
+          ],
+          [
+            5,
+            "member1@example.com",
+            "978-0172-591-4353",
+            "2026-06-24",
+            "2026-07-24"
+          ],
+          [
+            6,
+            "member15@example.com",
+            "978-0629-235-4312",
+            "2026-01-20",
+            "2026-02-14"
+          ],
+          [
+            7,
+            "member6@example.com",
+            "978-0351-217-8965",
+            "2026-04-27",
+            "2026-05-29"
+          ],
+          [
+            8,
+            "member15@example.com",
+            "978-0194-479-2288",
+            "2026-05-20",
+            "2026-06-15"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "L04",
+      "coverage_type": "aggregate",
+      "requirement": "Count loans by catalogue category.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": true,
+      "sql": "SELECT c.name AS category, COUNT(l.loan_id) AS loan_count FROM categories c LEFT JOIN books b ON b.category_id=c.category_id LEFT JOIN loans l ON l.book_id=b.book_id GROUP BY c.category_id, c.name ORDER BY c.name",
+      "expected": {
+        "columns": [
+          "category",
+          "loan_count"
+        ],
+        "rows": [
+          [
+            "Avventura",
+            8
+          ],
+          [
+            "Biografia",
+            3
+          ],
+          [
+            "Fantascienza",
+            2
+          ],
+          [
+            "Fiction",
+            7
+          ],
+          [
+            "Giallo",
+            6
+          ],
+          [
+            "Poesia",
+            4
+          ],
+          [
+            "Saggistica",
+            8
+          ],
+          [
+            "Scienza",
+            10
+          ],
+          [
+            "Storia",
+            4
+          ],
+          [
+            "Tecnologia",
+            8
+          ]
+        ]
+      }
+    },
+    {
+      "id": "L05",
+      "coverage_type": "missing_value",
+      "requirement": "Identify fines with a missing payment date.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": true,
+      "sql": "SELECT fine_id, loan_id, amount FROM fines WHERE paid_on IS NULL ORDER BY fine_id",
+      "expected": {
+        "columns": [
+          "fine_id",
+          "loan_id",
+          "amount"
+        ],
+        "rows": [
+          [
+            6,
+            6,
+            14.75
+          ],
+          [
+            19,
+            19,
+            11.98
+          ],
+          [
+            20,
+            20,
+            11.36
+          ],
+          [
+            22,
+            22,
+            6.65
+          ],
+          [
+            24,
+            24,
+            8.48
+          ],
+          [
+            26,
+            26,
+            7.51
+          ],
+          [
+            47,
+            47,
+            7.25
+          ],
+          [
+            50,
+            50,
+            3.59
+          ],
+          [
+            59,
+            59,
+            11.8
+          ]
+        ]
+      }
+    },
+    {
+      "id": "L06",
+      "coverage_type": "temporal",
+      "requirement": "Traverse the member-book many-to-many loan relation during June 2026.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": true,
+      "sql": "SELECT m.email, b.isbn, l.loan_date FROM loans l JOIN members m ON m.member_id=l.member_id JOIN books b ON b.book_id=l.book_id WHERE l.loan_date >= '2026-06-01' AND l.loan_date < '2026-07-01' ORDER BY l.loan_date, m.email, b.isbn",
+      "expected": {
+        "columns": [
+          "email",
+          "isbn",
+          "loan_date"
+        ],
+        "rows": [
+          [
+            "member20@example.com",
+            "978-0375-967-7500",
+            "2026-06-02"
+          ],
+          [
+            "member12@example.com",
+            "978-0653-207-4670",
+            "2026-06-13"
+          ],
+          [
+            "member12@example.com",
+            "978-0811-592-8049",
+            "2026-06-16"
+          ],
+          [
+            "member15@example.com",
+            "978-0622-401-8832",
+            "2026-06-20"
+          ],
+          [
+            "member1@example.com",
+            "978-0172-591-4353",
+            "2026-06-24"
+          ],
+          [
+            "member20@example.com",
+            "978-0968-525-7554",
+            "2026-06-25"
+          ],
+          [
+            "member7@example.com",
+            "978-0205-598-4727",
+            "2026-06-25"
+          ],
+          [
+            "member12@example.com",
+            "978-0865-356-7564",
+            "2026-06-27"
+          ],
+          [
+            "member12@example.com",
+            "978-0629-235-4312",
+            "2026-06-28"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "L07",
+      "coverage_type": "integrity",
+      "requirement": "Count orphaned loan and fine foreign keys.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": false,
+      "sql": "SELECT (SELECT COUNT(*) FROM loans l LEFT JOIN books b ON b.book_id=l.book_id LEFT JOIN members m ON m.member_id=l.member_id WHERE b.book_id IS NULL OR m.member_id IS NULL) + (SELECT COUNT(*) FROM fines f LEFT JOIN loans l ON l.loan_id=f.loan_id WHERE l.loan_id IS NULL) AS orphan_count",
+      "expected": {
+        "columns": [
+          "orphan_count"
+        ],
+        "rows": [
+          [
+            0
+          ]
+        ]
+      }
+    }
+  ]
+}

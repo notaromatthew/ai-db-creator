@@ -1,1 +1,943 @@
-{"version":"draft-v1","approval_status":"draft","queries":[{"id":"patient_count","use_case":"Count registered patients","sql":"SELECT COUNT(*) AS count FROM patients","expected":{"columns":["count"],"rows":[[100]]}}]}
+{
+  "protocol": "functional-workload-v1",
+  "version": "candidate-v2",
+  "approval_status": "candidate_unapproved",
+  "expected_result_status": "deterministic_gold_derived_candidate",
+  "human_approval_required": true,
+  "dataset": "hospital",
+  "canonicalisation_version": "functional-workload-v1",
+  "queries": [
+    {
+      "id": "H01",
+      "coverage_type": "lookup",
+      "requirement": "Find one patient by the source-grounded fiscal code.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": false,
+      "sql": "SELECT patient_id, fiscal_code, full_name, birth_date FROM patients WHERE fiscal_code='BH0128D4951'",
+      "expected": {
+        "columns": [
+          "patient_id",
+          "fiscal_code",
+          "full_name",
+          "birth_date"
+        ],
+        "rows": [
+          [
+            1,
+            "BH0128D4951",
+            "Chiara Gallo",
+            "1972-03-27"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "H02",
+      "coverage_type": "filter",
+      "requirement": "List the five largest invoices above six hundred euros.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": true,
+      "sql": "SELECT invoice_id, appointment_id, amount, issued_on FROM invoices WHERE amount > 600 ORDER BY amount DESC, invoice_id LIMIT 5",
+      "expected": {
+        "columns": [
+          "invoice_id",
+          "appointment_id",
+          "amount",
+          "issued_on"
+        ],
+        "rows": [
+          [
+            128,
+            128,
+            898.78,
+            "2026-05-29"
+          ],
+          [
+            25,
+            25,
+            897.88,
+            "2026-06-13"
+          ],
+          [
+            164,
+            164,
+            886.52,
+            "2026-06-08"
+          ],
+          [
+            135,
+            135,
+            885.16,
+            "2026-01-18"
+          ],
+          [
+            200,
+            200,
+            885.08,
+            "2026-03-23"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "H03",
+      "coverage_type": "join",
+      "requirement": "Resolve appointments to patient, doctor and ward labels.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": true,
+      "sql": "SELECT a.appointment_id, p.fiscal_code, d.full_name AS doctor, w.name AS ward, a.scheduled_on FROM appointments a JOIN patients p ON p.patient_id=a.patient_id JOIN doctors d ON d.doctor_id=a.doctor_id JOIN wards w ON w.ward_id=a.ward_id ORDER BY a.appointment_id LIMIT 8",
+      "expected": {
+        "columns": [
+          "appointment_id",
+          "fiscal_code",
+          "doctor",
+          "ward",
+          "scheduled_on"
+        ],
+        "rows": [
+          [
+            1,
+            "ED7996N4674",
+            "Dr. Andrea Costa",
+            "Reparto E",
+            "2026-01-07 07:54"
+          ],
+          [
+            2,
+            "SU6764B8829",
+            "Dr. Chiara Rizzo",
+            "Reparto B",
+            "2026-03-31 03:40"
+          ],
+          [
+            3,
+            "UJ9437H6380",
+            "Dr. Valentina Ferrari",
+            "Reparto B",
+            "2026-11-20 11:22"
+          ],
+          [
+            4,
+            "HZ5718W2744",
+            "Dr. Andrea Costa",
+            "Reparto C",
+            "2026-07-30 07:49"
+          ],
+          [
+            5,
+            "ZT9991X1199",
+            "Dr. Valentina Bruno",
+            "Reparto B",
+            "2026-07-09 19:12"
+          ],
+          [
+            6,
+            "DW0396K6410",
+            "Dr. Chiara Rizzo",
+            "Reparto A",
+            "2026-01-30 00:00"
+          ],
+          [
+            7,
+            "GS3167T3932",
+            "Dr. Marco Bianchi",
+            "Reparto A",
+            "2026-11-14 01:55"
+          ],
+          [
+            8,
+            "JG0825Z2195",
+            "Dr. Martina Marino",
+            "Reparto E",
+            "2027-01-27 05:52"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "H04",
+      "coverage_type": "aggregate",
+      "requirement": "Count appointments per ward.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": true,
+      "sql": "SELECT w.name AS ward, COUNT(a.appointment_id) AS appointment_count FROM wards w LEFT JOIN appointments a ON a.ward_id=w.ward_id GROUP BY w.ward_id, w.name ORDER BY w.name",
+      "expected": {
+        "columns": [
+          "ward",
+          "appointment_count"
+        ],
+        "rows": [
+          [
+            "Reparto A",
+            31
+          ],
+          [
+            "Reparto B",
+            29
+          ],
+          [
+            "Reparto C",
+            42
+          ],
+          [
+            "Reparto D",
+            31
+          ],
+          [
+            "Reparto E",
+            37
+          ],
+          [
+            "Reparto F",
+            30
+          ]
+        ]
+      }
+    },
+    {
+      "id": "H05",
+      "coverage_type": "missing_value",
+      "requirement": "Identify appointments without an invoice relationship.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": true,
+      "sql": "SELECT a.appointment_id, a.scheduled_on FROM appointments a LEFT JOIN invoices i ON i.appointment_id=a.appointment_id WHERE i.invoice_id IS NULL ORDER BY a.appointment_id",
+      "expected": {
+        "columns": [
+          "appointment_id",
+          "scheduled_on"
+        ],
+        "rows": [
+          [
+            14,
+            "2026-12-06 06:21"
+          ],
+          [
+            15,
+            "2026-09-18 15:25"
+          ],
+          [
+            33,
+            "2026-06-02 06:08"
+          ],
+          [
+            35,
+            "2027-01-20 15:08"
+          ],
+          [
+            36,
+            "2026-09-22 11:55"
+          ],
+          [
+            43,
+            "2027-02-20 04:19"
+          ],
+          [
+            45,
+            "2026-04-30 14:18"
+          ],
+          [
+            47,
+            "2026-09-12 09:20"
+          ],
+          [
+            60,
+            "2026-12-05 18:55"
+          ],
+          [
+            61,
+            "2026-11-22 06:46"
+          ],
+          [
+            71,
+            "2026-12-09 08:27"
+          ],
+          [
+            77,
+            "2026-08-19 02:07"
+          ],
+          [
+            82,
+            "2027-02-15 14:02"
+          ],
+          [
+            84,
+            "2027-01-19 00:08"
+          ],
+          [
+            89,
+            "2026-07-16 12:34"
+          ],
+          [
+            96,
+            "2026-04-01 05:17"
+          ],
+          [
+            99,
+            "2026-06-08 13:58"
+          ],
+          [
+            101,
+            "2026-11-18 03:23"
+          ],
+          [
+            103,
+            "2026-08-16 15:18"
+          ],
+          [
+            109,
+            "2026-09-05 19:44"
+          ],
+          [
+            112,
+            "2026-03-20 16:39"
+          ],
+          [
+            113,
+            "2026-06-23 16:46"
+          ],
+          [
+            118,
+            "2026-12-08 00:46"
+          ],
+          [
+            120,
+            "2026-08-07 18:54"
+          ],
+          [
+            125,
+            "2026-01-27 06:43"
+          ],
+          [
+            140,
+            "2026-12-10 10:23"
+          ],
+          [
+            150,
+            "2026-08-24 20:43"
+          ],
+          [
+            157,
+            "2026-06-02 20:15"
+          ],
+          [
+            158,
+            "2026-05-23 22:56"
+          ],
+          [
+            162,
+            "2026-05-17 20:53"
+          ],
+          [
+            169,
+            "2026-07-20 01:35"
+          ],
+          [
+            173,
+            "2027-02-13 05:40"
+          ],
+          [
+            175,
+            "2027-01-11 03:24"
+          ],
+          [
+            177,
+            "2026-11-02 02:11"
+          ],
+          [
+            179,
+            "2026-01-12 02:12"
+          ],
+          [
+            187,
+            "2026-08-24 11:53"
+          ],
+          [
+            192,
+            "2026-05-05 23:52"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "H06",
+      "coverage_type": "temporal",
+      "requirement": "Traverse the patient-medication many-to-many clinical chain in the first half of 2026.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": true,
+      "sql": "SELECT p.fiscal_code, m.name AS medication, COUNT(*) AS prescription_count FROM appointments a JOIN patients p ON p.patient_id=a.patient_id JOIN treatments t ON t.appointment_id=a.appointment_id JOIN prescriptions pr ON pr.treatment_id=t.treatment_id JOIN medications m ON m.medication_id=pr.medication_id WHERE a.scheduled_on >= '2026-01-01' AND a.scheduled_on < '2026-07-01' GROUP BY p.fiscal_code, m.medication_id, m.name ORDER BY p.fiscal_code, m.name",
+      "expected": {
+        "columns": [
+          "fiscal_code",
+          "medication",
+          "prescription_count"
+        ],
+        "rows": [
+          [
+            "AA5086A8550",
+            "Salbutamolo",
+            2
+          ],
+          [
+            "BH0128D4951",
+            "Atenololo",
+            1
+          ],
+          [
+            "BH0128D4951",
+            "Atorvastatina",
+            1
+          ],
+          [
+            "BH0128D4951",
+            "Metformina",
+            1
+          ],
+          [
+            "BH2675D5051",
+            "Atorvastatina",
+            1
+          ],
+          [
+            "BH2675D5051",
+            "Losartan",
+            1
+          ],
+          [
+            "BH2675D5051",
+            "Metformina",
+            1
+          ],
+          [
+            "CP5253G9072",
+            "Atorvastatina",
+            1
+          ],
+          [
+            "CP5253G9072",
+            "Ibuprofene",
+            1
+          ],
+          [
+            "CP5253G9072",
+            "Salbutamolo",
+            1
+          ],
+          [
+            "DW0396K6410",
+            "Atenololo",
+            2
+          ],
+          [
+            "DW0396K6410",
+            "Losartan",
+            1
+          ],
+          [
+            "DW7816K9148",
+            "Amoxicillina",
+            1
+          ],
+          [
+            "DW7816K9148",
+            "Atenololo",
+            1
+          ],
+          [
+            "DW7816K9148",
+            "Ciprofloxacina",
+            1
+          ],
+          [
+            "DW7816K9148",
+            "Ibuprofene",
+            1
+          ],
+          [
+            "DW7816K9148",
+            "Losartan",
+            2
+          ],
+          [
+            "ED2915N6901",
+            "Metformina",
+            1
+          ],
+          [
+            "GS0681T2781",
+            "Metformina",
+            1
+          ],
+          [
+            "GS0681T2781",
+            "Omeprazolo",
+            1
+          ],
+          [
+            "GS5658T1736",
+            "Omeprazolo",
+            1
+          ],
+          [
+            "GS8130T7802",
+            "Ibuprofene",
+            1
+          ],
+          [
+            "GS8130T7802",
+            "Losartan",
+            1
+          ],
+          [
+            "HZ0778W4784",
+            "Losartan",
+            1
+          ],
+          [
+            "HZ5718W2744",
+            "Amoxicillina",
+            2
+          ],
+          [
+            "HZ5718W2744",
+            "Paracetamolo",
+            1
+          ],
+          [
+            "JG8319Z9090",
+            "Atorvastatina",
+            1
+          ],
+          [
+            "JG8319Z9090",
+            "Losartan",
+            1
+          ],
+          [
+            "KO0960C9816",
+            "Atenololo",
+            1
+          ],
+          [
+            "KO0960C9816",
+            "Atorvastatina",
+            1
+          ],
+          [
+            "KO0960C9816",
+            "Ciprofloxacina",
+            1
+          ],
+          [
+            "KO0960C9816",
+            "Metformina",
+            1
+          ],
+          [
+            "LV3584F3022",
+            "Atorvastatina",
+            2
+          ],
+          [
+            "LV3584F3022",
+            "Metformina",
+            1
+          ],
+          [
+            "LV3584F3022",
+            "Paracetamolo",
+            1
+          ],
+          [
+            "LV3584F3022",
+            "Salbutamolo",
+            1
+          ],
+          [
+            "LV8540F5238",
+            "Atenololo",
+            1
+          ],
+          [
+            "LV8540F5238",
+            "Paracetamolo",
+            1
+          ],
+          [
+            "MC3624J9598",
+            "Atorvastatina",
+            1
+          ],
+          [
+            "MC3624J9598",
+            "Losartan",
+            1
+          ],
+          [
+            "MC3624J9598",
+            "Omeprazolo",
+            1
+          ],
+          [
+            "MC3624J9598",
+            "Paracetamolo",
+            1
+          ],
+          [
+            "MC3624J9598",
+            "Salbutamolo",
+            1
+          ],
+          [
+            "MC8694J4297",
+            "Ciprofloxacina",
+            1
+          ],
+          [
+            "MC8694J4297",
+            "Metformina",
+            1
+          ],
+          [
+            "NK8757M7826",
+            "Ciprofloxacina",
+            1
+          ],
+          [
+            "NK8757M7826",
+            "Metformina",
+            2
+          ],
+          [
+            "NK8757M7826",
+            "Omeprazolo",
+            2
+          ],
+          [
+            "NK8757M7826",
+            "Salbutamolo",
+            2
+          ],
+          [
+            "OR1320P7639",
+            "Amoxicillina",
+            1
+          ],
+          [
+            "OR6390P5040",
+            "Amoxicillina",
+            1
+          ],
+          [
+            "OR6390P5040",
+            "Atorvastatina",
+            1
+          ],
+          [
+            "OR8849P1560",
+            "Ciprofloxacina",
+            1
+          ],
+          [
+            "OR8849P1560",
+            "Ibuprofene",
+            1
+          ],
+          [
+            "OR8849P1560",
+            "Losartan",
+            1
+          ],
+          [
+            "PY1459S7976",
+            "Atorvastatina",
+            1
+          ],
+          [
+            "PY3991S8956",
+            "Atorvastatina",
+            1
+          ],
+          [
+            "PY3991S8956",
+            "Omeprazolo",
+            1
+          ],
+          [
+            "PY3991S8956",
+            "Paracetamolo",
+            2
+          ],
+          [
+            "QF1576V2248",
+            "Amoxicillina",
+            1
+          ],
+          [
+            "QF1576V2248",
+            "Ibuprofene",
+            1
+          ],
+          [
+            "QF1576V2248",
+            "Omeprazolo",
+            1
+          ],
+          [
+            "QF1576V2248",
+            "Salbutamolo",
+            1
+          ],
+          [
+            "QF9047V4579",
+            "Atenololo",
+            2
+          ],
+          [
+            "QF9047V4579",
+            "Atorvastatina",
+            1
+          ],
+          [
+            "QF9047V4579",
+            "Losartan",
+            1
+          ],
+          [
+            "QF9047V4579",
+            "Salbutamolo",
+            1
+          ],
+          [
+            "RN4190Y9872",
+            "Ibuprofene",
+            1
+          ],
+          [
+            "RN6665Y7397",
+            "Omeprazolo",
+            1
+          ],
+          [
+            "RN9168Y7501",
+            "Amoxicillina",
+            1
+          ],
+          [
+            "RN9168Y7501",
+            "Ciprofloxacina",
+            1
+          ],
+          [
+            "SU4225B2590",
+            "Ciprofloxacina",
+            1
+          ],
+          [
+            "SU6764B8829",
+            "Atenololo",
+            1
+          ],
+          [
+            "SU6764B8829",
+            "Atorvastatina",
+            1
+          ],
+          [
+            "SU6764B8829",
+            "Omeprazolo",
+            1
+          ],
+          [
+            "SU6764B8829",
+            "Paracetamolo",
+            1
+          ],
+          [
+            "SU6764B8829",
+            "Salbutamolo",
+            1
+          ],
+          [
+            "SU9279B6017",
+            "Paracetamolo",
+            1
+          ],
+          [
+            "TB6875E8958",
+            "Salbutamolo",
+            1
+          ],
+          [
+            "UJ4492H2288",
+            "Salbutamolo",
+            1
+          ],
+          [
+            "UJ6918H5638",
+            "Amoxicillina",
+            1
+          ],
+          [
+            "UJ6918H5638",
+            "Salbutamolo",
+            1
+          ],
+          [
+            "VQ7013L1798",
+            "Amoxicillina",
+            1
+          ],
+          [
+            "WX2179O2714",
+            "Metformina",
+            2
+          ],
+          [
+            "WX7185O9479",
+            "Amoxicillina",
+            1
+          ],
+          [
+            "WX7185O9479",
+            "Atenololo",
+            1
+          ],
+          [
+            "WX7185O9479",
+            "Metformina",
+            1
+          ],
+          [
+            "XE4798R4727",
+            "Paracetamolo",
+            1
+          ],
+          [
+            "XE7256R1861",
+            "Amoxicillina",
+            1
+          ],
+          [
+            "XE7256R1861",
+            "Salbutamolo",
+            1
+          ],
+          [
+            "XE9720R1340",
+            "Atenololo",
+            1
+          ],
+          [
+            "XE9720R1340",
+            "Losartan",
+            1
+          ],
+          [
+            "XE9720R1340",
+            "Paracetamolo",
+            1
+          ],
+          [
+            "XE9720R1340",
+            "Salbutamolo",
+            1
+          ],
+          [
+            "YM2377U2390",
+            "Atorvastatina",
+            1
+          ],
+          [
+            "YM2377U2390",
+            "Salbutamolo",
+            1
+          ],
+          [
+            "YM9864U3980",
+            "Atenololo",
+            1
+          ],
+          [
+            "YM9864U3980",
+            "Ibuprofene",
+            2
+          ],
+          [
+            "YM9864U3980",
+            "Metformina",
+            1
+          ],
+          [
+            "YM9864U3980",
+            "Omeprazolo",
+            1
+          ],
+          [
+            "ZT2452X9382",
+            "Ciprofloxacina",
+            1
+          ],
+          [
+            "ZT4910X2236",
+            "Atenololo",
+            1
+          ],
+          [
+            "ZT4910X2236",
+            "Atorvastatina",
+            1
+          ],
+          [
+            "ZT4910X2236",
+            "Ibuprofene",
+            1
+          ],
+          [
+            "ZT4910X2236",
+            "Metformina",
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "id": "H07",
+      "coverage_type": "integrity",
+      "requirement": "Count orphaned foreign keys across the clinical chain.",
+      "source_grounding": {
+        "gold_database": "ground_truth.db",
+        "derivation": "executed_not_hand_authored"
+      },
+      "ordered": false,
+      "sql": "SELECT (SELECT COUNT(*) FROM appointments a LEFT JOIN patients p ON p.patient_id=a.patient_id LEFT JOIN doctors d ON d.doctor_id=a.doctor_id LEFT JOIN wards w ON w.ward_id=a.ward_id WHERE p.patient_id IS NULL OR d.doctor_id IS NULL OR w.ward_id IS NULL) + (SELECT COUNT(*) FROM treatments t LEFT JOIN appointments a ON a.appointment_id=t.appointment_id WHERE a.appointment_id IS NULL) + (SELECT COUNT(*) FROM prescriptions pr LEFT JOIN treatments t ON t.treatment_id=pr.treatment_id LEFT JOIN medications m ON m.medication_id=pr.medication_id WHERE t.treatment_id IS NULL OR m.medication_id IS NULL) + (SELECT COUNT(*) FROM invoices i LEFT JOIN appointments a ON a.appointment_id=i.appointment_id WHERE a.appointment_id IS NULL) AS orphan_count",
+      "expected": {
+        "columns": [
+          "orphan_count"
+        ],
+        "rows": [
+          [
+            0
+          ]
+        ]
+      }
+    }
+  ]
+}
