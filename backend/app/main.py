@@ -25,7 +25,8 @@ async def lifespan(_: FastAPI):
     engine = init_db()
     verify_schema_compatibility(engine)
     if settings.bootstrap_keycloak:
-        await setup_keycloak_realm()
+        if not await setup_keycloak_realm():
+            raise RuntimeError("Keycloak bootstrap failed; startup refused")
     log.info("AI DB Creator started with PostgreSQL & Keycloak support")
     yield
 

@@ -37,12 +37,10 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER:?set KEYCLOAK_ADMIN_USER}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?set KEYCLOAK_ADMIN_PASSWORD}
     healthcheck:
-      test: ["CMD-SHELL", "test -e /proc/1/cmdline && grep -aq 'keycloak' /proc/1/cmdline"]
-      interval: 15s
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000; printf 'GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3; grep -q '200 OK' <&3"]
+      interval: 10s
       timeout: 5s
       retries: 20
-    labels:
-      healthcheck.scope: "process-liveness-only; backend /ready verifies realm discovery"
     restart: unless-stopped
 
   backend:
@@ -53,6 +51,7 @@ services:
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-aidbcreator}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-aidbcreator}
       KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL:-http://localhost:8080}
       ENABLE_AUTH: ${ENABLE_AUTH:-false}
       REDIS_URL: redis://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis:6379/0
       BOOTSTRAP_KEYCLOAK: ${BOOTSTRAP_KEYCLOAK:-false}
@@ -62,7 +61,7 @@ services:
     depends_on:
       postgres: {condition: service_healthy}
       redis: {condition: service_healthy}
-      keycloak: {condition: service_started}
+      keycloak: {condition: service_healthy}
     restart: unless-stopped
 
   worker:

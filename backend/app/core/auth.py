@@ -10,9 +10,9 @@ security = HTTPBearer(auto_error=False)
 
 _jwks_cache = None
 
-async def _get_jwks():
+async def _get_jwks(force_refresh: bool = False):
     global _jwks_cache
-    if _jwks_cache:
+    if _jwks_cache and not force_refresh:
         return _jwks_cache
     jwks_url = f"{settings.keycloak_url}/realms/{settings.keycloak_realm}/protocol/openid-connect/certs"
     async with httpx.AsyncClient(verify=True, timeout=10.0) as client:
@@ -45,6 +45,9 @@ async def get_current_user(
         kid = header.get("kid")
         key = next((k for k in jwks.get("keys", []) if k.get("kid") == kid), None)
         if not key:
+            jwks = await _get_jwks(force_refresh=True)
+            key = next((k for k in jwks.get("keys", []) if k.get("kid") == kid), None)
+        if not key:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Chiave di firma token Keycloak non trovata")
 
         signing_key = jwt.PyJWK.from_dict(key).key
@@ -53,8 +56,11 @@ async def get_current_user(
             signing_key,
             algorithms=["RS256"],
             audience="account",
-            options={"verify_aud": False}
+            issuer=f"{(settings.keycloak_issuer_url or settings.keycloak_url).rstrip('/')}/realms/{settings.keycloak_realm}",
+            options={"require": ["exp", "sub", "iat"]},
         )
+        if claims.get("azp") != settings.keycloak_client_id:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token issued for a different client")
 
         return {
             "sub": claims.get("sub"),

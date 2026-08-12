@@ -106,7 +106,7 @@ def test_container_configs_are_nonroot_and_healthchecked():
     assert "nginx-unprivileged" in frontend and "EXPOSE 8080" in frontend and "HEALTHCHECK" in frontend
     compose = (root / "docker-compose.yml").read_text()
     assert '"6379:6379"' not in compose and '"5432:5432"' not in compose
-    assert "process-liveness-only" in compose and "condition: service_started" in compose
+    assert "/health/ready" in compose and "keycloak: {condition: service_healthy}" in compose
     assert "REDIS_PASSWORD:?set REDIS_PASSWORD" in compose
     assert "--requirepass" in compose and "REDISCLI_AUTH" in compose
     assert "redis://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis:6379/0" in compose

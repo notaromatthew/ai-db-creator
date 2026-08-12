@@ -47,3 +47,28 @@ def test_unrecognized_legacy_database_fails_closed(tmp_path):
         connection.execute(text("CREATE TABLE projects (id VARCHAR PRIMARY KEY, name VARCHAR NOT NULL)"))
     with pytest.raises(RuntimeError, match="automatic migration refused"):
         migrate(url)
+
+
+def test_current_named_but_wrong_constraints_fails_closed(tmp_path):
+    url = sqlite_url(tmp_path / "wrong-shape.db")
+    Base.metadata.create_all(create_engine(url))
+    engine = create_engine(url)
+    with engine.begin() as connection:
+        connection.execute(text("DROP TABLE documents"))
+        connection.execute(text(
+            "CREATE TABLE documents (id VARCHAR, project_id VARCHAR NOT NULL, filename VARCHAR(255) NOT NULL, "
+            "file_type VARCHAR(10) NOT NULL, file_path VARCHAR(512) NOT NULL, content_summary TEXT, created_at DATETIME)"
+        ))
+    with pytest.raises(RuntimeError, match="automatic migration refused"):
+        migrate(url)
+
+
+def test_historical_named_but_wrong_or_extra_layout_fails_closed(tmp_path):
+    url = sqlite_url(tmp_path / "wrong-historical.db")
+    engine = create_engine(url)
+    with engine.begin() as connection:
+        connection.execute(text("CREATE TABLE projects (id VARCHAR, name VARCHAR(255) NOT NULL, prompt TEXT, schema_json JSON, db_path VARCHAR(512), created_at DATETIME, updated_at DATETIME)"))
+        connection.execute(text("CREATE TABLE documents (id VARCHAR PRIMARY KEY, project_id VARCHAR NOT NULL, filename VARCHAR(255) NOT NULL, file_type VARCHAR(10) NOT NULL, file_path VARCHAR(512) NOT NULL, content_summary TEXT, created_at DATETIME)"))
+        connection.execute(text("CREATE TABLE unexpected (id INTEGER PRIMARY KEY)"))
+    with pytest.raises(RuntimeError, match="automatic migration refused"):
+        migrate(url)

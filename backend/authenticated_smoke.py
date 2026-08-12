@@ -59,7 +59,7 @@ def run(keycloak_url: str, backend_url: str, admin_user: str, admin_password: st
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--keycloak-url", default="http://127.0.0.1:8080")
+    parser.add_argument("--keycloak-url", default="http://localhost:8080")
     parser.add_argument("--backend-url", default="http://127.0.0.1:8000")
     parser.add_argument("--admin-user", required=True)
     parser.add_argument("--admin-password", required=True)

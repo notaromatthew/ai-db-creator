@@ -16,9 +16,25 @@ from app.models.database import Base
 
 
 ROOT = Path(__file__).resolve().parent
-INITIAL_COLUMNS = {
-    "projects": {"id", "name", "prompt", "schema_json", "db_path", "created_at", "updated_at"},
-    "documents": {"id", "project_id", "filename", "file_type", "file_path", "content_summary", "created_at"},
+INITIAL_SIGNATURES = {
+    "projects": {
+        "columns": {
+            "id": {"type": "String", "nullable": False}, "name": {"type": "String", "nullable": False},
+            "prompt": {"type": "Text", "nullable": True}, "schema_json": {"type": "JSON", "nullable": True},
+            "db_path": {"type": "String", "nullable": True}, "created_at": {"type": "DateTime", "nullable": True},
+            "updated_at": {"type": "DateTime", "nullable": True},
+        },
+        "pk": ("id",), "fks": [], "indexes": [],
+    },
+    "documents": {
+        "columns": {
+            "id": {"type": "String", "nullable": False}, "project_id": {"type": "String", "nullable": False},
+            "filename": {"type": "String", "nullable": False}, "file_type": {"type": "String", "nullable": False},
+            "file_path": {"type": "String", "nullable": False}, "content_summary": {"type": "Text", "nullable": True},
+            "created_at": {"type": "DateTime", "nullable": True},
+        },
+        "pk": ("id",), "fks": [(('project_id',), 'projects', ('id',))], "indexes": [],
+    },
 }
 
 
@@ -28,8 +44,38 @@ def _config(database_url: str) -> Config:
     return config
 
 
-def _columns(inspector, table: str) -> set[str]:
-    return {column["name"] for column in inspector.get_columns(table)}
+def _signature(inspector, table: str) -> dict:
+    columns = {
+        item["name"]: {
+            "type": item["type"]._type_affinity.__name__,
+            "nullable": bool(item["nullable"]),
+        }
+        for item in inspector.get_columns(table)
+    }
+    return {
+        "columns": columns,
+        "pk": tuple(inspector.get_pk_constraint(table).get("constrained_columns") or ()),
+        "fks": sorted(
+            (tuple(item.get("constrained_columns") or ()), item.get("referred_table"), tuple(item.get("referred_columns") or ()))
+            for item in inspector.get_foreign_keys(table)
+        ),
+        "indexes": sorted(tuple(item.get("column_names") or ()) for item in inspector.get_indexes(table)),
+    }
+
+
+def _metadata_signature(table) -> dict:
+    return {
+        "columns": {
+            column.name: {"type": column.type._type_affinity.__name__, "nullable": bool(column.nullable)}
+            for column in table.columns
+        },
+        "pk": tuple(column.name for column in table.primary_key.columns),
+        "fks": sorted(
+            ((column.name,), foreign.column.table.name, (foreign.column.name,))
+            for column in table.columns for foreign in column.foreign_keys
+        ),
+        "indexes": sorted(tuple(column.name for column in index.columns) for index in table.indexes),
+    }
 
 
 def migrate(database_url: str | None = None) -> str:
@@ -49,16 +95,16 @@ def migrate(database_url: str | None = None) -> str:
         command.upgrade(config, "head")
         return "initialized"
 
-    is_current = application_tables <= tables and all(
-        set(Base.metadata.tables[table].columns.keys()) <= _columns(inspector, table)
+    is_current = application_tables == (tables - {"alembic_version"}) and all(
+        _metadata_signature(Base.metadata.tables[table]) == _signature(inspector, table)
         for table in application_tables
     )
     if is_current:
         command.stamp(config, "head")
         return "stamped_current"
 
-    is_historical_initial = present_application_tables == set(INITIAL_COLUMNS) and all(
-        _columns(inspector, table) == expected for table, expected in INITIAL_COLUMNS.items()
+    is_historical_initial = tables == set(INITIAL_SIGNATURES) and all(
+        _signature(inspector, table) == expected for table, expected in INITIAL_SIGNATURES.items()
     )
     if is_historical_initial:
         command.stamp(config, "c25c5721cbb9")

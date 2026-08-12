@@ -39,6 +39,7 @@ class Settings(BaseSettings):
 
     # Keycloak OIDC Auth & Realm Admin
     keycloak_url: str = "http://localhost:8080"
+    keycloak_issuer_url: str = ""
     keycloak_realm: str = "aidbcreator"
     keycloak_client_id: str = "aidbcreator-app"
     keycloak_admin_user: str = "admin"
