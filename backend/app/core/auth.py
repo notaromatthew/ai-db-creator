@@ -1,6 +1,6 @@
 from fastapi import Request, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from jose import jwt, JWTError
+import jwt
 import httpx
 from app.config import settings
 from app.utils.logger import log
@@ -47,9 +47,10 @@ async def get_current_user(
         if not key:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Chiave di firma token Keycloak non trovata")
 
+        signing_key = jwt.PyJWK.from_dict(key).key
         claims = jwt.decode(
             token,
-            key,
+            signing_key,
             algorithms=["RS256"],
             audience="account",
             options={"verify_aud": False}

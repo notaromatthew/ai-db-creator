@@ -2,6 +2,7 @@ from app.api.dependencies import get_owned_project
 from app.core.auth import get_current_user
 from app.main import app
 from app.models.database import BenchmarkResult, Project, get_session
+from validate_arm_routes import application_routes
 
 
 SCHEMA = {
@@ -26,7 +27,7 @@ def _as_user(user_id: str):
 
 def test_all_project_routes_enforce_owned_project_dependency():
     project_routes = [
-        route for route in app.routes
+        route for route in application_routes()
         if getattr(route, "path", "").startswith("/api/projects/{project_id}")
     ]
 

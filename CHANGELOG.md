@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-12 — Automated hardening and migration readiness
+
+- Added a fail-closed Alembic migration runner and coverage for empty, historical, current pre-Alembic and unknown legacy databases.
+- Upgraded FastAPI, multipart handling and JWT verification; dependency audits now report no known Python or npm vulnerabilities.
+- Replaced `python-jose` with PyJWT and added real RS256/JWKS role validation.
+- Added explicit CORS allowlisting, real Keycloak authentication smoke tests, CycloneDX SBOM generation, Trivy scanning and full Docker Compose smoke checks in CI.
+- Updated route introspection for the current FastAPI lazy included-router implementation.
+
 Tutte le modifiche rilevanti del progetto sono raccolte in questo file. Il formato segue una struttura orientata alla ricerca: ogni voce distingue funzionalità applicative, infrastruttura scientifica, riproducibilità, documentazione e validazione.
 
 ## 2026-08-10 - Correzioni chat, benchmark e compatibilità Python 3.13

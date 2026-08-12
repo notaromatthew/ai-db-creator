@@ -32,6 +32,20 @@ def test_settings_never_return_secret_and_do_not_write_env(client, monkeypatch):
     assert not (routes.Path(".env")).exists()
 
 
+def test_cors_allows_configured_frontend_and_rejects_arbitrary_origins(client):
+    test_client, _ = client
+    trusted = test_client.options(
+        "/api/projects",
+        headers={"Origin": "http://localhost:3000", "Access-Control-Request-Method": "GET"},
+    )
+    assert trusted.headers.get("access-control-allow-origin") == "http://localhost:3000"
+    untrusted = test_client.options(
+        "/api/projects",
+        headers={"Origin": "https://attacker.invalid", "Access-Control-Request-Method": "GET"},
+    )
+    assert "access-control-allow-origin" not in untrusted.headers
+
+
 def test_admin_role_enforced(monkeypatch):
     monkeypatch.setattr(settings, "enable_auth", True)
     with pytest.raises(HTTPException) as error:
@@ -45,7 +59,12 @@ def test_experiment_mode_rejects_placeholder_secrets():
         Settings(experiment_mode=True)
 
 
-def test_default_settings_never_target_external_infrastructure():
+def test_default_settings_never_target_external_infrastructure(monkeypatch):
+    for name in (
+        "DATABASE_URL", "KEYCLOAK_URL", "OLLAMA_BASE_URL", "SONARQUBE_URL",
+        "OLLAMA_MODE", "USE_OLLAMA", "LLM_MAX_REQUESTS_PER_MINUTE",
+    ):
+        monkeypatch.delenv(name, raising=False)
     defaults = Settings(_env_file=None)
     assert defaults.database_url == "sqlite:///./app.db"
     assert defaults.keycloak_url == "http://localhost:8080"
@@ -53,6 +72,7 @@ def test_default_settings_never_target_external_infrastructure():
     assert defaults.sonarqube_url == "http://localhost:9000"
     assert defaults.ollama_mode == "local" and defaults.use_ollama is False
     assert defaults.llm_max_requests_per_minute == 8
+    assert "localhost:3000" in defaults.cors_allowed_origins
 
 
 def test_schema_compatibility_empty_current_and_legacy():
@@ -82,6 +102,7 @@ def test_container_configs_are_nonroot_and_healthchecked():
     frontend = (root / "frontend" / "Dockerfile").read_text()
     assert "USER appuser" in combined and "HEALTHCHECK" in combined
     assert "USER appuser" in backend and "HEALTHCHECK" in backend
+    assert "migrate_database.py" in combined and "migrate_database.py" in backend
     assert "nginx-unprivileged" in frontend and "EXPOSE 8080" in frontend and "HEALTHCHECK" in frontend
     compose = (root / "docker-compose.yml").read_text()
     assert '"6379:6379"' not in compose and '"5432:5432"' not in compose

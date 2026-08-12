@@ -205,7 +205,7 @@ docker build -t ai-db-creator-frontend ./frontend
 ### 5.1 Security
 
 - **API Keys** — Never commit `.env` files to version control. Use secrets management or environment variables in production.
-- **CORS** — The current configuration allows all origins (`allow_origins=["*"]`). Restrict this in production.
+- **CORS** — `CORS_ALLOWED_ORIGINS` is an explicit comma-separated allowlist. Add only approved HTTPS frontend origins in production.
 - **Rate Limiting** — The API has a default limit of 1000 requests/hour. Adjust in `app/main.py` as needed.
 - **File Uploads** — Uploaded files are stored in `backend/uploads/` and `backend/projects/`. Ensure these directories are not publicly accessible.
 

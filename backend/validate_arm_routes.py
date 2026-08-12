@@ -26,8 +26,15 @@ GLOBAL_POLICY={
 }
 GET_SIDE_EFFECT_AUDIT={"GET /api/projects/{project_id}/export":"read_only_serialization","GET /api/projects/{project_id}/export-full":"read_only_serialization"}
 
+def application_routes():
+ routes=[]
+ for item in app.routes:
+  included=getattr(item,"original_router",None)
+  routes.extend(included.routes if included is not None else [item])
+ return routes
+
 def _inventory():
- return sorted({(method,route.path) for route in app.routes for method in getattr(route,"methods",set()) if route.path.startswith('/api') and method in {'POST','PUT','PATCH','DELETE'}})
+ return sorted({(method,route.path) for route in application_routes() for method in getattr(route,"methods",set()) if route.path.startswith('/api') and method in {'POST','PUT','PATCH','DELETE'}})
 def validate():
  failures=[]; inventory=[]
  for method,path in _inventory():
@@ -43,7 +50,7 @@ def validate():
    if not policy: failures.append({"route":key,"reason":"missing_explicit_global_policy"})
   inventory.append({"method":method,"path":path,"policy":policy})
  for key in GET_SIDE_EFFECT_AUDIT:
-  if not any(f"{method} {path}"==key for method,path in {(m,r.path) for r in app.routes for m in getattr(r,'methods',set())}): failures.append({"route":key,"reason":"audited_get_missing"})
+  if not any(f"{method} {path}"==key for method,path in {(m,r.path) for r in application_routes() for m in getattr(r,'methods',set())}): failures.append({"route":key,"reason":"audited_get_missing"})
  return {"status":"pass" if not failures else "fail","inventory":inventory,"audited_gets":GET_SIDE_EFFECT_AUDIT,"failures":failures}
 if __name__=='__main__':
  r=validate();print(json.dumps(r,indent=2));raise SystemExit(0 if r['status']=='pass' else 1)

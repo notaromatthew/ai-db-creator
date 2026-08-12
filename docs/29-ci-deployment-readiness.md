@@ -50,9 +50,12 @@ per minute. Back up the
 PostgreSQL and project/upload volumes according to the approved retention
 policy; CI reports expire after 14 days.
 
-Alembic's historical migration is stale and is deliberately not run at
-startup. New/empty databases are created from current SQLAlchemy metadata.
-Existing compatible databases start normally; if a model column is missing,
-startup fails with “migration required” rather than silently serving a partial
-schema. A reviewed migration must be produced and tested before upgrading such
-a deployment.
+Alembic is executed before the backend starts. The versioned migration chain is
+tested on an empty database, the historical initial revision, and a current
+pre-Alembic database. Current pre-Alembic schemas are verified column by column
+before being stamped. Unknown or partial legacy layouts fail closed and require
+a reviewed, backup-first migration; they are never guessed or silently changed.
+
+CI also runs dependency audits, emits CycloneDX SBOM artifacts, scans the
+repository with Trivy, starts all six Compose services, checks their health and
+exercises a real Keycloak-issued bearer token with an ephemeral test user.

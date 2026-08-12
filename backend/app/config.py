@@ -44,6 +44,7 @@ class Settings(BaseSettings):
     keycloak_admin_user: str = "admin"
     keycloak_admin_password: str = ""
     enable_auth: bool = True
+    cors_allowed_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
 
 
 
