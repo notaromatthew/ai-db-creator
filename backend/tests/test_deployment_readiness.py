@@ -105,8 +105,11 @@ def test_container_configs_are_nonroot_and_healthchecked():
     assert "migrate_database.py" in combined and "migrate_database.py" in backend
     assert "nginx-unprivileged" in frontend and "EXPOSE 8080" in frontend and "HEALTHCHECK" in frontend
     compose = (root / "docker-compose.yml").read_text()
+    backend_service = compose.split("\n  backend:\n", 1)[1].split("\n  worker:\n", 1)[0]
     assert '"6379:6379"' not in compose and '"5432:5432"' not in compose
     assert "/health/ready" in compose and "keycloak: {condition: service_healthy}" in compose
+    assert "KEYCLOAK_ADMIN_USER: ${KEYCLOAK_ADMIN_USER:?set KEYCLOAK_ADMIN_USER}" in backend_service
+    assert "KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?set KEYCLOAK_ADMIN_PASSWORD}" in backend_service
     assert "REDIS_PASSWORD:?set REDIS_PASSWORD" in compose
     assert "--requirepass" in compose and "REDISCLI_AUTH" in compose
     assert "redis://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis:6379/0" in compose
