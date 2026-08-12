@@ -177,8 +177,8 @@ def extract_schema_from_response(response: str) -> NormalizedSchema | None:
 EXTRACTION_PROMPT = ChatPromptTemplate.from_messages([
     ("system", "You are a database schema designer. Based on the conversation so far, output ONLY the complete JSON schema object for the database being designed. "
                "Do NOT add explanations, comments, or markdown. Output only the raw JSON.\n"
-               "Structure: {\"schema\": {\"tables\": [...], \"relationships\": [...], \"description\": \"...\"}}\n"
-               "Each table: {\"name\": \"nome_tabelle_plurale\", \"description\": \"cosa contiene\", \"columns\": [{\"name\": \"nome_colonna\", \"data_type\": \"INTEGER|TEXT|REAL|DATE|BOOLEAN\", \"is_primary_key\": true|false, \"is_foreign_key\": true|false, \"foreign_key_table\": \"...\" se FK, \"foreign_key_column\": \"...\" se FK, \"is_unique\": false, \"is_not_null\": false, \"description\": \"...\"}]}\n"
+               "Structure: {{\"schema\": {{\"tables\": [...], \"relationships\": [...], \"description\": \"...\"}}}}\n"
+               "Each table: {{\"name\": \"nome_tabelle_plurale\", \"description\": \"cosa contiene\", \"columns\": [{{\"name\": \"nome_colonna\", \"data_type\": \"INTEGER|TEXT|REAL|DATE|BOOLEAN\", \"is_primary_key\": true|false, \"is_foreign_key\": true|false, \"foreign_key_table\": \"...\" se FK, \"foreign_key_column\": \"...\" se FK, \"is_unique\": false, \"is_not_null\": false, \"description\": \"...\"}}]}}\n"
                "Each relationship MUST include the \"type\" field: one_to_many, many_to_many, or one_to_one."),
     ("system", "Conversation so far:\n{history}"),
     ("user", "Output the complete JSON schema for the database described above."),

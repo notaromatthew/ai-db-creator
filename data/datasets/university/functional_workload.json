@@ -1,0 +1,1 @@
+{"version":"draft-v1","approval_status":"draft","queries":[{"id":"student_count","use_case":"Count registered students","sql":"SELECT COUNT(*) AS count FROM students","expected":{"columns":["count"],"rows":[[30]]}}]}

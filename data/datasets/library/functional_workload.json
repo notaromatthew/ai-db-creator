@@ -1,0 +1,1 @@
+{"version":"draft-v1","approval_status":"draft","queries":[{"id":"book_count","use_case":"Count catalogued books","sql":"SELECT COUNT(*) AS count FROM books","expected":{"columns":["count"],"rows":[[50]]}}]}

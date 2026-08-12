@@ -1,0 +1,8 @@
+{
+  "version": "research-gate-expectations-v1",
+  "datasets": {
+    "hospital": {"validation_status": "invalid", "confirmatory_status": "blocked_unfrozen", "required_issue_codes": ["duplicate_natural_key"]},
+    "library": {"validation_status": "valid", "confirmatory_status": "blocked_unfrozen", "required_issue_codes": []},
+    "university": {"validation_status": "valid", "confirmatory_status": "blocked_unfrozen", "required_issue_codes": []}
+  }
+}

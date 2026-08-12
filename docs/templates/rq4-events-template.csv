@@ -1,0 +1,1 @@
+event_id,session_id,sequence_no,event_time_utc,monotonic_ms,event_type,operation_id,object_type,object_id_hash,source_surface,success,error_code,duration_ms,protocol_version,app_revision,payload_schema_version

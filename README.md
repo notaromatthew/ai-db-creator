@@ -16,7 +16,7 @@ Il database risultante può essere esplorato tramite un'interfaccia CRUD interat
 - **RQ3:** un'interfaccia visuale human-in-the-loop migliora la qualità dello schema rispetto a un approccio solo automatico?
 - **RQ4:** quali pattern di interazione emergono quando utenti non esperti progettano database tramite un'interfaccia LLM?
 
-Il sistema supporta un esperimento controllato tra soggetti a tre bracci: **Manuale**, **AI-Only** e **AI + Interfaccia**. Manuale vs AI + Interfaccia risponde a RQ0; AI-Only vs AI + Interfaccia isola il contributo human-in-the-loop per RQ3.
+Il software include una modalità sperimentale **draft** a tre bracci: **Manuale**, **AI-Only** e **AI + Interfaccia**. I contrasti pianificati sono Manuale vs AI + Interfaccia per RQ0 e AI-Only vs AI + Interfaccia per RQ3; protocollo, allocazione stratificata e analisi confermativa non sono ancora congelati o approvati.
 
 ### Avvio
 
@@ -80,6 +80,8 @@ Gli endpoint sincroni (CRUD, schema, populate) non richiedono alcuna infrastrutt
 - `POST /api/projects/{id}/export-async` — export asincrono
 - `GET /api/tasks/{id}` — polling dello stato del task
 
+Ogni task viene associato all'utente e al progetto che lo ha creato. Il polling restituisce `404` per task sconosciuti o appartenenti a un altro utente. Il registro usa Redis con TTL (`TASK_REGISTRY_TTL_SECONDS`, default 3600); il fallback in memoria è destinato al solo sviluppo su processo singolo.
+
 Per lo sviluppo locale puoi avviare un worker a parte:
 
 ```bash
@@ -105,7 +107,7 @@ The resulting database can be explored through an interactive CRUD interface, qu
 - **RQ3**: Does a human-in-the-loop visual interface improve schema quality compared to an automatic-only approach?
 - **RQ4**: What interaction patterns emerge when non-expert users design databases through an LLM-powered interface?
 
-The system supports a three-arm between-subjects controlled experiment: **Manual, AI-Only, and AI + Interface**. Manual vs AI + Interface answers RQ0; AI-Only vs AI + Interface isolates the human-in-the-loop contribution for RQ3.
+The system includes a **draft, proposed** three-arm between-subjects experiment mode: **Manual, AI-Only, and AI + Interface**. Manual vs AI + Interface is the planned RQ0 contrast; AI-Only vs AI + Interface is the planned RQ3 contrast. The protocol is not yet preregistered or ethics-approved, and its sample-size assumption remains to be validated through power analysis. See `docs/RESEARCH-READINESS-DRAFTS.md`.
 
 ### Running the system
 
@@ -182,6 +184,8 @@ Python 3.14 is not currently supported by the pinned Pydantic/PyO3 dependency ch
 
 ## API Endpoints (condivise / shared)
 
+Tutti gli endpoint relativi a un progetto richiedono autenticazione e verificano che il progetto appartenga al subject (`sub`) del token corrente. I progetti di altri utenti vengono restituiti come non trovati. I risultati automatici del benchmark sono condivisi, mentre voti, commenti e avanzamento del benchmark sono limitati all'utente autenticato.
+
 ### Projects
 - `POST /api/projects` - Create / crea progetto
 - `GET /api/projects` - List projects
@@ -235,9 +239,10 @@ Python 3.14 is not currently supported by the pinned Pydantic/PyO3 dependency ch
 - `POST /api/projects/{id}/generate-async` - Async schema generation (Celery)
 - `POST /api/projects/{id}/populate-async` - Async population
 - `POST /api/projects/{id}/export-async` - Async export
-- `GET /api/tasks/{task_id}` - Poll a task
+- `GET /api/tasks/{task_id}` - Poll an owned task (`404` for unknown/cross-tenant IDs)
 - `GET /api/progress/{project_id}` - Progress events
 - `POST /api/progress/{project_id}` - Report progress
+- `GET /api/progress/benchmark` - Current user's benchmark progress
 - `GET /api/llm/info` - Provider/model info
 
 ---
@@ -294,7 +299,11 @@ frontend/
 2. **Group A (AI Only)**: system generates schema and population automatically
 3. **Group B (AI + Interface)**: system generates first version; users review and edit via dashboard
 
-The preregistered RQ0 comparison is Manual vs AI + Interface; the preregistered RQ3 comparison is AI-Only vs AI + Interface. See `docs/08-research-notes.md` and `docs/14-usability-pilot-protocol.md`.
+The proposed RQ0 comparison is Manual vs AI + Interface; the proposed RQ3 comparison is AI-Only vs AI + Interface. These draft contrasts require preregistration and ethics approval before confirmatory use. See `docs/RESEARCH-READINESS-DRAFTS.md`, `docs/08-research-notes.md`, and `docs/14-usability-pilot-protocol.md`.
+
+Offline checks are available from `backend/`: `python validate_datasets.py --datasets ../data/datasets`, `python participant_simulator.py`, and `python validate_reproducibility.py --root .. --gate software|pilot|confirmatory`. Each selected gate returns nonzero on failure; the default software gate may pass while pilot and confirmatory gates remain blocked. No command invokes a remote LLM.
+
+CI and deployment distinguish software health from research readiness: a green software pipeline does not imply pilot or confirmatory eligibility. See `docs/29-ci-deployment-readiness.md` for the versioned expected-blocker gate, secret handling, container healthchecks, retention boundary and migration policy.
 
 ### Raccolta metriche / Metrics
 

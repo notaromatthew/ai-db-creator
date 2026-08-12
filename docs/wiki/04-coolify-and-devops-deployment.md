@@ -14,7 +14,7 @@
 
 ## 🛡️ SonarQube Quality Gate
 
-- **Instance URL**: `http://o4sn9bs961jvxn32hs18a81p.89.168.29.98:9000`
+- **Instance URL**: supplied via `SONAR_HOST_URL` by the deployment operator.
 - **Config**: `sonar-project.properties`
 - **Quality Gates**:
   - Zero critical security vulnerabilities
@@ -27,10 +27,10 @@
 
 | Variable Name | Required Value | Description |
 | :--- | :--- | :--- |
-| `DATABASE_URL` | `postgresql://postgres:<POSTGRES_PASSWORD>@89.168.29.98:12000/postgres` | Production PostgreSQL Connection String |
-| `KEYCLOAK_URL` | `https://keycloak-pw9ut4s1h3aodstrsw1gd84o.89.168.29.98.sslip.io` | OIDC Keycloak Realm Server |
+| `DATABASE_URL` | `<required deployment secret>` | Production PostgreSQL Connection String |
+| `KEYCLOAK_URL` | `<required HTTPS URL>` | OIDC Keycloak Realm Server |
 | `LLM_PROVIDER` | `ollama` | System Default AI Provider |
 | `OLLAMA_MODE` | `remote` | Ollama Server Location Mode |
-| `OLLAMA_BASE_URL`| `https://ollamaapi-u11fj34m2h9druz26hamz3xb.89.168.29.98.sslip.io` | Remote Ollama Inference Host |
+| `OLLAMA_BASE_URL`| `<required URL when Ollama is used>` | Remote Ollama Inference Host |
 | `OLLAMA_API_KEY` | `<OLLAMA_API_KEY>` | Remote Ollama Bearer Token |
 

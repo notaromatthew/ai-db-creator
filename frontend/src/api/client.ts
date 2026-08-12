@@ -104,7 +104,9 @@ export class ApiClient {
         msg = await res.text()
       }
     } catch {}
-    throw new Error(msg)
+    const error = new Error(msg) as Error & { status?: number }
+    error.status = res.status
+    throw error
   }
 }
 

@@ -2,6 +2,7 @@
   "name": "ai-db-creator",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -13,7 +14,7 @@
     "keycloak-js": "^25.0.6",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "react-router-dom": "^6.25.0",
+    "react-router-dom": "^7.18.2",
     "reactflow": "^11.11.0"
   },
   "devDependencies": {
@@ -22,12 +23,12 @@
     "@testing-library/user-event": "^14.5.2",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.4.0",
+    "@vitejs/plugin-react": "^6.0.5",
     "autoprefixer": "^10.4.0",
     "jsdom": "^25.0.1",
     "tailwindcss": "^3.4.0",
     "typescript": "^5.5.0",
-    "vite": "^5.4.0",
-    "vitest": "^2.1.8"
+    "vite": "^8.2.1",
+    "vitest": "^4.1.10"
   }
 }

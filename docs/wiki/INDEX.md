@@ -1,7 +1,7 @@
 # AI-DB-Creator Scientific & Engineering Wiki Hub
 
 > **Operational & Research Knowledge Base for AI Agents and Human Collaborators**  
-> Synthesized from the complete 20-document specification of **AI-DB-Creator** (PhD Research Platform for LLM-Powered Relational Database Generation, Normalization, Population, and Governance).
+> Navigation index for evolving draft specifications of **AI-DB-Creator**. Inclusion here does not imply implementation, validation, freeze or approval.
 
 ---
 

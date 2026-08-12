@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-SONAR_HOST="http://o4sn9bs961jvxn32hs18a81p.89.168.29.98.sslip.io:9000"
-SONAR_USER="admin"
+SONAR_HOST="${SONAR_HOST_URL:-http://localhost:9000}"
+SONAR_USER="${SONAR_USER:-admin}"
 SONAR_PASS="${SONAR_PASSWORD:-}"
 
 

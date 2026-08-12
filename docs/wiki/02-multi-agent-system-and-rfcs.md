@@ -22,12 +22,12 @@ AI-DB-Creator utilizes specialized AI subagents and operational directives to en
 ## 2. Operational Directives for AI Agents
 
 1. **Strict Online & Authenticated Operation**:
-   - **PostgreSQL**: Always use the production PostgreSQL database URL (`postgresql://postgres:...@89.168.29.98:12000/postgres`).
-   - **Keycloak OIDC**: All protected routes must validate JWT Bearer tokens issued by `https://keycloak-pw9ut4s1h3aodstrsw1gd84o.89.168.29.98.sslip.io` (Realm `aidbcreator`).
+   - **PostgreSQL**: Production uses an environment-managed `DATABASE_URL`; no remote fallback is embedded in code.
+   - **Keycloak OIDC**: Protected routes validate JWT Bearer tokens from the environment-managed `KEYCLOAK_URL` (Realm `aidbcreator`).
    - **Zero Fallbacks**: Do not fallback to SQLite or mock unauthenticated dev users.
 
 2. **Default AI Provider**:
-   - Remote Ollama server (`https://ollamaapi-u11fj34m2h9druz26hamz3xb.89.168.29.98.sslip.io`) is the system default provider (`LLM_PROVIDER=ollama`, `OLLAMA_MODE=remote`).
+   - Remote Ollama is optional and its endpoint must be supplied explicitly; no public endpoint is a built-in default.
 
 3. **Asynchronous Non-Blocking I/O**:
    - All network calls to LLM endpoints must use `httpx.AsyncClient` inside `async def` FastAPI handlers to prevent blocking Uvicorn's event loop.
@@ -68,7 +68,7 @@ AI Agents and developers log architectural findings, refactoring suggestions, an
 - **Author**: Antigravity AI Assistant
 - **Target Component**: [backend/app/models/database.py](file:///Users/davide/Documents/repos/ai-db-creator/backend/app/models/database.py)
 - **Problem Statement**: High concurrency benchmark runs can exhaust PostgreSQL connection limits if sessions are not pooled efficiently.
-- **Proposed Solution**: Configured `pool_size=10`, `max_overflow=20`, `pool_pre_ping=True`, and `pool_recycle=1800` on SQLAlchemy engine initialization for remote PostgreSQL instance `89.168.29.98:12000`.
+- **Proposed Solution**: Configure `pool_size=10`, `max_overflow=20`, `pool_pre_ping=True`, and `pool_recycle=1800` for the deployment-managed PostgreSQL instance.
 - **Status**: Implemented
 
 ---

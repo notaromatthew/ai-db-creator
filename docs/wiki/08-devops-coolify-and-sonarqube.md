@@ -53,7 +53,7 @@ CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "
 
 ## 3. SonarQube Code Quality Gates
 
-- **Instance Endpoint**: `http://o4sn9bs961jvxn32hs18a81p.89.168.29.98:9000`
+- **Instance Endpoint**: supplied via `SONAR_HOST_URL`; no infrastructure endpoint is committed.
 - **Configuration**: `sonar-project.properties`
 - **Quality Criteria**:
   1. Zero critical security vulnerabilities or exposed secrets.

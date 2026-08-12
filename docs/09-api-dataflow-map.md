@@ -2,6 +2,8 @@
 
 ## 1. API Endpoint Reference
 
+All project-scoped routes require authentication and enforce `Project.user_id == token.sub`; cross-tenant access returns `404`. `GET /benchmark/results` also requires authentication: automatic results are shared, while votes are restricted to the current user and omit `user_id`. Benchmark progress is keyed by the authenticated subject, so concurrent users cannot read or overwrite each other's state.
+
 ### 1.1 Projects
 
 | Method | Path | Description | Request Body | Response |
@@ -80,6 +82,11 @@
 | `GET` | `/api/projects/{id}/interactions` | Get interaction log | — | `[{timestamp, event_type, project_id, data}]` |
 | `POST` | `/api/projects/{id}/export-interactions` | Export interactions as JSON | — | `{path, count}` |
 | `POST` | `/api/experiments/compare` | Compare approaches | `{project_id, prompt, document_ids}` | `{automatic: {schema, metrics}}` |
+| `POST` | `/api/experiments/sessions` | Start or resume an idempotent draft three-arm session | `{project_id, protocol_version, duration_minutes}` | Pseudonymous session, condition, deadline and server capabilities |
+| `GET` | `/api/experiments/sessions/current` | Read the authenticated participant session and server-refreshed timeout | — | Session lifecycle state |
+| `POST` | `/api/experiments/sessions/current/{completed|withdrawn}` | Complete or withdraw; withdrawal erases session-scoped artifacts | — | Final lifecycle state |
+
+When `EXPERIMENT_MODE=true`, project-scoped routes enforce condition capabilities on the server and unknown mutations are denied. Current allocation is labelled `deterministic_hmac_allocation`: it is deterministic, approximately 1:1:1 and atomically persisted across processes, but is not randomised or stratified. The preregistration draft's proposed blocked/stratified allocation is a future protocol decision and is not implemented. Experiment routes return 404 while the mode is disabled. This remains draft infrastructure, not evidence of preregistration or ethics approval.
 | `POST` | `/api/surveys/nasa-tlx` | Submit NASA-TLX | `{project_id, mental_demand, ..., frustration}` | `{status, path}` |
 | `POST` | `/api/surveys/sus` | Submit SUS | `{project_id, scores: [10 ints]}` | `{status, path, total_score}` |
 
@@ -89,7 +96,9 @@
 |---|---|---|---|
 | `GET` | `/health` | Health check | `{status: "ok"}` |
 | `GET` | `/api/llm/info` | LLM provider info | `{provider: str, model: str}` |
-| `GET` | `/api/tasks/{task_id}` | Task status (Celery) | `{task_id, status, result?}` |
+| `GET` | `/api/tasks/{task_id}` | Owned task status (unknown/cross-tenant: `404`) | `{task_id, status, result?}` |
+| `GET` | `/api/progress/{project_id}` | Owned project progress; `benchmark` resolves to the current subject | `{status, progress, message, etc_seconds}` |
+| `POST` | `/api/progress/{project_id}` | Update owned project progress; `benchmark` is server-managed (`405`) | `{status: "updated"}` |
 
 ---
 

@@ -9,12 +9,12 @@ services:
       - "8000"
     environment:
       - DATABASE_URL=${DATABASE_URL}
-      - KEYCLOAK_URL=${KEYCLOAK_URL:-https://keycloak-pw9ut4s1h3aodstrsw1gd84o.89.168.29.98.sslip.io}
+      - KEYCLOAK_URL=${KEYCLOAK_URL:?set KEYCLOAK_URL}
       - KEYCLOAK_REALM=${KEYCLOAK_REALM:-aidbcreator}
       - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID:-aidbcreator-app}
       - KEYCLOAK_ADMIN_USER=${KEYCLOAK_ADMIN_USER}
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
-      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-https://ollamaapi-u11fj34m2h9druz26hamz3xb.89.168.29.98.sslip.io}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:?set OLLAMA_BASE_URL}
 
       - OLLAMA_API_KEY=${OLLAMA_API_KEY}
       - OLLAMA_MODE=${OLLAMA_MODE:-remote}

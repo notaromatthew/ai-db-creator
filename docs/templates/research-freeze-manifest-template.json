@@ -1,0 +1,16 @@
+{
+  "status": "draft_unapproved",
+  "protocol_version": "",
+  "frozen_at_utc": "",
+  "owner": "",
+  "reviewer": "",
+  "ethics_reference": "pending",
+  "artifacts": [
+    {"category": "software", "name": "application", "version": "", "sha256": ""},
+    {"category": "method", "name": "preregistration", "version": "", "sha256": ""},
+    {"category": "method", "name": "statistical_analysis_plan", "version": "", "sha256": ""},
+    {"category": "evaluation", "name": "rq2_evaluator", "version": "rq2-canonical-facts-v1", "sha256": ""},
+    {"category": "evaluation", "name": "functional_workload", "version": "functional_workload_v1", "sha256": ""},
+    {"category": "intervention", "name": "three_arm_configuration", "version": "", "sha256": ""}
+  ]
+}

@@ -59,10 +59,11 @@ def test_normalisation_rules():
 
 def test_classify_cell_types():
     assert classify_cell(42, 42, "INTEGER") == "OK"
-    assert classify_cell("1.0", 1, "REAL") == "OK"
+    assert classify_cell("1.0", 1, "REAL") == "TC"
     assert classify_cell(None, "Smith", "TEXT") == "NS"
     assert classify_cell("Smith", None, "TEXT") == "WV"
-    assert classify_cell(1.5, "1.0", "REAL") == "TC"
+    assert classify_cell(1.5, "1.0", "REAL") == "WV"
+    assert classify_cell(1, 2, "INTEGER") == "WV"
     assert classify_cell("Jones", "Smith", "TEXT") == "WV"
 
 
@@ -137,6 +138,9 @@ def test_missing_extra_and_fk(tmp_path):
     assert enrollments["fk_violations"] == 1  # student_id 99 has no student
     assert result["global"]["missing_rows"] == 1
     assert result["global"]["extra_rows"] == 1
+    assert students["duplicate_generated_rows"] == 0
+    assert students["precision"] < 0.5  # extra row contributes one FP per physical cell
+    assert "ci95_f1" not in students
 
 
 def test_column_alignment_handles_generated_schema_with_different_names(tmp_path):
@@ -177,3 +181,20 @@ def test_column_alignment_handles_generated_schema_with_different_names(tmp_path
     assert students["f1"] == 1.0
     enrollments = result["per_table"]["enrollments"]
     assert enrollments["fk_violations"] == 0
+
+
+def test_table_alias_is_used_for_renamed_generated_table(tmp_path):
+    schema = load_gold_schema(_write_schema(tmp_path))
+    sql = "CREATE TABLE students (id INTEGER PRIMARY KEY, name TEXT, gpa REAL, active BOOLEAN, enrolled_on DATE); CREATE TABLE enrollments (id INTEGER PRIMARY KEY, student_id INTEGER);"
+    _make_db(tmp_path / "ground.db", sql, {"students": [(1, "Ada", 3.5, 1, "2024-01-05")], "enrollments": [(1, 1)]})
+    generated_sql = "CREATE TABLE people (id INTEGER PRIMARY KEY, name TEXT, gpa REAL, active BOOLEAN, enrolled_on DATE); CREATE TABLE registrations (id INTEGER PRIMARY KEY, student_id INTEGER);"
+    _make_db(tmp_path / "gen.db", generated_sql, {"people": [(1, "Ada", 3.5, 1, "2024-01-05")], "registrations": [(1, 1)]})
+    with connect_database(tmp_path / "gen.db") as generated, connect_database(tmp_path / "ground.db") as ground:
+        result = evaluate_generated(generated, ground, schema, table_aliases={"students": "people", "enrollments": "registrations"})
+    assert result["global"]["f1"] == 1.0
+
+
+def _write_schema(tmp_path):
+    path = tmp_path / "gold.json"
+    path.write_text(json.dumps(GOLD_SCHEMA), encoding="utf-8")
+    return path

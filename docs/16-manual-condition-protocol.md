@@ -1,5 +1,7 @@
 # Manual Condition Protocol (RQ0)
 
+> **DRAFT / UNAPPROVED — ETHICS REVIEW PENDING.** Tool choice, tutorial, facilitator policy and equivalence checks require approval and freeze before participant use.
+
 ## Allowed Environment
 
 Participants receive the same source documents, task brief, target output requirements, tutorial duration, and task time limit as the AI-assisted groups. They may use one preselected conventional visual relational-database tool and its built-in documentation. Generative AI, automatic schema generators, pre-built schemas, copied SQL, and help from another person are prohibited.

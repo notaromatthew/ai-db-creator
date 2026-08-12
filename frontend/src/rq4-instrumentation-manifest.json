@@ -1,0 +1,15 @@
+{
+  "version": "rq4-instrumentation-manifest-v1",
+  "instrumented": {
+    "navigation": ["src/components/ExperimentShell.tsx"],
+    "task_complete": ["src/components/ExperimentShell.tsx"],
+    "task_abandon": ["src/components/ExperimentShell.tsx"]
+    ,"schema_save": ["src/components/SchemaViewer.tsx"]
+    ,"accept_suggestion": ["src/components/SchemaChat.tsx"]
+    ,"ignore_suggestion": ["src/components/SchemaChat.tsx"]
+    ,"population_start": ["src/pages/ProjectPage.tsx"]
+    ,"population_complete": ["src/pages/ProjectPage.tsx"]
+    ,"validation_error": ["src/components/SchemaViewer.tsx", "src/components/SchemaChat.tsx", "src/pages/ProjectPage.tsx"]
+  },
+  "required_for_pilot": ["navigation", "task_complete", "task_abandon", "schema_save", "accept_suggestion", "ignore_suggestion", "population_start", "population_complete", "validation_error"]
+}

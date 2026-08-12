@@ -10,12 +10,12 @@ AI-DB-Creator is an AI research platform for automated relational database schem
        │ HTTP / OIDC Bearer JWT
        ▼
 [ FastAPI Backend (Uvicorn :8000) ] ── (OIDC JWKS) ──► [ Keycloak Server ]
-       │                                              (https://keycloak...sslip.io)
-       ├──► [ Live PostgreSQL Database ]
-       │    (postgres://...89.168.29.98:12000/postgres)
+       │                                              (environment-managed URL)
+       ├──► [ PostgreSQL Database ]
+       │    (environment-managed DATABASE_URL)
        │
        └──► [ LLM Orchestration Engine ]
-            ├── Remote Ollama (https://ollamaapi...sslip.io) [Default]
+            ├── Optional local/remote Ollama (explicit URL)
             ├── Google Gemini (gemini-2.0-flash)
             ├── OpenAI / Groq / OpenRouter
 ```
@@ -55,9 +55,9 @@ AI-DB-Creator is an AI research platform for automated relational database schem
 
 ## 🤖 LLM Orchestration Engine (`app/core/llm.py`)
 
-- **Default Provider**: Remote Ollama (`OLLAMA_MODE=remote`)
-- **Remote Ollama API Endpoint**: `https://ollamaapi-u11fj34m2h9druz26hamz3xb.89.168.29.98.sslip.io`
+- **Provider selection**: configured through environment variables; local Ollama defaults to `http://localhost:11434`.
+- **Remote Ollama API Endpoint**: must be supplied explicitly by the deployment operator.
 - **Authentication**: `Authorization: Bearer <OLLAMA_API_KEY>`
 
 - **Model Discovery**: `GET /api/settings/ollama-models` queries `/api/tags` asynchronously via `httpx.AsyncClient` to populate available models (`gemma2:9b`, `qwen3:0.6b`, `llama3.2:1b`, `gemma3:270m`).
-- **Configuration Persistence**: `PUT /api/settings` persists settings dynamically to `backend/.env`.
+- **Configuration Persistence**: `PUT /api/settings` changes runtime settings only; secrets are write-only and `.env` is never rewritten.

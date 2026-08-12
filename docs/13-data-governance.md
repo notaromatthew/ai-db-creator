@@ -1,5 +1,7 @@
 # Data Governance Document
 
+> **DRAFT / UNAPPROVED — ETHICS/DPO REVIEW PENDING.** This document records proposed controls, not verified institutional configuration or legal advice. Lawful basis, roles, retention, transfers, providers and participant rights must be confirmed by the responsible institution before collection.
+
 ## 1. Purpose and Scope
 
 This document describes the data governance framework for AI-DB-Creator, a PhD research platform. It specifies what data is collected, how it is stored, processed, and retained, and what protections are in place for research participants. This framework is designed to comply with:
@@ -181,7 +183,7 @@ When using Ollama (`USE_OLLAMA=true`):
 
 ### 8.1 Lawful Basis
 
-The lawful basis for processing personal data in this research is **Article 6(1)(e) — public task** (scientific research) and **Article 9(2)(j) — archiving / scientific research** for special category data, subject to suitable safeguards (Data Protection Act 2018, Schedule 1).
+Proposed lawful basis: `[TO BE DETERMINED BY THE DATA CONTROLLER/DPO]`. Public task, consent and scientific-research provisions have different requirements and must not be selected by the development team. The study is not intended to collect special-category data; accidental collection triggers the approved incident procedure rather than making Article 9 processing an assumed part of the protocol.
 
 ### 8.2 Data Subject Rights
 
@@ -197,9 +199,9 @@ Participants have the right to:
 | **Right to data portability** | Logs and surveys can be exported as JSON |
 | **Right to object** | Available for scientific research processing |
 
-### 8.3 Data Controller
+### 8.3 Data Controller and Roles
 
-The university / research institution hosting the study is the data controller. The PhD student (researcher) is the data processor. Contact details are provided in the informed consent form.
+Controller, joint-controller and processor roles are `[TO BE CONFIRMED]`; a researcher is not automatically a data processor. Approved names, contacts and responsibilities must be copied exactly into the participant privacy notice.
 
 ---
 

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { api } from '@/api/client'
 import { useQueryClient } from '@tanstack/react-query'
 import { NormalizedSchema } from '@/types'
+import { emitRq4 } from '@/services/rq4Emitter'
 
 interface Props {
   projectId: string
@@ -54,9 +55,11 @@ export default function SchemaChat({ projectId, schema, documentIds }: Props) {
       const displayContent = stripCodeBlocks(res.response) || '(schema proposal)'
       setMessages(prev => [...prev, { role: 'assistant', content: displayContent }])
       if (res.schema) {
+        if (pendingSchema) emitRq4(projectId,{type:'ignore_suggestion',target_type:'suggestion',target_name:'schema-proposal',action:'ignore',phase:'schema',outcome:'ignored',operation_id:'chat-suggestion'}).catch(()=>{})
         setPendingSchema(res.schema)
       }
     } catch (e: any) {
+      emitRq4(projectId,{type:'validation_error',target_type:'suggestion',target_name:'chat',phase:'schema',outcome:'failure',error_code:'CHAT_ERROR',operation_id:'chat-suggestion'}).catch(()=>{})
       setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${e?.message || 'Chat failed'}` }])
     } finally {
       setLoading(false)
@@ -67,7 +70,8 @@ export default function SchemaChat({ projectId, schema, documentIds }: Props) {
     if (!pendingSchema) return
     setAccepting(true)
     try {
-      await api.put(`/projects/${projectId}/schema`, pendingSchema)
+      await api.post(`/projects/${projectId}/chat-accept`, pendingSchema)
+      await emitRq4(projectId,{type:'accept_suggestion',target_type:'suggestion',target_name:'schema-proposal',action:'accept',phase:'schema',outcome:'success',operation_id:'chat-suggestion'})
       setPendingSchema(null)
       setMessages([{ role: 'assistant', content: 'Schema accettato e salvato! Ora puoi visualizzarlo e popolare le tabelle qui sotto.' }])
       queryClient.invalidateQueries({ queryKey: ['schema', projectId] })

@@ -5,7 +5,8 @@ import json
 import re
 import httpx
 
-from app.core.auth import get_current_user
+from app.core.auth import get_current_user, require_admin
+from app.api.dependencies import authenticated_user_id, get_owned_project, require_owned_project
 from app.config import settings
 from app.services.benchmark_service import run_model_benchmark, save_user_vote, BENCHMARK_SCENARIOS
 from app.models.database import get_session, init_db, BenchmarkResult, UserVote
@@ -22,6 +23,7 @@ from app.utils.research import atomic_write_json, new_run_id, record_run, run_ma
 from app.services.metrics_service import MetricsService
 from app.services.interaction_logger import interaction_logger
 from app.services.backup_service import BackupService
+from app.services.task_registry import get_task_registration, register_task
 from app.utils.logger import log
 from app.utils.exceptions import AppException
 from pathlib import Path
@@ -57,20 +59,20 @@ def _log_research_run(event_type: str, project_id: str, data: dict, run_id: str 
 
 @router.post("/projects")
 def create_project(name: str = Body(...), prompt: str = Body(""), user: dict = Depends(get_current_user)):
-    user_id = user.get("sub") if user else None
+    user_id = authenticated_user_id(user)
     return schema_svc.create_project(name, prompt, user_id=user_id)
 
 @router.get("/projects")
 def list_projects(user: dict = Depends(get_current_user)):
-    user_id = user.get("sub") if user else None
+    user_id = authenticated_user_id(user)
     return schema_svc.list_projects(user_id=user_id)
 
 
-@router.get("/projects/{project_id}")
+@router.get("/projects/{project_id}", dependencies=[Depends(get_owned_project)])
 def get_project(project_id: str):
     return schema_svc.get_project(project_id)
 
-@router.delete("/projects/{project_id}")
+@router.delete("/projects/{project_id}", dependencies=[Depends(get_owned_project)])
 def delete_project(project_id: str):
     result = schema_svc.delete_project(project_id)
     result["interaction_events_deleted"] = interaction_logger.erase_project(project_id)
@@ -88,7 +90,7 @@ def delete_project(project_id: str):
     result["surveys_deleted"] = surveys_deleted
     return result
 
-@router.post("/projects/{project_id}/generate")
+@router.post("/projects/{project_id}/generate", dependencies=[Depends(get_owned_project)])
 async def generate_schema(project_id: str, req: GenerateRequest):
     started_at = utc_now()
     run_id = new_run_id()
@@ -124,11 +126,11 @@ async def generate_schema(project_id: str, req: GenerateRequest):
     }, run_id=run_id)
     return result
 
-@router.get("/projects/{project_id}/schema")
+@router.get("/projects/{project_id}/schema", dependencies=[Depends(get_owned_project)])
 def get_schema(project_id: str):
     return schema_svc.get_schema(project_id)
 
-@router.put("/projects/{project_id}/schema")
+@router.put("/projects/{project_id}/schema", dependencies=[Depends(get_owned_project)])
 def update_schema(project_id: str, schema: NormalizedSchema):
     previous = schema_svc.get_schema(project_id)
     result = schema_svc.update_schema(project_id, schema)
@@ -148,7 +150,7 @@ class ChatRequest(BaseModel):
     session_id: str | None = Field(default=None, pattern=r"^[A-Za-z0-9_.-]{1,128}$")
     participant_id: str | None = Field(default=None, pattern=r"^[A-Za-z0-9_.-]{1,128}$")
 
-@router.post("/projects/{project_id}/chat")
+@router.post("/projects/{project_id}/chat", dependencies=[Depends(get_owned_project)])
 async def chat_schema(project_id: str, req: ChatRequest):
     started_at = utc_now()
     run_id = new_run_id()
@@ -185,12 +187,12 @@ async def chat_schema(project_id: str, req: ChatRequest):
     }, run_id=run_id)
     return {"response": response, "schema": schema.model_dump() if schema else None}
 
-@router.post("/projects/{project_id}/chat-accept")
+@router.post("/projects/{project_id}/chat-accept", dependencies=[Depends(get_owned_project)])
 def accept_chat_schema(project_id: str, schema: NormalizedSchema):
     previous = schema_svc.get_schema(project_id)
     result = schema_svc.update_schema(project_id, schema)
     clear_history(project_id)
-    _log_research_run("schema_updated", project_id, {
+    _log_research_run("schema_accepted", project_id, {
         "schema_initial": previous.model_dump() if previous else None,
         "schema_final": schema.model_dump(),
         "schema_initial_hash": stable_hash(previous.model_dump()) if previous else None,
@@ -215,7 +217,7 @@ def _remove_temp_file(path: str, attempts: int = 5, retry_delay_seconds: float =
             break
 
 
-@router.post("/projects/{project_id}/documents")
+@router.post("/projects/{project_id}/documents", dependencies=[Depends(get_owned_project)])
 async def upload_document(project_id: str, file: UploadFile = File(...)):
     schema_svc.get_project(project_id)
     max_upload_size = 25 * 1024 * 1024
@@ -246,7 +248,7 @@ async def upload_document(project_id: str, file: UploadFile = File(...)):
         tmp.close()
         _remove_temp_file(tmp.name)
 
-@router.post("/projects/{project_id}/import-sql")
+@router.post("/projects/{project_id}/import-sql", dependencies=[Depends(get_owned_project)])
 async def import_sql(project_id: str, file: UploadFile = File(...), dialect: str = "sqlite"):
     started_at = utc_now()
     from app.core.sql_importer import extract_schema, clean_inserts, split_sql_statements
@@ -349,7 +351,7 @@ async def import_sql(project_id: str, file: UploadFile = File(...), dialect: str
     })
     return {"tables": len(schema.tables), "schema": schema.model_dump()}
 
-@router.get("/projects/{project_id}/documents")
+@router.get("/projects/{project_id}/documents", dependencies=[Depends(get_owned_project)])
 def list_documents(project_id: str):
     schema_svc.get_project(project_id)
     return [{
@@ -360,11 +362,11 @@ def list_documents(project_id: str):
         }
     } for doc in doc_svc.list_documents(project_id)]
 
-@router.delete("/projects/{project_id}/documents/{doc_id}")
+@router.delete("/projects/{project_id}/documents/{doc_id}", dependencies=[Depends(get_owned_project)])
 def delete_document(project_id: str, doc_id: str):
     return doc_svc.delete_document(project_id, doc_id)
 
-@router.post("/projects/{project_id}/populate")
+@router.post("/projects/{project_id}/populate", dependencies=[Depends(get_owned_project)])
 async def populate(project_id: str, req: PopulateRequest):
     started_at = utc_now()
     run_id = new_run_id()
@@ -418,11 +420,11 @@ async def populate(project_id: str, req: PopulateRequest):
     }, run_id=run_id)
     return result
 
-@router.post("/projects/{project_id}/query")
+@router.post("/projects/{project_id}/query", dependencies=[Depends(get_owned_project)])
 async def generate_query(project_id: str, req: QueryRequest):
     return await query_svc.generate(project_id, req.prompt, req.dialect)
 
-@router.post("/projects/{project_id}/execute-query")
+@router.post("/projects/{project_id}/execute-query", dependencies=[Depends(get_owned_project)])
 def execute_query(project_id: str, req: ExecuteQueryRequest):
     project = schema_svc.get_project(project_id)
     if not project or not project.db_path:
@@ -463,7 +465,7 @@ def execute_query(project_id: str, req: ExecuteQueryRequest):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Esecuzione query fallita: {str(e)}")
 
-@router.get("/projects/{project_id}/data/stats")
+@router.get("/projects/{project_id}/data/stats", dependencies=[Depends(get_owned_project)])
 def get_table_stats(project_id: str):
     project = schema_svc.get_project(project_id)
     schema = schema_svc.get_schema(project_id)
@@ -482,7 +484,7 @@ def get_table_stats(project_id: str):
                 stats[t] = 0
     return stats
 
-@router.get("/projects/{project_id}/data/{table_name}")
+@router.get("/projects/{project_id}/data/{table_name}", dependencies=[Depends(get_owned_project)])
 def get_table_data(project_id: str, table_name: str):
     project = schema_svc.get_project(project_id)
     schema = schema_svc.get_schema(project_id)
@@ -498,7 +500,7 @@ def get_table_data(project_id: str, table_name: str):
         rows = [dict(r._mapping) for r in result]
     return rows
 
-@router.put("/projects/{project_id}/data/{table_name}")
+@router.put("/projects/{project_id}/data/{table_name}", dependencies=[Depends(get_owned_project)])
 def update_table_row(project_id: str, table_name: str, row: dict = Body(...)):
     project = schema_svc.get_project(project_id)
     schema = schema_svc.get_schema(project_id)
@@ -524,7 +526,7 @@ def update_table_row(project_id: str, table_name: str, row: dict = Body(...)):
     interaction_logger.log_event("data_row_update", project_id, {"table": table_name, "columns": sorted(c for c in row if c not in pk_cols), "pk_columns": pk_cols})
     return {"updated": True}
 
-@router.delete("/projects/{project_id}/data/{table_name}")
+@router.delete("/projects/{project_id}/data/{table_name}", dependencies=[Depends(get_owned_project)])
 def delete_table_row(project_id: str, table_name: str, pks: dict = Body(..., embed=True)):
     project = schema_svc.get_project(project_id)
     schema = schema_svc.get_schema(project_id)
@@ -548,7 +550,7 @@ def delete_table_row(project_id: str, table_name: str, pks: dict = Body(..., emb
     interaction_logger.log_event("data_row_delete", project_id, {"table": table_name, "pk_columns": pk_cols})
     return {"deleted": True}
 
-@router.post("/projects/{project_id}/data/{table_name}")
+@router.post("/projects/{project_id}/data/{table_name}", dependencies=[Depends(get_owned_project)])
 def insert_table_row(project_id: str, table_name: str, row: dict = Body(...)):
     project = schema_svc.get_project(project_id)
     schema = schema_svc.get_schema(project_id)
@@ -573,7 +575,7 @@ def insert_table_row(project_id: str, table_name: str, row: dict = Body(...)):
     interaction_logger.log_event("data_row_insert", project_id, {"table": table_name, "columns": sorted(cols)})
     return {"inserted": True}
 
-@router.get("/projects/{project_id}/metrics")
+@router.get("/projects/{project_id}/metrics", dependencies=[Depends(get_owned_project)])
 def get_metrics(project_id: str):
     project = schema_svc.get_project(project_id)
     schema = schema_svc.get_schema(project_id)
@@ -589,44 +591,80 @@ def get_metrics(project_id: str):
     return metrics
 
 class ClientInteraction(BaseModel):
-    type: Literal["rename_column", "add_constraint", "remove_constraint", "ignore_suggestion", "accept_suggestion", "navigation"]
+    type: Literal["rename_column", "add_constraint", "remove_constraint", "ignore_suggestion", "accept_suggestion", "navigation", "schema_save", "population_start", "population_complete", "validation_error", "task_abandon", "task_complete"]
     target_type: Literal["project", "table", "column", "relationship", "suggestion"]
     target_name: str = Field(min_length=1, max_length=128, pattern=r"^[A-Za-z0-9_.-]+$")
-    action: str | None = Field(default=None, max_length=64, pattern=r"^[A-Za-z0-9_.-]+$")
+    action: Literal["open", "close", "add", "remove", "rename", "accept", "ignore", "start", "complete", "retry"] | None = None
+    phase: Literal["onboarding", "schema", "population", "validation", "survey", "completion"] | None = None
+    outcome: Literal["success", "failure", "cancelled", "ignored"] | None = None
+    error_code: str | None = Field(default=None, max_length=64, pattern=r"^[A-Z0-9_.-]+$")
+    event_id: str = Field(min_length=1, max_length=128, pattern=r"^[A-Za-z0-9_.:-]+$")
+    sequence_no: int = Field(ge=1)
+    monotonic_ms: float = Field(ge=0)
+    operation_id: str = Field(min_length=1, max_length=128, pattern=r"^[A-Za-z0-9_.:-]+$")
+    duration_ms: float = Field(ge=0)
+    app_revision: str = Field(min_length=1, max_length=128, pattern=r"^[A-Za-z0-9_.:-]+$")
+    payload_schema_version: Literal["rq4-envelope-v1"]
 
     model_config = {"extra": "forbid"}
 
 
-@router.post("/projects/{project_id}/interactions")
-def log_interaction(project_id: str, event: ClientInteraction):
+@router.post("/projects/{project_id}/interactions", dependencies=[Depends(get_owned_project)])
+def log_interaction(project_id: str, event: ClientInteraction, user: dict = Depends(get_current_user)):
     schema_svc.get_project(project_id)
-    interaction_logger.log_event(event.type, project_id, event.model_dump(exclude_none=True))
-    return {"status": "logged"}
+    from app.services.experiment_service import experiment_service
+    from app.services.rq4_events import normalise_event
+    session = experiment_service.for_subject(authenticated_user_id(user))
+    try:
+        safe = normalise_event(event.model_dump(exclude_none=True), session)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    try:
+        _, duplicate = interaction_logger.log_rq4_event(project_id, safe)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return {"status": "duplicate" if duplicate else "logged"}
 
-@router.get("/projects/{project_id}/interactions")
+@router.get("/projects/{project_id}/interactions", dependencies=[Depends(get_owned_project)])
 def get_interactions(project_id: str):
     schema_svc.get_project(project_id)
-    return interaction_logger.get_events(project_id)
+    return [event for event in interaction_logger.get_events(project_id)
+            if event.get("event_type") == "rq4_event" and event.get("data", {}).get("taxonomy_version")]
 
-@router.post("/projects/{project_id}/export-interactions")
+@router.get("/projects/{project_id}/interactions-next-sequence", dependencies=[Depends(get_owned_project)])
+def get_interaction_next_sequence(project_id: str, user: dict = Depends(get_current_user)):
+    from app.services.experiment_service import experiment_service
+    session = experiment_service.for_subject(authenticated_user_id(user))
+    session_id = session.get("session_id") if session else None
+    sequences = [event.get("data", {}).get("sequence_no", 0) for event in interaction_logger.get_events(project_id)
+                 if event.get("event_type") == "rq4_event" and event.get("data", {}).get("session_id") == session_id]
+    return {"session_id": session_id or "legacy", "next_sequence": max(sequences, default=0) + 1}
+
+@router.post("/projects/{project_id}/export-interactions", dependencies=[Depends(get_owned_project)])
 def export_interactions(project_id: str):
     schema_svc.get_project(project_id)
     from pathlib import Path
-    export_path = Path("projects") / project_id / "interactions.json"
-    export_path.parent.mkdir(parents=True, exist_ok=True)
-    count = interaction_logger.save_events(str(export_path), project_id=project_id)
-    return {"path": str(export_path), "count": count}
+    from app.services.rq4_events import export_participant_events
+    export_stem = Path("projects") / project_id / "rq4_participant_events"
+    return export_participant_events(interaction_logger.get_events(project_id), export_stem)
 
 @router.post("/experiments/compare")
-def compare_approaches(payload: dict):
+async def compare_approaches(payload: dict, user: dict = Depends(get_current_user)):
     from app.core.llm import generate_schema
     from app.models.database import get_session, Document
-    import asyncio
     prompt = payload.get("prompt", "")
     project_id = payload.get("project_id")
     if not isinstance(project_id, str) or not project_id:
         raise HTTPException(status_code=422, detail="project_id obbligatorio.")
-    schema_svc.get_project(project_id)
+    require_owned_project(project_id, user)
+    if settings.experiment_mode:
+        from app.services.experiment_service import experiment_service
+        try:
+            experiment_service.require(authenticated_user_id(user), project_id, "ai_generate")
+        except TimeoutError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except PermissionError as exc:
+            raise HTTPException(status_code=403, detail=str(exc)) from exc
     doc_ids = payload.get("document_ids", [])
     session = get_session(schema_svc.engine)
     doc_context = ""
@@ -641,17 +679,26 @@ def compare_approaches(payload: dict):
                 parts.append(f"--- {doc.filename} ---\n{doc.content_summary}")
         doc_context = "\n\n".join(parts)
     session.close()
-    auto_schema = asyncio.run(generate_schema(prompt, doc_context))
+    auto_schema = await generate_schema(prompt, doc_context)
     auto_metrics = {"norm3": metrics_svc.check_3nf(auto_schema), "relationships": metrics_svc.relationship_f1(auto_schema)}
     return {"automatic": {"schema": auto_schema.model_dump(), "metrics": auto_metrics}}
 
 @router.post("/surveys/nasa-tlx")
-def submit_nasa_tlx(payload: dict):
+def submit_nasa_tlx(payload: dict, user: dict = Depends(get_current_user)):
     """Submit NASA-TLX survey for cognitive load measurement."""
     project_id = payload.get("project_id")
     if not isinstance(project_id, str) or not project_id:
         raise HTTPException(status_code=422, detail="project_id obbligatorio.")
-    schema_svc.get_project(project_id)
+    require_owned_project(project_id, user)
+    experiment = None
+    if settings.experiment_mode:
+        from app.services.experiment_service import experiment_service
+        try:
+            experiment = experiment_service.require(authenticated_user_id(user), project_id, "survey")
+        except TimeoutError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except PermissionError as exc:
+            raise HTTPException(status_code=403, detail=str(exc)) from exc
     keys = ("mental_demand", "physical_demand", "temporal_demand", "performance", "effort", "frustration")
     if any(key not in payload for key in keys):
         raise HTTPException(status_code=422, detail="Completa tutte le sei dimensioni NASA Raw-TLX.")
@@ -666,19 +713,32 @@ def submit_nasa_tlx(payload: dict):
         "scores": scores,
         "aggregate_score": aggregate_score,
     }
-    survey_path = Path("projects") / "surveys" / f"nasa_tlx_{survey['timestamp'].replace(':', '-')}_{new_run_id()}.json"
+    if experiment:
+        survey.update({key: experiment[key] for key in ("participant_id", "session_id", "condition", "protocol_version")})
+        survey_path = Path("projects") / "experiment_artifacts" / experiment["session_id"] / "surveys" / f"nasa_tlx_{new_run_id()}.json"
+    else:
+        survey_path = Path("projects") / "surveys" / f"nasa_tlx_{survey['timestamp'].replace(':', '-')}_{new_run_id()}.json"
     survey_path.parent.mkdir(parents=True, exist_ok=True)
     atomic_write_json(survey_path, survey)
     interaction_logger.log_event("survey_nasa_tlx", survey["project_id"], {"aggregate_score": aggregate_score})
     return {"status": "saved", "aggregate_score": aggregate_score}
 
 @router.post("/surveys/sus")
-def submit_sus(payload: dict):
+def submit_sus(payload: dict, user: dict = Depends(get_current_user)):
     """Submit SUS (System Usability Scale) survey."""
     project_id = payload.get("project_id")
     if not isinstance(project_id, str) or not project_id:
         raise HTTPException(status_code=422, detail="project_id obbligatorio.")
-    schema_svc.get_project(project_id)
+    require_owned_project(project_id, user)
+    experiment = None
+    if settings.experiment_mode:
+        from app.services.experiment_service import experiment_service
+        try:
+            experiment = experiment_service.require(authenticated_user_id(user), project_id, "survey")
+        except TimeoutError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except PermissionError as exc:
+            raise HTTPException(status_code=403, detail=str(exc)) from exc
     scores = payload.get("scores")
     if not isinstance(scores, list) or len(scores) != 10:
         raise HTTPException(status_code=422, detail="Completa tutte le 10 domande SUS.")
@@ -691,7 +751,11 @@ def submit_sus(payload: dict):
         "scores": scores,
     }
     survey["total_score"] = sum((score - 1) if i % 2 == 0 else (5 - score) for i, score in enumerate(scores)) * 2.5
-    survey_path = Path("projects") / "surveys" / f"sus_{survey['timestamp'].replace(':', '-')}_{new_run_id()}.json"
+    if experiment:
+        survey.update({key: experiment[key] for key in ("participant_id", "session_id", "condition", "protocol_version")})
+        survey_path = Path("projects") / "experiment_artifacts" / experiment["session_id"] / "surveys" / f"sus_{new_run_id()}.json"
+    else:
+        survey_path = Path("projects") / "surveys" / f"sus_{survey['timestamp'].replace(':', '-')}_{new_run_id()}.json"
     survey_path.parent.mkdir(parents=True, exist_ok=True)
     atomic_write_json(survey_path, survey)
     interaction_logger.log_event("survey_sus", survey["project_id"], {"aggregate_score": survey["total_score"]})
@@ -699,10 +763,10 @@ def submit_sus(payload: dict):
 
 
 @router.get("/llm/info")
-def llm_info():
+def llm_info(user: dict = Depends(get_current_user)):
     return get_llm_info()
 
-@router.get("/projects/{project_id}/export-full")
+@router.get("/projects/{project_id}/export-full", dependencies=[Depends(get_owned_project)])
 def export_full(project_id: str, dialect: str = "sqlite"):
     from app.core.db_export import export_full as do_export
     project = schema_svc.get_project(project_id)
@@ -715,7 +779,7 @@ def export_full(project_id: str, dialect: str = "sqlite"):
     ext_map = {"sqlite": "sql", "postgresql": "sql", "mysql": "sql", "mssql": "sql"}
     return {"format": dialect, "content": content, "extension": ext_map.get(dialect, "sql")}
 
-@router.post("/projects/{project_id}/backup")
+@router.post("/projects/{project_id}/backup", dependencies=[Depends(get_owned_project)])
 def create_backup(project_id: str, label: str = ""):
     project = schema_svc.get_project(project_id)
     if not project.db_path:
@@ -724,12 +788,12 @@ def create_backup(project_id: str, label: str = ""):
     interaction_logger.log_event("backup", project_id, {"label": label, "file": result.get("file")})
     return result
 
-@router.get("/projects/{project_id}/backups")
+@router.get("/projects/{project_id}/backups", dependencies=[Depends(get_owned_project)])
 def list_backups(project_id: str):
     project = schema_svc.get_project(project_id)
     return backup_svc.list_backups(project_id, project.db_path)
 
-@router.post("/projects/{project_id}/restore")
+@router.post("/projects/{project_id}/restore", dependencies=[Depends(get_owned_project)])
 def restore_backup(project_id: str, backup_name: str = Body(..., embed=True)):
     project = schema_svc.get_project(project_id)
     if not project.db_path:
@@ -740,7 +804,7 @@ def restore_backup(project_id: str, backup_name: str = Body(..., embed=True)):
     interaction_logger.log_event("restore", project_id, {"backup": backup_name})
     return result
 
-@router.get("/projects/{project_id}/export")
+@router.get("/projects/{project_id}/export", dependencies=[Depends(get_owned_project)])
 def export_schema(project_id: str, format: str = "sql"):
     project = schema_svc.get_project(project_id)
     schema = schema_svc.get_schema(project_id)
@@ -789,8 +853,8 @@ def export_schema(project_id: str, format: str = "sql"):
 
     raise HTTPException(status_code=400, detail=f"Unsupported format: {format}")
 
-@router.post("/projects/{project_id}/generate-async")
-def generate_schema_async(project_id: str, req: GenerateRequest):
+@router.post("/projects/{project_id}/generate-async", dependencies=[Depends(get_owned_project)])
+def generate_schema_async(project_id: str, req: GenerateRequest, user: dict = Depends(get_current_user)):
     """Start async schema generation."""
     schema_svc.get_project(project_id)
     for document_id in set(req.document_ids):
@@ -800,10 +864,11 @@ def generate_schema_async(project_id: str, req: GenerateRequest):
                **get_llm_run_metadata(0.1, req.prompt, [item for item in document_hashes if item]),
                "parameters": {"temperature": 0.1}, "document_hashes": [item for item in document_hashes if item]}
     task = generate_schema_task.delay(project_id, req.prompt, req.document_ids, context)
+    register_task(task.id, authenticated_user_id(user), project_id)
     return {"task_id": task.id, "status": "started"}
 
-@router.post("/projects/{project_id}/populate-async")
-def populate_async(project_id: str, req: PopulateRequest):
+@router.post("/projects/{project_id}/populate-async", dependencies=[Depends(get_owned_project)])
+def populate_async(project_id: str, req: PopulateRequest, user: dict = Depends(get_current_user)):
     """Start async data population."""
     project = schema_svc.get_project(project_id)
     schema = schema_svc.get_schema(project_id)
@@ -820,21 +885,35 @@ def populate_async(project_id: str, req: PopulateRequest):
                               "fallback_temperature": 0.1},
                "document_hashes": [item for item in document_hashes if item]}
     task = populate_data_task.delay(project_id, project.db_path, json.loads(schema.model_dump_json()), req.document_ids, context)
+    register_task(task.id, authenticated_user_id(user), project_id)
     return {"task_id": task.id, "status": "started"}
 
-@router.post("/projects/{project_id}/export-async")
-def export_async(project_id: str, format: str = "sql"):
+@router.post("/projects/{project_id}/export-async", dependencies=[Depends(get_owned_project)])
+def export_async(project_id: str, format: str = "sql", user: dict = Depends(get_current_user)):
     """Start async schema export."""
     schema_svc.get_project(project_id)
     task = export_schema_task.delay(project_id, format)
+    register_task(task.id, authenticated_user_id(user), project_id)
     return {"task_id": task.id, "status": "started"}
 
 @router.get("/tasks/{task_id}")
-def get_task_status(task_id: str):
+def get_task_status(task_id: str, user: dict = Depends(get_current_user)):
     """Get async task status."""
+    registration = get_task_registration(task_id)
+    if not registration or registration.get("user_id") != authenticated_user_id(user):
+        raise HTTPException(status_code=404, detail="Task not found")
     from app.tasks import celery
     task = celery.AsyncResult(task_id)
-    return {"task_id": task_id, "status": task.status, "result": task.result if task.ready() else None}
+    result = task.result if task.ready() else None
+    if isinstance(result, dict):
+        result = {
+            key: value for key, value in result.items()
+            if key not in {"project_id", "db_path"} and not key.startswith("_")
+        }
+    elif result is not None:
+        # Do not expose raw exception objects or arbitrary worker return values.
+        result = {"error": "Task failed"} if task.status == "FAILURE" else None
+    return {"task_id": task_id, "status": task.status, "result": result}
 
 
 # ==========================================
@@ -864,18 +943,16 @@ class SettingsUpdateSchema(BaseModel):
 @router.get("/settings/ollama-models")
 
 async def list_ollama_models(
-    base_url: str | None = None,
-    api_key: str | None = None,
-    user: dict = Depends(get_current_user)
+    user: dict = Depends(require_admin)
 ):
-    target_url = base_url if base_url else settings.ollama_base_url
-    target_key = api_key if api_key is not None else settings.ollama_api_key
+    target_url = settings.ollama_base_url
+    target_key = settings.ollama_api_key
     try:
         headers = {}
         if target_key and target_key.strip():
             headers["Authorization"] = f"Bearer {target_key.strip()}"
         url = f"{target_url.rstrip('/')}/api/tags"
-        async with httpx.AsyncClient(verify=False, timeout=5.0) as client:
+        async with httpx.AsyncClient(verify=True, timeout=5.0) as client:
             res = await client.get(url, headers=headers)
             if res.status_code == 200:
                 models = res.json().get("models", [])
@@ -894,7 +971,7 @@ class OllamaTestRequest(BaseModel):
     model: str | None = None
 
 @router.post("/settings/ollama-test")
-async def test_ollama_prompt(body: OllamaTestRequest, user: dict = Depends(get_current_user)):
+async def test_ollama_prompt(body: OllamaTestRequest, user: dict = Depends(require_admin)):
     target_url = settings.ollama_base_url
     target_key = settings.ollama_api_key
     model = body.model or settings.ollama_model or "gemma2:9b"
@@ -910,9 +987,9 @@ async def test_ollama_prompt(body: OllamaTestRequest, user: dict = Depends(get_c
         "stream": False,
     }
 
-    log.info(f"🧪 Ollama test: POST {api_url} model={model} prompt={body.prompt[:60]}...")
+    log.info(f"Ollama connectivity test: model={model}")
     try:
-        async with httpx.AsyncClient(verify=False, timeout=60.0) as client:
+        async with httpx.AsyncClient(verify=True, timeout=60.0) as client:
             res = await client.post(api_url, json=payload, headers=headers)
             if res.status_code == 200:
                 data = res.json()
@@ -941,66 +1018,61 @@ async def test_ollama_prompt(body: OllamaTestRequest, user: dict = Depends(get_c
 
 @router.get("/settings")
 
-def get_app_settings(user: dict = Depends(get_current_user)):
+def get_app_settings(user: dict = Depends(require_admin)):
     info = get_llm_info()
     return {
         "provider": info["provider"],
         "model": info["model"],
         "llm_provider": settings.llm_provider,
         "openai_model": settings.openai_model,
-        "openai_api_key": settings.openai_api_key,
+        "openai_api_key_configured": bool(settings.openai_api_key),
         "google_model": settings.google_model,
-        "google_api_key": settings.google_api_key,
+        "google_api_key_configured": bool(settings.google_api_key),
         "groq_model": settings.groq_model,
-        "groq_api_key": settings.groq_api_key,
+        "groq_api_key_configured": bool(settings.groq_api_key),
         "openrouter_model": settings.openrouter_model,
-        "openrouter_api_key": settings.openrouter_api_key,
+        "openrouter_api_key_configured": bool(settings.openrouter_api_key),
         "ollama_mode": settings.ollama_mode,
         "ollama_model": settings.ollama_model,
         "ollama_base_url": settings.ollama_base_url,
-        "ollama_api_key": settings.ollama_api_key,
+        "ollama_api_key_configured": bool(settings.ollama_api_key),
         "use_ollama": settings.use_ollama,
         "llm_temperature": settings.llm_temperature,
         "llm_top_p": settings.llm_top_p,
         "llm_max_tokens": settings.llm_max_tokens,
         "llm_max_requests_per_minute": settings.llm_max_requests_per_minute,
-        "user": user,
     }
 
 @router.put("/settings")
-def update_app_settings(body: SettingsUpdateSchema, user: dict = Depends(get_current_user)):
+def update_app_settings(body: SettingsUpdateSchema, user: dict = Depends(require_admin)):
     if body.llm_provider is not None:
         settings.llm_provider = body.llm_provider
         settings.use_ollama = (body.llm_provider == "ollama")
 
     if body.openai_model is not None:
         settings.openai_model = body.openai_model
-    if body.openai_api_key is not None:
+    if body.openai_api_key:
         settings.openai_api_key = body.openai_api_key
     if body.google_model is not None:
         settings.google_model = body.google_model
-    if body.google_api_key is not None:
+    if body.google_api_key:
         settings.google_api_key = body.google_api_key
     if body.groq_model is not None:
         settings.groq_model = body.groq_model
-    if body.groq_api_key is not None:
+    if body.groq_api_key:
         settings.groq_api_key = body.groq_api_key
     if body.openrouter_model is not None:
         settings.openrouter_model = body.openrouter_model
-    if body.openrouter_api_key is not None:
+    if body.openrouter_api_key:
         settings.openrouter_api_key = body.openrouter_api_key
     if body.ollama_mode is not None:
         settings.ollama_mode = body.ollama_mode
-        if body.ollama_mode == "local" and not body.ollama_base_url:
-            settings.ollama_base_url = "http://localhost:11434"
-        elif body.ollama_mode == "remote" and not body.ollama_base_url:
-            settings.ollama_base_url = "https://ollamaapi-u11fj34m2h9druz26hamz3xb.89.168.29.98.sslip.io"
 
     if body.ollama_model is not None:
         settings.ollama_model = body.ollama_model
-    if body.ollama_base_url is not None:
-        settings.ollama_base_url = body.ollama_base_url
-    if body.ollama_api_key is not None:
+    if body.ollama_base_url is not None and body.ollama_base_url != settings.ollama_base_url:
+        raise HTTPException(status_code=422, detail="OLLAMA_BASE_URL is deployment-managed")
+    if body.ollama_api_key:
         settings.ollama_api_key = body.ollama_api_key
     if body.use_ollama is not None:
         settings.use_ollama = body.use_ollama
@@ -1013,32 +1085,6 @@ def update_app_settings(body: SettingsUpdateSchema, user: dict = Depends(get_cur
         settings.llm_max_tokens = body.llm_max_tokens
     if body.llm_max_requests_per_minute is not None:
         settings.llm_max_requests_per_minute = body.llm_max_requests_per_minute
-
-    # Persist updated settings directly to backend/.env
-    try:
-        env_path = Path(".env")
-        env_content = f"""LLM_PROVIDER={settings.llm_provider}
-USE_OLLAMA={'true' if settings.use_ollama else 'false'}
-OLLAMA_MODE={settings.ollama_mode}
-OLLAMA_BASE_URL={settings.ollama_base_url}
-OLLAMA_API_KEY={settings.ollama_api_key}
-OLLAMA_MODEL={settings.ollama_model}
-
-OPENAI_API_KEY={settings.openai_api_key}
-OPENAI_MODEL={settings.openai_model}
-
-GROQ_API_KEY={settings.groq_api_key}
-GROQ_MODEL={settings.groq_model}
-
-OPENROUTER_API_KEY={settings.openrouter_api_key}
-OPENROUTER_MODEL={settings.openrouter_model}
-
-GOOGLE_API_KEY={settings.google_api_key}
-GOOGLE_MODEL={settings.google_model}
-"""
-        env_path.write_text(env_content, encoding="utf-8")
-    except Exception as err:
-        log.warning(f"Could not persist settings to .env file: {err}")
 
     return get_app_settings(user)
 
@@ -1063,7 +1109,7 @@ class UserVoteRequest(BaseModel):
     comment: str = ""
 
 @router.get("/benchmark/scenarios")
-def list_benchmark_scenarios():
+def list_benchmark_scenarios(user: dict = Depends(get_current_user)):
     return [
         {"key": k, "title": v["title"], "prompt": v["prompt"], "gold_tables": v["gold_tables"]}
         for k, v in BENCHMARK_SCENARIOS.items()
@@ -1071,11 +1117,14 @@ def list_benchmark_scenarios():
 
 @router.post("/benchmark/run")
 async def run_benchmark(req: BenchmarkRunRequest, user: dict = Depends(get_current_user)):
+    from app.api.progress import benchmark_progress_key
+
     res = await run_model_benchmark(
         scenario_key=req.scenario,
         temperature=req.temperature,
         model_name=req.model,
-        provider=req.provider
+        provider=req.provider,
+        progress_key=benchmark_progress_key(authenticated_user_id(user)),
     )
     if isinstance(res, dict) and "error" in res:
         raise HTTPException(status_code=500, detail=res["error"])
@@ -1083,11 +1132,15 @@ async def run_benchmark(req: BenchmarkRunRequest, user: dict = Depends(get_curre
 
 
 @router.get("/benchmark/results")
-def get_benchmark_results():
+def get_benchmark_results(user: dict = Depends(get_current_user)):
+    user_id = authenticated_user_id(user)
     engine = init_db()
     session = get_session(engine)
-    results = session.query(BenchmarkResult).order_by(BenchmarkResult.created_at.desc()).limit(50).all()
-    votes = session.query(UserVote).order_by(UserVote.created_at.desc()).limit(50).all()
+    try:
+        results = session.query(BenchmarkResult).order_by(BenchmarkResult.created_at.desc()).limit(50).all()
+        votes = session.query(UserVote).filter(UserVote.user_id == user_id).order_by(UserVote.created_at.desc()).limit(50).all()
+    finally:
+        session.close()
     return {
         "results": [
             {
@@ -1097,7 +1150,9 @@ def get_benchmark_results():
                 "model": r.model_name,
                 "norm3_score": r.norm3_score,
                 "relationship_f1": r.relationship_f1,
-                "cell_precision": r.cell_precision,
+                "schema_quality_heuristic_estimate": r.cell_precision,
+                "rq2_cell_precision": None,
+                "data_metric_label": "Schema-derived heuristic (not an RQ2 population measure)",
                 "latency_seconds": r.latency_seconds,
                 "token_cost_estimate": r.token_cost_estimate,
                 "created_at": r.created_at.isoformat() if r.created_at else None,
@@ -1107,7 +1162,6 @@ def get_benchmark_results():
         "votes": [
             {
                 "id": v.id,
-                "user_id": v.user_id,
                 "schema_rating": v.schema_rating,
                 "data_rating": v.data_rating,
                 "comment": v.comment,
@@ -1119,7 +1173,9 @@ def get_benchmark_results():
 
 @router.post("/surveys/vote")
 def submit_user_vote(req: UserVoteRequest, user: dict = Depends(get_current_user)):
-    user_id = user.get("sub", "anonymous")
+    user_id = authenticated_user_id(user)
+    if req.project_id:
+        require_owned_project(req.project_id, user)
     vote = save_user_vote(
         user_id=user_id,
         schema_rating=req.schema_rating,

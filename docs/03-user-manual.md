@@ -1,5 +1,7 @@
 # User Manual
 
+> Uploaded files may be parsed in full by format-specific libraries, but the current document registry and LLM-bound context retain only a bounded summary of up to 5,000 characters. The interface must not be interpreted as guaranteeing full-content extraction or complete semantic coverage.
+
 ## Introduction
 
 AI-DB-Creator lets you create a fully normalised relational database by simply describing what you need and uploading your documents. The system uses an AI assistant to design the database structure, populate it with your data, and let you explore everything through a visual interface.
@@ -89,7 +91,7 @@ The relationships between tables are shown below the table cards (e.g., `clienti
 Once the schema is approved and saved:
 
 1. Click the **Populate Tables** button.
-2. The complete content of every uploaded document (CSV, Excel, PDF, TXT) is sent to the AI, which decides how to map the values into the approved schema. The AI is the primary population route for every document type and overrides any deterministic matching. Only duplicate rows that are already present in the target tables are discarded; NULL/empty values are accepted and inserted where allowed by the schema.
+2. The AI receives the approved schema and a bounded parsed summary of each document (currently at most 5,000 characters), not guaranteed complete file content. Truncation may omit relevant information and is recorded in provenance; mapped values must be reviewed.
 3. If the AI returns no usable SQL, the system falls back to deterministic header matching as a recovery path.
 4. A green message shows how many rows were inserted per table and the extraction method (e.g., `clienti: +15 · llm`).
 5. If some rows could not be inserted (e.g., because of missing foreign key references), they are reported as skipped.

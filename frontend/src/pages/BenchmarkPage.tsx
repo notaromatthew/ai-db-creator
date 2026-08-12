@@ -136,9 +136,9 @@ export default function BenchmarkPage() {
   const generateLatexTable = () => {
     if (!resultsData.results.length) return '% Nessun risultato disponibile'
     let latex = '\\begin{table}[h]\n\\centering\n\\begin{tabular}{|l|l|c|c|c|c|}\n\\hline\n'
-    latex += '\\textbf{Scenario} & \\textbf{Model} & \\textbf{3NF (\\%)} & \\textbf{Rel F1} & \\textbf{Cell Prec} & \\textbf{Time (s)} \\\\\n\\hline\n'
+    latex += '\\textbf{Scenario} & \\textbf{Model} & \\textbf{3NF (\\%)} & \\textbf{Rel F1} & \\textbf{Schema est.} & \\textbf{Time (s)} \\\\\n\\hline\n'
     resultsData.results.slice(0, 10).forEach((r) => {
-      latex += `${r.scenario} & ${r.model} & ${r.norm3_score}\\% & ${r.relationship_f1} & ${r.cell_precision} & ${r.latency_seconds}s \\\\\n`
+      latex += `${r.scenario} & ${r.model} & ${r.norm3_score}\\% & ${r.relationship_f1} & ${r.schema_quality_heuristic_estimate} & ${r.latency_seconds}s \\\\\n`
     })
     latex += '\\hline\n\\end{tabular}\n\\caption{LLM Model Evaluation Results}\n\\label{tab:benchmark_results}\n\\end{table}'
     navigator.clipboard.writeText(latex)
@@ -152,7 +152,7 @@ export default function BenchmarkPage() {
         <div>
           <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Benchmark Scientifico Modelli LLM</h1>
           <p className="mt-1 text-xs text-slate-500">
-            Valutazione quantitativa delle prestazioni (3NF, Relationship F1, Cell Precision) e feedback qualitativo umano per il Paper.
+            Benchmark esplorativo dello schema (3NF, Relationship F1) e feedback qualitativo. Le metriche RQ2 richiedono popolamento e ground truth e sono prodotte dal runner offline.
           </p>
         </div>
         <button
@@ -298,7 +298,7 @@ export default function BenchmarkPage() {
                 <th className="px-4 py-3">Modello</th>
                 <th className="px-4 py-3">3NF Score</th>
                 <th className="px-4 py-3">Rel F1</th>
-                <th className="px-4 py-3">Cell Precision</th>
+                <th className="px-4 py-3">Stima schema (non RQ2)</th>
                 <th className="px-4 py-3">Latenza</th>
               </tr>
             </thead>
@@ -314,7 +314,7 @@ export default function BenchmarkPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3 font-bold">{r.relationship_f1}</td>
-                  <td className="px-4 py-3">{r.cell_precision}</td>
+                  <td className="px-4 py-3" title={r.data_metric_label}>{r.schema_quality_heuristic_estimate}</td>
                   <td className="px-4 py-3 text-xs text-slate-400">{r.latency_seconds}s</td>
                 </tr>
               ))}

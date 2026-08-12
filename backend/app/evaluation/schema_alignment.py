@@ -19,6 +19,9 @@ from pathlib import Path
 from typing import Any
 
 from app.models.schema_models import NormalizedSchema
+from app.utils.research import stable_hash
+
+ALIGNMENT_METHOD_VERSION = "deterministic-alignment-v2"
 
 
 def normalise_name(name: str) -> str:
@@ -35,14 +38,13 @@ def normalise_name(name: str) -> str:
 def match_table(gold_table: Any, generated_tables: list[str]) -> str | None:
     target = normalise_name(gold_table.name)
     candidates = [(normalise_name(name), name) for name in generated_tables]
-    for candidate, name in candidates:
-        if candidate == target:
-            return name
-    for candidate, name in candidates:
-        if len(candidate) >= 3 and len(target) >= 3 \
-                and (target in candidate or candidate in target):
-            return name
-    return None
+    exact = [name for candidate, name in candidates if candidate == target]
+    if len(exact) == 1:
+        return exact[0]
+    partial = [name for candidate, name in candidates
+               if len(candidate) >= 3 and len(target) >= 3
+               and (target in candidate or candidate in target)]
+    return partial[0] if len(partial) == 1 else None
 
 
 def load_alias_registry(dataset_dir: Path) -> dict:
@@ -54,6 +56,15 @@ def load_alias_registry(dataset_dir: Path) -> dict:
     if not path.exists():
         return {}
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def load_alignment_config(dataset_dir: Path) -> dict:
+    path = dataset_dir / "rq2_alignment.json"
+    if not path.exists():
+        return {}
+    config = json.loads(path.read_text(encoding="utf-8"))
+    config["config_hash"] = stable_hash({k: v for k, v in config.items() if k != "config_hash"})
+    return config
 
 
 def inspect_generated_tables(conn) -> dict[str, list[str]]:
@@ -85,13 +96,24 @@ def build_alignment(schema: NormalizedSchema, generated_conn,
     generated_tables = inspect_generated_tables(generated_conn)
     result: dict = {
         "tables": {}, "columns": {}, "unmatched_tables": [],
-        "unmatched_columns": {}, "via_registry": [],
+        "unmatched_columns": {}, "ambiguous_tables": {},
+        "ambiguous_columns": {}, "via_registry": [],
+        "method_version": ALIGNMENT_METHOD_VERSION,
     }
 
     for gold_table in schema.tables:
-        generated_name = match_table(gold_table, list(generated_tables.keys()))
+        table_candidates = [name for name in generated_tables
+                            if normalise_name(name) == normalise_name(gold_table.name)]
+        if not table_candidates:
+            table_candidates = [name for name in generated_tables
+                                if len(normalise_name(name)) >= 3 and len(normalise_name(gold_table.name)) >= 3
+                                and (normalise_name(gold_table.name) in normalise_name(name)
+                                     or normalise_name(name) in normalise_name(gold_table.name))]
+        generated_name = table_candidates[0] if len(table_candidates) == 1 else None
         if generated_name is None:
             result["unmatched_tables"].append(gold_table.name)
+            if len(table_candidates) > 1:
+                result["ambiguous_tables"][gold_table.name] = sorted(table_candidates)
             continue
         result["tables"][gold_table.name] = generated_name
         generated_columns = generated_tables[generated_name]
@@ -99,19 +121,12 @@ def build_alignment(schema: NormalizedSchema, generated_conn,
         column_map: dict[str, str] = {}
         for column in gold_table.columns:
             target = normalise_name(column.name)
-            matched = next(
-                (name for name in generated_columns
-                 if normalise_name(name) == target),
-                None,
-            )
-            if matched is None:
-                matched = next(
-                    (name for name in generated_columns
-                     if len(target) >= 3 and len(normalise_name(name)) >= 3
-                     and (target in normalise_name(name)
-                          or normalise_name(name) in target)),
-                    None,
-                )
+            candidates = [name for name in generated_columns if normalise_name(name) == target]
+            if not candidates:
+                candidates = [name for name in generated_columns
+                              if len(target) >= 3 and len(normalise_name(name)) >= 3
+                              and (target in normalise_name(name) or normalise_name(name) in target)]
+            matched = candidates[0] if len(candidates) == 1 else None
             if matched is None and column.name in registry_map:
                 matched = registry_map[column.name]
             if matched is not None and matched in generated_columns:
@@ -124,6 +139,8 @@ def build_alignment(schema: NormalizedSchema, generated_conn,
                     })
             else:
                 result["unmatched_columns"].setdefault(gold_table.name, []).append(column.name)
+                if len(candidates) > 1:
+                    result["ambiguous_columns"].setdefault(gold_table.name, {})[column.name] = sorted(candidates)
         result["columns"][gold_table.name] = column_map
 
     return result

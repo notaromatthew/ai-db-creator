@@ -1,5 +1,7 @@
 # Usability Pilot Protocol
 
+> **DRAFT / UNAPPROVED — ETHICS REVIEW PENDING.** This template does not authorise recruitment or data collection. Pilot observations are formative and must be excluded from confirmatory analyses.
+
 ## Purpose
 
 Run a formative pilot before the confirmatory RQ0/RQ3 experiment to identify usability failures, unclear terminology, logging gaps, and task instructions that unintentionally favour one condition. Pilot participants are not included in the confirmatory dataset.

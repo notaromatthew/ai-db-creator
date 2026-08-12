@@ -22,7 +22,7 @@ const KeycloakContext = createContext<AuthContextType>({
   initialized: false,
 })
 
-const KEYCLOAK_URL = import.meta.env.VITE_KEYCLOAK_URL || 'https://keycloak-pw9ut4s1h3aodstrsw1gd84o.89.168.29.98.sslip.io'
+const KEYCLOAK_URL = import.meta.env.VITE_KEYCLOAK_URL || 'http://localhost:8080'
 const KEYCLOAK_REALM = import.meta.env.VITE_KEYCLOAK_REALM || 'aidbcreator'
 const KEYCLOAK_CLIENT_ID = import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'aidbcreator-app'
 

@@ -4,6 +4,8 @@
 
 All endpoints are served from `http://localhost:8000/api/` unless noted. All request and response bodies are JSON (`Content-Type: application/json`) except document upload (`multipart/form-data`). The backend auto-generates OpenAPI documentation at `http://localhost:8000/docs`.
 
+Every project-scoped endpoint requires a valid authenticated user and resolves the project by both project ID and the current token subject. A project owned by another user is returned as `404`. Automatic benchmark results are shared across authenticated researchers; expert votes returned by `GET /benchmark/results` and live benchmark progress are scoped to the current user and do not expose `user_id`.
+
 ### 1.1 Project CRUD
 
 | Method | Path | Description |
@@ -91,7 +93,9 @@ All endpoints are served from `http://localhost:8000/api/` unless noted. All req
 |---|---|---|
 | `GET` | `/health` | Health check. Returns `{status: "ok"}`. |
 | `GET` | `/api/llm/info` | Current LLM provider and model. Returns `{provider, model}`. |
-| `GET` | `/api/tasks/{task_id}` | Get Celery task status. Returns `{task_id, status, result}`. |
+| `GET` | `/api/tasks/{task_id}` | Get an owned Celery task status. Unknown and cross-tenant IDs return `404`; internal result fields are omitted. |
+| `GET` | `/api/progress/{project_id}` | Get progress for an owned project. Use `/api/progress/benchmark` for the current user's benchmark run. |
+| `POST` | `/api/progress/{project_id}` | Report progress for an owned project. Benchmark progress is server-managed and returns `405`. |
 
 ---
 
@@ -294,7 +298,7 @@ The prompt instruction "For columns marked NOT NULL, NEVER use NULL; use '' for 
 
 ### 5.3.1 Why Full-LLM Population as the Primary Route?
 
-Population was originally deterministic-first for structured documents (exact/partial header rules first, semantic LLM mapping only for unresolved columns). Observational evidence from a denormalised multi-file dataset showed the deterministic matcher associated `id` (a substring of composite identifiers such as `ID_Scontrino`) with multiple tables at once without filling NOT NULL and foreign-key columns, leaving the database under-populated. The population route was therefore inverted: the LLM now receives the complete content of every uploaded document (CSV, Excel, PDF, TXT) and decides how to map values into the schema, discarding only duplicate rows already present in the target tables. The deterministic mapper is retained strictly as a recovery path when the LLM returns no usable SQL. This change affects experimental comparability with earlier runs (extraction path is now `llm` by default) and is recorded in the CHANGELOG.
+Population was originally deterministic-first for structured documents. The current LLM route receives schema context and a bounded parsed summary of at most 5,000 characters per document, not guaranteed complete uploaded content. Truncation is recorded as provenance because it can omit relevant values. Deterministic recovery remains separately labelled; neither path is presumed accurate without evaluation.
 
 ### 5.4 Why Celery + Redis for Async Tasks?
 
@@ -302,4 +306,6 @@ Schema generation and data population can take 10-60 seconds for large documents
 
 - **Non-blocking API responses** — the endpoint returns immediately with a `task_id`.
 - **Progress polling** — the frontend polls `GET /api/tasks/{task_id}` to show progress.
+
+The API registers every async task ID with its authenticated subject and project immediately after enqueueing. The registry is Redis-backed and expires after `TASK_REGISTRY_TTL_SECONDS` (default 3600 seconds). A process-local in-memory fallback supports single-process development only; production deployments must use Redis so all API workers share the same ownership state.
 - **Worker separation** — heavy LLM inference runs in a separate process, not blocking the API server.

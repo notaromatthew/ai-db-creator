@@ -24,7 +24,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (settingsData && (settingsData.llm_provider === 'ollama' || settingsData.use_ollama)) {
-      fetchOllamaModels(settingsData.ollama_base_url, settingsData.ollama_api_key)
+      fetchOllamaModels()
     }
   }, [settingsData?.ollama_base_url, settingsData?.ollama_api_key, settingsData?.llm_provider, settingsData?.ollama_mode])
 
@@ -34,7 +34,7 @@ export default function SettingsPage() {
       const res = await api.get('/settings')
       setSettingsData(res)
       if (res.llm_provider === 'ollama' || res.use_ollama) {
-        fetchOllamaModels(res.ollama_base_url, res.ollama_api_key)
+        fetchOllamaModels()
       }
     } catch (e) {
       console.error('Error loading settings:', e)
@@ -43,13 +43,10 @@ export default function SettingsPage() {
     }
   }
 
-  const fetchOllamaModels = async (baseUrl: string, apiKey: string) => {
+  const fetchOllamaModels = async () => {
     setLoadingModels(true)
     try {
-      const query = new URLSearchParams()
-      if (baseUrl) query.append('base_url', baseUrl)
-      if (apiKey !== undefined && apiKey !== null) query.append('api_key', apiKey)
-      const res = await api.get(`/settings/ollama-models?${query.toString()}`)
+      const res = await api.get('/settings/ollama-models')
       const fetchedModels: string[] = res?.models || []
       setOllamaModels(fetchedModels)
       if (fetchedModels.length > 0) {
@@ -79,15 +76,9 @@ export default function SettingsPage() {
   }
 
   const handleOllamaModeChange = (mode: 'remote' | 'local') => {
-    const isRemote = mode === 'remote'
-    const targetUrl = isRemote
-      ? 'https://ollamaapi-u11fj34m2h9druz26hamz3xb.89.168.29.98.sslip.io'
-      : 'http://localhost:11434'
-
     setSettingsData((prev: any) => ({
       ...prev,
       ollama_mode: mode,
-      ollama_base_url: targetUrl,
       ollama_api_key: prev?.ollama_api_key || '',
     }))
   }
@@ -269,7 +260,7 @@ export default function SettingsPage() {
                     </label>
                     <button
                       type="button"
-                      onClick={() => fetchOllamaModels(settingsData.ollama_base_url, settingsData.ollama_api_key)}
+                      onClick={() => fetchOllamaModels()}
                       className="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
                     >
                       🔄 Aggiorna Lista (`ollama list`)

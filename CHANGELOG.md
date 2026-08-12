@@ -2,6 +2,25 @@
 
 Tutte le modifiche rilevanti del progetto sono raccolte in questo file. Il formato segue una struttura orientata alla ricerca: ogni voce distingue funzionalità applicative, infrastruttura scientifica, riproducibilità, documentazione e validazione.
 
+## 2026-08-10 - Correzioni chat, benchmark e compatibilità Python 3.13
+
+- Corretto il prompt di estrazione dello schema dalla chat, che interpretava gli esempi JSON come variabili del template.
+- Allineata l'accettazione della proposta chat all'endpoint dedicato `/chat-accept`, preservando il passaggio human-in-the-loop, la pulizia della conversazione e il relativo log di ricerca.
+- Corretto il calcolo della stima token del benchmark, che impediva il salvataggio e la visualizzazione dei risultati.
+- Corretto il riepilogo del runner CLI affinché conteggi separatamente run `ok` ed `error`.
+- Aggiornato `psycopg2-binary` a `2.9.10`, prima versione della serie con wheel CPython 3.13 per Windows, coerentemente con il runtime dichiarato dal progetto.
+- Centralizzata la verifica di ownership su tutti gli endpoint project-scoped; progetti legacy senza proprietario e risorse di altri tenant non sono più visibili.
+- Protetti i risultati benchmark con autenticazione: le metriche automatiche restano condivise, mentre voti e commenti sono filtrati sull'utente corrente senza esporre `user_id`.
+- Isolata la configurazione provider/modello dei benchmark concorrenti, eliminando mutazioni dello stato globale.
+- Isolato l'avanzamento del benchmark per subject autenticato; il client può solo leggerlo e non può sovrascriverlo tramite `POST`.
+- Introdotto un registro con TTL per l'ownership dei task asincroni (Redis, con fallback in memoria per sviluppo), registrato nei flussi generate/populate/export; il polling ora restituisce `404` per task sconosciuti o cross-tenant e filtra i dettagli interni del risultato.
+- Migrato l'avvio FastAPI da `on_event` al ciclo di vita `lifespan` e la configurazione settings a `SettingsConfigDict`; aggiornati Pydantic e le integrazioni LangChain alla linea nativa Pydantic v2, eliminando i 21 warning di deprecazione della suite backend.
+- Aggiornati Vite 8, Vitest 4, React Router 7 e il plugin React alle versioni compatibili con Node 24; dichiarato il frontend come modulo ESM e migrato il file PostCSS a `.mjs`. L'audit npm passa da 8 vulnerabilità a zero senza uso di `--force`.
+- Resa pilot-ready la valutazione RQ2: primary micro-F1 su fact-set canonici source-grounded con chiavi entità/surrogate congelate, strict physical-cell diagnostic separato, alias reali di tabella, rilevamento ambiguità, conteggio cell-level di righe mancanti/extra e classificazione corretta dei mismatch numerici/date/boolean.
+- Rimossa dalla dashboard la falsa `cell_precision` derivata dallo schema: il valore legacy è ora esposto esclusivamente come `schema_quality_heuristic_estimate` esplorativa e dichiarata non-RQ2. Aggiunti hash di evaluator/config/gold/ground truth/source e un export ZIP deterministico con manifest SHA-256.
+- Reso il primary RQ2 indipendente dall'output della singola run: usa esclusivamente mapping table/column condition-specific congelati nei manifest; l'allineamento euristico resta supplementary e un mapping primario non applicabile produce `not_evaluable`. Rimossi il falso `ci95_f1=[f1,f1]` e ogni riferimento a Wilson su F1; completata la provenance con prompt, schema generato, DB generato e revisione software esplicita.
+- Aggiunti, in stato draft/esplorativo, workload funzionali congelabili con scoring deterministico di answer fact/cell e controlli di integrità, validator dataset machine-readable, modalità sperimentale server-side a tre bracci con assegnazione idempotente e timeout, tassonomia RQ4 de-identificata, simulatore partecipanti offline, pipeline statistica dependency-light e comando unico di validazione/export verificabile. Nessun artefatto è idoneo all'uso confermativo finché protocollo e workload non risultano congelati e approvati.
+
 ## 2026-08-07 - Feature Fondamentali, Keycloak, PostgreSQL, SonarQube, Benchmark & Coolify (Branch Davide)
 
 ### Sintesi
@@ -10,13 +29,13 @@ Questa iterazione sul branch `Davide` introduce le funzionalità fondamentali pe
 
 ### Autenticazione & Multi-Tenancy (Keycloak)
 
-- Integrazione OIDC con server Keycloak (`89.168.29.98:8080`) e provisioning automatico del Realm `aidbcreator` e Client `aidbcreator-app` via API Admin (`backend/app/core/keycloak_setup.py`).
+- Integrazione OIDC con server Keycloak configurabile via ambiente e provisioning automatico del Realm `aidbcreator` e Client `aidbcreator-app` via API Admin (`backend/app/core/keycloak_setup.py`).
 - Middleware FastAPI JWT Bearer in `backend/app/core/auth.py` per l'estrazione dell'utente autenticato e isolamento dei progetti via `user_id`.
 - `KeycloakContext.tsx` per il frontend React con supporto al SSO, token refresh e fallback dev-mode trasparente.
 
 ### Persistenza (PostgreSQL Online)
 
-- Transizione della base dati di sistema verso PostgreSQL online (`89.168.29.98:12000`).
+- Supporto della base dati di sistema PostgreSQL configurabile via ambiente.
 - Fallback automatico in-memory / SQLite locale in caso di disconnessione di rete.
 
 ### Qualità del Codice (SonarQube)

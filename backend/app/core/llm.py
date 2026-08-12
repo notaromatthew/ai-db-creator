@@ -57,11 +57,16 @@ async def _invoke(chain, payload: dict):
     return await chain.ainvoke(payload)
 
 
-def _get_llm(temperature: float = 0.1, force_local: bool = False):
-    provider = "ollama" if (force_local or settings.use_ollama) else settings.llm_provider
+def _get_llm(
+    temperature: float = 0.1,
+    force_local: bool = False,
+    provider: str | None = None,
+    model: str | None = None,
+):
+    provider = "ollama" if force_local else provider or ("ollama" if settings.use_ollama else settings.llm_provider)
 
     if provider == "ollama":
-        model = _detect_local_model()
+        model = model or _detect_local_model()
         kwargs = {
             "base_url": settings.ollama_base_url,
             "model": model,
@@ -75,7 +80,7 @@ def _get_llm(temperature: float = 0.1, force_local: bool = False):
     if provider == "groq":
         return ChatOpenAI(
             api_key=settings.groq_api_key,
-            model=settings.groq_model,
+            model=model or settings.groq_model,
             temperature=temperature,
             base_url="https://api.groq.com/openai/v1",
         )
@@ -83,7 +88,7 @@ def _get_llm(temperature: float = 0.1, force_local: bool = False):
     if provider == "openrouter":
         return ChatOpenAI(
             api_key=settings.openrouter_api_key,
-            model=settings.openrouter_model,
+            model=model or settings.openrouter_model,
             temperature=temperature,
             base_url="https://openrouter.ai/api/v1",
             default_headers={
@@ -95,16 +100,21 @@ def _get_llm(temperature: float = 0.1, force_local: bool = False):
     if provider == "google":
         try:
             from langchain_google_genai import ChatGoogleGenerativeAI
-            return ChatGoogleGenerativeAI(
+            selected_model = model or settings.google_model
+            normalized_model = re.sub(r"-\d{3}$", "", selected_model.lower().rsplit("/", 1)[-1])
+            kwargs = dict(
                 api_key=settings.google_api_key,
-                model=settings.google_model,
-                temperature=temperature,
+                model=selected_model,
             )
+            # These Google models reject custom sampling and use fixed defaults.
+            if normalized_model not in {"gemini-3.5-flash-lite", "gemini-3.6-flash"}:
+                kwargs["temperature"] = temperature
+            return ChatGoogleGenerativeAI(**kwargs)
         except ImportError:
             log.warning("langchain-google-genai not installed. Falling back to OpenAI.")
             return ChatOpenAI(api_key=settings.openai_api_key, model=settings.openai_model, temperature=temperature)
 
-    return ChatOpenAI(api_key=settings.openai_api_key, model=settings.openai_model, temperature=temperature)
+    return ChatOpenAI(api_key=settings.openai_api_key, model=model or settings.openai_model, temperature=temperature)
 
 
 schema_parser = PydanticOutputParser(pydantic_object=NormalizedSchema)
@@ -129,9 +139,15 @@ QUERY_PROMPT = ChatPromptTemplate.from_messages([
 
 
 async def generate_schema(prompt: str, document_context: str = "",
-                          temperature: float | None = None) -> NormalizedSchema:
+                          temperature: float | None = None,
+                          provider: str | None = None,
+                          model: str | None = None) -> NormalizedSchema:
     try:
-        llm = _get_llm(temperature=0.1 if temperature is None else temperature)
+        llm = _get_llm(
+            temperature=0.1 if temperature is None else temperature,
+            provider=provider,
+            model=model,
+        )
         chain = SCHEMA_PROMPT | llm | schema_parser
         result = await _invoke(chain, {
             "prompt": prompt,
@@ -266,12 +282,12 @@ _PROVIDER_LABELS = {
     "ollama": "Ollama",
 }
 
-def get_llm_info():
+def get_llm_info(provider: str | None = None, model: str | None = None):
     """Get current LLM configuration info."""
-    provider = "ollama" if settings.use_ollama else settings.llm_provider
+    provider = provider or ("ollama" if settings.use_ollama else settings.llm_provider)
     if provider == "ollama":
         label = f"Ollama ({'Remoto' if settings.ollama_mode == 'remote' else 'Locale'})"
-        model = settings.ollama_model or _detect_local_model()
+        model = model or settings.ollama_model or _detect_local_model()
     else:
         label = _PROVIDER_LABELS.get(provider, provider.capitalize())
         models = {
@@ -280,7 +296,7 @@ def get_llm_info():
             "openrouter": settings.openrouter_model,
             "google": settings.google_model,
         }
-        model = models.get(provider, settings.openai_model)
+        model = model or models.get(provider, settings.openai_model)
 
     return {
         "provider": label,

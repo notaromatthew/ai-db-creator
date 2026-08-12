@@ -118,7 +118,10 @@ def test_run_artifact_contains_schema_but_global_log_only_references_it(client, 
     test_client, _ = client
     sql = b"CREATE TABLE persone (id INTEGER PRIMARY KEY);"
     assert test_client.post(f"/api/projects/{project['id']}/import-sql", files={"file": ("x.sql", sql, "text/sql")}).status_code == 200
-    event = next(item for item in test_client.get(f"/api/projects/{project['id']}/interactions").json() if item["event_type"] == "import_sql")
+    from app.services.interaction_logger import interaction_logger
+    participant_events = test_client.get(f"/api/projects/{project['id']}/interactions").json()
+    assert all(item["event_type"] == "rq4_event" for item in participant_events)
+    event = next(item for item in interaction_logger.get_events(project["id"]) if item["event_type"] == "import_sql")
     assert "schema_initial" not in event["data"]
     assert "schema_final" not in event["data"]
     artifact = tmp_path / "projects" / project["id"] / event["data"]["run_artifact"]

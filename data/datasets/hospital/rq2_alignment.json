@@ -1,0 +1,35 @@
+{
+  "version": "rq2-alignment-v1",
+  "entity_keys": {
+    "patients": ["fiscal_code"],
+    "doctors": ["full_name", "specialty"],
+    "wards": ["name"],
+    "appointments": ["patient_id", "doctor_id", "scheduled_on"],
+    "treatments": ["appointment_id", "description"],
+    "medications": ["name"],
+    "prescriptions": ["treatment_id", "medication_id", "dosage"],
+    "invoices": ["appointment_id", "issued_on"]
+  },
+  "surrogate_keys": {
+    "patients": ["patient_id"],
+    "doctors": ["doctor_id"],
+    "wards": ["ward_id"],
+    "appointments": ["appointment_id"],
+    "treatments": ["treatment_id"],
+    "medications": ["medication_id"],
+    "prescriptions": ["prescription_id"],
+    "invoices": ["invoice_id"]
+  },
+  "alignments": {
+    "baseline": {
+      "mode": "identity_with_frozen_overrides",
+      "tables": {"patients": "patients", "doctors": "doctors", "wards": "wards", "appointments": "appointments", "treatments": "treatments", "medications": "medications", "prescriptions": "prescriptions", "invoices": "invoices"},
+      "columns": {"patients": {}, "doctors": {}, "wards": {}, "appointments": {}, "treatments": {}, "medications": {}, "prescriptions": {}, "invoices": {}}
+    },
+    "full_llm": {
+      "mode": "identity_with_frozen_overrides",
+      "tables": {"patients": "patients", "doctors": "doctors", "wards": "wards", "appointments": "appointments", "treatments": "treatments", "medications": "medications", "prescriptions": "prescriptions", "invoices": "invoices"},
+      "columns": {"patients": {}, "doctors": {}, "wards": {}, "appointments": {}, "treatments": {}, "medications": {}, "prescriptions": {}, "invoices": {}}
+    }
+  }
+}

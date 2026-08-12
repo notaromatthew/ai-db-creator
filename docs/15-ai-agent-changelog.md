@@ -6,9 +6,9 @@ This document provides a machine-readable summary of architectural, model, API, 
 
 ## 1. Summary of Major Additions
 
-- **PostgreSQL Online Database Integration**: Primary application database target migrated to online PostgreSQL (`89.168.29.98:12000`). SQLite local fallback remains active if PostgreSQL connection fails.
+- **PostgreSQL Database Integration**: PostgreSQL deployment is configured exclusively through environment variables; local development uses an explicit local configuration.
 - **Keycloak OIDC Authentication & Realm Setup**: Multi-tenant project isolation by `user_id` (JWT Bearer token verification). Automatic Realm (`aidbcreator`) and Client (`aidbcreator-app`) provisioning on startup.
-- **SonarQube Integration**: Static code analysis setup configured for `http://o4sn9bs961jvxn32hs18a81p.89.168.29.98.sslip.io:9000`.
+- **SonarQube Integration**: Static analysis endpoint is deployment-managed (`SONAR_HOST_URL`).
 - **Project Wizard & Help System**: Modal for choosing between Quick Mode and Guided Step-by-Step Wizard; interactive `/help` documentation page.
 - **Dynamic AI Hyperparameter Configuration**: `/settings` API and UI to tune LLM Provider, Temperature, Top-P, Max Tokens, and Rate Limits.
 - **Scientific Benchmark & Expert Voting Module**: `/benchmark` page evaluating 3NF %, Relationship F1, Cell Precision, Latency, Token Cost, Likert 1-5 Human Expert voting, and LaTeX table export.

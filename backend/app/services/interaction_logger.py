@@ -109,5 +109,21 @@ class InteractionLogger:
             self._atomic_write(self.persist_path, retained)
         return removed
 
+    def log_rq4_event(self, project_id: str, data: dict):
+        with self._locked():
+            persisted = self._load_events()
+            rq4 = [event for event in persisted if event.get("project_id") == project_id and event.get("event_type") == "rq4_event"]
+            duplicate = next((event for event in rq4 if event.get("data", {}).get("event_id") == data["event_id"]), None)
+            if duplicate:
+                return duplicate, True
+            session_id = data.get("session_id")
+            sequences = [event.get("data", {}).get("sequence_no", 0) for event in rq4 if event.get("data", {}).get("session_id") == session_id]
+            if data["sequence_no"] != (max(sequences, default=0) + 1):
+                raise ValueError("RQ4 sequence out of order")
+            event = {"run_id": new_run_id(), "timestamp": datetime.now(timezone.utc).isoformat(),
+                     "event_type": "rq4_event", "project_id": project_id, "data": sanitize_metadata(data)}
+            persisted.append(event); self.events = persisted; self._atomic_write(self.persist_path, persisted)
+            return event, False
+
 
 interaction_logger = InteractionLogger()

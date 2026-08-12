@@ -1,5 +1,13 @@
 # Reproducibility and Provenance Protocol
 
+> **DRAFT / UNAPPROVED.** Retention, access, transfer and release decisions remain subject to institutional ethics/privacy review.
+
+## Separation of Participant Logs and Technical Run Artifacts
+
+Participant-facing research logs are data-minimised and pseudonymous. They contain only allow-listed event categories, timestamps/durations, controlled error codes, protocol/software versions and hashed internal object identifiers. They must not contain raw document content, cell values, SQL, chat text, credentials, bearer tokens, filenames containing personal data or unrestricted stack traces.
+
+Complete technical run artifacts needed to reproduce schema/population benchmarks may include generated schemas, generated databases, ground truth, source documents and raw model outputs. These are stored in a separate restricted artifact area under dataset-specific access, retention and licensing rules. A manifest in participant logs may reference these artifacts only by opaque identifier and cryptographic hash. Access to a pseudonymous event log never implies access to full run artifacts, and neither class is automatically anonymous or suitable for public release.
+
 ## Run Manifest
 
 Every schema-generation and population execution must produce a stable `run_id` and a structured manifest containing:
@@ -39,8 +47,15 @@ Before confirmatory data collection, freeze and identify:
 3. prompt templates;
 4. three benchmark datasets and gold schemas;
 5. task/tutorial version;
-6. questionnaire wording and scoring;
-7. analysis scripts and preregistration.
+6. RQ2 evaluator version and frozen alignment/entity-key configuration hash;
+7. SHA-256 hashes for prompt, generated schema/database, gold schema, ground-truth database and every source document;
+8. software revision with an explicit source (`SOFTWARE_REVISION`, Git, or unavailable);
+9. questionnaire wording and scoring;
+10. analysis scripts, preregistration and statistical analysis plan;
+11. functional workload version/hash and expected-result hashes;
+12. participant event taxonomy and data-dictionary version/hash.
+
+Benchmark exports use `backend/export_benchmark_package.py`. The deterministic ZIP includes `MANIFEST.json` with per-file SHA-256, byte size, package version and a stable content hash. This package is the unit transferred for independent analysis; generated reports without evaluator/config hashes are treated as legacy exploratory outputs.
 
 Any material change after the first confirmatory participant creates a new protocol version. Runs from different protocol versions are never silently pooled.
 

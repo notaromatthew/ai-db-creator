@@ -127,3 +127,20 @@ def test_build_alignment_short_generated_column_needs_registry(tmp_path):
         "table": "students", "gold_column": "student_id", "generated_column": "id",
     }]
     conn.close()
+
+
+def test_ambiguous_substring_mapping_is_not_silently_selected(tmp_path):
+    schema = load_gold_schema(_write_gold(tmp_path))
+    conn = sqlite3.connect(tmp_path / "ambiguous.db")
+    conn.execute("CREATE TABLE students (student_name TEXT, name_student TEXT, email TEXT)")
+    conn.commit()
+    with conn:
+        alignment = build_alignment(schema, conn, {})
+    assert "name" not in alignment["columns"]["students"]
+    assert alignment["ambiguous_columns"]["students"]["name"] == ["name_student", "student_name"]
+
+
+def _write_gold(tmp_path):
+    path = tmp_path / "gold.json"
+    path.write_text(json.dumps(GOLD_SCHEMA), encoding="utf-8")
+    return path

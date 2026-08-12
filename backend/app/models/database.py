@@ -93,3 +93,18 @@ def get_session(engine=None):
     target_engine = engine or init_db()
     Session = sessionmaker(bind=target_engine)
     return Session()
+
+
+def verify_schema_compatibility(engine) -> None:
+    """Fail startup when an existing table is missing model columns; create_all cannot migrate it safely."""
+    from sqlalchemy import inspect
+    inspector = inspect(engine)
+    mismatches = []
+    for table in Base.metadata.sorted_tables:
+        if inspector.has_table(table.name):
+            actual = {column["name"] for column in inspector.get_columns(table.name)}
+            missing = set(table.columns.keys()) - actual
+            if missing:
+                mismatches.append(f"{table.name}: missing {sorted(missing)}")
+    if mismatches:
+        raise RuntimeError("Database schema migration required; startup refused: " + "; ".join(mismatches))

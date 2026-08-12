@@ -1,4 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
+from app.api.dependencies import authenticated_user_id, require_owned_project
+from app.core.auth import get_current_user
 from app.utils.logger import log
 from datetime import datetime
 import os
@@ -19,6 +21,10 @@ def _get_redis_client():
 
 def _redis_key(project_id: str) -> str:
     return f"progress:{project_id}"
+
+
+def benchmark_progress_key(user_id: str) -> str:
+    return f"benchmark:{user_id}"
 
 def set_progress(project_id: str, status: str, progress: int, message: str = "", etc_seconds: float | None = None):
     data = {
@@ -50,11 +56,17 @@ def get_progress_state(project_id: str) -> dict:
 
 
 @router.get("/progress/{project_id}")
-def get_progress(project_id: str):
+def get_progress(project_id: str, user: dict = Depends(get_current_user)):
+    if project_id == "benchmark":
+        return get_progress_state(benchmark_progress_key(authenticated_user_id(user)))
+    require_owned_project(project_id, user)
     return get_progress_state(project_id)
 
 @router.post("/progress/{project_id}")
-def update_progress(project_id: str, status: str, progress: int, message: str = ""):
+def update_progress(project_id: str, status: str, progress: int, message: str = "", user: dict = Depends(get_current_user)):
+    if project_id == "benchmark":
+        raise HTTPException(status_code=405, detail="Benchmark progress is server-managed")
+    require_owned_project(project_id, user)
     set_progress(project_id, status, progress, message)
     log.info(f"Progress {project_id}: {status} ({progress}%) - {message}")
     return {"status": "updated"}

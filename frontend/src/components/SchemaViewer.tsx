@@ -2,6 +2,7 @@ import { NormalizedSchema, TableDef, ColumnDef } from '@/types'
 import { useState, useEffect } from 'react'
 import { api } from '@/api/client'
 import { useQueryClient } from '@tanstack/react-query'
+import { emitRq4 } from '@/services/rq4Emitter'
 
 interface Props {
   schema: NormalizedSchema
@@ -27,7 +28,8 @@ export default function SchemaViewer({ schema, projectId }: Props) {
   }, [schema])
 
   const handleUpdate = async () => {
-    await api.put(`/projects/${projectId}/schema`, localSchema)
+    try { await api.put(`/projects/${projectId}/schema`, localSchema); await emitRq4(projectId,{type:'schema_save',target_type:'project',target_name:'schema',action:'complete',phase:'schema',outcome:'success',operation_id:'schema-save'}) }
+    catch (error) { await emitRq4(projectId,{type:'validation_error',target_type:'project',target_name:'schema',phase:'validation',outcome:'failure',error_code:'SCHEMA_SAVE_ERROR',operation_id:'schema-save'}); throw error }
     queryClient.invalidateQueries({ queryKey: ['schema', projectId] })
     queryClient.invalidateQueries({ queryKey: ['stats', projectId] })
     setEditing(false)

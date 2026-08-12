@@ -1,14 +1,16 @@
 # Thesis Roadmap
 
+> **PLANNING DRAFT / UNAPPROVED.** Phase labels and dates are planning statements, not evidence of ethics approval, completed recruitment or confirmatory results. The current operational gate is research/pilot readiness and artifact freeze.
+
 ## Overview
 
-This document outlines the planned phases for the PhD research project "AI-DB-Creator: An LLM-Powered Visual Interface for Automatic Database Schema Generation and Population." The project is organised into seven phases spanning approximately 12 months. Phases 1–2 are complete; Phases 3–7 are planned.
+This document outlines a draft sequence for the PhD research project "AI-DB-Creator: An LLM-Powered Visual Interface for Automatic Database Schema Generation and Population." Phase labels are planning aids, not completion evidence; implementation and research-freeze status must be read from the readiness gates.
 
 ---
 
 ## Phase 1: System Development and Architecture Definition (Complete)
 
-**Timeline:** Months 1–3 (completed)
+**Timeline:** Months 1–3 (planned baseline; completion not asserted here)
 
 ### Objectives
 - Develop the core AI-DB-Creator application (backend + frontend)
@@ -27,11 +29,11 @@ This document outlines the planned phases for the PhD research project "AI-DB-Cr
 ### Validation
 - End-to-end manual testing with 3 benchmark datasets
 - Schema generation produces valid 3NF structures for simple and medium datasets
-- Population correctly inserts data from CSV and Excel sources
+- Population paths exist for CSV and Excel sources; correctness remains an evaluation question
 
 ---
 
-## Phase 2: Documentation, Paper Writing, Dataset Preparation (Current)
+## Phase 2: Documentation, Paper Writing, Dataset Preparation (In progress; research freeze pending)
 
 **Timeline:** Months 4–5 (current)
 
@@ -113,7 +115,7 @@ This document outlines the planned phases for the PhD research project "AI-DB-Cr
 
 ### Objectives
 - Run a formative pilot with 5–8 non-experts; exclude pilot data from confirmatory analyses
-- Recruit approximately 114 participants to obtain at least 34 completed cases in each of three arms after attrition
+- Determine recruitment only after the SAP, allocation design and power analysis are approved; existing numerical scenarios are planning inputs, not a final target
 - Randomly assign to Manual, AI-Only, or AI + Interface; preregister Manual vs. AI + Interface for RQ0 and AI-Only vs. AI + Interface for RQ3
 - Each participant creates a database from one of the three datasets
 - Collect: schema quality (expert-rated post-hoc), NASA-TLX, SUS, completion time, task success rate
@@ -129,7 +131,7 @@ This document outlines the planned phases for the PhD research project "AI-DB-Cr
 - **Primary analyses:** Two preregistered pairwise contrasts: Manual vs. AI + Interface (RQ0), and AI-Only vs. AI + Interface (RQ3), with multiplicity control and effect sizes with 95% confidence intervals
 - **Secondary analysis:** Mann-Whitney U for NASA-TLX and SUS scores (non-normal distributions anticipated)
 - **Exploratory analysis:** Correlation between computer literacy and schema quality within each group
-- **Power:** α = 0.05, power = 0.80, expected d = 0.7 → approximately 34 completed participants per arm (102 total); recruit approximately 114 for 10% attrition. A smaller achieved sample is reported as exploratory rather than retrospectively redefining the target.
+- **Power:** effect-size, attrition and sample-size assumptions remain draft scenarios. A locked SAP and approved power analysis must define the final target before recruitment.
 
 ### Materials Needed
 - Pre-session: online consent form + questionnaire

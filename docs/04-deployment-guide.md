@@ -5,7 +5,7 @@
 ### Prerequisites
 
 - **Python 3.10–3.13** (Python 3.14 is not supported by the currently pinned Pydantic/PyO3 dependency chain)
-- **Node.js 18+** (tested with 18.x and 20.x)
+- **Node.js 20.19+ or 22.12+** (tested with 24.x; required by Vite 8)
 - **npm** (comes with Node.js)
 - **Git** (for cloning the repository)
 
@@ -55,7 +55,8 @@ OLLAMA_MODEL=llama3
 
 # Optional: Celery (for async tasks)
 # Install Redis separately and configure:
-# REDIS_URL=redis://localhost:6379/0
+# REDIS_URL=redis://:URL_SAFE_PASSWORD@localhost:6379/0
+LLM_MAX_REQUESTS_PER_MINUTE=8
 ```
 
 Start the backend:
@@ -107,7 +108,8 @@ The frontend is now available at `http://localhost:5173` (Vite default).
 | `OLLAMA_BASE_URL` | No | `http://localhost:11434` | Ollama server URL |
 | `OLLAMA_MODEL` | No | `llama3` | Ollama model name |
 | `USE_OLLAMA` | No | `false` | Force Ollama provider regardless of `LLM_PROVIDER` |
-| `REDIS_URL` | No | — | Redis URL for Celery (omit for sync-only operation) |
+| `REDIS_URL` | No | — | Authenticated Redis URL for Celery (omit for sync-only operation) |
+| `LLM_MAX_REQUESTS_PER_MINUTE` | No | `8` | Global provider throttle; keep at 8 for the test API capped at 10/min |
 | `LOG_LEVEL` | No | `DEBUG` | Logging level: `DEBUG`, `INFO`, `WARNING`, `ERROR` |
 | `EXPERIMENT_MODE` | No | `false` | Enable experiment-specific features |
 
@@ -130,7 +132,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
 
 ```bash
 # Start Redis (Docker recommended)
-docker run -d -p 6379:6379 redis:7-alpine
+docker run -d -p 127.0.0.1:6379:6379 redis:7-alpine redis-server --requirepass URL_SAFE_PASSWORD
 
 # Start the Celery worker
 cd backend
@@ -173,7 +175,11 @@ Create a `.env` file in the project root (used by docker-compose):
 ```ini
 LLM_PROVIDER=openai
 OPENAI_API_KEY=sk-your-key-here
-# Add other providers as needed
+POSTGRES_PASSWORD=<from-secret-store>
+REDIS_PASSWORD=<long-url-safe-value-from-secret-store>
+KEYCLOAK_ADMIN_USER=admin
+KEYCLOAK_ADMIN_PASSWORD=<from-secret-store>
+LLM_MAX_REQUESTS_PER_MINUTE=8
 ```
 
 Or pass them inline:

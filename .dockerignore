@@ -1,0 +1,15 @@
+.git
+.env
+.env.*
+!.env.example
+**/.venv
+**/node_modules
+**/__pycache__
+**/.pytest_cache
+**/reports
+**/projects
+**/uploads
+**/logs
+**/*.db
+**/*.sqlite
+data/datasets/**/ground_truth.db

@@ -49,29 +49,32 @@ async def run_model_benchmark(
     scenario_key: str = "ecommerce",
     temperature: float = 0.1,
     model_name: str | None = None,
-    provider: str | None = None
+    provider: str | None = None,
+    progress_key: str | None = None,
 ) -> dict:
     scenario = BENCHMARK_SCENARIOS.get(scenario_key, BENCHMARK_SCENARIOS["ecommerce"])
-    from app.config import settings
-    if model_name:
-        settings.ollama_model = model_name
-    if provider:
-        settings.llm_provider = provider
-        settings.use_ollama = (provider == "ollama")
-
     from app.api.progress import set_progress
-    llm_info = get_llm_info()
+    llm_info = get_llm_info(provider=provider, model=model_name)
     log.info(f"🚀 Starting benchmark scenario '{scenario_key}' with provider '{llm_info['provider']}', model '{llm_info['model']}', temp={temperature}")
 
-    set_progress("benchmark", "running", 15, f"Inizializzazione provider {llm_info['provider']} ({llm_info['model']})...", etc_seconds=12)
+    def report(status: str, progress: int, message: str, etc_seconds: float = 0):
+        if progress_key:
+            set_progress(progress_key, status, progress, message, etc_seconds=etc_seconds)
+
+    report("running", 15, f"Inizializzazione provider {llm_info['provider']} ({llm_info['model']})...", etc_seconds=12)
     start_time = time.monotonic()
     try:
-        set_progress("benchmark", "running", 35, f"Invio prompt per scenario '{scenario['title']}' a {llm_info['model']}...", etc_seconds=8)
-        schema: NormalizedSchema = await generate_schema(scenario["prompt"], temperature=temperature)
+        report("running", 35, f"Invio prompt per scenario '{scenario['title']}' a {llm_info['model']}...", etc_seconds=8)
+        schema: NormalizedSchema = await generate_schema(
+            scenario["prompt"],
+            temperature=temperature,
+            provider=provider,
+            model=model_name,
+        )
         latency = round(time.monotonic() - start_time, 3)
         log.info(f"✅ Benchmark finished in {latency}s for model {llm_info['model']}")
 
-        set_progress("benchmark", "running", 75, "Analisi conformità 3NF e calcolo F1 score delle relazioni...", etc_seconds=3)
+        report("running", 75, "Analisi conformità 3NF e calcolo F1 score delle relazioni...", etc_seconds=3)
 
 
 
@@ -104,10 +107,11 @@ async def run_model_benchmark(
         recall = tp / (tp + fn) if (tp + fn) > 0 else 1.0 if not gold_pairs else 0.0
         f1_score = round(2 * (precision * recall) / (precision + recall), 3) if (precision + recall) > 0 else 0.0
 
-        # 3. Cell precision estimate & Token cost estimate
-        cell_precision = round(min(1.0, norm3_score / 100.0 * 0.95 + 0.05), 3)
-        est_tokens = len(scenario["prompt"].split()) * 5 + len(str(schema.model_dump())).split()
-        est_cost = round(len(est_tokens) * 0.000002, 6)
+        # This schema-only endpoint has no populated DB or ground truth. Keep the
+        # historical estimate explicitly labelled and out of RQ2 metrics.
+        schema_quality_heuristic = round(min(1.0, norm3_score / 100.0 * 0.95 + 0.05), 3)
+        est_tokens = len(scenario["prompt"].split()) * 5 + len(str(schema.model_dump()).split())
+        est_cost = round(est_tokens * 0.000002, 6)
 
         result_entry = BenchmarkResult(
             scenario_name=scenario["title"],
@@ -115,25 +119,32 @@ async def run_model_benchmark(
             model_name=llm_info["model"],
             norm3_score=norm3_score,
             relationship_f1=f1_score,
-            cell_precision=cell_precision,
+            cell_precision=schema_quality_heuristic,
             latency_seconds=latency,
             token_cost_estimate=est_cost,
             details_json={
                 "tables_count": len(tables),
                 "generated_relationships": list(generated_fk_pairs),
                 "gold_relationships": list(gold_pairs),
-                "temperature": temperature
+                "temperature": temperature,
+                "data_metric": {
+                    "name": "schema_quality_heuristic_estimate",
+                    "value": schema_quality_heuristic,
+                    "role": "exploratory",
+                    "is_rq2_measure": False,
+                    "reason": "No populated database or ground truth is available in this schema-only benchmark."
+                }
             }
         )
 
-        set_progress("benchmark", "saving", 95, "Registrazione risultati nel database PostgreSQL...", etc_seconds=1)
+        report("saving", 95, "Registrazione risultati nel database PostgreSQL...", etc_seconds=1)
         engine = init_db()
         session = get_session(engine)
         session.add(result_entry)
         session.commit()
         session.refresh(result_entry)
 
-        set_progress("benchmark", "completed", 100, f"Benchmark per {llm_info['model']} completato con successo in {latency}s!", etc_seconds=0)
+        report("completed", 100, f"Benchmark per {llm_info['model']} completato con successo in {latency}s!", etc_seconds=0)
 
         return {
             "id": result_entry.id,
@@ -142,7 +153,8 @@ async def run_model_benchmark(
             "model": llm_info["model"],
             "norm3_score": norm3_score,
             "relationship_f1": f1_score,
-            "cell_precision": cell_precision,
+            "schema_quality_heuristic_estimate": schema_quality_heuristic,
+            "rq2_cell_precision": None,
             "latency_seconds": latency,
             "estimated_cost": est_cost,
             "tables_generated": [t.name for t in tables],
@@ -150,7 +162,7 @@ async def run_model_benchmark(
 
     except Exception as e:
         log.error(f"Benchmark execution error: {e}")
-        set_progress("benchmark", "failed", 0, f"Errore benchmark: {e}", etc_seconds=0)
+        report("failed", 0, f"Errore benchmark: {e}", etc_seconds=0)
         return {
             "error": str(e),
             "scenario": scenario["title"],

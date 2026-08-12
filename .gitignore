@@ -9,6 +9,7 @@ dist/
 coverage/
 backend/uploads/
 backend/projects/
+projects/
 backend/logs/
 backend/filedb/
 backend/reports/

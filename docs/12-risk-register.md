@@ -1,5 +1,7 @@
 # Risk Register
 
+> **DRAFT / UNAPPROVED.** Likelihoods, frequencies and mitigations are planning assessments unless linked to frozen evidence. Review before pilot and at every material protocol change.
+
 | # | Risk Category | Description | Likelihood | Impact | Mitigation Strategy |
 |---|---|---|---|---|---|
 | 1 | **LLM Hallucination** | The LLM generates tables, columns, or relationships that do not correspond to anything in the user's description or documents (e.g., inventing an "addresses" table when no address data is provided). This undermines trust and requires user intervention to correct. | **High** — observed in ~30% of test runs, especially with ambiguous or underspecified prompts. | **Medium** — users can edit or reject the schema via the chat interface and edit mode, but hallucinated entities waste time and may confuse non-expert users. | 1. Prompt engineering: add explicit "do not invent entities not mentioned in the source material" instruction. 2. Human-in-the-loop validation: every schema must be reviewed before database creation. 3. Provide document context explicitly in the prompt so the LLM has concrete data to ground its output. 4. Post-generation validation: automated check that every table name appears in or can be inferred from the source text. |

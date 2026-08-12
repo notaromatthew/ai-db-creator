@@ -31,8 +31,8 @@ Conditions:
 
 Aggregation:
     For each (dataset, condition) a summary CSV and JSON report is written
-    listing per-run global F1 / precision / recall next to the mean and the
-    Wilson 95% confidence interval across runs.
+    listing per-run primary and strict F1 / precision / recall next to
+    descriptive means. No Wilson interval is reported for F1 or mean-run F1.
 """
 from __future__ import annotations
 
@@ -40,12 +40,13 @@ import argparse
 import asyncio
 import csv
 import json
+import os
+import subprocess
 import sys
 from pathlib import Path
 
-from app.evaluation.population_evaluation import wilson_ci
 from app.models.schema_models import GenerateRequest
-from app.utils.research import atomic_write_json
+from app.utils.research import atomic_write_json, sha256_file, sha256_text, stable_hash
 
 
 def round_or_none(value, ndigits: int = 4):
@@ -55,6 +56,22 @@ def round_or_none(value, ndigits: int = 4):
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATASETS_DIR = REPO_ROOT / "data" / "datasets"
+
+
+def software_revision() -> dict:
+    configured = os.getenv("SOFTWARE_REVISION")
+    if configured:
+        return {"value": configured, "source": "SOFTWARE_REVISION"}
+    try:
+        value = subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, check=True,
+            capture_output=True, text=True, timeout=3,
+        ).stdout.strip()
+        if value:
+            return {"value": value, "source": "git"}
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return {"value": None, "source": "unavailable"}
 
 
 class BenchmarkRunner:
@@ -139,23 +156,31 @@ class BenchmarkRunner:
                                     temperature=self.temperature)
         return project_id
 
-    def _evaluate(self, project_id: str, dataset: str, alignment: dict | None = None):
+    def _evaluate(self, project_id: str, dataset: str, condition: str,
+                  alignment: dict | None = None):
         from app.evaluation.population_evaluation import (
             connect_database, evaluate_generated, load_gold_schema, read_rows,
         )
+        from app.evaluation.canonical_facts import evaluate_canonical_facts
+        from app.evaluation.schema_alignment import load_alignment_config
         project = self.schema_svc.get_project(project_id)
         schema = load_gold_schema(str(self._gold_schema(dataset)))
         column_aliases = (alignment or {}).get("columns") or None
+        table_aliases = (alignment or {}).get("tables") or None
+        config = load_alignment_config(DATASETS_DIR / dataset)
         generated_rows = {}
         ground_rows = {}
         with connect_database(project.db_path) as generated, \
                 connect_database(str(self._ground_truth(dataset))) as ground:
-            result = evaluate_generated(generated, ground, schema, column_aliases)
+            strict = evaluate_generated(generated, ground, schema, column_aliases, table_aliases)
+            primary = evaluate_canonical_facts(generated, ground, schema, config, condition)
             for table in schema.tables:
                 aliases = (column_aliases or {}).get(table.name, {})
-                generated_rows[table.name] = read_rows(generated, table, aliases)
+                generated_rows[table.name] = read_rows(
+                    generated, table, aliases, (table_aliases or {}).get(table.name)
+                )
                 ground_rows[table.name] = read_rows(ground, table)
-        return project, result, generated_rows, ground_rows
+        return project, {"primary": primary, "supplementary_strict": strict}, generated_rows, ground_rows
 
     def _build_alignment(self, project_id: str, dataset: str) -> dict | None:
         from app.evaluation.schema_alignment import (
@@ -173,9 +198,11 @@ class BenchmarkRunner:
             "dataset": dataset, "condition": condition, "run": run_index,
             "project_id": None, "status": "ok",
             "temperature": self.temperature,
-            "global_precision": None, "global_recall": None, "global_f1": None,
+            "primary_precision": None, "primary_recall": None, "primary_f1": None,
+            "strict_precision": None, "strict_recall": None, "strict_f1": None,
             "total_cells": None, "missing_rows": None, "extra_rows": None,
-            "alignment": None, "adjudication": None, "error": None,
+            "alignment": None, "evaluation": None, "adjudication": None,
+            "provenance": None, "error": None,
         }
         run_dir = self.output_dir / dataset / condition
         run_dir.mkdir(parents=True, exist_ok=True)
@@ -184,15 +211,32 @@ class BenchmarkRunner:
             alignment = self._build_alignment(project_id, dataset) \
                 if condition == "full_llm" else None
             project, result, generated_rows, ground_rows = \
-                self._evaluate(project_id, dataset, alignment)
+                self._evaluate(project_id, dataset, condition, alignment)
+            primary = result["primary"]
+            strict = result["supplementary_strict"]
             record.update({
                 "project_id": project_id,
-                "global_precision": round_or_none(result["global"]["precision"]),
-                "global_recall": round_or_none(result["global"]["recall"]),
-                "global_f1": round_or_none(result["global"]["f1"]),
-                "total_cells": result["global"]["total_cells"],
-                "missing_rows": result["global"]["missing_rows"],
-                "extra_rows": result["global"]["extra_rows"],
+                "primary_precision": round_or_none(primary.get("global", {}).get("precision")),
+                "primary_recall": round_or_none(primary.get("global", {}).get("recall")),
+                "primary_f1": round_or_none(primary.get("global", {}).get("f1")),
+                "strict_precision": round_or_none(strict["global"]["precision"]),
+                "strict_recall": round_or_none(strict["global"]["recall"]),
+                "strict_f1": round_or_none(strict["global"]["f1"]),
+                "total_cells": strict["global"]["total_cells"],
+                "missing_rows": strict["global"]["missing_rows"],
+                "extra_rows": strict["global"]["extra_rows"],
+                "evaluation": result,
+                "provenance": {
+                    "prompt_sha256": sha256_text(self._prompt(dataset)),
+                    "gold_schema_sha256": sha256_file(self._gold_schema(dataset)),
+                    "ground_truth_sha256": sha256_file(self._ground_truth(dataset)),
+                    "generated_schema_sha256": stable_hash(self.schema_svc.get_schema(project_id).model_dump()),
+                    "generated_db_sha256": sha256_file(project.db_path),
+                    "source_sha256": {path.name: sha256_file(path) for path in self._source_files(dataset)},
+                    "alignment_config_hash": primary.get("config_hash"),
+                    "evaluator_version": primary.get("evaluator_version"),
+                    "software_revision": software_revision(),
+                },
             })
             if alignment is not None:
                 record["alignment"] = {
@@ -200,7 +244,10 @@ class BenchmarkRunner:
                     "columns": alignment["columns"],
                     "unmatched_tables": alignment["unmatched_tables"],
                     "unmatched_columns": alignment["unmatched_columns"],
+                    "ambiguous_tables": alignment["ambiguous_tables"],
+                    "ambiguous_columns": alignment["ambiguous_columns"],
                     "via_registry": alignment["via_registry"],
+                    "method_version": alignment["method_version"],
                 }
             if self.adjudicate:
                 gold_schema = self._load_gold_schema(dataset)
@@ -250,7 +297,8 @@ class BenchmarkRunner:
 
         rows_path = out / f"{condition}.csv"
         fields = ["dataset", "condition", "run", "project_id",
-                  "global_precision", "global_recall", "global_f1",
+                  "primary_precision", "primary_recall", "primary_f1",
+                  "strict_precision", "strict_recall", "strict_f1",
                   "total_cells", "missing_rows", "extra_rows"]
         with rows_path.open("w", newline="", encoding="utf-8") as fh:
             writer = csv.DictWriter(fh, fieldnames=fields)
@@ -268,10 +316,6 @@ class BenchmarkRunner:
             return [r[key] for r in records if r[key] is not None]
         def mean(vals: list[float]) -> float | None:
             return round_or_none(stats.mean(vals)) if vals else None
-        def wci(values: list[float]) -> list | None:
-            if not values:
-                return None
-            return [round_or_none(v) for v in wilson_ci(mean(values), len(values))]
         def adjudication_col(key: str) -> list[float]:
             return [r["adjudication"]["scores"][key] for r in records
                     if isinstance(r.get("adjudication"), dict)
@@ -282,10 +326,11 @@ class BenchmarkRunner:
             "condition": records[0]["condition"] if records else None,
             "n_runs": len(records),
             "temperature": records[0].get("temperature") if records else None,
-            "mean_precision": mean(col("global_precision")),
-            "mean_recall": mean(col("global_recall")),
-            "mean_f1": mean(col("global_f1")),
-            "ci95_f1": wci(col("global_f1")),
+            "reporting_status": "exploratory_descriptive",
+            "mean_primary_precision": mean(col("primary_precision")),
+            "mean_primary_recall": mean(col("primary_recall")),
+            "mean_primary_f1": mean(col("primary_f1")),
+            "mean_strict_f1": mean(col("strict_f1")),
             "mean_total_cells": mean([r["total_cells"] for r in records]),
             "mean_missing_rows": mean([r["missing_rows"] for r in records]),
             "mean_extra_rows": mean([r["extra_rows"] for r in records]),
@@ -327,10 +372,13 @@ def main(argv: list[str] | None = None) -> int:
                              adjudicate=args.adjudicate,
                              temperature=args.temperature)
     results = asyncio.run(runner.run())
+    ok_count = sum(result.get("status") == "ok" for result in results)
+    error_count = sum(result.get("status") == "error" for result in results)
     print(json.dumps({
         "output": str(runner.output_dir),
         "n_runs": len(results),
-        "ok": len(results),
+        "ok": ok_count,
+        "error": error_count,
         "temperature": runner.temperature,
     }, indent=2))
     return 0

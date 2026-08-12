@@ -1,5 +1,7 @@
 # Benchmark Protocol for RQ1 and RQ2
 
+> **DRAFT / UNAPPROVED — ETHICS AND PROTOCOL REVIEW PENDING.** This document is a proposed research protocol. Existing outputs were produced during development and are not confirmatory evidence. Human expert or participant activity must not begin on the basis of this draft alone.
+
 ## 1. Dataset Descriptions
 
 Three datasets of increasing complexity are used to evaluate schema generation quality (RQ1) and population accuracy (RQ2). Each dataset includes:
@@ -108,7 +110,13 @@ Reported metrics:
 
 ---
 
-## 4. Cell-Level Comparison Methodology (RQ2)
+## 4. Two-level deterministic population evaluation (RQ2)
+
+### 4.0 Confirmatory primary and supplementary diagnostics
+
+The confirmatory primary metric is **canonical fact micro-F1**. Each version-controlled dataset manifest (`rq2_alignment.json`) declares entity keys, surrogate keys, and condition-specific table/column mappings and must be approved and frozen before outcome inspection. The evaluator converts generated and gold databases into multisets of source-grounded facts `(entity, natural identity, attribute, normalised value)`, excludes declared surrogate identifiers, and resolves surrogate foreign keys through the referenced entity's declared natural identity. It then computes `TP = P ∩ G`, `FP = P \ G`, and `FN = G \ P`. No LLM judge, name heuristic, substring match, or run-dependent inferred mapping is allowed in this path. If the frozen mapping is missing or does not apply to the generated database, the primary result is explicitly `not_evaluable`; it is never silently scored. Heuristic alignment remains available only for the supplementary strict diagnostic and candidate review.
+
+The physical cell/PK comparison below is retained as a **supplementary strict diagnostic** for error typing and auditing. It is not the confirmatory primary RQ2 outcome when generated schemas use different surrogate keys. Structural schema scores and any optional LLM adjudication are reported separately. The term *functional equivalence* is reserved for a future frozen SQL workload whose query outputs are compared deterministically; canonical fact equivalence is called **content fidelity**, not functional equivalence.
 
 ### 4.1 Comparison Script
 
@@ -137,7 +145,7 @@ Before comparison, values are normalised:
 
 - **Numeric:** `"1.0"` = `"1"` = `1` = `1.0`
 - **Boolean:** `"TRUE"`, `"true"`, `"True"`, `"1"`, `"t"` are equivalent (same for false)
-- **Date/Time:** `"2024-01-05"` = `"2024-1-5"` = `"05/01/2024"` (ISO only, not ambiguous formats)
+- **Date/Time:** `"2024-01-05"` = `"2024-1-5"`; locale-ambiguous forms such as `"05/01/2024"` are not canonicalised without a dataset-level rule frozen in advance
 - **String:** Whitespace-trimmed; case-sensitive (database default)
 - **NULL / empty string:** `NULL` ≠ `""` (treated as different — NULL indicates missing data, empty string is a deliberate value)
 
@@ -164,15 +172,16 @@ Before comparison, values are normalised:
 
 Let:
 - `TP` = cells that match exactly (EXACT_MATCH) or are type-consistent (TYPE_CONSISTENT)
-- `FP` = cells that are WRONG_VALUE or FK_VIOLATION or TYPE_MISMATCH
-- `FN` = cells that are NULL_IN_SOURCE or MISSING_ROW
+- `FP` = cells that are WRONG_VALUE, FK_VIOLATION or TYPE_MISMATCH; each EXTRA_ROW contributes one FP per evaluated column
+- `FN` = cells that are NULL_IN_SOURCE; each MISSING_ROW contributes one FN per evaluated column
 - `Precision` = TP / (TP + FP)
 - `Recall` = TP / (TP + FN)
 - `F1` = 2 × Precision × Recall / (Precision + Recall)
 
 ### 6.2 Global Metrics
 
-- **Overall Precision, Recall, F1** — macro-averaged across all tables
+- **Primary overall Precision, Recall, F1** — micro-averaged over the canonical fact multiset
+- **Supplementary strict Precision, Recall, F1** — micro-averaged over physical cells after frozen alignment
 - **Duplicate Rate** — percentage of rows that have duplicate primary keys (computed by `MetricsService.data_quality()`)
 - **Normalisation Score** — percentage of tables in 3NF (from `MetricsService.check_3nf()`)
 - **Relationship F1** — precision, recall, F1 for identified vs. expected relationships (from `MetricsService.relationship_f1()`)
@@ -207,25 +216,28 @@ The alignment table is versioned and reused for every run. A relationship match 
 - **Secondary:** Pairwise quadratic-weighted Cohen's kappa for diagnosis only
 - **Software:** Python `krippendorff` package (primary) and `sklearn.metrics.cohen_kappa_score` (secondary)
 
-### 7.2 Comparing Conditions (RQ1, RQ3)
+### 7.2 Comparing Conditions (RQ0, RQ1, RQ3)
 
-- **Primary test:** Independent-samples t-test (two-tailed, α = 0.05)
-- **Assumption check:** Shapiro-Wilk for normality, Levene's test for equality of variances
-- **Non-parametric backup:** Mann-Whitney U test
-- **Effect size:** Cohen's d
-- **Confidence intervals:** 95% CI for the mean difference
+Confirmatory contrasts, covariates, estimands and robust/ordinal/count models are
+specified in `docs/19-preregistration-draft.md` and
+`docs/27-statistical-analysis-plan-draft.md`. Tests are not selected post hoc
+from Shapiro-Wilk or Levene results. Every contrast is reported with effect size,
+95% confidence interval, adjusted and unadjusted p-value where applicable.
 
 ### 7.3 Confidence Intervals (RQ2)
 
-- **Per-metric CI:** Wilson score interval for precision/recall/F1
+- **Per-metric CI:** Wilson intervals may be used for binomial precision/recall proportions only; not for F1 or a mean across runs
 - **Reported as:** Metric ± CI (e.g., F1 = 0.87 ± 0.03)
-- **Bootstrap CI:** 10,000 resamples for the overall mean F1
+- **Run-level uncertainty:** stratified or hierarchical bootstrap according to
+  `docs/27-statistical-analysis-plan-draft.md`; cells from one run are not treated
+  as independent experimental replicates
 
 ### 7.4 Multiple Comparison Correction
 
-For the 5-dimension expert evaluation (RQ1), Bonferroni correction is applied:
-- Adjusted α = 0.05 / 5 = 0.01 for each dimension
-- Both unadjusted and adjusted results are reported
+Multiplicity families and Holm/BH procedures are frozen in
+`docs/19-preregistration-draft.md` and `docs/27-statistical-analysis-plan-draft.md`.
+Both unadjusted and adjusted results are reported; exploratory analyses are
+labelled and never promoted because they cross a significance threshold.
 
 ---
 
@@ -244,7 +256,7 @@ Total time commitment per expert: approximately 4–6 hours (10–12 minutes per
 
 ## 9. Automated Evaluation Pipeline
 
-The evaluation script (`backend/evaluate_population.py`) implements the cell-level comparison in section 4, normalisation rules in section 4.2, error typology in section 5, and the precision/recall/F1 metrics (Wilson score intervals) in sections 6-7. It is executed as:
+The evaluation script (`backend/evaluate_population.py`) exposes the supplementary strict comparison. The batch runner additionally computes the primary canonical-fact metric from the frozen dataset alignment manifest and records evaluator/config/input hashes. It is executed as:
 
 ```bash
 cd backend
@@ -315,7 +327,7 @@ Conditions:
 For every `(dataset, condition, run)` the runner writes `run<NN>.json` with the
 full per-table detail; per `(dataset, condition)` it writes `{condition}.csv`
 listing each run's global precision/recall/F1 and a `{condition}_summary.json`
-with the mean, the Wilson 95% CI across runs, and the mean cell/row counts.
+with descriptive means and cell/row counts. Existing reports produced before evaluator `rq2-canonical-facts-v1` are exploratory legacy artifacts and must be regenerated; Wilson intervals over F1 or mean-run F1 are no longer emitted.
 
 Each dataset requires a `data/datasets/{name}/prompt.txt` describing the domain
 for the LLM schema-generation step (one exists per dataset).
@@ -344,8 +356,17 @@ a table/column correspondence (frozen procedure per section 6.4):
    versioned and reviewed), used when the generated name is too short for the
    heuristic (e.g. generated `id` → gold `student_id`).
 
-The mapping used is recorded per run in the report (`alignment` block), so the
-cell-level numbers are auditable.
+The candidate heuristic mapping used by the supplementary diagnostic is recorded per run in the report (`alignment` block), including method version, unresolved and ambiguous candidates. The primary evaluator reads only the condition-specific frozen table/column mapping and entity/surrogate-key declarations in `rq2_alignment.json`. Its hash is recorded with prompt, generated schema/database, gold-schema, ground-truth and source-file hashes. Software revision records either the configured `SOFTWARE_REVISION`, the available Git commit, or an explicit `{value: null, source: "unavailable"}` fallback.
+
+### 9.5 Reproducible report package
+
+Reports can be exported to a deterministic ZIP containing a hash manifest:
+
+```bash
+python export_benchmark_package.py --input reports/benchmark --output reports/benchmark-package.zip
+```
+
+`MANIFEST.json` lists path, byte size and SHA-256 for every included artifact plus a stable content hash. ZIP timestamps and permissions are fixed so identical inputs produce identical archive hashes.
 
 ### 9.4 Dynamic LLM adjudication (supplementary)
 

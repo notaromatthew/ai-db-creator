@@ -15,7 +15,7 @@ async def _get_jwks():
     if _jwks_cache:
         return _jwks_cache
     jwks_url = f"{settings.keycloak_url}/realms/{settings.keycloak_realm}/protocol/openid-connect/certs"
-    async with httpx.AsyncClient(verify=False, timeout=10.0) as client:
+    async with httpx.AsyncClient(verify=True, timeout=10.0) as client:
         res = await client.get(jwks_url)
         if res.status_code == 200:
             _jwks_cache = res.json()
@@ -59,6 +59,8 @@ async def get_current_user(
             "sub": claims.get("sub"),
             "username": claims.get("preferred_username", claims.get("sub")),
             "email": claims.get("email"),
+            "roles": sorted(set(claims.get("realm_access", {}).get("roles", [])) |
+                            set(claims.get("resource_access", {}).get(settings.keycloak_client_id, {}).get("roles", []))),
         }
     except HTTPException:
         raise
@@ -69,4 +71,12 @@ async def get_current_user(
             detail="Token di autenticazione non valido o scaduto",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+
+def require_admin(user: dict = Depends(get_current_user)) -> dict:
+    if not settings.enable_auth:
+        return user
+    if "admin" not in set(user.get("roles", [])):
+        raise HTTPException(status_code=403, detail="Administrator role required")
+    return user
 

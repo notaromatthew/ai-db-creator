@@ -51,7 +51,7 @@ Agents and developers can append structured comments below using the following t
 - **Agent/Author**: Antigravity AI Assistant
 - **Target File(s)**: [app/models/database.py](file:///Users/davide/Documents/repos/ai-db-creator/backend/app/models/database.py)
 - **Observation / Problem**: High concurrency benchmark runs can exhaust PostgreSQL connection limits if sessions are not pooled efficiently.
-- **Proposed Solution**: Configure `pool_size=10`, `max_overflow=20`, `pool_pre_ping=True`, and `pool_recycle=1800` on SQLAlchemy engine initialization for remote PostgreSQL instance `89.168.29.98:12000`.
+- **Proposed Solution**: Configure `pool_size=10`, `max_overflow=20`, `pool_pre_ping=True`, and `pool_recycle=1800` on SQLAlchemy engine initialization for the deployment-managed PostgreSQL instance.
 - **Status**: Implemented
 
 ---

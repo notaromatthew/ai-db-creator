@@ -19,6 +19,7 @@ from __future__ import annotations
 import json
 import math
 import sqlite3
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -100,13 +101,15 @@ def classify_cell(generated: Any, ground: Any, data_type: str) -> str:
         return "NS"
     if _is_null(ground):
         return "WV"
-    if normalise_value(generated, data_type) is not None \
-            and normalise_value(generated, data_type) == normalise_value(ground, data_type):
-        return "OK"
-    if (data_type or "").upper() in NUMERIC_TYPES | BOOLEAN_TRUE | DATETIME_TYPES or True:
-        upper_type = (data_type or "").upper()
-        if upper_type in NUMERIC_TYPES or upper_type == "BOOLEAN" or upper_type in DATETIME_TYPES:
-            return "TC"
+    generated_normalised = normalise_value(generated, data_type)
+    ground_normalised = normalise_value(ground, data_type)
+    if generated_normalised is not None and generated_normalised == ground_normalised:
+        return "OK" if generated == ground else "TC"
+    upper_type = (data_type or "").upper()
+    if upper_type in NUMERIC_TYPES | DATETIME_TYPES and generated_normalised is None:
+        return "TM"
+    if upper_type == "BOOLEAN" and str(generated).strip().lower() not in BOOLEAN_TRUE | BOOLEAN_FALSE:
+        return "TM"
     return "WV"
 
 
@@ -126,7 +129,8 @@ def _round_ci(ci: tuple[float, float]) -> list[float]:
 
 
 def read_rows(conn: sqlite3.Connection, table: Any,
-              column_aliases: dict[str, str] | None = None) -> list[dict]:
+              column_aliases: dict[str, str] | None = None,
+              table_alias: str | None = None) -> list[dict]:
     """Read all rows of a table as dicts keyed by column name.
 
     ``column_aliases`` maps gold column names to the column actually present in
@@ -137,14 +141,14 @@ def read_rows(conn: sqlite3.Connection, table: Any,
     aliases = column_aliases or {}
     selected = [(column.name, aliases.get(column.name, column.name))
                 for column in table.columns]
-    present = [name for name in _table_columns(conn, table.name)]
+    actual_table = table_alias or table.name
+    present = [name for name in _table_columns(conn, actual_table)]
     usable = [(gold, gen) for gold, gen in selected if gen in present]
-    placeholders = ", ".join(f"[{gen}]" for _, gen in usable)
-    cursor = conn.execute(f"SELECT {placeholders} FROM [{table.name}]")
-    header = [description[0] for description in cursor.description]
-    gold_names = [gold for gold, _ in usable]
     if not usable:
         return []
+    placeholders = ", ".join(f"[{gen}]" for _, gen in usable)
+    cursor = conn.execute(f"SELECT {placeholders} FROM [{actual_table}]")
+    gold_names = [gold for gold, _ in usable]
     return [dict(zip(gold_names, row)) for row in cursor.fetchall()]
 
 
@@ -185,16 +189,15 @@ def evaluate_table(generated_rows: list[dict], ground_rows: list[dict], table: A
     def row_key(row: dict) -> tuple:
         return tuple(_as_sortable(row.get(c)) for c in key_cols)
 
-    generated_by_pk: dict[tuple, dict] = {}
-    for row in generated_rows:
-        generated_by_pk.setdefault(row_key(row), row)
-    ground_by_pk: dict[tuple, dict] = {}
-    for row in ground_rows:
-        ground_by_pk.setdefault(row_key(row), row)
+    generated_counts = Counter(row_key(row) for row in generated_rows)
+    ground_counts = Counter(row_key(row) for row in ground_rows)
+    generated_by_pk = {row_key(row): row for row in generated_rows}
+    ground_by_pk = {row_key(row): row for row in ground_rows}
 
     matching_keys = set(generated_by_pk) & set(ground_by_pk)
-    missing_rows = len(set(ground_by_pk) - matching_keys)
-    extra_rows = len(set(generated_by_pk) - matching_keys)
+    missing_rows = sum((ground_counts - generated_counts).values())
+    extra_rows = sum((generated_counts - ground_counts).values())
+    duplicate_generated_rows = sum(max(0, count - 1) for count in generated_counts.values())
 
     counts = {"OK": 0, "TC": 0, "NS": 0, "WV": 0, "FK": 0, "TM": 0}
     total_cells = 0
@@ -214,8 +217,8 @@ def evaluate_table(generated_rows: list[dict], ground_rows: list[dict], table: A
     exact = counts["OK"]
     type_consistent = counts["TC"]
     tp = exact + type_consistent
-    fp = counts["WV"] + counts["FK"] + counts["TM"]
-    fn = counts["NS"] + missing_rows
+    fp = counts["WV"] + counts["FK"] + counts["TM"] + extra_rows * len(all_columns)
+    fn = counts["NS"] + missing_rows * len(all_columns)
     precision = tp / (tp + fp) if (tp + fp) else 0.0
     recall = tp / (tp + fn) if (tp + fn) else 0.0
     f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0
@@ -229,13 +232,13 @@ def evaluate_table(generated_rows: list[dict], ground_rows: list[dict], table: A
         "type_mismatch": counts["TM"],
         "missing_rows": missing_rows,
         "extra_rows": extra_rows,
+        "duplicate_generated_rows": duplicate_generated_rows,
         "total_cells": total_cells,
         "precision": round(precision, 4),
         "recall": round(recall, 4),
         "f1": round(f1, 4),
         "ci95_precision": _round_ci(wilson_ci(precision, tp + fp)),
         "ci95_recall": _round_ci(wilson_ci(recall, tp + fn)),
-        "ci95_f1": _round_ci((f1, f1)),
     }
 
 
@@ -247,7 +250,8 @@ def _as_sortable(value: Any) -> str:
 
 def evaluate_generated(generated_conn: sqlite3.Connection, ground_conn: sqlite3.Connection,
                        schema: NormalizedSchema,
-                       column_aliases: dict[str, dict[str, str]] | None = None) -> dict:
+                       column_aliases: dict[str, dict[str, str]] | None = None,
+                       table_aliases: dict[str, str] | None = None) -> dict:
     """Run the full cell-level comparison over all tables in the gold schema.
 
     ``column_aliases`` maps ``gold_table -> {gold_column: generated_column}``
@@ -256,29 +260,36 @@ def evaluate_generated(generated_conn: sqlite3.Connection, ground_conn: sqlite3.
     schema_alignment.py. Tables/columns without an alias use gold names.
     """
     column_aliases = column_aliases or {}
+    table_aliases = table_aliases or {}
     fk_targets = _build_fk_targets(ground_conn, schema)
     per_table: dict[str, dict] = {}
     for table in schema.tables:
         aliases = column_aliases.get(table.name, {})
-        generated_rows = read_rows(generated_conn, table, aliases)
+        generated_rows = read_rows(generated_conn, table, aliases, table_aliases.get(table.name))
         ground_rows = read_rows(ground_conn, table)
         per_table[table.name] = evaluate_table(generated_rows, ground_rows, table, fk_targets)
 
-    precisions = [t["precision"] for t in per_table.values()]
-    recalls = [t["recall"] for t in per_table.values()]
-    f1s = [t["f1"] for t in per_table.values()]
-
-    def average(values: list[float]) -> float:
-        return sum(values) / len(values) if values else 0.0
+    tp = sum(t["exact"] + t["type_consistent"] for t in per_table.values())
+    fp = sum(t["wrong_value"] + t["fk_violations"] + t["type_mismatch"]
+             + t["extra_rows"] * len(next(x for x in schema.tables if x.name == name).columns)
+             for name, t in per_table.items())
+    fn = sum(t["null_in_source"]
+             + t["missing_rows"] * len(next(x for x in schema.tables if x.name == name).columns)
+             for name, t in per_table.items())
+    precision = tp / (tp + fp) if tp + fp else 0.0
+    recall = tp / (tp + fn) if tp + fn else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
 
     return {
         "per_table": per_table,
         "global": {
-            "precision": round(average(precisions), 4),
-            "recall": round(average(recalls), 4),
-            "f1": round(average(f1s), 4),
+            "precision": round(precision, 4),
+            "recall": round(recall, 4),
+            "f1": round(f1, 4),
+            "averaging": "micro",
             "total_cells": sum(t["total_cells"] for t in per_table.values()),
             "missing_rows": sum(t["missing_rows"] for t in per_table.values()),
             "extra_rows": sum(t["extra_rows"] for t in per_table.values()),
+            "duplicate_generated_rows": sum(t["duplicate_generated_rows"] for t in per_table.values()),
         },
     }

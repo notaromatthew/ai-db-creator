@@ -1,0 +1,21 @@
+{
+  "protocol": "functional_workload_v1",
+  "approval_status": "draft",
+  "expected_result_status": "exploratory_only",
+  "dataset": "",
+  "version": "",
+  "canonicalisation_version": "",
+  "queries": [
+    {
+      "id": "Q01",
+      "requirement": "",
+      "parameters": {},
+      "order_matters": false,
+      "expected_result_artifact": "",
+      "expected_result_sha256": ""
+    }
+  ],
+  "integrity_checks": [
+    {"id": "I01", "requirement": "", "expected": true}
+  ]
+}

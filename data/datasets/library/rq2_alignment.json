@@ -1,0 +1,29 @@
+{
+  "version": "rq2-alignment-v1",
+  "entity_keys": {
+    "categories": ["name"],
+    "members": ["email"],
+    "books": ["isbn"],
+    "loans": ["book_id", "member_id", "loan_date"],
+    "fines": ["loan_id", "amount"]
+  },
+  "surrogate_keys": {
+    "categories": ["category_id"],
+    "members": ["member_id"],
+    "books": ["book_id"],
+    "loans": ["loan_id"],
+    "fines": ["fine_id"]
+  },
+  "alignments": {
+    "baseline": {
+      "mode": "identity_with_frozen_overrides",
+      "tables": {"categories": "categories", "members": "members", "books": "books", "loans": "loans", "fines": "fines"},
+      "columns": {"categories": {}, "members": {}, "books": {}, "loans": {}, "fines": {}}
+    },
+    "full_llm": {
+      "mode": "identity_with_frozen_overrides",
+      "tables": {"categories": "categories", "members": "members", "books": "books", "loans": "loans", "fines": "fines"},
+      "columns": {"categories": {}, "members": {}, "books": {}, "loans": {}, "fines": {}}
+    }
+  }
+}

@@ -37,8 +37,10 @@ class SchemaService:
     def list_projects(self, user_id: str | None = None) -> list:
         session = get_session(self.engine)
         query = session.query(Project)
-        if user_id:
-            query = query.filter((Project.user_id == user_id) | (Project.user_id == None))
+        if not user_id:
+            session.close()
+            return []
+        query = query.filter(Project.user_id == user_id)
         projects = query.all()
         session.close()
         return projects

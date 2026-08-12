@@ -1,12 +1,12 @@
 fastapi==0.115.0
 uvicorn==0.30.6
 sqlalchemy==2.0.35
-langchain-openai==0.2.0
-langchain-ollama==0.2.0
-langchain-google-genai==2.0.0
-langchain-core==0.3.0
-pydantic==2.9.0
-pydantic-settings==2.5.0
+langchain-openai==1.4.2
+langchain-ollama==1.1.0
+langchain-google-genai==4.3.2
+langchain-core==1.5.3
+pydantic==2.13.4
+pydantic-settings==2.15.0
 loguru==0.7.2
 pandas>=2.2.3
 openpyxl==3.1.5
@@ -23,6 +23,6 @@ celery==5.4.0
 redis==5.0.7
 
 
-psycopg2-binary==2.9.9
+psycopg2-binary==2.9.10
 python-jose[cryptography]==3.3.0
 pyjwt==2.9.0

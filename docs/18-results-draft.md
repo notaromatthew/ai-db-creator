@@ -1,5 +1,7 @@
 # Risultati — Bozza RQ1 / RQ2 (DRAFT)
 
+> **LEGACY EXPLORATORY / NON-CONFIRMATORY.** Questi risultati sono stati prodotti con la semantica precedente del valutatore e non devono essere presentati come risposta confermativa a RQ1/RQ2. Il classificatore, i denominatori di righe mancanti/extra, l'allineamento e gli intervalli d'incertezza sono stati successivamente sottoposti a revisione metodologica. Tutti i benchmark destinati al paper devono essere rigenerati con evaluator, allineamenti, workload, modello e temperatura congelati. I numeri legacy non sono direttamente combinabili con quelli del nuovo protocollo.
+
 > **Stato:** bozza analitica costruita dai report reali del benchmark a due
 > temperature di campionamento — **0.1** e **0.5** — 5 run per (dataset,
 > condizione), 3 dataset (university / library / hospital). La stima di questo
@@ -15,7 +17,7 @@
 
 ---
 
-## 1. Osservazioni consolidate (RQ2 — accuratezza di popolamento a livello di cella)
+## 1. Osservazioni consolidate legacy (RQ2 — sviluppo esplorativo)
 
 Condizioni: **baseline** = schema gold applicato deterministicamente + popolamento
 LLM; **full_llm** = schema generato dall'LLM + popolamento LLM. Metrica: F1

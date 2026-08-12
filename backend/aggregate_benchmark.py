@@ -1,8 +1,8 @@
 """Consolidate RQ2 numbers from a run_benchmark report tree into JSON.
 
 For each (dataset, condition) this reads the per-run ``run<NN>.json`` records
-and the ``{condition}_summary.json`` written by run_benchmark (mean precision/
-recall/F1 + Wilson 95% CI + mean adjudication scores), and emits one flat JSON
+and the ``{condition}_summary.json`` written by run_benchmark (descriptive
+canonical-fact primary metrics + supplementary scores), and emits one flat JSON
 suitable for building the results tables in the thesis/paper draft.
 
 Usage:
@@ -93,9 +93,10 @@ def main(argv: list[str] | None = None) -> int:
                 "run": d.get("run"),
                 "status": d.get("status"),
                 "project_id": d.get("project_id"),
-                "f1": d.get("global_f1"),
-                "precision": d.get("global_precision"),
-                "recall": d.get("global_recall"),
+                "f1": d.get("primary_f1"),
+                "precision": d.get("primary_precision"),
+                "recall": d.get("primary_recall"),
+                "strict_f1": d.get("strict_f1"),
                 "cells": d.get("total_cells"),
                 "missing_rows": d.get("missing_rows"),
                 "extra_rows": d.get("extra_rows"),
@@ -122,11 +123,12 @@ def main(argv: list[str] | None = None) -> int:
             "n_runs_total": summary.get("n_runs"),
             "n_runs_f1": len(f1s),
             "per_run_f1": f1s,
-            "mean_f1": summary.get("mean_f1"),
-            "mean_precision": summary.get("mean_precision"),
-            "mean_recall": summary.get("mean_recall"),
-            "ci95_f1": summary.get("ci95_f1"),
-            "mean_cells": summary.get("mean_cells"),
+            "reporting_status": summary.get("reporting_status"),
+            "mean_f1": summary.get("mean_primary_f1"),
+            "mean_precision": summary.get("mean_primary_precision"),
+            "mean_recall": summary.get("mean_primary_recall"),
+            "mean_strict_f1": summary.get("mean_strict_f1"),
+            "mean_cells": summary.get("mean_total_cells"),
             "mean_missing_rows": summary.get("mean_missing_rows"),
             "mean_extra_rows": summary.get("mean_extra_rows"),
             "mean_duplicate_rate": mean(dup_rates),

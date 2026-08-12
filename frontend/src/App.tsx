@@ -1,15 +1,17 @@
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
-import { useEffect } from 'react'
-import Dashboard from './pages/Dashboard'
-import ProjectPage from './pages/ProjectPage'
-import HelpPage from './pages/HelpPage'
-import SettingsPage from './pages/SettingsPage'
-import BenchmarkPage from './pages/BenchmarkPage'
+import { lazy, Suspense, useEffect } from 'react'
 import LLMStatus from './components/LLMStatus'
 import ThemeToggle from './components/ThemeToggle'
 import ProgressBar from './components/ProgressBar'
 import { KeycloakProvider, useAuth } from './context/KeycloakContext'
 import { api } from './api/client'
+import ExperimentShell from './components/ExperimentShell'
+
+const Dashboard = lazy(() => import('./pages/Dashboard'))
+const ProjectPage = lazy(() => import('./pages/ProjectPage'))
+const HelpPage = lazy(() => import('./pages/HelpPage'))
+const SettingsPage = lazy(() => import('./pages/SettingsPage'))
+const BenchmarkPage = lazy(() => import('./pages/BenchmarkPage'))
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { authenticated, login } = useAuth()
@@ -126,13 +128,15 @@ function MainContent() {
       </nav>
 
       <main className="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8">
-        <Routes>
-          <Route path="/" element={<RequireAuth><Dashboard /></RequireAuth>} />
-          <Route path="/projects/:id" element={<RequireAuth><ProjectPage /></RequireAuth>} />
-          <Route path="/help" element={<HelpPage />} />
-          <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
-          <Route path="/benchmark" element={<RequireAuth><BenchmarkPage /></RequireAuth>} />
-        </Routes>
+        <Suspense fallback={<div className="py-12 text-center text-sm text-slate-500">Caricamento…</div>}>
+          <Routes>
+            <Route path="/" element={<RequireAuth><Dashboard /></RequireAuth>} />
+            <Route path="/projects/:id" element={<RequireAuth><ExperimentShell projectId={projectId || ''}><ProjectPage /></ExperimentShell></RequireAuth>} />
+            <Route path="/help" element={<HelpPage />} />
+            <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
+            <Route path="/benchmark" element={<RequireAuth><BenchmarkPage /></RequireAuth>} />
+          </Routes>
+        </Suspense>
       </main>
       {projectId && <ProgressBar projectId={projectId} />}
       <LLMStatus />
