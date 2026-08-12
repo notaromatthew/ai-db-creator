@@ -116,6 +116,9 @@ def test_container_configs_are_nonroot_and_healthchecked():
     workflow = (root / ".github" / "workflows" / "ci.yml").read_text()
     assert 'healthy_services="$(docker compose ps --format json' in workflow
     assert '[ "$healthy_services" -eq 6 ]' in workflow
+    assert "actions/checkout@v6" in workflow and "actions/setup-python@v6" in workflow
+    assert "actions/setup-node@v6" in workflow and "actions/upload-artifact@v6" in workflow
+    assert "actions/checkout@v4" not in workflow and "actions/setup-python@v5" not in workflow
 
 
 def test_governance_without_evidence_is_missing():
