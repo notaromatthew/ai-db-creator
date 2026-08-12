@@ -113,6 +113,9 @@ def test_container_configs_are_nonroot_and_healthchecked():
     assert "REDIS_PASSWORD:?set REDIS_PASSWORD" in compose
     assert "--requirepass" in compose and "REDISCLI_AUTH" in compose
     assert "redis://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis:6379/0" in compose
+    workflow = (root / ".github" / "workflows" / "ci.yml").read_text()
+    assert 'healthy_services="$(docker compose ps --format json' in workflow
+    assert '[ "$healthy_services" -eq 6 ]' in workflow
 
 
 def test_governance_without_evidence_is_missing():
