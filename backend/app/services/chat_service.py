@@ -5,7 +5,7 @@ from app.utils.exceptions import AppException
 from app.utils.logger import log
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-from typing import Optional
+from typing import Any, Optional
 import json
 import re
 
@@ -131,46 +131,188 @@ def _truncate_json(raw: str) -> str:
     return raw.strip()
 
 
-def _normalize_schema(data: dict) -> dict:
-    if "schema" in data:
-        data = data["schema"]
-    for rel in data.get("relationships", []):
+from app.utils.json_repair import repair_and_load_json
+
+
+def _normalize_schema(data: Any) -> dict:
+    if isinstance(data, list):
+        data = {"tables": data, "relationships": []}
+    if isinstance(data, dict):
+        if "schema" in data and isinstance(data["schema"], dict):
+            data = data["schema"]
+        elif "database" in data and isinstance(data["database"], dict):
+            data = data["database"]
+
+    raw_tables = data.get("tables", []) if isinstance(data, dict) else []
+    tables = []
+
+    for t in raw_tables:
+        if not isinstance(t, dict) or "name" not in t:
+            continue
+        t_name = str(t.get("name", "")).strip().lower().replace(" ", "_")
+        cols = []
+        raw_cols = t.get("columns", [])
+        has_pk = False
+
+        for c in raw_cols:
+            if not isinstance(c, dict):
+                continue
+            c_name = str(c.get("name") or c.get("column_name") or c.get("field") or "").strip().lower().replace(" ", "_")
+            if not c_name:
+                continue
+            dt = str(c.get("data_type") or c.get("type") or "TEXT").upper()
+            if "INT" in dt:
+                dt = "INTEGER"
+            elif any(k in dt for k in ("CHAR", "TEXT", "STR")):
+                dt = "TEXT"
+            elif any(k in dt for k in ("FLOAT", "DOUBLE", "REAL", "DECIMAL", "NUMERIC")):
+                dt = "REAL"
+            elif "DATE" in dt or "TIME" in dt:
+                dt = "DATE"
+            elif "BOOL" in dt:
+                dt = "BOOLEAN"
+            else:
+                dt = "TEXT"
+
+            is_pk = bool(c.get("is_primary_key") or c.get("primary_key") or c.get("pk") or c_name == "id")
+            if is_pk:
+                has_pk = True
+
+            fk_table = c.get("foreign_key_table")
+            fk_col = c.get("foreign_key_column")
+            is_fk = bool(c.get("is_foreign_key") or c.get("foreign_key") or c.get("fk") or fk_table)
+
+            cols.append({
+                "name": c_name,
+                "data_type": dt,
+                "is_primary_key": is_pk,
+                "is_foreign_key": is_fk,
+                "foreign_key_table": str(fk_table) if fk_table else None,
+                "foreign_key_column": str(fk_col) if fk_col else ("id" if is_fk and fk_table else None),
+                "is_unique": bool(c.get("is_unique")),
+                "is_not_null": bool(c.get("is_not_null") or is_pk),
+                "default_value": str(c.get("default_value")) if c.get("default_value") is not None else None,
+                "description": str(c.get("description")) if c.get("description") else None,
+            })
+
+        if not has_pk and cols:
+            cols[0]["is_primary_key"] = True
+
+        tables.append({
+            "name": t_name,
+            "columns": cols,
+            "description": str(t.get("description")) if t.get("description") else None,
+        })
+
+    # Cross-reference and reconcile foreign keys with actual tables & columns
+    known_tables = {t["name"].lower(): t["name"] for t in tables}
+    table_cols = {t["name"].lower(): {c["name"].lower(): c["name"] for c in t["columns"]} for t in tables}
+    table_pks = {}
+    for t in tables:
+        pk = next((c["name"] for c in t["columns"] if c.get("is_primary_key")), None)
+        table_pks[t["name"].lower()] = pk or (t["columns"][0]["name"] if t["columns"] else "id")
+
+    for t in tables:
+        for c in t["columns"]:
+            if c.get("is_foreign_key") or c.get("foreign_key_table"):
+                fk_tbl_candidate = str(c.get("foreign_key_table") or "").strip().lower().replace(" ", "_")
+                if fk_tbl_candidate in known_tables:
+                    target_tbl = known_tables[fk_tbl_candidate]
+                    c["foreign_key_table"] = target_tbl
+                    c["is_foreign_key"] = True
+                    fk_col_candidate = str(c.get("foreign_key_column") or "").strip().lower().replace(" ", "_")
+                    if fk_col_candidate in table_cols.get(fk_tbl_candidate, {}):
+                        c["foreign_key_column"] = table_cols[fk_tbl_candidate][fk_col_candidate]
+                    else:
+                        c["foreign_key_column"] = table_pks.get(fk_tbl_candidate, "id")
+                else:
+                    c["is_foreign_key"] = False
+                    c["foreign_key_table"] = None
+                    c["foreign_key_column"] = None
+
+    # Relationships
+    relationships = []
+    for rel in (data.get("relationships", []) if isinstance(data, dict) else []):
+        if not isinstance(rel, dict) or "from_table" not in rel or "to_table" not in rel:
+            continue
         t = rel.get("type", "")
         if t in ("many-to-one", "many_to_one"):
-            rel["type"] = "one_to_many"
-        elif t in ("one-to-one",):
-            rel["type"] = "one_to_one"
-        elif t in ("many-to-many",):
-            rel["type"] = "many_to_many"
-        elif not t:
-            rel["type"] = "one_to_many"
-    return data
+            rel_type = "one_to_many"
+        elif t in ("one-to-one", "one_to_one"):
+            rel_type = "one_to_one"
+        elif t in ("many-to-many", "many_to_many"):
+            rel_type = "many_to_many"
+        else:
+            rel_type = "one_to_many"
+
+        f_tbl_raw = str(rel.get("from_table", "")).strip().lower().replace(" ", "_")
+        t_tbl_raw = str(rel.get("to_table", "")).strip().lower().replace(" ", "_")
+        if f_tbl_raw in known_tables and t_tbl_raw in known_tables:
+            src_tbl = known_tables[f_tbl_raw]
+            tgt_tbl = known_tables[t_tbl_raw]
+            f_col_raw = str(rel.get("from_column", "")).strip().lower().replace(" ", "_")
+            t_col_raw = str(rel.get("to_column", "")).strip().lower().replace(" ", "_")
+            src_col = table_cols.get(f_tbl_raw, {}).get(f_col_raw) or table_pks.get(f_tbl_raw, "id")
+            tgt_col = table_cols.get(t_tbl_raw, {}).get(t_col_raw) or table_pks.get(t_tbl_raw, "id")
+            relationships.append({
+                "type": rel_type,
+                "from_table": src_tbl,
+                "from_column": src_col,
+                "to_table": tgt_tbl,
+                "to_column": tgt_col,
+            })
+
+    # Infer relationships from foreign keys if none specified
+    if not relationships:
+        for tbl in tables:
+            for col in tbl["columns"]:
+                if col.get("is_foreign_key") and col.get("foreign_key_table"):
+                    relationships.append({
+                        "type": "one_to_many",
+                        "from_table": tbl["name"],
+                        "from_column": col["name"],
+                        "to_table": col["foreign_key_table"],
+                        "to_column": col.get("foreign_key_column", "id"),
+                    })
+
+    return {
+        "tables": tables,
+        "relationships": relationships,
+        "description": data.get("description", "Schema generato dall'assistente AI") if isinstance(data, dict) else None,
+    }
 
 
 def _try_build_schema(raw: str) -> NormalizedSchema | None:
     try:
-        data = json.loads(raw)
-        data = _normalize_schema(data)
-        return NormalizedSchema(**data)
+        data = repair_and_load_json(raw)
+        norm = _normalize_schema(data)
+        if norm.get("tables"):
+            return NormalizedSchema(**norm)
     except Exception as e:
-        log.warning(f"Failed to parse JSON schema: {e}")
-        return None
+        log.warning(f"Failed to parse repaired JSON schema: {e}")
+    return None
 
 
 def extract_schema_from_response(response: str) -> NormalizedSchema | None:
-    import re
-    match = re.search(r'```json\s*([\s\S]*?)\s*```', response)
-    if match:
-        raw = _truncate_json(match.group(1).strip())
-        schema = _try_build_schema(raw)
-        if schema:
-            return schema
-    match = re.search(r'\{[\s\S]*\}', response)
-    if match:
-        raw = _truncate_json(match.group(0))
-        schema = _try_build_schema(raw)
-        if schema:
-            return schema
+    if not response:
+        return None
+
+    # 1. Try to repair and parse JSON directly from full response or blocks
+    schema = _try_build_schema(response)
+    if schema:
+        return schema
+
+    # 2. Check for SQL DDL CREATE TABLE statements
+    if "CREATE TABLE" in response.upper():
+        try:
+            from app.core.sql_importer import extract_schema as extract_sql_schema
+            sql_schema = extract_sql_schema(response, dialect="sqlite")
+            if sql_schema and sql_schema.tables:
+                log.info("Schema extracted from SQL DDL statements in chat response")
+                return sql_schema
+        except Exception as e:
+            log.warning(f"SQL schema extraction failed: {e}")
+
     return None
 
 

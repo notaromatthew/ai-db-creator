@@ -1,0 +1,13 @@
+sku,nome_prodotto,categoria,prezzo_unitario,giacenza_magazzino,fornitore,paese_fornitore
+LAP-001,Laptop Pro 15 Ultra,Computer & Laptop,1299.99,25,TechGlobal Inc,USA
+LAP-002,Ultrabook Air Lite,Computer & Laptop,899.50,40,TechGlobal Inc,USA
+MOU-101,Mouse Wireless Ergonomico,Accessori PC,29.90,150,Periferiche Italia Srl,Italia
+KEY-102,Tastiera Meccanica RGB,Accessori PC,79.99,85,Periferiche Italia Srl,Italia
+MON-201,Monitor Gaming 27 Pollici 144Hz,Schermi & Monitor,249.00,30,VisionDisplay Corp,Corea del Sud
+MON-202,Monitor Professionale 4K 32",Schermi & Monitor,499.00,18,VisionDisplay Corp,Corea del Sud
+CUF-301,Cuffie Bluetooth Noise Cancelling,Audio & Suono,119.00,60,SoundMasters Ltd,Germania
+MIC-302,Microfono USB da Studio,Audio & Suono,65.00,45,SoundMasters Ltd,Germania
+WBC-401,Webcam Full HD 1080p con Microfono,Accessori PC,45.50,90,Periferiche Italia Srl,Italia
+STP-501,Stampante Multifunzione Laser,Ufficio,189.90,15,OfficeTech Gmbh,Germania
+TAB-601,Tablet 11 Pollici 128GB Wi-Fi,Tablet & Mobile,349.99,35,TechGlobal Inc,USA
+HUB-701,Hub USB-C 7 in 1 Multiporta,Accessori PC,39.90,110,Periferiche Italia Srl,Italia

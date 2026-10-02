@@ -1,0 +1,90 @@
+=== REGISTRO ORDINI E CLIENTI E-COMMERCE TECHSTORE ===
+Data esportazione: 2026-10-01
+
+--- CLIENTE: Marco Rossi ---
+Codice Cliente: CLI-001
+Email: marco.rossi@email.it
+Telefono: +39 02 9876541
+Indirizzo di Spedizione: Via Roma 45, 20121 Milano (MI)
+Data Registrazione: 2026-01-15
+Ordini Effettuati:
+  - Numero Ordine: ORD-2026-001
+    Data Ordine: 2026-02-10
+    Metodo di Pagamento: Carta di Credito
+    Stato: Consegnato
+    Corriere: DHL Express (Tracking: DHL-882193)
+    Articoli acquistati:
+      * 1x Laptop Pro 15 Ultra (SKU: LAP-001) a €1299.99
+      * 1x Mouse Wireless Ergonomico (SKU: MOU-101) a €29.90
+    Totale Ordine: €1329.89
+
+--- CLIENTE: Laura Bianchi ---
+Codice Cliente: CLI-002
+Email: laura.bianchi@gmail.com
+Telefono: +39 06 4433221
+Indirizzo di Spedizione: Corso Vittorio Emanuele 120, 00186 Roma (RM)
+Data Registrazione: 2026-03-02
+Ordini Effettuati:
+  - Numero Ordine: ORD-2026-002
+    Data Ordine: 2026-03-12
+    Metodo di Pagamento: PayPal
+    Stato: Consegnato
+    Corriere: BRT Corriere Espresso (Tracking: BRT-991204)
+    Articoli acquistati:
+      * 1x Monitor Gaming 27 Pollici 144Hz (SKU: MON-201) a €249.00
+      * 1x Tastiera Meccanica RGB (SKU: KEY-102) a €79.99
+      * 1x Cuffie Bluetooth Noise Cancelling (SKU: CUF-301) a €119.00
+    Totale Ordine: €447.99
+
+--- CLIENTE: Giovanni Verdi ---
+Codice Cliente: CLI-003
+Email: g.verdi@studiolegale.it
+Telefono: +39 011 5566778
+Indirizzo di Spedizione: Piazza San Carlo 8, 10121 Torino (TO)
+Data Registrazione: 2026-04-18
+Ordini Effettuati:
+  - Numero Ordine: ORD-2026-003
+    Data Ordine: 2026-05-20
+    Metodo di Pagamento: Bonifico Bancario
+    Stato: Consegnato
+    Corriere: UPS (Tracking: UPS-774411)
+    Articoli acquistati:
+      * 2x Ultrabook Air Lite (SKU: LAP-002) a €899.50 cad.
+      * 2x Hub USB-C 7 in 1 Multiporta (SKU: HUB-701) a €39.90 cad.
+      * 1x Stampante Multifunzione Laser (SKU: STP-501) a €189.90
+    Totale Ordine: €2068.70
+
+--- CLIENTE: Elena Neri ---
+Codice Cliente: CLI-004
+Email: elena.neri@creativeagency.com
+Telefono: +39 055 1234890
+Indirizzo di Spedizione: Via dei Calzaiuoli 14, 50122 Firenze (FI)
+Data Registrazione: 2026-06-10
+Ordini Effettuati:
+  - Numero Ordine: ORD-2026-004
+    Data Ordine: 2026-07-05
+    Metodo di Pagamento: Carta di Credito
+    Stato: In Spedizione
+    Corriere: DHL Express (Tracking: DHL-901123)
+    Articoli acquistati:
+      * 1x Monitor Professionale 4K 32" (SKU: MON-202) a €499.00
+      * 1x Microfono USB da Studio (SKU: MIC-302) a €65.00
+      * 1x Webcam Full HD 1080p con Microfono (SKU: WBC-401) a €45.50
+    Totale Ordine: €609.50
+
+--- CLIENTE: Alessandro Fontana ---
+Codice Cliente: CLI-005
+Email: alessandro.fontana@outlook.com
+Telefono: +39 081 7766554
+Indirizzo di Spedizione: Via Toledo 300, 80134 Napoli (NA)
+Data Registrazione: 2026-08-01
+Ordini Effettuati:
+  - Numero Ordine: ORD-2026-005
+    Data Ordine: 2026-09-15
+    Metodo di Pagamento: PayPal
+    Stato: Elaborazione
+    Corriere: Non ancora assegnato
+    Articoli acquistati:
+      * 1x Tablet 11 Pollici 128GB Wi-Fi (SKU: TAB-601) a €349.99
+      * 1x Cuffie Bluetooth Noise Cancelling (SKU: CUF-301) a €119.00
+    Totale Ordine: €468.99

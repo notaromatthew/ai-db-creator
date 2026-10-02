@@ -71,6 +71,8 @@ def _get_llm(
             "base_url": settings.ollama_base_url,
             "model": model,
             "temperature": temperature,
+            "async_client_kwargs": {"timeout": 120.0},
+            "sync_client_kwargs": {"timeout": 120.0},
         }
         if settings.ollama_api_key:
             kwargs["headers"] = {"Authorization": f"Bearer {settings.ollama_api_key}"}

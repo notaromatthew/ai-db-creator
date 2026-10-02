@@ -56,10 +56,12 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?set KEYCLOAK_ADMIN_PASSWORD}
       ENABLE_AUTH: ${ENABLE_AUTH:-false}
       REDIS_URL: redis://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis:6379/0
-      BOOTSTRAP_KEYCLOAK: ${BOOTSTRAP_KEYCLOAK:-false}
+      BOOTSTRAP_KEYCLOAK: ${BOOTSTRAP_KEYCLOAK:-true}
     volumes:
       - uploads_data:/app/uploads
       - projects_data:/app/projects
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       postgres: {condition: service_healthy}
       redis: {condition: service_healthy}
@@ -76,6 +78,8 @@ services:
     volumes:
       - uploads_data:/app/uploads
       - projects_data:/app/projects
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       backend: {condition: service_healthy}
       redis: {condition: service_healthy}
