@@ -66,12 +66,21 @@ def list_projects(user: dict = Depends(get_current_user)):
     return schema_svc.list_projects(user_id=user_id)
 
 
+def _owned_project(project_id: str, user: dict | None) -> Project:
+    project = schema_svc.get_project(project_id)
+    user_id = user.get("sub") if user else None
+    if user_id and project.user_id and project.user_id != user_id:
+        raise AppException(detail="Project not found", status_code=404)
+    return project
+
+
 @router.get("/projects/{project_id}")
-def get_project(project_id: str):
-    return schema_svc.get_project(project_id)
+def get_project(project_id: str, user: dict = Depends(get_current_user)):
+    return _owned_project(project_id, user)
 
 @router.delete("/projects/{project_id}")
-def delete_project(project_id: str):
+def delete_project(project_id: str, user: dict = Depends(get_current_user)):
+    _owned_project(project_id, user)
     result = schema_svc.delete_project(project_id)
     result["interaction_events_deleted"] = interaction_logger.erase_project(project_id)
     surveys_deleted = 0

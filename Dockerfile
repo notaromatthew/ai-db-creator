@@ -1,13 +1,16 @@
-# Multi-stage Dockerfile for Coolify Deployment
-# Stage 1: Build Frontend React App
 FROM node:20-alpine AS frontend-builder
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm ci
 COPY frontend/ ./
+ARG VITE_KEYCLOAK_URL=
+ARG VITE_KEYCLOAK_REALM=aidbcreator
+ARG VITE_KEYCLOAK_CLIENT_ID=aidbcreator-app
+ENV VITE_KEYCLOAK_URL=$VITE_KEYCLOAK_URL \
+    VITE_KEYCLOAK_REALM=$VITE_KEYCLOAK_REALM \
+    VITE_KEYCLOAK_CLIENT_ID=$VITE_KEYCLOAK_CLIENT_ID
 RUN npm run build
 
-# Stage 2: Backend FastAPI + Static Asset Service
 FROM python:3.12-slim AS runner
 WORKDIR /app
 
@@ -23,7 +26,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/app ./app
 COPY --from=frontend-builder /app/frontend/dist ./static
 
-ENV PORT=8000
+RUN useradd --system --uid 10001 --create-home appuser \
+    && mkdir -p /app/uploads /app/projects \
+    && chown -R appuser:appuser /app
+
+USER appuser
+
+ENV PORT=8000 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
 EXPOSE 8000
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips='*'"]

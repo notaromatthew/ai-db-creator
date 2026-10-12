@@ -106,8 +106,8 @@ async def run_model_benchmark(
 
         # 3. Cell precision estimate & Token cost estimate
         cell_precision = round(min(1.0, norm3_score / 100.0 * 0.95 + 0.05), 3)
-        est_tokens = len(scenario["prompt"].split()) * 5 + len(str(schema.model_dump())).split()
-        est_cost = round(len(est_tokens) * 0.000002, 6)
+        est_tokens = len(scenario["prompt"].split()) * 5 + len(str(schema.model_dump()).split())
+        est_cost = round(est_tokens * 0.000002, 6)
 
         result_entry = BenchmarkResult(
             scenario_name=scenario["title"],

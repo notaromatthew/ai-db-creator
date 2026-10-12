@@ -38,6 +38,10 @@ class Settings(BaseSettings):
     keycloak_admin_password: str = ""
     enable_auth: bool = True
 
+    host: str = "0.0.0.0"
+    port: int = 8000
+    cors_allow_origin_regex: str = r"https?://.*"
+
 
 
 

@@ -2,6 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { api } from '../api/client'
 
+const numOr = (v: any, d: number) => {
+  if (v === '' || v === null || v === undefined) return d
+  const n = Number(v)
+  return Number.isFinite(n) ? n : d
+}
+
 export default function SettingsPage() {
   const queryClient = useQueryClient()
   const [settingsData, setSettingsData] = useState<any>(null)
@@ -114,10 +120,10 @@ export default function SettingsPage() {
         groq_api_key: settingsData.groq_api_key || '',
         openrouter_model: settingsData.openrouter_model || 'openai/gpt-4o-mini',
         openrouter_api_key: settingsData.openrouter_api_key || '',
-        llm_temperature: Number(settingsData.llm_temperature) || 0.1,
-        llm_top_p: Number(settingsData.llm_top_p) || 0.95,
-        llm_max_tokens: Number(settingsData.llm_max_tokens) || 4096,
-        llm_max_requests_per_minute: Number(settingsData.llm_max_requests_per_minute) || 15,
+        llm_temperature: numOr(settingsData.llm_temperature, 0.1),
+        llm_top_p: numOr(settingsData.llm_top_p, 0.95),
+        llm_max_tokens: numOr(settingsData.llm_max_tokens, 4096),
+        llm_max_requests_per_minute: numOr(settingsData.llm_max_requests_per_minute, 15),
       }
 
       const updated = await api.put('/settings', payload)

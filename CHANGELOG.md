@@ -2,6 +2,15 @@
 
 Tutte le modifiche rilevanti del progetto sono raccolte in questo file. Il formato segue una struttura orientata alla ricerca: ogni voce distingue funzionalità applicative, infrastruttura scientifica, riproducibilità, documentazione e validazione.
 
+## 2026-10-12 - Lifespan, /ready, test, correzioni e deploy GCP (Branch Davide)
+
+- Backend: migrazione a `lifespan` (RFC-001), endpoint `/ready`, `PORT`/CORS da configurazione; avvio resiliente se DB o Keycloak non rispondono. 26 nuovi test (auth, health/ready, settings, benchmark, multi-tenancy): 91 passati.
+- Correzione: `POST /api/benchmark/run` restituiva sempre 500 (stima token); `token_cost_estimate` ora è definito da questa data e non comparabile con run precedenti (nessuno salvato).
+- Correzione: `GET/DELETE /api/projects/{id}` ora verificano la proprietà (RFC-005).
+- Frontend: 21 nuovi test (28 totali). Corretto `SettingsPage`: temperatura 0 veniva salvata come 0.1; impatta la riproducibilità solo per chi imposta 0.
+- Deploy: `Dockerfile` con `$PORT` e utente non-root, `deploy/gcp/` (Cloud Build, Cloud Run, Secret Manager), capitolo GCP in `docs/04-deployment-guide.md`.
+- Aperti: vedi RFC-007.
+
 ## 2026-08-07 - Feature Fondamentali, Keycloak, PostgreSQL, SonarQube, Benchmark & Coolify (Branch Davide)
 
 ### Sintesi

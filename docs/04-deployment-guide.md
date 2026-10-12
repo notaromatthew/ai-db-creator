@@ -240,3 +240,47 @@ backend/
 ├── .env                    # Configuration
 └── requirements.txt
 ```
+
+---
+
+## 6. Google Cloud Platform (Cloud Run)
+
+### 6.1 English
+
+The root `Dockerfile` is Cloud Run compatible: it honours `$PORT`, runs as non-root user (uid 10001) and still works on Coolify (default port 8000). Assets live in `deploy/gcp/`:
+
+| File | Purpose |
+|---|---|
+| `cloudbuild.yaml` | Cloud Build: builds and pushes the image to Artifact Registry, passes `VITE_KEYCLOAK_*` as build args |
+| `deploy.sh` | Idempotent: enables APIs, creates the Artifact Registry repo, creates secrets, builds, deploys with `--set-secrets` |
+| `env.example` | All variables consumed by the script |
+| `README.md` | Step-by-step instructions |
+
+```bash
+cp deploy/gcp/env.example deploy/gcp/.env   # edit values
+DRY_RUN=true ./deploy/gcp/deploy.sh         # print commands only
+./deploy/gcp/deploy.sh
+```
+
+Environment mapping (names from `backend/app/config.py`):
+
+| Kind | Variables |
+|---|---|
+| Secret Manager | `DATABASE_URL`, `KEYCLOAK_ADMIN_PASSWORD`, `OLLAMA_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `GROQ_API_KEY`, `OPENROUTER_API_KEY` |
+| Plain env | `KEYCLOAK_URL`, `KEYCLOAK_REALM`, `KEYCLOAK_CLIENT_ID`, `ENABLE_AUTH`, `LLM_PROVIDER`, `OLLAMA_MODE`, `OLLAMA_BASE_URL`, `OLLAMA_MODEL`, `OPENAI_MODEL`, `GOOGLE_MODEL`, `LOG_LEVEL` |
+| Build time (frontend) | `VITE_KEYCLOAK_URL`, `VITE_KEYCLOAK_REALM`, `VITE_KEYCLOAK_CLIENT_ID` (`VITE_API_URL` unset: same-origin) |
+
+Operational assumptions:
+
+- Set `CLOUDSQL_INSTANCE=PROJECT:REGION:INSTANCE` for Cloud SQL and use `postgresql://USER:PASS@/DB?host=/cloudsql/PROJECT:REGION:INSTANCE` as `DATABASE_URL`; grant `roles/cloudsql.client` to the runtime service account.
+- After deploy, add the Cloud Run URL to the Keycloak client: Valid redirect URIs (`<url>/*`), Valid post logout redirect URIs and Web origins (`<url>`).
+- The container filesystem is ephemeral: `uploads/` and `projects/` are lost on restart or scale-to-zero.
+- The app connects to PostgreSQL at startup; an unreachable `DATABASE_URL` prevents the container from becoming ready.
+- Redis/Celery are not part of this topology; `*-async` endpoints are unavailable.
+- Rate limiting and LLM throttling are per instance.
+
+### 6.2 Italiano
+
+Il `Dockerfile` in radice e compatibile con Cloud Run (rispetta `$PORT`, utente non-root) e continua a funzionare su Coolify. Gli script sono in `deploy/gcp/`: `deploy.sh` abilita le API, crea il repository Artifact Registry e i secret in Secret Manager, esegue la build con Cloud Build e distribuisce su Cloud Run con `--set-secrets`. Usare `DRY_RUN=true` per vedere i comandi senza eseguirli.
+
+Punti di attenzione: aggiungere l'URL Cloud Run a redirect URI, post-logout redirect URI e web origins del client Keycloak; per Cloud SQL usare il socket `/cloudsql/...` in `DATABASE_URL`; il filesystem e effimero (`uploads/`, `projects/`); le variabili `VITE_KEYCLOAK_*` sono fissate in fase di build, quindi un cambio di Keycloak richiede una nuova build. Dettagli in `deploy/gcp/README.md`.
