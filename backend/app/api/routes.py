@@ -61,6 +61,9 @@ def _log_research_run(event_type: str, project_id: str, data: dict, run_id: str 
 @router.post("/projects")
 def create_project(name: str = Body(...), prompt: str = Body(""), user: dict = Depends(get_current_user)):
     row = ensure_user(user)
+    from app.core.runtime import get_setting
+    if len(schema_svc.list_projects(user_id=row.id)) >= get_setting("max_projects_per_user"):
+        raise AppException(detail="Hai raggiunto il numero massimo di progetti. Eliminane uno per crearne un altro.", status_code=409)
     return schema_svc.create_project(name, prompt, owner_id=row.id)
 
 @router.get("/projects")
@@ -222,7 +225,9 @@ def _remove_temp_file(path: str, attempts: int = 5, retry_delay_seconds: float =
 @router.post("/projects/{project_id}/documents", dependencies=[Depends(project_editor)])
 async def upload_document(project_id: str, file: UploadFile = File(...)):
     schema_svc.get_project(project_id)
-    max_upload_size = 25 * 1024 * 1024
+    from app.core.runtime import get_setting
+    upload_mb = int(get_setting("max_upload_mb"))
+    max_upload_size = upload_mb * 1024 * 1024
     allowed_extensions = {".pdf", ".xls", ".xlsx", ".txt", ".csv", ".sql"}
     original_filename = Path(file.filename or "").name
     extension = Path(original_filename).suffix.lower()
@@ -235,7 +240,7 @@ async def upload_document(project_id: str, file: UploadFile = File(...)):
         while chunk := await file.read(min(1024 * 1024, max_upload_size - total_size + 1)):
             total_size += len(chunk)
             if total_size > max_upload_size:
-                raise HTTPException(status_code=413, detail="Il file supera il limite di 25 MB.")
+                raise HTTPException(status_code=413, detail=f"Il file supera il limite di {upload_mb} MB.")
             tmp.write(chunk)
         tmp.close()
         doc = doc_svc.upload_document(project_id, tmp.name, original_filename=original_filename)
@@ -259,13 +264,15 @@ async def import_sql(project_id: str, file: UploadFile = File(...), dialect: str
     if Path(file.filename or "").suffix.lower() != ".sql":
         raise HTTPException(status_code=422, detail="È richiesto un file .sql.")
     initial_schema = schema_svc.get_schema(project_id)
-    max_upload_size = 25 * 1024 * 1024
+    from app.core.runtime import get_setting
+    upload_mb = int(get_setting("max_upload_mb"))
+    max_upload_size = upload_mb * 1024 * 1024
     chunks = []
     total_size = 0
     while chunk := await file.read(min(1024 * 1024, max_upload_size - total_size + 1)):
         total_size += len(chunk)
         if total_size > max_upload_size:
-            raise HTTPException(status_code=413, detail="Il file supera il limite di 25 MB.")
+            raise HTTPException(status_code=413, detail=f"Il file supera il limite di {upload_mb} MB.")
         chunks.append(chunk)
     content = b"".join(chunks)
     sql_text = content.decode("utf-8", errors="replace")

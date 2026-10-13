@@ -42,7 +42,7 @@ class Settings(BaseSettings):
     research_mode: bool = False
     # Quote giornaliere per utente (valori bassi di proposito, modificabili dall'admin).
     default_daily_ai_quota: int = 20
-    max_upload_mb: int = 10
+    max_upload_mb: int = 25
     max_projects_per_user: int = 10
     daily_ai_budget_total: int = 500  # tetto globale di chiamate AI al giorno
 
