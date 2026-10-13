@@ -2,6 +2,8 @@
 # Scansione SonarQube. Richiede SONAR_TOKEN e SONAR_HOST_URL da ambiente (mai nel repo).
 # Genera copertura backend (pytest-cov) e frontend (vitest coverage, se installato), poi lancia sonar-scanner.
 set -euo pipefail
+root0="$(cd "$(dirname "$0")/.." && pwd)"
+if [[ -f "$root0/.sonar.env" ]]; then set -a; . "$root0/.sonar.env"; set +a; fi
 : "${SONAR_TOKEN:?SONAR_TOKEN mancante: nessuna scansione}"
 : "${SONAR_HOST_URL:?SONAR_HOST_URL mancante: nessuna scansione}"
 root="$(cd "$(dirname "$0")/.." && pwd)"

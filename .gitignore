@@ -41,3 +41,4 @@ infra/**/.terraform.lock.hcl
 backend/coverage.xml
 .scannerwork/
 backend/.coverage
+.sonar.env

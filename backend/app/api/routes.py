@@ -30,9 +30,16 @@ from app.utils.logger import log
 from app.utils.exceptions import AppException
 from pathlib import Path
 import tempfile
+from starlette.concurrency import run_in_threadpool
 import os
 import shutil
 from typing import Literal
+
+
+def _outbound_tls_verify() -> bool:
+    """Verifica del certificato attiva di default; si spegne solo con OUTBOUND_TLS_VERIFY=0 (sviluppo, Ollama con certificato autofirmato)."""
+    return os.getenv("OUTBOUND_TLS_VERIFY", "1") != "0"
+
 
 router = APIRouter(prefix="/api")
 schema_svc = SchemaService()
@@ -292,7 +299,7 @@ async def upload_document(project_id: str, file: UploadFile = File(...), user: d
     if not original_filename or extension not in allowed_extensions:
         raise HTTPException(status_code=422, detail="Formato non supportato. Usa PDF, Excel, CSV, TXT o SQL.")
 
-    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=extension)
+    tmp = await run_in_threadpool(tempfile.NamedTemporaryFile, delete=False, suffix=extension)
     try:
         total_size = 0
         while chunk := await file.read(min(1024 * 1024, max_upload_size - total_size + 1)):
@@ -301,7 +308,6 @@ async def upload_document(project_id: str, file: UploadFile = File(...), user: d
                 raise HTTPException(status_code=413, detail=f"Il file supera il limite di {upload_mb} MB.")
             tmp.write(chunk)
         tmp.close()
-        from starlette.concurrency import run_in_threadpool
 
         def ocr_gate():
             # l'OCR e' una chiamata al modello: consuma la quota come le altre
@@ -1296,7 +1302,7 @@ async def list_ollama_models(
         if target_key and target_key.strip():
             headers["Authorization"] = f"Bearer {target_key.strip()}"
         url = f"{target_url.rstrip('/')}/api/tags"
-        async with httpx.AsyncClient(verify=False, timeout=5.0) as client:
+        async with httpx.AsyncClient(verify=_outbound_tls_verify(), timeout=5.0) as client:
             res = await client.get(url, headers=headers)
             if res.status_code == 200:
                 models = res.json().get("models", [])
@@ -1333,7 +1339,7 @@ async def test_ollama_prompt(body: OllamaTestRequest, user: dict = Depends(requi
 
     log.info(f"🧪 Ollama test: POST {api_url} model={model} prompt={body.prompt[:60]}...")
     try:
-        async with httpx.AsyncClient(verify=False, timeout=60.0) as client:
+        async with httpx.AsyncClient(verify=_outbound_tls_verify(), timeout=60.0) as client:
             res = await client.post(api_url, json=payload, headers=headers)
             if res.status_code == 200:
                 data = res.json()

@@ -195,10 +195,13 @@ function UsageList({ title, id, rows, label, loading, error }: { title: string; 
   )
 }
 
+function useUsageQuery(group: 'user' | 'day' | 'kind', days: number) {
+  return useQuery<UsageCount[]>({ queryKey: ['admin', 'usage', group, days], queryFn: () => api.get(`/admin/usage?group=${group}&days=${days}`) })
+}
+
 function UsageTab() {
   const [days, setDays] = useState(14)
-  const q = (group: 'user' | 'day' | 'kind') => useQuery<UsageCount[]>({ queryKey: ['admin', 'usage', group, days], queryFn: () => api.get(`/admin/usage?group=${group}&days=${days}`) })
-  const byDayQ = q('day'); const byKindQ = q('kind'); const byUserQ = q('user')
+  const byDayQ = useUsageQuery('day', days); const byKindQ = useUsageQuery('kind', days); const byUserQ = useUsageQuery('user', days)
   const byDay = useMemo(() => [...(byDayQ.data ?? [])].sort((a, b) => b.key.localeCompare(a.key)), [byDayQ.data])
   const total = byDay.reduce((s, r) => s + r.count, 0)
   const max = Math.max(1, ...byDay.map((r) => r.count))

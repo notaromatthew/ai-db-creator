@@ -121,7 +121,7 @@ async def setup_keycloak_realm():
         return False
 
     try:
-        async with httpx.AsyncClient(verify=False, timeout=10.0) as client:
+        async with httpx.AsyncClient(verify=os.getenv("KEYCLOAK_TLS_VERIFY", "1") != "0", timeout=10.0) as client:
             res = await client.post(token_url, data=payload)
             if res.status_code != 200:
                 log.warning(f"Keycloak admin authentication failed ({res.status_code})")
