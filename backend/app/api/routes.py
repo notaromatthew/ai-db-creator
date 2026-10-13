@@ -6,6 +6,7 @@ import re
 import httpx
 
 from app.core.auth import get_current_user
+from app.core.acl import ProjectAccess, ensure_user, project_editor, project_owner, project_viewer
 from app.config import settings
 from app.services.benchmark_service import run_model_benchmark, save_user_vote, BENCHMARK_SCENARIOS
 from app.models.database import get_session, init_db, BenchmarkResult, UserVote
@@ -57,30 +58,22 @@ def _log_research_run(event_type: str, project_id: str, data: dict, run_id: str 
 
 @router.post("/projects")
 def create_project(name: str = Body(...), prompt: str = Body(""), user: dict = Depends(get_current_user)):
-    user_id = user.get("sub") if user else None
-    return schema_svc.create_project(name, prompt, user_id=user_id)
+    row = ensure_user(user)
+    return schema_svc.create_project(name, prompt, owner_id=row.id)
 
 @router.get("/projects")
 def list_projects(user: dict = Depends(get_current_user)):
-    user_id = user.get("sub") if user else None
-    return schema_svc.list_projects(user_id=user_id)
-
-
-def _owned_project(project_id: str, user: dict | None) -> Project:
-    project = schema_svc.get_project(project_id)
-    user_id = user.get("sub") if user else None
-    if user_id and project.user_id and project.user_id != user_id:
-        raise AppException(detail="Project not found", status_code=404)
-    return project
+    row = ensure_user(user)
+    return schema_svc.list_projects(user_id=row.id)
 
 
 @router.get("/projects/{project_id}")
-def get_project(project_id: str, user: dict = Depends(get_current_user)):
-    return _owned_project(project_id, user)
+def get_project(project_id: str, access: ProjectAccess = Depends(project_viewer)):
+    project = schema_svc.get_project(project_id)
+    return {**{c.name: getattr(project, c.name) for c in project.__table__.columns}, "my_role": access.role}
 
 @router.delete("/projects/{project_id}")
-def delete_project(project_id: str, user: dict = Depends(get_current_user)):
-    _owned_project(project_id, user)
+def delete_project(project_id: str, access: ProjectAccess = Depends(project_owner)):
     result = schema_svc.delete_project(project_id)
     result["interaction_events_deleted"] = interaction_logger.erase_project(project_id)
     surveys_deleted = 0
@@ -97,7 +90,7 @@ def delete_project(project_id: str, user: dict = Depends(get_current_user)):
     result["surveys_deleted"] = surveys_deleted
     return result
 
-@router.post("/projects/{project_id}/generate")
+@router.post("/projects/{project_id}/generate", dependencies=[Depends(project_editor)])
 async def generate_schema(project_id: str, req: GenerateRequest):
     started_at = utc_now()
     run_id = new_run_id()
@@ -133,11 +126,11 @@ async def generate_schema(project_id: str, req: GenerateRequest):
     }, run_id=run_id)
     return result
 
-@router.get("/projects/{project_id}/schema")
+@router.get("/projects/{project_id}/schema", dependencies=[Depends(project_viewer)])
 def get_schema(project_id: str):
     return schema_svc.get_schema(project_id)
 
-@router.put("/projects/{project_id}/schema")
+@router.put("/projects/{project_id}/schema", dependencies=[Depends(project_editor)])
 def update_schema(project_id: str, schema: NormalizedSchema):
     previous = schema_svc.get_schema(project_id)
     result = schema_svc.update_schema(project_id, schema)
@@ -157,7 +150,7 @@ class ChatRequest(BaseModel):
     session_id: str | None = Field(default=None, pattern=r"^[A-Za-z0-9_.-]{1,128}$")
     participant_id: str | None = Field(default=None, pattern=r"^[A-Za-z0-9_.-]{1,128}$")
 
-@router.post("/projects/{project_id}/chat")
+@router.post("/projects/{project_id}/chat", dependencies=[Depends(project_editor)])
 async def chat_schema(project_id: str, req: ChatRequest):
     started_at = utc_now()
     run_id = new_run_id()
@@ -194,7 +187,7 @@ async def chat_schema(project_id: str, req: ChatRequest):
     }, run_id=run_id)
     return {"response": response, "schema": schema.model_dump() if schema else None}
 
-@router.post("/projects/{project_id}/chat-accept")
+@router.post("/projects/{project_id}/chat-accept", dependencies=[Depends(project_editor)])
 def accept_chat_schema(project_id: str, schema: NormalizedSchema):
     previous = schema_svc.get_schema(project_id)
     result = schema_svc.update_schema(project_id, schema)
@@ -224,7 +217,7 @@ def _remove_temp_file(path: str, attempts: int = 5, retry_delay_seconds: float =
             break
 
 
-@router.post("/projects/{project_id}/documents")
+@router.post("/projects/{project_id}/documents", dependencies=[Depends(project_editor)])
 async def upload_document(project_id: str, file: UploadFile = File(...)):
     schema_svc.get_project(project_id)
     max_upload_size = 25 * 1024 * 1024
@@ -255,7 +248,7 @@ async def upload_document(project_id: str, file: UploadFile = File(...)):
         tmp.close()
         _remove_temp_file(tmp.name)
 
-@router.post("/projects/{project_id}/import-sql")
+@router.post("/projects/{project_id}/import-sql", dependencies=[Depends(project_editor)])
 async def import_sql(project_id: str, file: UploadFile = File(...), dialect: str = "sqlite"):
     started_at = utc_now()
     from app.core.sql_importer import extract_schema, clean_inserts, split_sql_statements
@@ -358,7 +351,7 @@ async def import_sql(project_id: str, file: UploadFile = File(...), dialect: str
     })
     return {"tables": len(schema.tables), "schema": schema.model_dump()}
 
-@router.get("/projects/{project_id}/documents")
+@router.get("/projects/{project_id}/documents", dependencies=[Depends(project_viewer)])
 def list_documents(project_id: str):
     schema_svc.get_project(project_id)
     return [{
@@ -369,11 +362,11 @@ def list_documents(project_id: str):
         }
     } for doc in doc_svc.list_documents(project_id)]
 
-@router.delete("/projects/{project_id}/documents/{doc_id}")
+@router.delete("/projects/{project_id}/documents/{doc_id}", dependencies=[Depends(project_editor)])
 def delete_document(project_id: str, doc_id: str):
     return doc_svc.delete_document(project_id, doc_id)
 
-@router.post("/projects/{project_id}/populate")
+@router.post("/projects/{project_id}/populate", dependencies=[Depends(project_editor)])
 async def populate(project_id: str, req: PopulateRequest):
     started_at = utc_now()
     run_id = new_run_id()
@@ -427,12 +420,12 @@ async def populate(project_id: str, req: PopulateRequest):
     }, run_id=run_id)
     return result
 
-@router.post("/projects/{project_id}/query")
+@router.post("/projects/{project_id}/query", dependencies=[Depends(project_viewer)])
 async def generate_query(project_id: str, req: QueryRequest):
     return await query_svc.generate(project_id, req.prompt, req.dialect)
 
-@router.post("/projects/{project_id}/execute-query")
-def execute_query(project_id: str, req: ExecuteQueryRequest):
+@router.post("/projects/{project_id}/execute-query", dependencies=[Depends(project_viewer)])
+def execute_query(project_id: str, req: ExecuteQueryRequest, access: ProjectAccess = Depends(project_viewer)):
     project = schema_svc.get_project(project_id)
     if not project or not project.db_path:
         raise HTTPException(status_code=400, detail="Nessun database trovato per questo progetto")
@@ -445,7 +438,11 @@ def execute_query(project_id: str, req: ExecuteQueryRequest):
         raise HTTPException(status_code=400, detail="SQL vuoto")
 
     stmt_upper = sql.upper().strip()
-    if any(kw in stmt_upper for kw in ("INSERT ", "UPDATE ", "DELETE ", "DROP ", "CREATE ", "ALTER ")):
+    is_write = not stmt_upper.startswith(("SELECT", "WITH", "EXPLAIN")) or any(
+        kw in stmt_upper for kw in ("INSERT ", "UPDATE ", "DELETE ", "DROP ", "CREATE ", "ALTER ", "ATTACH ", "PRAGMA "))
+    if is_write and not access.allows("editor"):
+        raise HTTPException(status_code=403, detail="Con il ruolo di lettore puoi eseguire solo query di lettura")
+    if is_write:
         backup_svc.auto_backup(project.db_path, project_id, "execute_query")
         log.info("Auto-backup created before write query")
 
@@ -472,7 +469,7 @@ def execute_query(project_id: str, req: ExecuteQueryRequest):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Esecuzione query fallita: {str(e)}")
 
-@router.get("/projects/{project_id}/data/stats")
+@router.get("/projects/{project_id}/data/stats", dependencies=[Depends(project_viewer)])
 def get_table_stats(project_id: str):
     project = schema_svc.get_project(project_id)
     schema = schema_svc.get_schema(project_id)
@@ -491,7 +488,7 @@ def get_table_stats(project_id: str):
                 stats[t] = 0
     return stats
 
-@router.get("/projects/{project_id}/data/{table_name}")
+@router.get("/projects/{project_id}/data/{table_name}", dependencies=[Depends(project_viewer)])
 def get_table_data(project_id: str, table_name: str):
     project = schema_svc.get_project(project_id)
     schema = schema_svc.get_schema(project_id)
@@ -507,7 +504,7 @@ def get_table_data(project_id: str, table_name: str):
         rows = [dict(r._mapping) for r in result]
     return rows
 
-@router.put("/projects/{project_id}/data/{table_name}")
+@router.put("/projects/{project_id}/data/{table_name}", dependencies=[Depends(project_editor)])
 def update_table_row(project_id: str, table_name: str, row: dict = Body(...)):
     project = schema_svc.get_project(project_id)
     schema = schema_svc.get_schema(project_id)
@@ -533,7 +530,7 @@ def update_table_row(project_id: str, table_name: str, row: dict = Body(...)):
     interaction_logger.log_event("data_row_update", project_id, {"table": table_name, "columns": sorted(c for c in row if c not in pk_cols), "pk_columns": pk_cols})
     return {"updated": True}
 
-@router.delete("/projects/{project_id}/data/{table_name}")
+@router.delete("/projects/{project_id}/data/{table_name}", dependencies=[Depends(project_editor)])
 def delete_table_row(project_id: str, table_name: str, pks: dict = Body(..., embed=True)):
     project = schema_svc.get_project(project_id)
     schema = schema_svc.get_schema(project_id)
@@ -557,7 +554,7 @@ def delete_table_row(project_id: str, table_name: str, pks: dict = Body(..., emb
     interaction_logger.log_event("data_row_delete", project_id, {"table": table_name, "pk_columns": pk_cols})
     return {"deleted": True}
 
-@router.post("/projects/{project_id}/data/{table_name}")
+@router.post("/projects/{project_id}/data/{table_name}", dependencies=[Depends(project_editor)])
 def insert_table_row(project_id: str, table_name: str, row: dict = Body(...)):
     project = schema_svc.get_project(project_id)
     schema = schema_svc.get_schema(project_id)
@@ -582,7 +579,7 @@ def insert_table_row(project_id: str, table_name: str, row: dict = Body(...)):
     interaction_logger.log_event("data_row_insert", project_id, {"table": table_name, "columns": sorted(cols)})
     return {"inserted": True}
 
-@router.get("/projects/{project_id}/metrics")
+@router.get("/projects/{project_id}/metrics", dependencies=[Depends(project_viewer)])
 def get_metrics(project_id: str):
     project = schema_svc.get_project(project_id)
     schema = schema_svc.get_schema(project_id)
@@ -606,18 +603,18 @@ class ClientInteraction(BaseModel):
     model_config = {"extra": "forbid"}
 
 
-@router.post("/projects/{project_id}/interactions")
+@router.post("/projects/{project_id}/interactions", dependencies=[Depends(project_viewer)])
 def log_interaction(project_id: str, event: ClientInteraction):
     schema_svc.get_project(project_id)
     interaction_logger.log_event(event.type, project_id, event.model_dump(exclude_none=True))
     return {"status": "logged"}
 
-@router.get("/projects/{project_id}/interactions")
+@router.get("/projects/{project_id}/interactions", dependencies=[Depends(project_viewer)])
 def get_interactions(project_id: str):
     schema_svc.get_project(project_id)
     return interaction_logger.get_events(project_id)
 
-@router.post("/projects/{project_id}/export-interactions")
+@router.post("/projects/{project_id}/export-interactions", dependencies=[Depends(project_viewer)])
 def export_interactions(project_id: str):
     schema_svc.get_project(project_id)
     from pathlib import Path
@@ -711,7 +708,7 @@ def submit_sus(payload: dict):
 def llm_info():
     return get_llm_info()
 
-@router.get("/projects/{project_id}/export-full")
+@router.get("/projects/{project_id}/export-full", dependencies=[Depends(project_viewer)])
 def export_full(project_id: str, dialect: str = "sqlite"):
     from app.core.db_export import export_full as do_export
     project = schema_svc.get_project(project_id)
@@ -724,7 +721,7 @@ def export_full(project_id: str, dialect: str = "sqlite"):
     ext_map = {"sqlite": "sql", "postgresql": "sql", "mysql": "sql", "mssql": "sql"}
     return {"format": dialect, "content": content, "extension": ext_map.get(dialect, "sql")}
 
-@router.post("/projects/{project_id}/backup")
+@router.post("/projects/{project_id}/backup", dependencies=[Depends(project_editor)])
 def create_backup(project_id: str, label: str = ""):
     project = schema_svc.get_project(project_id)
     if not project.db_path:
@@ -733,12 +730,12 @@ def create_backup(project_id: str, label: str = ""):
     interaction_logger.log_event("backup", project_id, {"label": label, "file": result.get("file")})
     return result
 
-@router.get("/projects/{project_id}/backups")
+@router.get("/projects/{project_id}/backups", dependencies=[Depends(project_viewer)])
 def list_backups(project_id: str):
     project = schema_svc.get_project(project_id)
     return backup_svc.list_backups(project_id, project.db_path)
 
-@router.post("/projects/{project_id}/restore")
+@router.post("/projects/{project_id}/restore", dependencies=[Depends(project_editor)])
 def restore_backup(project_id: str, backup_name: str = Body(..., embed=True)):
     project = schema_svc.get_project(project_id)
     if not project.db_path:
@@ -749,7 +746,7 @@ def restore_backup(project_id: str, backup_name: str = Body(..., embed=True)):
     interaction_logger.log_event("restore", project_id, {"backup": backup_name})
     return result
 
-@router.get("/projects/{project_id}/export")
+@router.get("/projects/{project_id}/export", dependencies=[Depends(project_viewer)])
 def export_schema(project_id: str, format: str = "sql"):
     project = schema_svc.get_project(project_id)
     schema = schema_svc.get_schema(project_id)
@@ -798,7 +795,7 @@ def export_schema(project_id: str, format: str = "sql"):
 
     raise HTTPException(status_code=400, detail=f"Unsupported format: {format}")
 
-@router.post("/projects/{project_id}/generate-async")
+@router.post("/projects/{project_id}/generate-async", dependencies=[Depends(project_editor)])
 def generate_schema_async(project_id: str, req: GenerateRequest):
     """Start async schema generation."""
     schema_svc.get_project(project_id)
@@ -811,7 +808,7 @@ def generate_schema_async(project_id: str, req: GenerateRequest):
     task = generate_schema_task.delay(project_id, req.prompt, req.document_ids, context)
     return {"task_id": task.id, "status": "started"}
 
-@router.post("/projects/{project_id}/populate-async")
+@router.post("/projects/{project_id}/populate-async", dependencies=[Depends(project_editor)])
 def populate_async(project_id: str, req: PopulateRequest):
     """Start async data population."""
     project = schema_svc.get_project(project_id)
@@ -831,7 +828,7 @@ def populate_async(project_id: str, req: PopulateRequest):
     task = populate_data_task.delay(project_id, project.db_path, json.loads(schema.model_dump_json()), req.document_ids, context)
     return {"task_id": task.id, "status": "started"}
 
-@router.post("/projects/{project_id}/export-async")
+@router.post("/projects/{project_id}/export-async", dependencies=[Depends(project_viewer)])
 def export_async(project_id: str, format: str = "sql"):
     """Start async schema export."""
     schema_svc.get_project(project_id)

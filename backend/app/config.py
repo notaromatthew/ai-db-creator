@@ -47,6 +47,7 @@ class Settings(BaseSettings):
     keycloak_admin_user: str = "admin"
     keycloak_admin_password: str = ""
     enable_auth: bool = True
+    admin_role: str = "aidb-admin"
     # URL pubblico dell'app (es. https://app.tecniaweb.it): usato per limitare
     # redirect URI e web origins del client Keycloak. Vuoto = nessuna restrizione.
     app_public_url: str = ""

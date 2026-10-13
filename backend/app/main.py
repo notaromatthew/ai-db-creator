@@ -65,6 +65,8 @@ async def custom_http_exception_handler(request: Request, exc: StarletteHTTPExce
 
 app.include_router(router)
 app.include_router(progress_router)
+from app.api.sharing import router as sharing_router
+app.include_router(sharing_router)
 
 @app.get("/health")
 @limiter.limit("60/minute")

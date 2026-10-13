@@ -4,7 +4,7 @@ from app.core.parser import get_parser, ParsedDocument
 from app.core.db_generator import create_database_from_schema
 from app.utils.exceptions import AppException
 from app.utils.logger import log
-from app.models.database import Project, Document, get_session, init_db
+from app.models.database import Project, ProjectMember, Document, get_session, init_db
 from pathlib import Path
 import json
 import os
@@ -17,9 +17,9 @@ class SchemaService:
     def __init__(self):
         self.engine = init_db()
     
-    def create_project(self, name: str, prompt: str = "", user_id: str | None = None) -> Project:
+    def create_project(self, name: str, prompt: str = "", owner_id: str | None = None) -> Project:
         session = get_session(self.engine)
-        project = Project(name=name, prompt=prompt, user_id=user_id)
+        project = Project(name=name, prompt=prompt, owner_id=owner_id)
         session.add(project)
         session.commit()
         project_id = project.id
@@ -36,9 +36,11 @@ class SchemaService:
     
     def list_projects(self, user_id: str | None = None) -> list:
         session = get_session(self.engine)
+        from sqlalchemy import or_
         query = session.query(Project)
         if user_id:
-            query = query.filter((Project.user_id == user_id) | (Project.user_id == None))
+            shared = session.query(ProjectMember.project_id).filter(ProjectMember.user_id == user_id)
+            query = query.filter(or_(Project.owner_id == user_id, Project.id.in_(shared)))
         projects = query.all()
         session.close()
         return projects

@@ -28,7 +28,8 @@ async def get_current_user(
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
 ) -> dict:
     if not settings.enable_auth:
-        return {"sub": "default-user", "username": "davide", "email": "davide@example.com"}
+        return {"sub": "default-user", "username": "davide", "email": "davide@example.com",
+                "name": "Davide", "roles": [settings.admin_role]}
 
     if not credentials:
         raise HTTPException(
@@ -59,6 +60,8 @@ async def get_current_user(
             "sub": claims.get("sub"),
             "username": claims.get("preferred_username", claims.get("sub")),
             "email": claims.get("email"),
+            "name": claims.get("name"),
+            "roles": list((claims.get("realm_access") or {}).get("roles", [])),
         }
     except HTTPException:
         raise
