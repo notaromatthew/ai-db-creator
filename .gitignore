@@ -40,3 +40,4 @@ infra/**/terraform.tfvars
 infra/**/.terraform.lock.hcl
 backend/coverage.xml
 .scannerwork/
+backend/.coverage
