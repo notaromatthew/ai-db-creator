@@ -6,7 +6,9 @@ import re
 import httpx
 
 from app.core.auth import get_current_user
-from app.core.acl import ProjectAccess, ensure_user, project_editor, project_owner, project_viewer
+from app.core.quota import consume_ai
+from app.core.research import require_research
+from app.core.acl import require_admin, ProjectAccess, ensure_user, project_editor, project_owner, project_viewer
 from app.config import settings
 from app.services.benchmark_service import run_model_benchmark, save_user_vote, BENCHMARK_SCENARIOS
 from app.models.database import get_session, init_db, BenchmarkResult, UserVote
@@ -90,7 +92,7 @@ def delete_project(project_id: str, access: ProjectAccess = Depends(project_owne
     result["surveys_deleted"] = surveys_deleted
     return result
 
-@router.post("/projects/{project_id}/generate", dependencies=[Depends(project_editor)])
+@router.post("/projects/{project_id}/generate", dependencies=[Depends(project_editor), Depends(consume_ai("generate"))])
 async def generate_schema(project_id: str, req: GenerateRequest):
     started_at = utc_now()
     run_id = new_run_id()
@@ -150,7 +152,7 @@ class ChatRequest(BaseModel):
     session_id: str | None = Field(default=None, pattern=r"^[A-Za-z0-9_.-]{1,128}$")
     participant_id: str | None = Field(default=None, pattern=r"^[A-Za-z0-9_.-]{1,128}$")
 
-@router.post("/projects/{project_id}/chat", dependencies=[Depends(project_editor)])
+@router.post("/projects/{project_id}/chat", dependencies=[Depends(project_editor), Depends(consume_ai("chat"))])
 async def chat_schema(project_id: str, req: ChatRequest):
     started_at = utc_now()
     run_id = new_run_id()
@@ -366,7 +368,7 @@ def list_documents(project_id: str):
 def delete_document(project_id: str, doc_id: str):
     return doc_svc.delete_document(project_id, doc_id)
 
-@router.post("/projects/{project_id}/populate", dependencies=[Depends(project_editor)])
+@router.post("/projects/{project_id}/populate", dependencies=[Depends(project_editor), Depends(consume_ai("populate"))])
 async def populate(project_id: str, req: PopulateRequest):
     started_at = utc_now()
     run_id = new_run_id()
@@ -420,7 +422,7 @@ async def populate(project_id: str, req: PopulateRequest):
     }, run_id=run_id)
     return result
 
-@router.post("/projects/{project_id}/query", dependencies=[Depends(project_viewer)])
+@router.post("/projects/{project_id}/query", dependencies=[Depends(project_viewer), Depends(consume_ai("query"))])
 async def generate_query(project_id: str, req: QueryRequest):
     return await query_svc.generate(project_id, req.prompt, req.dialect)
 
@@ -605,16 +607,18 @@ class ClientInteraction(BaseModel):
 
 @router.post("/projects/{project_id}/interactions", dependencies=[Depends(project_viewer)])
 def log_interaction(project_id: str, event: ClientInteraction):
+    if not settings.research_mode:
+        return {"status": "disabled"}
     schema_svc.get_project(project_id)
     interaction_logger.log_event(event.type, project_id, event.model_dump(exclude_none=True))
     return {"status": "logged"}
 
-@router.get("/projects/{project_id}/interactions", dependencies=[Depends(project_viewer)])
+@router.get("/projects/{project_id}/interactions", dependencies=[Depends(project_viewer), Depends(require_research)])
 def get_interactions(project_id: str):
     schema_svc.get_project(project_id)
     return interaction_logger.get_events(project_id)
 
-@router.post("/projects/{project_id}/export-interactions", dependencies=[Depends(project_viewer)])
+@router.post("/projects/{project_id}/export-interactions", dependencies=[Depends(project_viewer), Depends(require_research)])
 def export_interactions(project_id: str):
     schema_svc.get_project(project_id)
     from pathlib import Path
@@ -623,7 +627,7 @@ def export_interactions(project_id: str):
     count = interaction_logger.save_events(str(export_path), project_id=project_id)
     return {"path": str(export_path), "count": count}
 
-@router.post("/experiments/compare")
+@router.post("/experiments/compare", dependencies=[Depends(require_research)])
 def compare_approaches(payload: dict):
     from app.core.llm import generate_schema
     from app.models.database import get_session, Document
@@ -651,7 +655,7 @@ def compare_approaches(payload: dict):
     auto_metrics = {"norm3": metrics_svc.check_3nf(auto_schema), "relationships": metrics_svc.relationship_f1(auto_schema)}
     return {"automatic": {"schema": auto_schema.model_dump(), "metrics": auto_metrics}}
 
-@router.post("/surveys/nasa-tlx")
+@router.post("/surveys/nasa-tlx", dependencies=[Depends(require_research)])
 def submit_nasa_tlx(payload: dict):
     """Submit NASA-TLX survey for cognitive load measurement."""
     project_id = payload.get("project_id")
@@ -678,7 +682,7 @@ def submit_nasa_tlx(payload: dict):
     interaction_logger.log_event("survey_nasa_tlx", survey["project_id"], {"aggregate_score": aggregate_score})
     return {"status": "saved", "aggregate_score": aggregate_score}
 
-@router.post("/surveys/sus")
+@router.post("/surveys/sus", dependencies=[Depends(require_research)])
 def submit_sus(payload: dict):
     """Submit SUS (System Usability Scale) survey."""
     project_id = payload.get("project_id")
@@ -705,7 +709,7 @@ def submit_sus(payload: dict):
 
 
 @router.get("/llm/info")
-def llm_info():
+def llm_info(user: dict = Depends(get_current_user)):
     return get_llm_info()
 
 @router.get("/projects/{project_id}/export-full", dependencies=[Depends(project_viewer)])
@@ -795,7 +799,7 @@ def export_schema(project_id: str, format: str = "sql"):
 
     raise HTTPException(status_code=400, detail=f"Unsupported format: {format}")
 
-@router.post("/projects/{project_id}/generate-async", dependencies=[Depends(project_editor)])
+@router.post("/projects/{project_id}/generate-async", dependencies=[Depends(project_editor), Depends(consume_ai("generate"))])
 def generate_schema_async(project_id: str, req: GenerateRequest):
     """Start async schema generation."""
     schema_svc.get_project(project_id)
@@ -808,7 +812,7 @@ def generate_schema_async(project_id: str, req: GenerateRequest):
     task = generate_schema_task.delay(project_id, req.prompt, req.document_ids, context)
     return {"task_id": task.id, "status": "started"}
 
-@router.post("/projects/{project_id}/populate-async", dependencies=[Depends(project_editor)])
+@router.post("/projects/{project_id}/populate-async", dependencies=[Depends(project_editor), Depends(consume_ai("populate"))])
 def populate_async(project_id: str, req: PopulateRequest):
     """Start async data population."""
     project = schema_svc.get_project(project_id)
@@ -836,7 +840,7 @@ def export_async(project_id: str, format: str = "sql"):
     return {"task_id": task.id, "status": "started"}
 
 @router.get("/tasks/{task_id}")
-def get_task_status(task_id: str):
+def get_task_status(task_id: str, user: dict = Depends(get_current_user)):
     """Get async task status."""
     from app.tasks import celery
     task = celery.AsyncResult(task_id)
@@ -872,7 +876,7 @@ class SettingsUpdateSchema(BaseModel):
 async def list_ollama_models(
     base_url: str | None = None,
     api_key: str | None = None,
-    user: dict = Depends(get_current_user)
+    user: dict = Depends(require_admin)
 ):
     target_url = base_url if base_url else settings.ollama_base_url
     target_key = api_key if api_key is not None else settings.ollama_api_key
@@ -900,7 +904,7 @@ class OllamaTestRequest(BaseModel):
     model: str | None = None
 
 @router.post("/settings/ollama-test")
-async def test_ollama_prompt(body: OllamaTestRequest, user: dict = Depends(get_current_user)):
+async def test_ollama_prompt(body: OllamaTestRequest, user: dict = Depends(require_admin)):
     target_url = settings.ollama_base_url
     target_key = settings.ollama_api_key
     model = body.model or settings.ollama_model or "gemma2:9b"
@@ -945,26 +949,29 @@ async def test_ollama_prompt(body: OllamaTestRequest, user: dict = Depends(get_c
         }
 
 
-@router.get("/settings")
+def _mask(value: str) -> str:
+    return "••••" + value[-4:] if value and len(value) > 8 else ("••••" if value else "")
 
-def get_app_settings(user: dict = Depends(get_current_user)):
+
+@router.get("/settings")
+def get_app_settings(user: dict = Depends(require_admin)):
     info = get_llm_info()
     return {
         "provider": info["provider"],
         "model": info["model"],
         "llm_provider": settings.llm_provider,
         "openai_model": settings.openai_model,
-        "openai_api_key": settings.openai_api_key,
+        "openai_api_key": _mask(settings.openai_api_key),
         "google_model": settings.google_model,
-        "google_api_key": settings.google_api_key,
+        "google_api_key": _mask(settings.google_api_key),
         "groq_model": settings.groq_model,
-        "groq_api_key": settings.groq_api_key,
+        "groq_api_key": _mask(settings.groq_api_key),
         "openrouter_model": settings.openrouter_model,
-        "openrouter_api_key": settings.openrouter_api_key,
+        "openrouter_api_key": _mask(settings.openrouter_api_key),
         "ollama_mode": settings.ollama_mode,
         "ollama_model": settings.ollama_model,
         "ollama_base_url": settings.ollama_base_url,
-        "ollama_api_key": settings.ollama_api_key,
+        "ollama_api_key": _mask(settings.ollama_api_key),
         "use_ollama": settings.use_ollama,
         "llm_temperature": settings.llm_temperature,
         "llm_top_p": settings.llm_top_p,
@@ -974,26 +981,26 @@ def get_app_settings(user: dict = Depends(get_current_user)):
     }
 
 @router.put("/settings")
-def update_app_settings(body: SettingsUpdateSchema, user: dict = Depends(get_current_user)):
+def update_app_settings(body: SettingsUpdateSchema, user: dict = Depends(require_admin)):
     if body.llm_provider is not None:
         settings.llm_provider = body.llm_provider
         settings.use_ollama = (body.llm_provider == "ollama")
 
     if body.openai_model is not None:
         settings.openai_model = body.openai_model
-    if body.openai_api_key is not None:
+    if body.openai_api_key is not None and not body.openai_api_key.startswith("••••"):
         settings.openai_api_key = body.openai_api_key
     if body.google_model is not None:
         settings.google_model = body.google_model
-    if body.google_api_key is not None:
+    if body.google_api_key is not None and not body.google_api_key.startswith("••••"):
         settings.google_api_key = body.google_api_key
     if body.groq_model is not None:
         settings.groq_model = body.groq_model
-    if body.groq_api_key is not None:
+    if body.groq_api_key is not None and not body.groq_api_key.startswith("••••"):
         settings.groq_api_key = body.groq_api_key
     if body.openrouter_model is not None:
         settings.openrouter_model = body.openrouter_model
-    if body.openrouter_api_key is not None:
+    if body.openrouter_api_key is not None and not body.openrouter_api_key.startswith("••••"):
         settings.openrouter_api_key = body.openrouter_api_key
     if body.ollama_mode is not None:
         settings.ollama_mode = body.ollama_mode
@@ -1006,7 +1013,7 @@ def update_app_settings(body: SettingsUpdateSchema, user: dict = Depends(get_cur
         settings.ollama_model = body.ollama_model
     if body.ollama_base_url is not None:
         settings.ollama_base_url = body.ollama_base_url
-    if body.ollama_api_key is not None:
+    if body.ollama_api_key is not None and not body.ollama_api_key.startswith("••••"):
         settings.ollama_api_key = body.ollama_api_key
     if body.use_ollama is not None:
         settings.use_ollama = body.use_ollama
@@ -1068,14 +1075,14 @@ class UserVoteRequest(BaseModel):
     data_rating: int = Field(..., ge=1, le=5)
     comment: str = ""
 
-@router.get("/benchmark/scenarios")
-def list_benchmark_scenarios():
+@router.get("/benchmark/scenarios", dependencies=[Depends(require_research)])
+def list_benchmark_scenarios(user: dict = Depends(get_current_user)):
     return [
         {"key": k, "title": v["title"], "prompt": v["prompt"], "gold_tables": v["gold_tables"]}
         for k, v in BENCHMARK_SCENARIOS.items()
     ]
 
-@router.post("/benchmark/run")
+@router.post("/benchmark/run", dependencies=[Depends(require_research)])
 async def run_benchmark(req: BenchmarkRunRequest, user: dict = Depends(get_current_user)):
     res = await run_model_benchmark(
         scenario_key=req.scenario,
@@ -1088,8 +1095,8 @@ async def run_benchmark(req: BenchmarkRunRequest, user: dict = Depends(get_curre
     return res
 
 
-@router.get("/benchmark/results")
-def get_benchmark_results():
+@router.get("/benchmark/results", dependencies=[Depends(require_research)])
+def get_benchmark_results(user: dict = Depends(get_current_user)):
     engine = init_db()
     session = get_session(engine)
     results = session.query(BenchmarkResult).order_by(BenchmarkResult.created_at.desc()).limit(50).all()
@@ -1123,7 +1130,7 @@ def get_benchmark_results():
         ]
     }
 
-@router.post("/surveys/vote")
+@router.post("/surveys/vote", dependencies=[Depends(require_research)])
 def submit_user_vote(req: UserVoteRequest, user: dict = Depends(get_current_user)):
     user_id = user.get("sub", "anonymous")
     vote = save_user_vote(

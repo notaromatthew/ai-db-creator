@@ -6,6 +6,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.config import settings
 settings.database_url = "sqlite:///./test_app.db"
+settings.research_mode = True
 
 import pytest
 from fastapi.testclient import TestClient

@@ -36,9 +36,19 @@ class Settings(BaseSettings):
     projects_dir: str = str(Path(__file__).parent.parent / "projects")
     log_level: str = "DEBUG"
     experiment_mode: bool = False
+    # Modalita' ricerca: strumenti di studio (benchmark, questionari, log delle
+    # interazioni, manifest dei run). Spenta = resta solo il prodotto.
+    # Si cambia con la variabile RESEARCH_MODE su Coolify e un redeploy.
+    research_mode: bool = False
+    # Quote giornaliere per utente (valori bassi di proposito, modificabili dall'admin).
+    default_daily_ai_quota: int = 20
+    max_upload_mb: int = 10
+    max_projects_per_user: int = 10
+    daily_ai_budget_total: int = 500  # tetto globale di chiamate AI al giorno
 
     # Database PostgreSQL
-    database_url: str = "postgresql://postgres:postgres@89.168.29.98:12000/postgres"
+    # Nessuna credenziale di default: in produzione DATABASE_URL arriva da Coolify.
+    database_url: str = "sqlite:///./app.db"
 
     # Keycloak OIDC Auth & Realm Admin
     keycloak_url: str = "https://keycloak-pw9ut4s1h3aodstrsw1gd84o.89.168.29.98.sslip.io"

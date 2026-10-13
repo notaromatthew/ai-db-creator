@@ -67,6 +67,8 @@ app.include_router(router)
 app.include_router(progress_router)
 from app.api.sharing import router as sharing_router
 app.include_router(sharing_router)
+from app.api.admin import router as admin_router
+app.include_router(admin_router)
 
 @app.get("/health")
 @limiter.limit("60/minute")

@@ -26,6 +26,38 @@ class User(Base):
     last_seen_at = Column(DateTime, default=_now)
 
 
+class AppSetting(Base):
+    """Impostazioni modificabili dall'admin senza redeploy (chiave/valore JSON)."""
+    __tablename__ = "app_settings"
+
+    key = Column(String(100), primary_key=True)
+    value = Column(JSON, nullable=True)
+    updated_by = Column(String(255), nullable=True)
+    updated_at = Column(DateTime, default=_now, onupdate=_now)
+
+
+class AdminAuditLog(Base):
+    __tablename__ = "admin_audit_log"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    actor_id = Column(String(255), nullable=False)
+    action = Column(String(100), nullable=False)
+    target = Column(String(255), nullable=True)
+    detail = Column(JSON, nullable=True)
+    created_at = Column(DateTime, default=_now, index=True)
+
+
+class UsageEvent(Base):
+    """Una riga per ogni chiamata AI: serve alle quote e alla vista consumi dell'admin."""
+    __tablename__ = "usage_events"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String(255), nullable=False, index=True)
+    project_id = Column(String, nullable=True)
+    kind = Column(String(50), nullable=False)
+    created_at = Column(DateTime, default=_now, index=True)
+
+
 class Project(Base):
     __tablename__ = "projects"
 
