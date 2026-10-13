@@ -69,7 +69,7 @@ def create_project(name: str = Body(...), prompt: str = Body(""), user: dict = D
 @router.get("/projects")
 def list_projects(user: dict = Depends(get_current_user)):
     row = ensure_user(user)
-    return schema_svc.list_projects(user_id=row.id)
+    return schema_svc.list_project_summaries(user_id=row.id)
 
 
 @router.get("/projects/{project_id}")
@@ -192,11 +192,14 @@ async def chat_schema(project_id: str, req: ChatRequest):
     }, run_id=run_id)
     return {"response": response, "schema": schema.model_dump() if schema else None}
 
+@router.get("/projects/{project_id}/chat/history", dependencies=[Depends(project_viewer)])
+def chat_history(project_id: str):
+    return {"messages": get_history(project_id)}
+
 @router.post("/projects/{project_id}/chat-accept", dependencies=[Depends(project_editor)])
 def accept_chat_schema(project_id: str, schema: NormalizedSchema):
     previous = schema_svc.get_schema(project_id)
     result = schema_svc.update_schema(project_id, schema)
-    clear_history(project_id)
     _log_research_run("schema_updated", project_id, {
         "schema_initial": previous.model_dump() if previous else None,
         "schema_final": schema.model_dump(),

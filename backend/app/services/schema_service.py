@@ -4,7 +4,7 @@ from app.core.parser import get_parser, ParsedDocument
 from app.core.db_generator import create_database_from_schema
 from app.utils.exceptions import AppException
 from app.utils.logger import log
-from app.models.database import Project, ProjectMember, Document, get_session, init_db
+from app.models.database import Project, ProjectMember, Document, User, get_session, init_db
 from pathlib import Path
 import json
 import os
@@ -45,7 +45,50 @@ class SchemaService:
         session.close()
         return projects
 
-    
+    def list_project_summaries(self, user_id: str) -> list[dict]:
+        """Progetti accessibili con i campi utili alla dashboard: ruolo, proprietario, passo e stato."""
+        import sqlite3
+        from sqlalchemy import func
+        projects = self.list_projects(user_id=user_id)
+        session = get_session(self.engine)
+        try:
+            ids = [p.id for p in projects]
+            roles = dict(session.query(ProjectMember.project_id, ProjectMember.role)
+                         .filter(ProjectMember.user_id == user_id).all())
+            docs = dict(session.query(Document.project_id, func.count(Document.id))
+                        .filter(Document.project_id.in_(ids)).group_by(Document.project_id).all()) if ids else {}
+            owners = {u.id: (u.display_name or u.email) for u in
+                      session.query(User).filter(User.id.in_({p.owner_id for p in projects})).all()} if projects else {}
+        finally:
+            session.close()
+        out = []
+        for p in projects:
+            tables = [t.get("name") for t in ((p.schema_json or {}).get("tables") or []) if isinstance(t, dict)]
+            has_data = False
+            if tables and p.db_path and os.path.exists(p.db_path):
+                try:
+                    con = sqlite3.connect(f"file:{p.db_path}?mode=ro", uri=True)
+                    try:
+                        for name in tables:
+                            safe = str(name).replace('"', '""')
+                            if con.execute(f'SELECT 1 FROM "{safe}" LIMIT 1').fetchone():
+                                has_data = True
+                                break
+                    finally:
+                        con.close()
+                except sqlite3.Error:
+                    has_data = False
+            step, status = (3, "data_ready") if has_data else (2, "schema_review") if tables else (1, "not_started")
+            row = {c.name: getattr(p, c.name) for c in p.__table__.columns}
+            row.update({
+                "my_role": "owner" if p.owner_id == user_id else roles.get(p.id, "viewer"),
+                "owner_name": owners.get(p.owner_id),
+                "step": step, "status": status, "table_count": len(tables),
+                "document_count": docs.get(p.id, 0),
+            })
+            out.append(row)
+        return out
+
     async def generate_from_prompt(self, project_id: str, request: GenerateRequest,
                                    temperature: float | None = None) -> NormalizedSchema:
         project = self.get_project(project_id)

@@ -74,6 +74,7 @@ class Project(Base):
     members = relationship("ProjectMember", back_populates="project", cascade="all, delete-orphan")
     invites = relationship("ProjectInvite", cascade="all, delete-orphan")
     links = relationship("ProjectLink", cascade="all, delete-orphan")
+    chat_messages = relationship("ChatMessage", cascade="all, delete-orphan")
 
 
 class ProjectMember(Base):
@@ -130,6 +131,17 @@ class Document(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     project = relationship("Project", back_populates="documents")
+
+
+class ChatMessage(Base):
+    """Cronologia della chat di progettazione: sopravvive al riavvio e alla perdita di sessione."""
+    __tablename__ = "chat_messages"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    project_id = Column(String, ForeignKey("projects.id"), nullable=False, index=True)
+    role = Column(String(20), nullable=False)
+    content = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=_now, index=True)
 
 
 class BenchmarkResult(Base):

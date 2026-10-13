@@ -1,5 +1,5 @@
 from app.models.schema_models import NormalizedSchema
-from app.models.database import Document, get_session, init_db
+from app.models.database import ChatMessage, Document, get_session, init_db
 from app.core.llm import _get_llm
 from app.utils.exceptions import AppException
 from app.utils.logger import log
@@ -8,8 +8,6 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from typing import Optional
 import json
 import re
-
-_conversations: dict[str, list] = {}
 
 SYSTEM_PROMPT = """Sei un assistente esperto di progettazione di database. Il tuo scopo è aiutare l'utente a progettare uno schema di database normalizzato tramite conversazione in italiano.
 
@@ -38,20 +36,33 @@ REGOLE IMPORTANTI:
 
 
 def get_history(project_id: str) -> list:
-    return _conversations.get(project_id, [])
+    """Messaggi del progetto in ordine cronologico, letti dal database."""
+    session = get_session(init_db())
+    try:
+        rows = (session.query(ChatMessage).filter(ChatMessage.project_id == project_id)
+                .order_by(ChatMessage.created_at).all())
+        return [{"id": r.id, "role": r.role, "content": r.content,
+                 "created_at": r.created_at.isoformat() if r.created_at else None} for r in rows]
+    finally:
+        session.close()
 
 
 def add_message(project_id: str, role: str, content: str, extra: Optional[dict] = None):
-    if project_id not in _conversations:
-        _conversations[project_id] = []
-    msg = {"role": role, "content": content}
-    if extra:
-        msg["extra"] = extra
-    _conversations[project_id].append(msg)
+    session = get_session(init_db())
+    try:
+        session.add(ChatMessage(project_id=project_id, role=role, content=content))
+        session.commit()
+    finally:
+        session.close()
 
 
 def clear_history(project_id: str):
-    _conversations.pop(project_id, None)
+    session = get_session(init_db())
+    try:
+        session.query(ChatMessage).filter(ChatMessage.project_id == project_id).delete()
+        session.commit()
+    finally:
+        session.close()
 
 
 def build_doc_context(project_id: str, document_ids: list[str]) -> str:
@@ -76,9 +87,9 @@ async def chat(project_id: str, message: str, document_ids: list[str], existing_
     history = get_history(project_id)
 
     if not history:
-        intro = "I'll help you design a database schema. Describe what data you need to store"
+        intro = "Ti aiuto a rifinire lo schema del database. Descrivi cosa vuoi cambiare o quali dati devi memorizzare"
         if doc_context:
-            intro += f", considering the uploaded documents"
+            intro += ", tenendo conto dei documenti caricati"
         intro += "."
         add_message(project_id, "assistant", intro)
         history = get_history(project_id)

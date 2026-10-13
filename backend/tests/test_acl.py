@@ -56,3 +56,18 @@ def test_owner_cannot_be_demoted_and_roles_validated(client, project):
     c, _ = client
     pid = project["id"]
     assert c.post(f"/api/projects/{pid}/invites", json={"email": "a@b.it", "role": "owner"}).status_code == 422
+
+
+def test_project_list_carries_role_owner_and_status(client, project):
+    c, _ = client
+    pid = project["id"]
+    rows = c.get("/api/projects").json()
+    assert rows[0]["my_role"] == "owner" and rows[0]["status"] == "not_started" and rows[0]["step"] == 1
+    assert rows[0]["document_count"] == 0 and rows[0]["table_count"] == 0
+    as_user("editor", "e@example.com")
+    c.get("/api/me")
+    as_user("test-user", "owner@example.com")
+    c.post(f"/api/projects/{pid}/invites", json={"email": "e@example.com", "role": "editor"})
+    as_user("editor", "e@example.com")
+    shared = c.get("/api/projects").json()[0]
+    assert shared["my_role"] == "editor" and shared["id"] == pid and "owner_name" in shared
