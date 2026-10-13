@@ -21,6 +21,17 @@ services:
       - LLM_PROVIDER=${LLM_PROVIDER:-ollama}
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # Modalita' ricerca: true = strumenti di studio accesi, false = solo il prodotto
+      - RESEARCH_MODE=${RESEARCH_MODE:-false}
+      - APP_PUBLIC_URL=${APP_PUBLIC_URL:-}
+      - ADMIN_ROLE=${ADMIN_ROLE:-aidb-admin}
+      - DEFAULT_DAILY_AI_QUOTA=${DEFAULT_DAILY_AI_QUOTA:-20}
+      - DAILY_AI_BUDGET_TOTAL=${DAILY_AI_BUDGET_TOTAL:-500}
+      # Vertex AI tramite il gateway su Cloud Run (vedi infra/gcp)
+      - VERTEX_PROJECT=${VERTEX_PROJECT:-}
+      - VERTEX_LOCATION=${VERTEX_LOCATION:-europe-west4}
+      - VERTEX_MODEL=${VERTEX_MODEL:-gemini-2.5-flash-lite}
+      - VERTEX_CREDENTIALS_JSON=${VERTEX_CREDENTIALS_JSON:-}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 15s

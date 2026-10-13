@@ -25,3 +25,10 @@ frontend/NPM_AUDIT_REPORT.md
 backend/pytest_out.txt
 backend/pytest_run*.txt
 
+
+# Terraform
+infra/gcp/.terraform/
+infra/gcp/*.tfstate
+infra/gcp/*.tfstate.*
+infra/gcp/*.tfplan
+infra/gcp/terraform.tfvars

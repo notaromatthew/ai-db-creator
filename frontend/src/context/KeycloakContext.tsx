@@ -96,6 +96,10 @@ export const KeycloakProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       .then((auth) => {
         syncAuthState(auth)
         setInitialized(true)
+        // /app?register=1 arriva dai bottoni "Registrati" della landing
+        if (!auth && new URLSearchParams(window.location.search).get('register') === '1') {
+          keycloakInstance.register({ redirectUri: window.location.origin + '/app' })
+        }
 
         // Periodic background token refresh every 30 seconds
         setInterval(() => {
