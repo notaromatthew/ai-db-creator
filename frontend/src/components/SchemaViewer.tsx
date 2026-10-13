@@ -122,9 +122,9 @@ export default function SchemaViewer({ schema, projectId, readOnly = false }: Pr
                 <tr>
                   <th className="text-left">Colonna</th>
                   <th className="text-left">Tipo</th>
-                  <th className="text-left">PK</th>
-                  <th className="text-left">FK</th>
-                  <th className="text-left">NN</th>
+                  <th className="text-left" title="Chiave primaria">Chiave</th>
+                  <th className="text-left" title="Chiave esterna">Collegata a</th>
+                  <th className="text-left" title="Valore obbligatorio">Obbligatorio</th>
                   {editing && <th className="w-8"></th>}
                 </tr>
               </thead>
@@ -144,9 +144,9 @@ export default function SchemaViewer({ schema, projectId, readOnly = false }: Pr
                       <>
                         <td>{col.name}</td>
                         <td>{col.data_type}</td>
-                        <td>{col.is_primary_key ? 'Y' : ''}</td>
+                        <td>{col.is_primary_key ? 'Sì' : ''}</td>
                         <td>{col.is_foreign_key ? `${col.foreign_key_table}.${col.foreign_key_column}` : ''}</td>
-                        <td>{col.is_not_null ? 'Y' : ''}</td>
+                        <td>{col.is_not_null ? 'Sì' : ''}</td>
                       </>
                     )}
                   </tr>
@@ -173,7 +173,7 @@ export default function SchemaViewer({ schema, projectId, readOnly = false }: Pr
                   {rel.type === 'one_to_many' ? '──N──→' : rel.type === 'many_to_many' ? '──M:N──' : '──1:1──'}
                 </span>
                 <span className="font-mono">{rel.to_table}.{rel.to_column}</span>
-                <span className="text-xs text-gray-500 ml-1">({rel.type})</span>
+                <span className="text-xs text-gray-500 ml-1">({rel.type === 'one_to_many' ? 'uno a molti' : rel.type === 'many_to_many' ? 'molti a molti' : 'uno a uno'})</span>
               </div>
             ))}
           </div>

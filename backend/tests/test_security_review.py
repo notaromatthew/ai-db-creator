@@ -124,3 +124,20 @@ def test_legacy_database_is_migrated_with_owners(tmp_path):
     run_migrations(engine)
     assert dict(con.execute("select id, owner_id from projects").fetchall()) == {"p1": "kc-1", "p2": "legacy"}
     init_db("sqlite:///./test_app.db")
+
+
+def test_finalize_blocks_schema_edits_and_reset_data_clears_rows(client, db_project):
+    c, routes = client
+    pid = db_project["id"]
+    from app.models.schema_models import NormalizedSchema
+    schema = NormalizedSchema(tables=[{"name": "t", "columns": [
+        {"name": "id", "data_type": "INTEGER", "is_primary_key": True}, {"name": "v", "data_type": "TEXT"}]}], relationships=[])
+    assert c.put(f"/api/projects/{pid}/schema", json=schema.model_dump()).status_code == 200
+    assert c.post(f"/api/projects/{pid}/finalize").json() == {"finalized": True}
+    assert c.get(f"/api/projects/{pid}").json()["schema_finalized_at"]
+    assert c.put(f"/api/projects/{pid}/schema", json=schema.model_dump()).status_code == 409
+    assert c.post(f"/api/projects/{pid}/chat", json={"message": "ciao"}).status_code == 409
+    n = lambda: c.post(f"/api/projects/{pid}/execute-query", json={"sql": "SELECT count(*) AS n FROM t"}).json()["rows"][0]["n"]
+    assert n() == 1
+    assert c.post(f"/api/projects/{pid}/reset-data").json() == {"reset": True}
+    assert n() == 0

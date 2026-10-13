@@ -135,13 +135,13 @@ export default function SettingsPage() {
       const updated = await api.put('/settings', payload)
       setSettingsData(updated)
       queryClient.invalidateQueries({ queryKey: ['llm-info'] })
-      setSuccessMsg('Impostazioni salvate con successo!')
+      setSuccessMsg('Impostazioni salvate.')
 
       setTimeout(() => setSuccessMsg(''), 4000)
     } catch (e: any) {
       console.error('Save settings error:', e)
       setSuccessMsg('')
-      setSaveError(`Non siamo riusciti a salvare: ${e.message || e}`)
+      setSaveError(`Non sono riuscito a salvare: ${e.message || e}`)
     } finally {
       setSaving(false)
     }
@@ -165,7 +165,7 @@ export default function SettingsPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-tecnia-ink dark:text-white">Modelli IA</h1>
           <p className="mt-1.5 text-sm text-tecnia-muted">
-            Scegli il fornitore attivo e i parametri di generazione. Per Ollama, i modelli disponibili vengono letti in tempo reale dal server scelto (`ollama list`).
+            Scegli il fornitore attivo e come deve rispondere. Per Ollama, l'elenco dei modelli viene letto direttamente dal server che scegli.
           </p>
         </div>
       </div>
@@ -183,9 +183,9 @@ export default function SettingsPage() {
       <form onSubmit={handleSave} className="space-y-6">
         {/* Step 1: Provider Selection */}
         <div className="glass p-6">
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">1. Selezione Provider AI</h3>
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">1. Scegli il fornitore IA</h3>
           <div className="mt-4">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">Provider Principale</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">Fornitore principale</label>
             <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-5">
               {[
                 { id: 'ollama', name: 'Ollama', badge: 'Predefinito' },
@@ -219,14 +219,14 @@ export default function SettingsPage() {
         {/* Step 2: Dynamic Provider Configuration */}
         <div className="glass p-6">
           <h3 className="text-base font-bold text-slate-900 dark:text-white">
-            2. Configurazione Specifica: <span className="text-blue-600 dark:text-blue-400 uppercase">{currentProvider}</span>
+            2. Impostazioni di <span className="text-blue-600 dark:text-blue-400 uppercase">{currentProvider}</span>
           </h3>
 
           {/* OLLAMA DYNAMIC FORM WITH MODEL DROPDOWN */}
           {currentProvider === 'ollama' && (
             <div className="mt-4 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-500">Modalità Istanza Ollama</label>
+                <label className="block text-xs font-semibold text-slate-500">Dove gira Ollama</label>
                 <div className="mt-2 flex gap-4">
                   <label className="flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-200 cursor-pointer">
                     <input
@@ -237,7 +237,7 @@ export default function SettingsPage() {
                       onChange={() => handleOllamaModeChange('remote')}
                       className="h-4 w-4 text-blue-600"
                     />
-                    🌐 Remoto (Server Online)
+                    <span className="material-symbols-outlined text-[18px]" aria-hidden="true">cloud</span>Remoto (server online)
                   </label>
                   <label className="flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-200 cursor-pointer">
                     <input
@@ -248,7 +248,7 @@ export default function SettingsPage() {
                       onChange={() => handleOllamaModeChange('local')}
                       className="h-4 w-4 text-blue-600"
                     />
-                    💻 Locale (Localhost)
+                    <span className="material-symbols-outlined text-[18px]" aria-hidden="true">computer</span>Locale (questo computer)
                   </label>
                 </div>
               </div>
@@ -256,7 +256,7 @@ export default function SettingsPage() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label className="block text-xs font-semibold text-slate-500">
-                    {isOllamaRemote ? 'Endpoint API Ollama Remoto' : 'Endpoint Server Locale'}
+                    {isOllamaRemote ? 'Indirizzo del server Ollama remoto' : 'Indirizzo del server locale'}
                   </label>
                   <input
                     type="text"
@@ -268,7 +268,7 @@ export default function SettingsPage() {
 
                 {isOllamaRemote && (
                   <div>
-                    <label className="block text-xs font-semibold text-slate-500">Bearer Auth Token</label>
+                    <label className="block text-xs font-semibold text-slate-500">Token di accesso</label>
                     <input
                       type="password"
                       value={settingsData.ollama_api_key || ''}
@@ -282,21 +282,21 @@ export default function SettingsPage() {
                 <div className="sm:col-span-2">
                   <div className="flex items-center justify-between">
                     <label className="block text-xs font-semibold text-slate-500">
-                      Modelli Disponibili sul Server ({isOllamaRemote ? 'Remoto' : 'Locale'})
+                      Modelli disponibili sul server ({isOllamaRemote ? 'remoto' : 'locale'})
                     </label>
                     <button
                       type="button"
                       onClick={() => fetchOllamaModels(settingsData.ollama_base_url, settingsData.ollama_api_key)}
                       className="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
                     >
-                      🔄 Aggiorna Lista (`ollama list`)
+                      <span className="material-symbols-outlined text-[16px] align-middle" aria-hidden="true">refresh</span> Aggiorna l'elenco
                     </button>
                   </div>
 
                   {loadingModels ? (
                     <div className="mt-2 flex items-center gap-2 text-xs text-slate-400">
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
-                      Lettura dei modelli dal server Ollama...
+                      Lettura dei modelli dal server Ollama…
                     </div>
                   ) : ollamaModels.length > 0 ? (
                     <select
@@ -306,13 +306,13 @@ export default function SettingsPage() {
                     >
                       {ollamaModels.map((m) => (
                         <option key={m} value={m}>
-                          📦 {m}
+                          {m}
                         </option>
                       ))}
                     </select>
                   ) : (
                     <div className="mt-1 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300">
-                      ⚠️ Impossibile contattare il server Ollama o nessun modello trovato. Modello predefinito selezionato: <code className="font-bold">{settingsData.ollama_model}</code>
+                      <span className="material-symbols-outlined text-[16px] align-middle" aria-hidden="true">warning</span> Non riesco a contattare il server Ollama oppure non ci sono modelli. Modello selezionato: <code className="font-bold">{settingsData.ollama_model}</code>
                     </div>
                   )}
                 </div>
@@ -324,7 +324,7 @@ export default function SettingsPage() {
           {currentProvider === 'google' && (
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-xs font-semibold text-slate-500">Google Gemini API Key</label>
+                <label className="block text-xs font-semibold text-slate-500">Chiave API di Google Gemini</label>
                 <input
                   type="password"
                   placeholder="AIzaSy..."
@@ -335,7 +335,7 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500">Nome Modello Gemini</label>
+                <label className="block text-xs font-semibold text-slate-500">Nome del modello Gemini</label>
                 <input
                   type="text"
                   placeholder="gemini-2.0-flash"
@@ -351,7 +351,7 @@ export default function SettingsPage() {
           {currentProvider === 'openai' && (
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-xs font-semibold text-slate-500">OpenAI API Key</label>
+                <label className="block text-xs font-semibold text-slate-500">Chiave API di OpenAI</label>
                 <input
                   type="password"
                   placeholder="sk-..."
@@ -362,7 +362,7 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500">Nome Modello OpenAI</label>
+                <label className="block text-xs font-semibold text-slate-500">Nome del modello OpenAI</label>
                 <input
                   type="text"
                   placeholder="gpt-4o-mini"
@@ -378,7 +378,7 @@ export default function SettingsPage() {
           {currentProvider === 'groq' && (
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-xs font-semibold text-slate-500">Groq API Key</label>
+                <label className="block text-xs font-semibold text-slate-500">Chiave API di Groq</label>
                 <input
                   type="password"
                   placeholder="gsk_..."
@@ -389,7 +389,7 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500">Nome Modello Groq</label>
+                <label className="block text-xs font-semibold text-slate-500">Nome del modello Groq</label>
                 <input
                   type="text"
                   placeholder="llama3-70b-8192"
@@ -405,7 +405,7 @@ export default function SettingsPage() {
           {currentProvider === 'openrouter' && (
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-xs font-semibold text-slate-500">OpenRouter API Key</label>
+                <label className="block text-xs font-semibold text-slate-500">Chiave API di OpenRouter</label>
                 <input
                   type="password"
                   placeholder="sk-or-..."
@@ -416,7 +416,7 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500">Nome Modello OpenRouter</label>
+                <label className="block text-xs font-semibold text-slate-500">Nome del modello OpenRouter</label>
                 <input
                   type="text"
                   placeholder="openai/gpt-4o-mini"
@@ -431,7 +431,7 @@ export default function SettingsPage() {
 
         {/* Step 3: Hyperparameters */}
         <div className="glass p-6">
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">3. Iperparametri di Generazione</h3>
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">3. Parametri di generazione</h3>
           <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div>
               <div className="flex justify-between text-xs font-semibold text-slate-500">
@@ -447,7 +447,7 @@ export default function SettingsPage() {
                 onChange={(e) => setSettingsData({ ...settingsData, llm_temperature: e.target.value })}
                 className="mt-2 w-full accent-blue-600"
               />
-              <span className="text-[10px] text-slate-400">Valori bassi (0.0-0.2) aumentano il determinismo degli schemi.</span>
+              <span className="text-[10px] text-slate-400">Con valori bassi (0.0-0.2) gli schemi sono più prevedibili e ripetibili.</span>
             </div>
 
             <div>
@@ -467,7 +467,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-500">Max Tokens per Risposta</label>
+              <label className="block text-xs font-semibold text-slate-500">Lunghezza massima della risposta (token)</label>
               <input
                 type="number"
                 value={settingsData.llm_max_tokens}
@@ -477,7 +477,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-500">Rate Limit (Richieste/Minuto)</label>
+              <label className="block text-xs font-semibold text-slate-500">Richieste massime al minuto</label>
               <input
                 type="number"
                 value={settingsData.llm_max_requests_per_minute}
@@ -494,27 +494,27 @@ export default function SettingsPage() {
             disabled={saving}
             className="primary-button"
           >
-            {saving ? 'Salvataggio in corso...' : 'Salva Impostazioni'}
+            {saving ? 'Salvataggio in corso…' : 'Salva le impostazioni'}
           </button>
         </div>
       </form>
 
       {/* Test Prompt Ollama Section */}
       <div className="glass p-6">
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Test Connessione Provider</h2>
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Prova la connessione</h2>
         <p className="mt-1 text-xs text-slate-500">
-          Invia un prompt di test al provider corrente per verificare che la connessione funzioni correttamente.
+          Manda un messaggio di prova al fornitore scelto per controllare che la connessione funzioni.
         </p>
 
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="sm:col-span-2">
-            <label className="block text-xs font-semibold text-slate-500">Prompt di Test</label>
+            <label className="block text-xs font-semibold text-slate-500">Messaggio di prova</label>
             <textarea
               value={testPrompt}
               onChange={(e) => setTestPrompt(e.target.value)}
               rows={2}
               className="mt-1 field"
-              placeholder="Scrivi un prompt di test..."
+              placeholder="Scrivi un messaggio di prova…"
             />
           </div>
 
@@ -554,7 +554,7 @@ export default function SettingsPage() {
               disabled={testRunning || !testPrompt.trim()}
               className="mt-3 w-full rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 py-2.5 text-sm font-bold text-white shadow-md hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50"
             >
-              {testRunning ? '⏳ Invio in corso...' : '🚀 Invia Prompt di Test'}
+              {testRunning ? 'Invio in corso…' : 'Invia il messaggio di prova'}
             </button>
           </div>
         </div>
@@ -563,7 +563,7 @@ export default function SettingsPage() {
           <div className="mt-4 flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50/60 p-4 dark:border-blue-900/50 dark:bg-blue-950/60">
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
             <span className="text-xs font-semibold text-blue-700 dark:text-blue-300">
-              In attesa di risposta da {testModel || settingsData?.ollama_model || 'modello'}...
+              Aspetto la risposta da {testModel || settingsData?.ollama_model || 'modello'}…
             </span>
           </div>
         )}
@@ -577,7 +577,7 @@ export default function SettingsPage() {
             {testResult.success ? (
               <>
                 <div className="flex items-center gap-2 text-xs font-bold text-green-700 dark:text-green-300">
-                  <span>✅ Risposta ricevuta da {testResult.model}</span>
+                  <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[16px]" aria-hidden="true">check_circle</span>Risposta ricevuta da {testResult.model}</span>
                   <span className="rounded-full bg-green-200 px-2 py-0.5 text-[10px] font-mono dark:bg-green-900/50">
                     {testResult.total_duration_ms}ms · {testResult.eval_count} token
                   </span>
@@ -588,7 +588,7 @@ export default function SettingsPage() {
               </>
             ) : (
               <div className="text-xs font-semibold text-red-700 dark:text-red-300">
-                ❌ Test fallito: {testResult.error}
+                <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[16px]" aria-hidden="true">error</span>Prova non riuscita: {testResult.error}</span>
               </div>
             )}
           </div>

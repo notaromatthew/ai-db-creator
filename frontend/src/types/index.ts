@@ -40,6 +40,7 @@ export interface Project {
   created_at: string
   updated_at: string
   owner_id?: string
+  schema_finalized_at?: string | null
   owner_name?: string | null
   my_role?: 'owner' | 'editor' | 'viewer'
   step?: number

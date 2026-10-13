@@ -7,13 +7,23 @@ interface Props {
 }
 
 const ICONS: Record<string, string> = {
-  populate: '📦',
-  import_sql: '📥',
-  backup: '💾',
-  restore: '⏪',
-  execute_query: '▶️',
-  chat: '💬',
-  generate: '⚡',
+  populate: 'database',
+  import_sql: 'upload_file',
+  backup: 'save',
+  restore: 'history',
+  execute_query: 'play_arrow',
+  chat: 'chat',
+  generate: 'bolt',
+}
+
+const LABELS: Record<string, string> = {
+  populate: 'Dati di esempio',
+  import_sql: 'Importazione SQL',
+  backup: 'Backup',
+  restore: 'Ripristino',
+  execute_query: 'Query eseguita',
+  chat: 'Chat con l\'IA',
+  generate: 'Generazione',
 }
 
 export default function OperationHistory({ projectId }: Props) {
@@ -43,9 +53,9 @@ export default function OperationHistory({ projectId }: Props) {
               {events.slice().reverse().map((e: any, i: number) => (
                 <div key={i} className="text-xs border-b dark:border-gray-700 pb-1 last:border-0">
                   <div className="flex items-center gap-1">
-                    <span>{ICONS[e.event_type] || '•'}</span>
-                    <span className="font-medium capitalize">{e.event_type.replace(/_/g, ' ')}</span>
-                    <span className="text-gray-500 ml-auto">{new Date(e.timestamp).toLocaleString()}</span>
+                    <span className="material-symbols-outlined text-[16px]" aria-hidden="true">{ICONS[e.event_type] || 'circle'}</span>
+                    <span className="font-medium">{LABELS[e.event_type] || String(e.event_type).replace(/_/g, ' ')}</span>
+                    <span className="text-gray-500 ml-auto">{new Date(e.timestamp).toLocaleString('it-IT')}</span>
                   </div>
                   {e.data && Object.keys(e.data).length > 0 && (
                     <div className="text-gray-500 ml-4 truncate">{JSON.stringify(e.data).slice(0, 120)}</div>

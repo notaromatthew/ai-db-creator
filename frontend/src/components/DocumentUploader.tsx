@@ -169,7 +169,7 @@ export default function DocumentUploader({ projectId, onUpload, readOnly = false
 
         <div aria-live="polite">
           {error && <p role="alert" className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-sm font-medium text-red-700 dark:bg-red-950/40 dark:text-red-300">{error}</p>}
-          {success && <p className="mt-3 rounded-xl bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">✓ {success}</p>}
+          {success && <p className="mt-3 flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"><span className="material-symbols-outlined text-[18px]" aria-hidden="true">check_circle</span>{success}</p>}
         </div>
 
         {documents.length > 0 && (

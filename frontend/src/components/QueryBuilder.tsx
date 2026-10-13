@@ -27,7 +27,7 @@ export default function QueryBuilder({ projectId, schema, onDataChange }: Props)
       const res = await api.post(`/projects/${projectId}/query`, { prompt, dialect: 'sqlite' })
       setSql(res.sql)
     } catch (e) {
-      setError('Failed to generate query. Check your prompt and try again.')
+      setError('Non sono riuscito a preparare la query. Controlla la richiesta e riprova.')
     } finally {
       setLoading(false)
     }
@@ -43,7 +43,7 @@ export default function QueryBuilder({ projectId, schema, onDataChange }: Props)
       setResult(res)
       onDataChange?.()
     } catch (e: any) {
-      setError(e?.message || 'Query execution failed.')
+      setError(e?.message || 'Non è stato possibile eseguire la query.')
     } finally {
       setExecuting(false)
     }
@@ -148,7 +148,7 @@ export default function QueryBuilder({ projectId, schema, onDataChange }: Props)
               </table>
             </div>
           ) : (
-            <p className="text-gray-500 text-sm">Esecuzione completata ({result.affected} righe interessate).</p>
+            <p className="text-gray-500 text-sm">Esecuzione completata ({result.affected} righe coinvolte).</p>
           )}
         </div>
       )}

@@ -124,7 +124,7 @@ export default function DataViewer({ projectId, schema, autoLoad }: Props) {
       await loadData()
       invalidateStats()
     } catch (e: any) {
-      setError(e?.message || 'Update failed')
+      setError(e?.message || 'Non è stato possibile salvare la modifica.')
     }
   }
 
@@ -137,7 +137,7 @@ export default function DataViewer({ projectId, schema, autoLoad }: Props) {
       await loadData()
       invalidateStats()
     } catch (e: any) {
-      setError(e?.message || 'Delete failed')
+      setError(e?.message || 'Non è stato possibile eliminare la riga.')
     }
   }
 
@@ -148,7 +148,7 @@ export default function DataViewer({ projectId, schema, autoLoad }: Props) {
       try {
         await api.post(`/projects/${projectId}/data/${table}`, rows[i])
       } catch (e: any) {
-        setError(e?.message || `Insert failed for row ${i + 1}`)
+        setError(e?.message || `Non è stato possibile inserire la riga ${i + 1}.`)
         return
       }
     }
@@ -178,7 +178,7 @@ export default function DataViewer({ projectId, schema, autoLoad }: Props) {
     <div className="space-y-6">
       <div className="flex gap-2 items-center flex-wrap">
         <button onClick={loadData} disabled={loading} className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50">
-          {loading ? 'Loading...' : 'Load Data'}
+          {loading ? 'Caricamento…' : 'Carica i dati'}
         </button>
         <input
           placeholder="Cerca in tutte le tabelle..."
@@ -279,7 +279,7 @@ export default function DataViewer({ projectId, schema, autoLoad }: Props) {
                 </table>
               </div>
             ) : (
-              <p className="p-2 text-gray-500">Nessun dato. Vai su Schema e clicca "Populate Tables".</p>
+              <p className="p-2 text-gray-500">Nessun dato. Vai su Schema e usa «Popola le tabelle».</p>
             )}
           </div>
         )

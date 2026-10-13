@@ -102,7 +102,7 @@ export default function ProjectPage() {
 
   const hasSchema = !!schema && schema.tables?.length > 0
   const hasData = !!stats && Object.values(stats).some((v: any) => v > 0)
-  const isFinal = finalized || hasData
+  const isFinal = finalized || hasData || !!project?.schema_finalized_at
   const docIds = documents.map((d: any) => d.id)
   const latestSchemaEvent = research
     ? [...interactions].reverse().find((e: any) => e.event_type === 'schema_generated' || e.event_type === 'schema_updated')
@@ -153,7 +153,10 @@ export default function ProjectPage() {
   }, [hasSchema, genStartedAt, schema, genMut.isPending]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const populateMut = useMutation({
-    mutationFn: () => api.post(`/projects/${projectId}/populate`, { document_ids: docIds }),
+    mutationFn: async (reset?: boolean) => {
+      if (reset === true) await api.post(`/projects/${projectId}/reset-data`, {})
+      return api.post(`/projects/${projectId}/populate`, { document_ids: docIds })
+    },
     onSuccess: (data: any) => {
       const parts: string[] = []
       for (const [table, info] of Object.entries(data || {})) {
@@ -201,6 +204,7 @@ export default function ProjectPage() {
     store.set(`aidb:final:${projectId}`, '1')
     setFinalized(true)
     setChosen(4)
+    api.post(`/projects/${projectId}/finalize`, {}).then(() => queryClient.invalidateQueries({ queryKey: ['project', projectId] })).catch(() => {})
   }
 
   const regenerateSchema = () => {
@@ -209,7 +213,7 @@ export default function ProjectPage() {
 
   const regenerateData = () => {
     setPopulateMessage(null)
-    if (!hasData || window.confirm('Rigenerare i dati? Vengono aggiunte nuove righe alle tabelle; prima viene salvata una copia di sicurezza.')) populateMut.mutate()
+    if (!hasData || window.confirm('Rigenerare i dati? Le righe attuali vengono sostituite; prima viene salvata una copia di sicurezza.')) populateMut.mutate(hasData)
   }
 
   const handleDownload = async () => {
@@ -404,7 +408,7 @@ export default function ProjectPage() {
       back: { label: 'Indietro', onClick: () => setChosen(3) },
       primary: hasData
         ? { label: `Scarica lo script per ${dialectLabel(dialect)}`, icon: 'download', onClick: handleDownload, loading: exporting }
-        : { label: 'Genera i dati', icon: 'auto_awesome', onClick: () => populateMut.mutate(), loading: populateMut.isPending, disabled: !canEdit },
+        : { label: 'Genera i dati', icon: 'auto_awesome', onClick: () => populateMut.mutate(false), loading: populateMut.isPending, disabled: !canEdit },
     }
   }
 

@@ -97,6 +97,7 @@ def delete_project(project_id: str, access: ProjectAccess = Depends(project_owne
 
 @router.post("/projects/{project_id}/generate", dependencies=[Depends(project_editor), Depends(consume_ai("generate"))])
 async def generate_schema(project_id: str, req: GenerateRequest):
+    _set_finalized(project_id, None)
     started_at = utc_now()
     run_id = new_run_id()
     document_hashes = []
@@ -137,6 +138,7 @@ def get_schema(project_id: str):
 
 @router.put("/projects/{project_id}/schema", dependencies=[Depends(project_editor)])
 def update_schema(project_id: str, schema: NormalizedSchema):
+    _ensure_not_finalized(project_id)
     previous = schema_svc.get_schema(project_id)
     result = schema_svc.update_schema(project_id, schema)
     _log_research_run("schema_updated", project_id, {
@@ -148,6 +150,49 @@ def update_schema(project_id: str, schema: NormalizedSchema):
     })
     return result
 
+def _ensure_not_finalized(project_id: str):
+    if schema_svc.get_project(project_id).schema_finalized_at is not None:
+        raise AppException(detail="Lo schema è definitivo: non si può più modificare.", status_code=409)
+
+
+def _set_finalized(project_id: str, value):
+    session = get_session(schema_svc.engine)
+    try:
+        session.query(Project).filter(Project.id == project_id).update({"schema_finalized_at": value})
+        session.commit()
+    finally:
+        session.close()
+
+
+@router.post("/projects/{project_id}/finalize", dependencies=[Depends(project_editor)])
+def finalize_schema(project_id: str):
+    from datetime import datetime, timezone
+    if not schema_svc.get_schema(project_id):
+        raise AppException(detail="Genera prima lo schema.", status_code=400)
+    _set_finalized(project_id, datetime.now(timezone.utc).replace(tzinfo=None))
+    return {"finalized": True}
+
+
+@router.post("/projects/{project_id}/reset-data", dependencies=[Depends(project_editor)])
+def reset_data(project_id: str):
+    """Svuota le tabelle del progetto (dopo un backup) senza toccare lo schema."""
+    project = schema_svc.get_project(project_id)
+    schema = schema_svc.get_schema(project_id)
+    if not project.db_path or not schema:
+        raise AppException(detail="Nessun database da svuotare.", status_code=400)
+    backup_svc.auto_backup(project.db_path, project_id, "reset_data")
+    import sqlite3
+    con = sqlite3.connect(project.db_path)
+    try:
+        con.execute("PRAGMA foreign_keys=OFF")
+        for table in schema.tables:
+            con.execute(f'DELETE FROM "{table.name.replace(chr(34), "")}"')
+        con.commit()
+    finally:
+        con.close()
+    return {"reset": True}
+
+
 class ChatRequest(BaseModel):
     message: str
     document_ids: list[str] = []
@@ -157,6 +202,7 @@ class ChatRequest(BaseModel):
 
 @router.post("/projects/{project_id}/chat", dependencies=[Depends(project_editor), Depends(consume_ai("chat"))])
 async def chat_schema(project_id: str, req: ChatRequest):
+    _ensure_not_finalized(project_id)
     started_at = utc_now()
     run_id = new_run_id()
     project = schema_svc.get_project(project_id)
@@ -260,6 +306,7 @@ async def upload_document(project_id: str, file: UploadFile = File(...)):
 
 @router.post("/projects/{project_id}/import-sql", dependencies=[Depends(project_editor)])
 async def import_sql(project_id: str, file: UploadFile = File(...), dialect: str = "sqlite"):
+    _set_finalized(project_id, None)
     started_at = utc_now()
     from app.core.sql_importer import extract_schema, clean_inserts, split_sql_statements
     if dialect not in {"sqlite", "postgresql", "mysql", "mssql"}:

@@ -67,6 +67,7 @@ class Project(Base):
     prompt = Column(Text, nullable=True)
     schema_json = Column(JSON, nullable=True)
     db_path = Column(String(512), nullable=True)
+    schema_finalized_at = Column(DateTime, nullable=True)  # schema reso definitivo: chat e modifiche si chiudono
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 

@@ -40,7 +40,7 @@ export default function BackupManager({ projectId }: Props) {
   }
 
   const handleRestore = (name: string) => {
-    if (window.confirm(`Ripristinare il backup "${name}"? I dati correnti verranno salvati come undo.`)) {
+    if (window.confirm(`Ripristinare il backup "${name}"? I dati correnti verranno salvati prima, così potrai tornare indietro.`)) {
       restoreMut.mutate(name)
     }
   }
@@ -51,7 +51,7 @@ export default function BackupManager({ projectId }: Props) {
         onClick={handleToggle}
         className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded text-sm hover:bg-gray-300 dark:hover:bg-gray-600"
       >
-        Backup / Restore
+        Backup e ripristino
       </button>
       {open && (
         <div className="absolute top-full right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg z-20 min-w-80 p-3">
@@ -85,7 +85,7 @@ export default function BackupManager({ projectId }: Props) {
                     <div className="flex-1 min-w-0 mr-2">
                       <div className="truncate font-medium">{b.label || b.file}</div>
                       <div className="text-gray-500">
-                        {new Date(b.timestamp).toLocaleString()} &middot; {(b.size / 1024).toFixed(1)} KB
+                        {new Date(b.timestamp).toLocaleString('it-IT')} &middot; {(b.size / 1024).toFixed(1)} KB
                       </div>
                     </div>
                     <button

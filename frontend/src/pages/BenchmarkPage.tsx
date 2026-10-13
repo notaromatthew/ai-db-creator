@@ -122,7 +122,7 @@ export default function BenchmarkPage() {
         data_rating: dataRating,
         comment,
       })
-      setVoteSuccess('Voto dell\'esperto registrato con successo nel database!')
+      setVoteSuccess('Voto dell\'esperto registrato.')
       setComment('')
       await loadData()
       setTimeout(() => setVoteSuccess(''), 4000)
@@ -136,11 +136,11 @@ export default function BenchmarkPage() {
   const generateLatexTable = () => {
     if (!resultsData.results.length) return '% Nessun risultato disponibile'
     let latex = '\\begin{table}[h]\n\\centering\n\\begin{tabular}{|l|l|c|c|c|c|}\n\\hline\n'
-    latex += '\\textbf{Scenario} & \\textbf{Model} & \\textbf{3NF (\\%)} & \\textbf{Rel F1} & \\textbf{Cell Prec} & \\textbf{Time (s)} \\\\\n\\hline\n'
+    latex += '\\textbf{Scenario} & \\textbf{Modello} & \\textbf{3NF (\\%)} & \\textbf{Rel F1} & \\textbf{Prec. dati} & \\textbf{Tempo (s)} \\\\\n\\hline\n'
     resultsData.results.slice(0, 10).forEach((r) => {
       latex += `${r.scenario} & ${r.model} & ${r.norm3_score}\\% & ${r.relationship_f1} & ${r.cell_precision} & ${r.latency_seconds}s \\\\\n`
     })
-    latex += '\\hline\n\\end{tabular}\n\\caption{LLM Model Evaluation Results}\n\\label{tab:benchmark_results}\n\\end{table}'
+    latex += '\\hline\n\\end{tabular}\n\\caption{Risultati della valutazione dei modelli IA}\n\\label{tab:benchmark_results}\n\\end{table}'
     navigator.clipboard.writeText(latex)
     alert('Tabella LaTeX copiata negli appunti!')
   }
@@ -166,7 +166,7 @@ export default function BenchmarkPage() {
           </p>
         </div>
         <button onClick={generateLatexTable} className="secondary-button">
-          <span className="material-symbols-outlined">content_copy</span>Copia tabella LaTeX
+          <span className="material-symbols-outlined" aria-hidden="true">content_copy</span>Copia tabella LaTeX
         </button>
       </header>
 
