@@ -44,3 +44,17 @@ This document provides a machine-readable summary of architectural, model, API, 
 
 - **Deterministic Fallbacks & LLM Prompts**: Intact. Benchmark evaluations run on isolated test scenarios without altering project schemas.
 - **Environmental Contracts**: Backend functions gracefully fallback to SQLite if PostgreSQL is offline, and authentication defaults to `default-user` if `ENABLE_AUTH=False`.
+
+
+---
+
+## Branch `redesign/tecnia-research`: ridisegno, ACL e modalità ricerca
+
+- **ACL**: tabelle `users`, `project_members`, `project_invites`, `project_links`; `projects.owner_id` sostituisce `user_id`. Ruoli owner/editor/viewer, 404 sui progetti inaccessibili, link pubblico di sola lettura, admin tramite ruolo Keycloak `aidb-admin` (metadati e consumi, mai contenuti altrui). Controllo unico in `app/core/acl.py`.
+- **RESEARCH_MODE**: variabile d'ambiente (default spento). Spenta, benchmark, questionari, log delle interazioni ed esperimenti rispondono 404 e resta solo il prodotto. `GET /api/config` espone la modalità al frontend.
+- **Admin e quote**: `app_settings`, `admin_audit_log`, `usage_events`; quote giornaliere basse per utente e tetto globale; `/api/admin/*`.
+- **Sicurezza** (revisione indipendente): `execute-query` con autorizzatore SQLite (niente ATTACH/PRAGMA, lettori in sola lettura), path traversal in `restore` chiuso, `/progress` protetto, questionari ed esperimenti vincolati al progetto, inviti accettati solo con email verificata (impostazione `invites_require_verified_email`), verifica dell'issuer del token e ricarica del JWKS, impostazioni e chiavi API solo admin e mascherate, nessuna credenziale di default per il database.
+- **Migrazioni**: `run_migrations` all'avvio (database nuovo: stamp; database precedente: migrazione con proprietario `legacy` ai progetti orfani). Migrazioni `d1a0acl00001`, `d2adm00002`, `d3chat00003`.
+- **Chat**: cronologia salvata su database (`chat_messages`).
+- **Frontend**: tema TecnIA, landing `/` e `/en/`, app su `/app`, registrazione Keycloak, flusso a 4 passi con barra azioni fissa, diagramma ER con chat laterale fino a "Rendi definitivo", scelta del dialetto, condivisione, pagina admin, vista pubblica.
+- **Infra**: `infra/gcp` (Terraform per Vertex AI, validato, non applicato).

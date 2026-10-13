@@ -4,7 +4,7 @@ from app.main import app
 
 
 def as_user(sub, roles=None, email=None):
-    app.dependency_overrides[get_current_user] = lambda: {"sub": sub, "username": sub, "email": email, "roles": roles or []}
+    app.dependency_overrides[get_current_user] = lambda: {"sub": sub, "username": sub, "email": email, "roles": roles or [], "email_verified": True}
 
 
 def test_config_is_public_and_has_no_secrets(client):

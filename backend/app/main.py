@@ -24,7 +24,9 @@ async def lifespan(app: FastAPI):
     Path("uploads").mkdir(parents=True, exist_ok=True)
     Path("projects").mkdir(parents=True, exist_ok=True)
     try:
-        init_db()
+        engine = init_db()
+        from app.models.database import run_migrations
+        run_migrations(engine)
     except Exception as exc:
         log.error(f"Database initialisation failed at startup: {exc}")
     try:

@@ -16,6 +16,7 @@ from fastapi import Depends
 
 from app.config import settings
 from app.core.auth import get_current_user
+from app.core.runtime import get_setting
 from app.models.database import (
     Project, ProjectInvite, ProjectLink, ProjectMember, User, get_session, init_db,
 )
@@ -70,7 +71,8 @@ def ensure_user(user: dict) -> User:
             row.last_seen_at = now
             if email and row.email != email:
                 row.email = email
-        if email:
+        trusted = bool(user.get("email_verified")) or not settings.enable_auth or not get_setting("invites_require_verified_email")
+        if email and trusted:
             pending = session.query(ProjectInvite).filter(
                 ProjectInvite.email == email, ProjectInvite.accepted_at.is_(None),
                 ProjectInvite.expires_at > now).all()

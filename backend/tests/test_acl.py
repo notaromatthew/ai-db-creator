@@ -4,7 +4,7 @@ from app.main import app
 
 def as_user(sub, email=None, roles=None):
     app.dependency_overrides[get_current_user] = lambda: {
-        "sub": sub, "username": sub, "email": email, "roles": roles or []}
+        "sub": sub, "username": sub, "email": email, "roles": roles or [], "email_verified": True}
 
 
 def test_stranger_gets_404(client, project):
@@ -22,7 +22,7 @@ def test_viewer_can_read_not_write(client, project):
     as_user("viewer", "v@example.com")
     c.get("/api/me")
     as_user("test-user", "owner@example.com")
-    assert c.post(f"/api/projects/{pid}/invites", json={"email": "v@example.com", "role": "viewer"}).json()["status"] == "member"
+    assert c.post(f"/api/projects/{pid}/invites", json={"email": "v@example.com", "role": "viewer"}).json()["status"] == "shared"
     as_user("viewer", "v@example.com")
     assert c.get(f"/api/projects/{pid}/schema").status_code in (200, 404) and c.get(f"/api/projects/{pid}").status_code == 200
     assert c.put(f"/api/projects/{pid}/schema", json={"tables": []}).status_code in (403, 422)
@@ -35,7 +35,7 @@ def test_viewer_can_read_not_write(client, project):
 def test_invite_for_unregistered_email_accepted_on_first_login(client, project):
     c, _ = client
     pid = project["id"]
-    assert c.post(f"/api/projects/{pid}/invites", json={"email": "New@Example.com", "role": "editor"}).json()["status"] == "invited"
+    assert c.post(f"/api/projects/{pid}/invites", json={"email": "New@Example.com", "role": "editor"}).json()["status"] == "shared"
     as_user("newbie", "new@example.com")
     assert c.get(f"/api/projects/{pid}").json()["my_role"] == "editor"
 

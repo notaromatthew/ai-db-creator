@@ -29,3 +29,4 @@ pyjwt==2.9.0
 
 # Vertex AI (provider "vertex")
 langchain-google-vertexai>=2.0.0,<3
+alembic>=1.13

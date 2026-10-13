@@ -8,7 +8,7 @@ import httpx
 from app.core.auth import get_current_user
 from app.core.quota import consume_ai
 from app.core.research import require_research
-from app.core.acl import require_admin, ProjectAccess, ensure_user, project_editor, project_owner, project_viewer
+from app.core.acl import is_admin, require_admin, ProjectAccess, ensure_user, project_editor, project_owner, project_viewer
 from app.config import settings
 from app.services.benchmark_service import run_model_benchmark, save_user_vote, BENCHMARK_SCENARIOS
 from app.models.database import get_session, init_db, BenchmarkResult, UserVote
@@ -436,6 +436,31 @@ async def populate(project_id: str, req: PopulateRequest):
 async def generate_query(project_id: str, req: QueryRequest):
     return await query_svc.generate(project_id, req.prompt, req.dialect)
 
+_WRITE_WORDS = re.compile(r"\b(INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|REPLACE|VACUUM|ATTACH|DETACH|PRAGMA|REINDEX)\b")
+
+
+def _install_sqlite_guard(engine, read_only: bool):
+    """Autorizzatore SQLite: niente ATTACH/PRAGMA/estensioni per nessuno; i lettori non scrivono."""
+    import sqlite3
+    from sqlalchemy import event
+
+    deny = {sqlite3.SQLITE_ATTACH, sqlite3.SQLITE_DETACH, sqlite3.SQLITE_PRAGMA}
+    read_ok = {sqlite3.SQLITE_SELECT, sqlite3.SQLITE_READ, sqlite3.SQLITE_FUNCTION, sqlite3.SQLITE_RECURSIVE}
+
+    def authorizer(action, arg1, arg2, db_name, source):
+        if action in deny:
+            return sqlite3.SQLITE_DENY
+        if action == sqlite3.SQLITE_FUNCTION and str(arg2).lower() in {"load_extension", "readfile", "writefile"}:
+            return sqlite3.SQLITE_DENY
+        if read_only and action not in read_ok:
+            return sqlite3.SQLITE_DENY
+        return sqlite3.SQLITE_OK
+
+    @event.listens_for(engine, "connect")
+    def _on_connect(dbapi_conn, _record):
+        dbapi_conn.set_authorizer(authorizer)
+
+
 @router.post("/projects/{project_id}/execute-query", dependencies=[Depends(project_viewer)])
 def execute_query(project_id: str, req: ExecuteQueryRequest, access: ProjectAccess = Depends(project_viewer)):
     project = schema_svc.get_project(project_id)
@@ -450,8 +475,7 @@ def execute_query(project_id: str, req: ExecuteQueryRequest, access: ProjectAcce
         raise HTTPException(status_code=400, detail="SQL vuoto")
 
     stmt_upper = sql.upper().strip()
-    is_write = not stmt_upper.startswith(("SELECT", "WITH", "EXPLAIN")) or any(
-        kw in stmt_upper for kw in ("INSERT ", "UPDATE ", "DELETE ", "DROP ", "CREATE ", "ALTER ", "ATTACH ", "PRAGMA "))
+    is_write = bool(_WRITE_WORDS.search(stmt_upper)) or not stmt_upper.startswith(("SELECT", "WITH", "EXPLAIN"))
     if is_write and not access.allows("editor"):
         raise HTTPException(status_code=403, detail="Con il ruolo di lettore puoi eseguire solo query di lettura")
     if is_write:
@@ -459,6 +483,7 @@ def execute_query(project_id: str, req: ExecuteQueryRequest, access: ProjectAcce
         log.info("Auto-backup created before write query")
 
     db_engine = create_engine(f"sqlite:///{project.db_path}")
+    _install_sqlite_guard(db_engine, read_only=not access.allows("editor"))
     try:
         with db_engine.connect() as conn:
             statements = [s.strip() for s in sql.split(';') if s.strip()]
@@ -637,8 +662,27 @@ def export_interactions(project_id: str):
     count = interaction_logger.save_events(str(export_path), project_id=project_id)
     return {"path": str(export_path), "count": count}
 
+def _assert_project_role(project_id, user: dict, minimum: str):
+    from app.core.acl import ROLE_RANK, resolve_role
+    if not isinstance(project_id, str) or not project_id:
+        raise HTTPException(status_code=422, detail="project_id obbligatorio.")
+    row = ensure_user(user)
+    role = resolve_role(project_id, row.id)
+    if role is None:
+        raise AppException(detail="Project not found", status_code=404)
+    if ROLE_RANK[role] < ROLE_RANK[minimum]:
+        raise AppException(detail="Permesso insufficiente per questa azione", status_code=403)
+
+
+def _consume_ai_now(user: dict, kind: str, project_id=None):
+    row = ensure_user(user)
+    consume_ai(kind)(project_id, row)
+
+
 @router.post("/experiments/compare", dependencies=[Depends(require_research)])
-def compare_approaches(payload: dict):
+def compare_approaches(payload: dict, user: dict = Depends(get_current_user)):
+    _assert_project_role(payload.get("project_id"), user, "viewer")
+    _consume_ai_now(user, "experiment", payload.get("project_id"))
     from app.core.llm import generate_schema
     from app.models.database import get_session, Document
     import asyncio
@@ -666,7 +710,8 @@ def compare_approaches(payload: dict):
     return {"automatic": {"schema": auto_schema.model_dump(), "metrics": auto_metrics}}
 
 @router.post("/surveys/nasa-tlx", dependencies=[Depends(require_research)])
-def submit_nasa_tlx(payload: dict):
+def submit_nasa_tlx(payload: dict, user: dict = Depends(get_current_user)):
+    _assert_project_role(payload.get("project_id"), user, "viewer")
     """Submit NASA-TLX survey for cognitive load measurement."""
     project_id = payload.get("project_id")
     if not isinstance(project_id, str) or not project_id:
@@ -693,7 +738,8 @@ def submit_nasa_tlx(payload: dict):
     return {"status": "saved", "aggregate_score": aggregate_score}
 
 @router.post("/surveys/sus", dependencies=[Depends(require_research)])
-def submit_sus(payload: dict):
+def submit_sus(payload: dict, user: dict = Depends(get_current_user)):
+    _assert_project_role(payload.get("project_id"), user, "viewer")
     """Submit SUS (System Usability Scale) survey."""
     project_id = payload.get("project_id")
     if not isinstance(project_id, str) or not project_id:
@@ -854,7 +900,8 @@ def get_task_status(task_id: str, user: dict = Depends(get_current_user)):
     """Get async task status."""
     from app.tasks import celery
     task = celery.AsyncResult(task_id)
-    return {"task_id": task_id, "status": task.status, "result": task.result if task.ready() else None}
+    return {"task_id": task_id, "status": task.status,
+            "result": task.result if (task.ready() and is_admin(user)) else None}
 
 
 # ==========================================
@@ -1094,6 +1141,7 @@ def list_benchmark_scenarios(user: dict = Depends(get_current_user)):
 
 @router.post("/benchmark/run", dependencies=[Depends(require_research)])
 async def run_benchmark(req: BenchmarkRunRequest, user: dict = Depends(get_current_user)):
+    _consume_ai_now(user, "benchmark")
     res = await run_model_benchmark(
         scenario_key=req.scenario,
         temperature=req.temperature,
@@ -1130,10 +1178,10 @@ def get_benchmark_results(user: dict = Depends(get_current_user)):
         "votes": [
             {
                 "id": v.id,
-                "user_id": v.user_id,
+                "user_id": v.user_id if is_admin(user) else None,
                 "schema_rating": v.schema_rating,
                 "data_rating": v.data_rating,
-                "comment": v.comment,
+                "comment": v.comment if is_admin(user) else None,
                 "created_at": v.created_at.isoformat() if v.created_at else None,
             }
             for v in votes

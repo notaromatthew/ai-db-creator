@@ -199,3 +199,41 @@ def get_session(engine=None):
     target_engine = engine or init_db()
     Session = sessionmaker(bind=target_engine)
     return Session()
+
+def run_migrations(engine=None):
+    """Porta lo schema alla versione corrente.
+
+    - database nuovo (create_all ha gia' creato tutto): si marca come aggiornato;
+    - database precedente senza versione Alembic: si parte dalla migrazione iniziale;
+    - database gia' versionato: upgrade fino all'ultima.
+    """
+    from pathlib import Path
+    from sqlalchemy import inspect
+
+    script_dir = Path(__file__).resolve().parents[2] / "alembic"
+    if not script_dir.exists():
+        log.warning("Cartella alembic non trovata: migrazioni saltate")
+        return
+    from alembic import command
+    from alembic.config import Config
+
+    engine = engine or init_db()
+    cfg = Config()
+    cfg.set_main_option("script_location", str(script_dir))
+    cfg.attributes["engine"] = engine
+    tables = set(inspect(engine).get_table_names())
+    columns = {c["name"] for c in inspect(engine).get_columns("projects")} if "projects" in tables else set()
+    if "alembic_version" in tables:
+        command.upgrade(cfg, "head")
+    elif "projects" in tables and "owner_id" not in columns:
+        # init_db ha appena creato (vuote) le tabelle nuove: vanno tolte perche' le crea la migrazione.
+        from sqlalchemy import text
+        with engine.begin() as conn:
+            for name in ("chat_messages", "project_links", "project_invites", "project_members",
+                         "usage_events", "admin_audit_log", "app_settings", "users"):
+                if name in tables:
+                    conn.execute(text(f"DROP TABLE {name}"))
+        command.stamp(cfg, "c25c5721cbb9")
+        command.upgrade(cfg, "head")
+    else:
+        command.stamp(cfg, "head")

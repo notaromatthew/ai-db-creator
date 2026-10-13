@@ -10,9 +10,9 @@ security = HTTPBearer(auto_error=False)
 
 _jwks_cache = None
 
-async def _get_jwks():
+async def _get_jwks(force: bool = False):
     global _jwks_cache
-    if _jwks_cache:
+    if _jwks_cache and not force:
         return _jwks_cache
     jwks_url = f"{settings.keycloak_url}/realms/{settings.keycloak_realm}/protocol/openid-connect/certs"
     async with httpx.AsyncClient(timeout=10.0) as client:
@@ -46,6 +46,9 @@ async def get_current_user(
         kid = header.get("kid")
         key = next((k for k in jwks.get("keys", []) if k.get("kid") == kid), None)
         if not key:
+            jwks = await _get_jwks(force=True)  # chiave ruotata su Keycloak
+            key = next((k for k in jwks.get("keys", []) if k.get("kid") == kid), None)
+        if not key:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Chiave di firma token Keycloak non trovata")
 
         claims = jwt.decode(
@@ -53,13 +56,17 @@ async def get_current_user(
             key,
             algorithms=["RS256"],
             audience="account",
-            options={"verify_aud": False}
+            options={"verify_aud": False, "verify_iss": False}
         )
+        issuer = str(claims.get("iss", ""))
+        if issuer.rstrip("/").split("/realms/")[-1] != settings.keycloak_realm:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token emesso da un realm non valido")
 
         return {
             "sub": claims.get("sub"),
             "username": claims.get("preferred_username", claims.get("sub")),
             "email": claims.get("email"),
+            "email_verified": bool(claims.get("email_verified")),
             "name": claims.get("name"),
             "roles": list((claims.get("realm_access") or {}).get("roles", [])),
         }

@@ -1,5 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from app.utils.logger import log
+from app.config import settings
+from app.core.auth import get_current_user
+from app.core.acl import ensure_user, resolve_role
+from app.utils.exceptions import AppException
 from datetime import datetime
 import os
 import json
@@ -49,12 +53,17 @@ def get_progress_state(project_id: str) -> dict:
     return _in_memory_store.get(project_id, {"status": "idle", "progress": 0, "message": "", "etc_seconds": None})
 
 
-@router.get("/progress/{project_id}")
+def _progress_access(project_id: str, user: dict = Depends(get_current_user)):
+    """Il progresso e' leggibile solo da chi ha accesso al progetto; 'benchmark' e' una chiave speciale dello studio."""
+    if project_id == "benchmark":
+        if not settings.research_mode:
+            raise AppException(detail="Not found", status_code=404)
+        return
+    row = ensure_user(user)
+    if resolve_role(project_id, row.id) is None:
+        raise AppException(detail="Project not found", status_code=404)
+
+
+@router.get("/progress/{project_id}", dependencies=[Depends(_progress_access)])
 def get_progress(project_id: str):
     return get_progress_state(project_id)
-
-@router.post("/progress/{project_id}")
-def update_progress(project_id: str, status: str, progress: int, message: str = ""):
-    set_progress(project_id, status, progress, message)
-    log.info(f"Progress {project_id}: {status} ({progress}%) - {message}")
-    return {"status": "updated"}

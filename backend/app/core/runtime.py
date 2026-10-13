@@ -9,6 +9,7 @@ DEFAULTS = {
     "max_upload_mb": lambda: settings.max_upload_mb,
     "max_projects_per_user": lambda: settings.max_projects_per_user,
     "registration_open": lambda: True,
+    "invites_require_verified_email": lambda: True,
     "maintenance_message": lambda: "",
 }
 INT_KEYS = {"default_daily_ai_quota", "daily_ai_budget_total", "max_upload_mb", "max_projects_per_user"}
@@ -36,7 +37,7 @@ def set_setting(key: str, value, actor: str):
         value = int(value)
         if value < 0:
             raise ValueError("valore negativo")
-    elif key == "registration_open":
+    elif key in ("registration_open", "invites_require_verified_email"):
         value = bool(value)
     else:
         value = str(value)[:300]

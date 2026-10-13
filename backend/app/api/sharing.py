@@ -81,12 +81,12 @@ def invite(project_id: str, body: InviteRequest, access: ProjectAccess = Depends
                 session.add(ProjectMember(project_id=project_id, user_id=existing.id, role=role,
                                           invited_by=access.user_id))
             session.commit()
-            return {"status": "member", "email": email, "role": role}
+            return {"status": "shared", "email": email, "role": role}
         token = new_token()
         session.add(ProjectInvite(project_id=project_id, email=email, role=role, token_hash=hash_token(token),
                                   invited_by=access.user_id, expires_at=utcnow_naive() + timedelta(days=INVITE_DAYS)))
         session.commit()
-        return {"status": "invited", "email": email, "role": role}
+        return {"status": "shared", "email": email, "role": role}
     finally:
         session.close()
 
@@ -182,6 +182,8 @@ def read_shared(token: str):
     session = get_session(init_db())
     try:
         project = session.get(Project, project_id)
+        if project is None:
+            raise AppException(detail="Link non valido", status_code=404)
         return {"name": project.name, "schema": project.schema_json, "read_only": True}
     finally:
         session.close()

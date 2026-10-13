@@ -62,7 +62,11 @@ class BackupService:
     def restore_backup(self, db_path: str, backup_name: str) -> dict:
         db_file = Path(db_path)
         backup_dir = db_file.parent / BACKUPS_DIR
-        backup_path = backup_dir / backup_name
+        safe_name = Path(backup_name).name
+        backup_path = backup_dir / safe_name
+        if (safe_name != backup_name or backup_path.suffix != ".db"
+                or backup_path.resolve().parent != backup_dir.resolve()):
+            return {"error": "Nome del backup non valido"}
 
         if not backup_path.exists():
             return {"error": f"Backup not found: {backup_name}"}
