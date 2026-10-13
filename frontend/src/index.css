@@ -4,13 +4,18 @@
 
 @layer base {
   html { @apply scroll-smooth; }
-  body { @apply min-w-[320px] bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100; }
-  button, a, input, textarea, select, summary { @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900; }
+  body { @apply min-w-[320px] bg-tecnia-bg font-sans text-tecnia-ink antialiased dark:bg-slate-950 dark:text-slate-100; }
+  h1, h2, h3 { @apply font-headline; }
+  button, a, input, textarea, select, summary { @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900; }
 }
 
 @layer components {
-  .surface { @apply rounded-2xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900; }
-  .primary-button { @apply inline-flex min-h-11 items-center justify-center rounded-xl bg-blue-600 px-5 py-2.5 font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-400; }
-  .secondary-button { @apply inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 font-medium text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-blue-500 dark:hover:bg-slate-700; }
-  .field { @apply w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-slate-900 placeholder:text-slate-400 transition hover:border-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-900; }
+  .surface { @apply rounded-2xl border border-tecnia-line/60 bg-white/80 shadow-glass backdrop-blur dark:border-slate-700 dark:bg-slate-900; }
+  .glass { @apply rounded-[20px] border border-tecnia-line/40 bg-white/70 shadow-glass backdrop-blur-md dark:border-slate-700 dark:bg-slate-900/70; }
+  /* Pulsanti a pillola in maiuscolo, come da design TecnIA */
+  .primary-button { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-orange-500 bg-white/70 px-6 py-2.5 font-headline text-xs font-bold uppercase tracking-wide text-tecnia-primary shadow-[0_2px_10px_rgba(255,107,0,.12)] transition hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-800 dark:text-orange-300 dark:hover:bg-slate-700; }
+  .secondary-button { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-tecnia-line bg-white/70 px-5 py-2.5 font-headline text-xs font-bold uppercase tracking-wide text-tecnia-ink transition hover:border-orange-300 hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700; }
+  .field { @apply w-full rounded-xl border border-tecnia-line bg-white px-3.5 py-2.5 text-tecnia-ink placeholder:text-slate-400 transition hover:border-orange-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:focus:ring-orange-900; }
+  .tag { @apply inline-flex rounded-full border border-current px-3 py-0.5 font-headline text-[11px] font-bold uppercase tracking-wider; }
+  .orb { @apply pointer-events-none absolute rounded-full opacity-20 blur-[95px]; }
 }

@@ -139,7 +139,7 @@ export default function ProjectPage() {
   return (
     <div className="mx-auto max-w-6xl">
       <header className="mb-6">
-        <Link to="/" className="mb-3 inline-flex items-center gap-1 rounded-lg text-sm font-medium text-slate-500 hover:text-blue-700 dark:hover:text-blue-300">← Tutti i progetti</Link>
+        <Link to="/app" className="mb-3 inline-flex items-center gap-1 rounded-lg text-sm font-medium text-slate-500 hover:text-blue-700 dark:hover:text-blue-300">← Tutti i progetti</Link>
         <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Area di lavoro</p>

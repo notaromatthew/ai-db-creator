@@ -19,7 +19,7 @@ export default function Dashboard() {
     mutationFn: (data: { name: string; prompt: string }) => api.post('/projects', data),
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['projects'] })
-      setName(''); setPrompt(''); navigate(`/projects/${result.id}`)
+      setName(''); setPrompt(''); navigate(`/app/projects/${result.id}`)
     },
     onError: (caught: any) => setError(caught?.message || 'Impossibile creare il progetto. Verifica che il servizio sia attivo.'),
   })
@@ -125,7 +125,7 @@ export default function Dashboard() {
           <div className="grid gap-4 md:grid-cols-2">
             {projects?.map((project) => (
               <article key={project.id} className="surface group relative transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:hover:border-blue-700">
-                <Link to={`/projects/${project.id}`} className="block min-h-36 p-5 pr-14">
+                <Link to={`/app/projects/${project.id}`} className="block min-h-36 p-5 pr-14">
                   <span className="mb-3 grid h-10 w-10 place-items-center rounded-xl bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300" aria-hidden="true">▦</span>
                   <h3 className="truncate text-lg font-bold group-hover:text-blue-700 dark:group-hover:text-blue-300">{project.name}</h3>
                   <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{project.prompt || 'Nessuna descrizione: apri il progetto per iniziare.'}</p>

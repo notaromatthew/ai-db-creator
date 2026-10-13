@@ -101,7 +101,7 @@ export default function HelpPage() {
           <p className="text-xs text-slate-500">Crea il tuo primo progetto o confronta i modelli nella pagina Benchmark.</p>
         </div>
         <Link
-          to="/"
+          to="/app"
           className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow hover:bg-blue-700"
         >
           Torna alla Dashboard

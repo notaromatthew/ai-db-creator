@@ -1,13 +1,17 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 import Keycloak from 'keycloak-js'
 import { api } from '../api/client'
+import { useConfig } from '../config/AppConfig'
 
 interface AuthContextType {
   authenticated: boolean
   token: string | null
   username: string
   login: () => void
+  register: () => void
   logout: () => void
+  roles: string[]
+  isAdmin: boolean
   keycloak: Keycloak | null
   initialized: boolean
 }
@@ -17,23 +21,23 @@ const KeycloakContext = createContext<AuthContextType>({
   token: null,
   username: 'Ospite',
   login: () => {},
+  register: () => {},
   logout: () => {},
+  roles: [],
+  isAdmin: false,
   keycloak: null,
   initialized: false,
 })
 
-const KEYCLOAK_URL = import.meta.env.VITE_KEYCLOAK_URL || 'https://keycloak-pw9ut4s1h3aodstrsw1gd84o.89.168.29.98.sslip.io'
-const KEYCLOAK_REALM = import.meta.env.VITE_KEYCLOAK_REALM || 'aidbcreator'
-const KEYCLOAK_CLIENT_ID = import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'aidbcreator-app'
-
-// Singleton Keycloak instance
-const keycloakInstance = new Keycloak({
-  url: KEYCLOAK_URL,
-  realm: KEYCLOAK_REALM,
-  clientId: KEYCLOAK_CLIENT_ID,
-})
+let keycloakInstance: Keycloak | null = null
+const getKeycloak = (url: string, realm: string, clientId: string) => {
+  if (!keycloakInstance) keycloakInstance = new Keycloak({ url, realm, clientId })
+  return keycloakInstance
+}
 
 export const KeycloakProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { config, loaded } = useConfig()
+  const [roles, setRoles] = useState<string[]>([])
   const isRun = useRef(false)
   const [authenticated, setAuthenticated] = useState<boolean>(false)
   const [token, setToken] = useState<string | null>(null)
@@ -41,6 +45,7 @@ export const KeycloakProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [initialized, setInitialized] = useState<boolean>(false)
 
   const syncAuthState = (auth: boolean) => {
+    const keycloakInstance = getKeycloak(config.keycloak_url, config.keycloak_realm, config.keycloak_client_id)
     setAuthenticated(auth)
     if (auth && keycloakInstance.token) {
       const activeToken = keycloakInstance.token
@@ -51,7 +56,9 @@ export const KeycloakProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         keycloakInstance.tokenParsed?.sub ||
         'Utente Keycloak'
       setUsername(parsedUser)
+      setRoles((keycloakInstance.tokenParsed as any)?.realm_access?.roles ?? [])
     } else {
+      setRoles([])
       setToken(null)
       api.setToken(null)
       setUsername('Ospite')
@@ -59,8 +66,9 @@ export const KeycloakProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }
 
   useEffect(() => {
-    if (isRun.current) return
+    if (!loaded || isRun.current) return
     isRun.current = true
+    const keycloakInstance = getKeycloak(config.keycloak_url, config.keycloak_realm, config.keycloak_client_id)
 
     // Set Keycloak Event Listeners
     keycloakInstance.onAuthSuccess = () => syncAuthState(true)
@@ -110,22 +118,27 @@ export const KeycloakProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         syncAuthState(false)
         setInitialized(true)
       })
-  }, [])
+  }, [loaded])
 
+  const kc = () => getKeycloak(config.keycloak_url, config.keycloak_realm, config.keycloak_client_id)
   const login = () => {
-    keycloakInstance.login({ redirectUri: window.location.origin + '/' })
+    kc().login({ redirectUri: window.location.origin + '/app' })
+  }
+
+  const register = () => {
+    kc().register({ redirectUri: window.location.origin + '/app' })
   }
 
   const logout = () => {
-    keycloakInstance.logout({ redirectUri: window.location.origin + '/' })
+    kc().logout({ redirectUri: window.location.origin + '/' })
   }
 
   if (!initialized) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-slate-950 text-white">
+      <div className="flex h-screen w-screen items-center justify-center bg-tecnia-bg text-tecnia-ink">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
-          <p className="text-sm font-semibold text-slate-400">Autenticazione Keycloak in corso...</p>
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-orange-500 border-t-transparent"></div>
+          <p className="text-sm font-semibold text-tecnia-muted">Accesso in corso…</p>
         </div>
       </div>
     )
@@ -138,7 +151,10 @@ export const KeycloakProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         token,
         username,
         login,
+        register,
         logout,
+        roles,
+        isAdmin: roles.includes('aidb-admin'),
         keycloak: keycloakInstance,
         initialized,
       }}
