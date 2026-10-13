@@ -29,7 +29,7 @@ def test_generated_query_is_recorded_with_question(client, project, monkeypatch)
     assert history[0]["question"] == "tutte le persone"
     assert history[0]["sql"] == "SELECT * FROM persone"
     assert history[0]["outcome"] == "ok" and history[0]["source"] == "query"
-    assert history[0]["user_id"] == "test-user"
+    assert history[0]["mine"] is True and "user_id" not in history[0]
 
 
 def test_failed_generation_is_recorded_as_error(client, project, monkeypatch):
@@ -78,6 +78,10 @@ def test_history_follows_the_acl(client, project):
     as_user("test-user", "owner@example.com")
     c.post(f"/api/projects/{pid}/invites", json={"email": "v@example.com", "role": "viewer"})
     as_user("viewer", "v@example.com")
-    assert len(c.get(f"/api/projects/{pid}/queries").json()["queries"]) == 1
+    assert c.get(f"/api/projects/{pid}/queries").json()["queries"] == []  # le domande altrui non si vedono
+    query_service.record_query(pid, "viewer", "mia", "SELECT 2", "ok")
+    assert [q["question"] for q in c.get(f"/api/projects/{pid}/queries").json()["queries"]] == ["mia"]
+    as_user("test-user", "owner@example.com")
+    assert len(c.get(f"/api/projects/{pid}/queries").json()["queries"]) == 2  # il proprietario vede tutto
     as_user("stranger", "s@example.com")
     assert c.get(f"/api/projects/{pid}/queries").status_code == 404

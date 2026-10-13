@@ -58,7 +58,7 @@ def test_generation_saves_version_one_and_exposes_it_on_the_project(client, proj
     listing = versions(c, pid)
     assert listing["current"] == 1
     assert listing["versions"][0]["origin"] == "generazione"
-    assert listing["versions"][0]["author"] == "test-user"
+    assert listing["versions"][0]["mine"] is True and "author" not in listing["versions"][0]
     assert listing["versions"][0]["table_count"] == 2
 
 

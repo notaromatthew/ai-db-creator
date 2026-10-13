@@ -4,8 +4,9 @@
 Tre livelli, dal piu' automatico al piu' manuale:
 
 1. **Tetto giornaliero nel gateway** (`daily_request_cap`, default 500 richieste UTC/giorno): automatico, nessun costo oltre il tetto.
-   Il contatore e' in memoria, per questo Cloud Run e' configurato con 1 sola istanza massima. Un riavvio azzera il contatore del giorno:
-   il tetto e' un freno di sicurezza, non una contabilita'.
+   Il contatore e' in memoria e vale per istanza: Cloud Run ha 1 istanza minima e massima, con CPU sempre allocata, cosi' lo scale-to-zero
+   non lo azzera a ogni cold start. Un deploy o un riavvio lo azzera comunque: il tetto e' un freno di sicurezza, non una contabilita'.
+   Il limite vero resta la **quota Vertex AI** per il modello (richieste al minuto/giorno), da impostare nella console GCP.
 2. **Budget GCP con soglie** al 50%, 90%, 100% e 120% del tetto mensile: avvisi per email (Monitoring) e ai destinatari dell'account di fatturazione.
    Un budget GCP non blocca la spesa da solo.
 3. **Interruttore `ai_enabled=false`**: `scripts/ops_gateway_off.sh off` fa plan -> "SI" -> apply; il gateway risponde 503 a tutto.

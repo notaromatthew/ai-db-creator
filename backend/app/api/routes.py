@@ -8,7 +8,7 @@ import httpx
 from app.core.auth import get_current_user
 from app.core.quota import consume_ai
 from app.core.research import require_research
-from app.core.acl import is_admin, require_admin, ProjectAccess, ensure_user, project_editor, project_owner, project_viewer
+from app.core.acl import is_admin, require_admin, ProjectAccess, ensure_user, project_editor, project_owner, project_viewer, resolve_role
 from app.config import settings
 from app.services.benchmark_service import run_model_benchmark, save_user_vote, BENCHMARK_SCENARIOS
 from app.models.database import get_session, init_db, BenchmarkResult, UserVote
@@ -513,11 +513,47 @@ async def generate_query(project_id: str, req: QueryRequest, access: ProjectAcce
     return response
 
 
-@router.get("/projects/{project_id}/queries", dependencies=[Depends(project_viewer)])
-def query_history(project_id: str):
-    """Ultime 50 domande del progetto con la query generata e l'esito."""
+
+def _author_labels(user_ids, access: "ProjectAccess") -> dict:
+    """Etichette per gli autori: mai l'id interno. Il proprietario vede il nome visualizzato, gli altri
+    solo "Tu" per le proprie voci e "Altro membro" per il resto."""
+    from app.models.database import User
+    labels: dict = {}
+    names: dict = {}
+    wanted = {u for u in user_ids if u}
+    if wanted and access.role == "owner":
+        session = get_session(schema_svc.engine)
+        try:
+            names = {u.id: (u.display_name or "").strip() for u in session.query(User).filter(User.id.in_(wanted)).all()}
+        finally:
+            session.close()
+    for uid in wanted:
+        if uid == access.user_id:
+            labels[uid] = "Tu"
+        elif access.role == "owner":
+            name = names.get(uid)
+            labels[uid] = name if name and name != uid else "Membro"
+        else:
+            labels[uid] = "Altro membro"
+    return labels
+
+
+def _visible_to(access: "ProjectAccess", owner_of_entry: str | None) -> bool:
+    """Il proprietario del progetto vede tutto, gli altri solo le proprie voci."""
+    return access.role == "owner" or owner_of_entry == access.user_id
+
+
+@router.get("/projects/{project_id}/queries")
+def query_history(project_id: str, access: ProjectAccess = Depends(project_viewer)):
+    """Ultime 50 domande: il proprietario vede quelle di tutti, gli altri membri solo le proprie."""
     schema_svc.get_project(project_id)
-    return {"queries": list_queries(project_id)}
+    items = list_queries(project_id, user_id=None if access.role == "owner" else access.user_id)
+    labels = _author_labels([i["user_id"] for i in items], access)
+    for item in items:
+        uid = item.pop("user_id", None)
+        item["mine"] = uid == access.user_id
+        item["author_label"] = labels.get(uid, "Sconosciuto")
+    return {"queries": items}
 
 _WRITE_WORDS = re.compile(r"\b(INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|REPLACE|VACUUM|ATTACH|DETACH|PRAGMA|REINDEX)\b")
 
@@ -762,7 +798,7 @@ def _assert_project_role(project_id, user: dict, minimum: str):
 
 def _consume_ai_now(user: dict, kind: str, project_id=None):
     row = ensure_user(user)
-    consume_ai(kind)(project_id, row)
+    return consume_ai(kind)(project_id, row)
 
 
 @router.post("/experiments/compare", dependencies=[Depends(require_research)])
@@ -945,7 +981,7 @@ def export_schema(project_id: str, format: str = "sql"):
     raise HTTPException(status_code=400, detail=f"Unsupported format: {format}")
 
 @router.post("/projects/{project_id}/generate-async", dependencies=[Depends(project_editor), Depends(consume_ai("generate"))])
-def generate_schema_async(project_id: str, req: GenerateRequest):
+def generate_schema_async(project_id: str, req: GenerateRequest, access: ProjectAccess = Depends(project_editor)):
     """Start async schema generation."""
     schema_svc.get_project(project_id)
     for document_id in set(req.document_ids):
@@ -954,11 +990,12 @@ def generate_schema_async(project_id: str, req: GenerateRequest):
     context = {"condition": req.condition, "session_id": req.session_id, "participant_id": req.participant_id,
                **get_llm_run_metadata(0.1, req.prompt, [item for item in document_hashes if item]),
                "parameters": {"temperature": 0.1}, "document_hashes": [item for item in document_hashes if item]}
-    task = generate_schema_task.delay(project_id, req.prompt, req.document_ids, context)
+    task = generate_schema_task.apply_async(args=(project_id, req.prompt, req.document_ids, context),
+                                            task_id=_new_task_id(project_id, access.user_id))
     return {"task_id": task.id, "status": "started"}
 
 @router.post("/projects/{project_id}/populate-async", dependencies=[Depends(project_editor), Depends(consume_ai("populate"))])
-def populate_async(project_id: str, req: PopulateRequest):
+def populate_async(project_id: str, req: PopulateRequest, access: ProjectAccess = Depends(project_editor)):
     """Start async data population."""
     project = schema_svc.get_project(project_id)
     schema = schema_svc.get_schema(project_id)
@@ -974,23 +1011,51 @@ def populate_async(project_id: str, req: PopulateRequest):
                "parameters": {"deterministic_first": True, "semantic_mapping_temperature": 0.0,
                               "fallback_temperature": 0.1},
                "document_hashes": [item for item in document_hashes if item]}
-    task = populate_data_task.delay(project_id, project.db_path, json.loads(schema.model_dump_json()), req.document_ids, context)
+    task = populate_data_task.apply_async(
+        args=(project_id, project.db_path, json.loads(schema.model_dump_json()), req.document_ids, context),
+        task_id=_new_task_id(project_id, access.user_id))
     return {"task_id": task.id, "status": "started"}
 
 @router.post("/projects/{project_id}/export-async", dependencies=[Depends(project_viewer)])
-def export_async(project_id: str, format: str = "sql"):
+def export_async(project_id: str, format: str = "sql", access: ProjectAccess = Depends(project_viewer)):
     """Start async schema export."""
     schema_svc.get_project(project_id)
-    task = export_schema_task.delay(project_id, format)
+    task = export_schema_task.apply_async(args=(project_id, format), task_id=_new_task_id(project_id, access.user_id))
     return {"task_id": task.id, "status": "started"}
+
+def hmac_equal(a: str, b: str) -> bool:
+    import hmac
+    return hmac.compare_digest(a, b)
+
+
+def _task_tag(user_id: str) -> str:
+    import hashlib, hmac
+    key = (os.getenv("TASK_BINDING_SECRET") or "aidb-task-binding").encode("utf-8")
+    return hmac.new(key, str(user_id).encode("utf-8"), hashlib.sha256).hexdigest()[:16]
+
+
+def _new_task_id(project_id: str, user_id: str) -> str:
+    """L'id del task contiene progetto e un'etichetta del creatore: lo stato si legge solo con l'ACL del progetto."""
+    import uuid
+    return f"{project_id}.{_task_tag(user_id)}.{uuid.uuid4().hex}"
+
 
 @router.get("/tasks/{task_id}")
 def get_task_status(task_id: str, user: dict = Depends(get_current_user)):
-    """Get async task status."""
+    """Stato di un task asincrono: serve un ruolo sul progetto del task; il risultato lo vede solo chi l'ha avviato.
+    L'admin senza ruolo sul progetto riceve 404 e non vede mai il risultato."""
+    parts = task_id.split(".")
+    if len(parts) != 3:
+        raise AppException(detail="Task non trovato", status_code=404)
+    project_id, tag, _ = parts
+    row = ensure_user(user)
+    if resolve_role(project_id, row.id) is None:
+        raise AppException(detail="Task non trovato", status_code=404)
     from app.tasks import celery
     task = celery.AsyncResult(task_id)
-    return {"task_id": task_id, "status": task.status,
-            "result": task.result if (task.ready() and is_admin(user)) else None}
+    own = hmac_equal(tag, _task_tag(row.id))
+    return {"task_id": task_id, "status": task.status, "project_id": project_id,
+            "result": task.result if (own and task.ready()) else None}
 
 
 # ==========================================
@@ -1017,17 +1082,28 @@ def set_target_dialect(project_id: str, body: DialectRequest):
     return {"target_dialect": body.dialect}
 
 
-@router.get("/projects/{project_id}/schema/versions", dependencies=[Depends(project_viewer)])
-def list_schema_versions(project_id: str):
+def _mask_author(entry: dict, labels: dict, access: "ProjectAccess") -> dict:
+    uid = entry.pop("author", None)
+    entry["mine"] = uid == access.user_id
+    entry["author_label"] = labels.get(uid, "Sistema")
+    return entry
+
+
+@router.get("/projects/{project_id}/schema/versions")
+def list_schema_versions(project_id: str, access: ProjectAccess = Depends(project_viewer)):
+    """Lo schema e' condiviso, quindi tutti i membri vedono l'elenco delle versioni; l'autore e' solo un'etichetta."""
     project = schema_svc.get_project(project_id)
+    versions = schema_svc.list_versions(project_id)
+    labels = _author_labels([v.get("author") for v in versions], access)
     return {"current": project.schema_version or 0, "finalized": project.schema_finalized_at is not None,
-            "versions": schema_svc.list_versions(project_id)}
+            "versions": [_mask_author(v, labels, access) for v in versions]}
 
 
-@router.get("/projects/{project_id}/schema/versions/{version}", dependencies=[Depends(project_viewer)])
-def get_schema_version(project_id: str, version: int):
+@router.get("/projects/{project_id}/schema/versions/{version}")
+def get_schema_version(project_id: str, version: int, access: ProjectAccess = Depends(project_viewer)):
     schema_svc.get_project(project_id)
-    return schema_svc.get_version(project_id, version)
+    entry = schema_svc.get_version(project_id, version)
+    return _mask_author(entry, _author_labels([entry.get("author")], access), access)
 
 
 @router.post("/projects/{project_id}/schema/versions/{version}/restore")
@@ -1057,26 +1133,29 @@ class JobRequest(BaseModel):
     dialect: str | None = None
 
 
-def _job_to_dict(job) -> dict:
-    return {"id": job.id, "project_id": job.project_id, "user_id": job.user_id, "kind": job.kind,
+def _job_to_dict(job, access: "ProjectAccess | None" = None, labels: dict | None = None) -> dict:
+    mine = access is not None and job.user_id == access.user_id
+    label = (labels or {}).get(job.user_id) or ("Tu" if mine else "Altro membro")
+    return {"id": job.id, "project_id": job.project_id, "mine": mine, "author_label": label, "kind": job.kind,
             "status": job.status, "progress": job.progress, "error": job.error, "result": job.result,
             "created_at": job.created_at, "updated_at": job.updated_at}
 
 
-def _load_job(project_id: str, job_id: str):
+def _load_job(project_id: str, job_id: str, access: "ProjectAccess"):
     from app.models.database import Job
     session = get_session(schema_svc.engine)
     try:
         job = session.query(Job).filter(Job.id == job_id, Job.project_id == project_id).first()
-        if job is None:
+        if job is None or not _visible_to(access, job.user_id):
             raise AppException(detail="Lavoro non trovato", status_code=404)
-        return _job_to_dict(job)
+        return _job_to_dict(job, access, _author_labels([job.user_id], access))
     finally:
         session.close()
 
 
-@router.post("/projects/{project_id}/jobs", status_code=202, dependencies=[Depends(project_editor)])
-def create_job(project_id: str, req: JobRequest, user: dict = Depends(get_current_user)):
+@router.post("/projects/{project_id}/jobs", status_code=202)
+def create_job(project_id: str, req: JobRequest, user: dict = Depends(get_current_user),
+               access: ProjectAccess = Depends(project_editor)):
     """Accoda un lavoro lungo: la risposta e' immediata, lo stato si legge con GET .../jobs/{id}."""
     from app.models.database import Job
     from app.core.db_export import SUPPORTED_DIALECTS
@@ -1098,71 +1177,85 @@ def create_job(project_id: str, req: JobRequest, user: dict = Depends(get_curren
             raise HTTPException(status_code=422, detail="Dialetto non supportato.")
         params.update({"format": req.format, "dialect": req.dialect})
     job_tasks.expire_stale_jobs()
+    from sqlalchemy.exc import IntegrityError
+    busy_message = "C'è già un lavoro in corso su questo progetto. Attendi che finisca."
     session = get_session(schema_svc.engine)
     try:
-        if req.kind in ("schema", "dati"):
-            busy = session.query(Job).filter(
-                Job.project_id == project_id, Job.kind.in_(("schema", "dati")),
-                Job.status.in_(("queued", "running"))).first()
-            if busy is not None:
-                raise AppException(detail="C'è già un lavoro in corso su questo progetto. Attendi che finisca.", status_code=409)
-    finally:
-        session.close()
-    if req.kind in ("schema", "dati"):
-        _consume_ai_now(user, "generate" if req.kind == "schema" else "populate", project_id)
-    session = get_session(schema_svc.engine)
-    try:
+        # un'unica transazione: il controllo e l'inserimento sono garantiti dall'indice unico parziale
+        # (progetto, schema/dati, queued/running), quindi due richieste concorrenti non passano entrambe
         job = Job(project_id=project_id, user_id=row.id, kind=req.kind, status="queued", progress=0, params=params)
         session.add(job)
-        session.commit()
+        try:
+            session.commit()
+        except IntegrityError:
+            session.rollback()
+            raise AppException(detail=busy_message, status_code=409)
         job_id = job.id
     finally:
         session.close()
+    if req.kind in ("schema", "dati"):
+        try:
+            _consume_ai_now(user, "generate" if req.kind == "schema" else "populate", project_id)
+        except BaseException:
+            # quota negata (o errore): il lavoro non parte e non occupa piu' il posto del progetto
+            session = get_session(schema_svc.engine)
+            try:
+                session.query(Job).filter(Job.id == job_id).delete()
+                session.commit()
+            finally:
+                session.close()
+            raise
     executor = job_tasks.dispatch_job(job_id)
     job_tasks.update_job(job_id, executor=executor)
-    return _load_job(project_id, job_id)
+    return _load_job(project_id, job_id, access)
 
 
-@router.get("/projects/{project_id}/jobs", dependencies=[Depends(project_viewer)])
-def list_jobs(project_id: str, status: str | None = None):
+@router.get("/projects/{project_id}/jobs")
+def list_jobs(project_id: str, status: str | None = None, access: ProjectAccess = Depends(project_viewer)):
     from app.models.database import Job
     schema_svc.get_project(project_id)
     job_tasks.expire_stale_jobs()
     session = get_session(schema_svc.engine)
     try:
         query = session.query(Job).filter(Job.project_id == project_id)
+        if access.role != "owner":
+            query = query.filter(Job.user_id == access.user_id)
         if status:
             query = query.filter(Job.status == status)
         jobs = query.order_by(Job.created_at.desc(), Job.id.desc()).limit(50).all()
-        return {"jobs": [_job_to_dict(j) for j in jobs]}
+        labels = _author_labels([j.user_id for j in jobs], access)
+        return {"jobs": [_job_to_dict(j, access, labels) for j in jobs]}
     finally:
         session.close()
 
 
-@router.get("/projects/{project_id}/jobs/{job_id}", dependencies=[Depends(project_viewer)])
-def get_job(project_id: str, job_id: str):
+@router.get("/projects/{project_id}/jobs/{job_id}")
+def get_job(project_id: str, job_id: str, access: ProjectAccess = Depends(project_viewer)):
     job_tasks.expire_stale_jobs()
-    return _load_job(project_id, job_id)
+    return _load_job(project_id, job_id, access)
 
 
-@router.post("/projects/{project_id}/jobs/{job_id}/cancel", dependencies=[Depends(project_editor)])
-def cancel_job(project_id: str, job_id: str):
+@router.post("/projects/{project_id}/jobs/{job_id}/cancel")
+def cancel_job(project_id: str, job_id: str, access: ProjectAccess = Depends(project_editor)):
     """Annulla un lavoro in coda o in corso: il risultato non viene salvato."""
     from app.models.database import Job
     session = get_session(schema_svc.engine)
     try:
         job = session.query(Job).filter(Job.id == job_id, Job.project_id == project_id).first()
-        if job is None:
+        if job is None or not _visible_to(access, job.user_id):
             raise AppException(detail="Lavoro non trovato", status_code=404)
         if job.status not in ("queued", "running"):
             raise AppException(detail="Il lavoro è già terminato.", status_code=409)
-        job.status = "cancelled"
-        job.updated_at = job_tasks._now_naive()
+        changed = session.query(Job).filter(
+            Job.id == job_id, Job.status.in_(("queued", "running"))
+        ).update({"status": "cancelled", "updated_at": job_tasks._now_naive()}, synchronize_session=False)
         session.commit()
+        if not changed:
+            raise AppException(detail="Il lavoro è già terminato.", status_code=409)
     finally:
         session.close()
     job_tasks.revoke_job(job_id)
-    return _load_job(project_id, job_id)
+    return _load_job(project_id, job_id, access)
 
 
 # ==========================================

@@ -71,15 +71,19 @@ resource "google_cloud_run_v2_service" "gateway" {
     service_account = google_service_account.gateway.email
     timeout         = "130s"
 
-    # max 1: il tetto giornaliero e' un contatore in memoria, quindi una sola istanza lo rende esatto.
+    # Il tetto giornaliero e' un contatore in memoria PER ISTANZA. max 1 evita che piu' istanze lo moltiplichino;
+    # min 1 con CPU sempre allocata evita che i cold start (scale-to-zero) lo azzerino a ogni risveglio.
+    # Un riavvio/deploy lo azzera comunque: il limite vero di spesa e' la quota Vertex da impostare in GCP
+    # (docs/ops/gateway.md, docs/ops/spegnimento-gateway.md).
     scaling {
-      min_instance_count = 0
+      min_instance_count = 1
       max_instance_count = 1
     }
 
     containers {
       image = local.image
       resources {
+        cpu_idle = false # CPU sempre allocata: l'istanza minima resta viva e mantiene il contatore
         limits = {
           cpu    = "1"
           memory = "512Mi"

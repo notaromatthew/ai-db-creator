@@ -49,6 +49,16 @@ app.add_middleware(
 )
 
 
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    """Il token dei link condivisi sta nell'URL: niente Referer verso altri siti e niente cache sulle risposte condivise."""
+    response = await call_next(request)
+    response.headers["Referrer-Policy"] = "no-referrer"
+    if request.url.path.startswith("/api/shared"):
+        response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 from fastapi.responses import JSONResponse, FileResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 

@@ -1,5 +1,6 @@
 """Studio con partecipanti: consenso, bracci bilanciati, questionari, eventi anonimi, ritiro e cancellazione (8.x)."""
 import csv
+import itertools
 import io
 import json
 
@@ -28,7 +29,12 @@ def study(client):
     return c
 
 
-def enroll(c, **over):
+_accounts = itertools.count(1)
+
+
+def enroll(c, same_account=False, **over):
+    if not same_account:  # ogni iscrizione di un account diverso, tranne dove si prova il limite
+        as_user(f"partecipante{next(_accounts)}@esempio.it")
     body = {"consent": True, "consent_version": "1.0", "demographics": DEMO, **over}
     return c.post("/api/study/participants", json=body)
 
@@ -235,3 +241,84 @@ def test_researcher_panel_status_export_and_erase_by_code(study):
         session.close()
     after = c.get("/api/study/admin/status").json()
     assert sum(a["withdrawn"] for a in after["arms"]) == 1
+
+
+# --- rafforzamenti della revisione ---
+def test_one_active_enrollment_per_account_without_storing_the_user_id(study):
+    c = study
+    first = enroll(c, same_account=True)
+    assert first.status_code == 201
+    assert enroll(c, same_account=True).status_code == 409
+    session = get_session(init_db())
+    try:
+        row = session.get(StudyParticipant, first.json()["participant_id"])
+        assert row.account_hash and "partecipante@esempio.it" not in row.account_hash
+        assert row.account_hash != "partecipante@esempio.it"
+    finally:
+        session.close()
+    # dopo il ritiro l'account puo' iscriversi di nuovo e il collegamento viene azzerato
+    assert c.post(f"/api/study/participants/{first.json()['participant_id']}/withdraw", headers=hdr(first.json())).status_code == 200
+    session = get_session(init_db())
+    try:
+        assert session.get(StudyParticipant, first.json()["participant_id"]).account_hash is None
+    finally:
+        session.close()
+    assert enroll(c, same_account=True).status_code == 201
+
+
+def test_concurrent_enrollments_of_the_same_account_create_one_participant(study):
+    import threading
+    c = study
+    codes = []
+    barrier = threading.Barrier(5)
+
+    def worker():
+        barrier.wait()
+        codes.append(enroll(c, same_account=True).status_code)
+    threads = [threading.Thread(target=worker) for _ in range(5)]
+    [t.start() for t in threads]
+    [t.join(30) for t in threads]
+    assert sorted(codes) == [201, 409, 409, 409, 409]
+
+
+def test_blocked_accounts_cannot_enroll(study):
+    from app.models.database import User
+    c = study
+    as_user("sospeso@esempio.it")
+    c.get("/api/me")
+    session = get_session(init_db())
+    try:
+        session.get(User, "sospeso@esempio.it").blocked = True
+        session.commit()
+    finally:
+        session.close()
+    assert enroll(c, same_account=True).status_code == 403
+
+
+def test_event_cap_per_participant(study, monkeypatch):
+    from app.services import research_study
+    c = study
+    monkeypatch.setattr(research_study, "MAX_EVENTS_PER_PARTICIPANT", 3)
+    p = enroll(c).json()
+    codes = [c.post(f"/api/study/participants/{p['participant_id']}/events", headers=hdr(p),
+                    json={"type": "page_view", "data": {}}).status_code for _ in range(5)]
+    assert codes == [200, 200, 200, 429, 429]
+
+
+def test_advance_is_a_conditional_update(study):
+    from app.services import research_study
+    c = study
+    p = enroll(c).json()
+    session = get_session(init_db())
+    try:
+        stale = session.get(StudyParticipant, p["participant_id"])
+        # un'altra richiesta ha gia' completato il passo mentre questa teneva in mano la riga "vecchia"
+        other = get_session(init_db())
+        other.query(StudyParticipant).filter_by(id=stale.id).update({"step": "tlx"})
+        other.commit()
+        other.close()
+        with pytest.raises(research_study.StudyError) as exc:
+            research_study._advance(session, stale, "task", "tlx")
+        assert exc.value.status == 409
+    finally:
+        session.close()

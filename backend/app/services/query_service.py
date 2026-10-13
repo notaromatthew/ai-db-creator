@@ -46,11 +46,14 @@ def record_query(project_id: str, user_id: str | None, question: str | None, sql
         session.close()
 
 
-def list_queries(project_id: str, limit: int = MAX_HISTORY) -> list[dict]:
+def list_queries(project_id: str, limit: int = MAX_HISTORY, user_id: str | None = None) -> list[dict]:
     from app.models.database import QueryHistory
     session = get_session(init_db())
     try:
-        rows = (session.query(QueryHistory).filter(QueryHistory.project_id == project_id)
+        query = session.query(QueryHistory).filter(QueryHistory.project_id == project_id)
+        if user_id is not None:
+            query = query.filter(QueryHistory.user_id == user_id)
+        rows = (query
                 .order_by(QueryHistory.created_at.desc(), QueryHistory.id.desc())
                 .limit(min(max(limit, 1), MAX_HISTORY)).all())
         return [{"id": r.id, "question": r.question, "sql": r.generated_sql, "source": r.source,

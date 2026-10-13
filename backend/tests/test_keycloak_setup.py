@@ -1,5 +1,8 @@
 from app.config import settings
-from app.core.keycloak_setup import build_client_config, build_realm_config
+import pytest
+import asyncio
+from app.core.keycloak_setup import (KeycloakConfigError, build_client_config, build_realm_config,
+                                     setup_keycloak_realm)
 
 
 def test_realm_enables_self_registration(monkeypatch):
@@ -31,9 +34,38 @@ def test_client_restricted_to_public_url(monkeypatch):
     assert cfg["attributes"]["pkce.code.challenge.method"] == "S256"
 
 
-def test_client_open_when_url_unknown(monkeypatch):
+def test_client_refused_without_public_url_in_production(monkeypatch):
     monkeypatch.setattr(settings, "app_public_url", "")
+    monkeypatch.setattr(settings, "environment", "production")
+    monkeypatch.delenv("APP_ENV", raising=False)
+    monkeypatch.delenv("ENVIRONMENT", raising=False)
+    with pytest.raises(KeycloakConfigError, match="APP_PUBLIC_URL"):
+        build_client_config()
+
+
+def test_client_open_only_in_development(monkeypatch):
+    monkeypatch.setattr(settings, "app_public_url", "")
+    monkeypatch.setenv("APP_ENV", "development")
     assert build_client_config()["redirectUris"] == ["*"]
+
+
+def test_setup_does_not_touch_keycloak_without_public_url(monkeypatch):
+    monkeypatch.setattr(settings, "app_public_url", "")
+    monkeypatch.setattr(settings, "environment", "production")
+    monkeypatch.delenv("APP_ENV", raising=False)
+    monkeypatch.delenv("ENVIRONMENT", raising=False)
+
+    def boom(*a, **k):
+        raise AssertionError("nessuna chiamata di rete attesa")
+    monkeypatch.setattr("app.core.keycloak_setup.httpx.AsyncClient", boom)
+    assert asyncio.run(setup_keycloak_realm()) is False
+
+
+def test_realm_requires_verified_email_by_default(monkeypatch):
+    monkeypatch.setattr(settings, "keycloak_verify_email", True)
+    assert build_realm_config()["verifyEmail"] is True
+    monkeypatch.setattr(settings, "keycloak_verify_email", False)
+    assert build_realm_config()["verifyEmail"] is False
 
 
 # --- ruolo admin e primo admin (task 1.7) ---
@@ -87,14 +119,14 @@ def mapped(fake):
 
 def test_role_created_and_first_admin_assigned(monkeypatch):
     monkeypatch.setenv("FIRST_ADMIN_EMAIL", "Boss@Example.com")
-    fake = FakeKeycloak(users=[{"id": "u1", "email": "boss@example.com"}])
+    fake = FakeKeycloak(users=[{"id": "u1", "email": "boss@example.com", "emailVerified": True}])
     assert run_ensure(fake) is True
     assert fake.role is not None and fake.holders == ["u1"]
 
 
 def test_role_creation_is_idempotent_and_no_reassignment(monkeypatch):
     monkeypatch.setenv("FIRST_ADMIN_EMAIL", "boss@example.com")
-    fake = FakeKeycloak(users=[{"id": "u1", "email": "boss@example.com"}], role_exists=True, holders=["other"])
+    fake = FakeKeycloak(users=[{"id": "u1", "email": "boss@example.com", "emailVerified": True}], role_exists=True, holders=["other"])
     assert run_ensure(fake) is True
     assert mapped(fake) == []
     assert not any(c == ("POST", "/admin/realms/r/roles") for c in fake.calls)
@@ -102,7 +134,7 @@ def test_role_creation_is_idempotent_and_no_reassignment(monkeypatch):
 
 def test_no_assignment_without_variable(monkeypatch):
     monkeypatch.delenv("FIRST_ADMIN_EMAIL", raising=False)
-    fake = FakeKeycloak(users=[{"id": "u1", "email": "boss@example.com"}])
+    fake = FakeKeycloak(users=[{"id": "u1", "email": "boss@example.com", "emailVerified": True}])
     assert run_ensure(fake) is True
     assert fake.role is not None and mapped(fake) == []
 
@@ -111,5 +143,14 @@ def test_first_admin_not_registered_yet_is_assigned_later(monkeypatch):
     monkeypatch.setenv("FIRST_ADMIN_EMAIL", "boss@example.com")
     fake = FakeKeycloak(users=[])
     assert run_ensure(fake) is True and fake.holders == []
-    fake.users.append({"id": "u9", "email": "boss@example.com"})
+    fake.users.append({"id": "u9", "email": "boss@example.com", "emailVerified": True})
     assert run_ensure(fake) is True and fake.holders == ["u9"]
+
+
+def test_unverified_email_never_gets_admin_role(monkeypatch):
+    monkeypatch.setenv("FIRST_ADMIN_EMAIL", "boss@example.com")
+    fake = FakeKeycloak(users=[{"id": "u1", "email": "boss@example.com", "emailVerified": False}])
+    assert run_ensure(fake) is True
+    assert fake.holders == [] and mapped(fake) == []
+    fake.users[0]["emailVerified"] = True
+    assert run_ensure(fake) is True and fake.holders == ["u1"]

@@ -15,6 +15,10 @@ import secrets
 import threading
 import uuid
 
+from sqlalchemy import update
+from sqlalchemy.exc import IntegrityError
+
+from app.config import settings
 from app.core.acl import utcnow_naive
 from app.models.database import (
     AdminAuditLog, StudyEvent, StudyParticipant, StudyResponse, get_session, init_db,
@@ -33,6 +37,8 @@ EVENT_TYPES = ("task_start", "task_end", "schema_edit", "schema_export", "help_r
 TLX_KEYS = ("mental_demand", "physical_demand", "temporal_demand", "performance", "effort", "frustration")
 SUS_ITEMS = 10
 
+MAX_EVENTS_PER_PARTICIPANT = 5000
+
 _assign_lock = threading.Lock()
 _FORBIDDEN_WORDS = {"email", "mail", "ip", "name", "nome", "cognome", "user", "username", "token", "phone", "tel",
                     "telefono", "address", "indirizzo", "sub", "password"}
@@ -48,6 +54,12 @@ class StudyError(Exception):
 
 def hash_code(code: str) -> str:
     return hashlib.sha256(code.strip().upper().encode("utf-8")).hexdigest()
+
+
+def account_hash(user_id: str) -> str:
+    """HMAC con sale dell'id utente: serve solo a impedire iscrizioni doppie, non e' reversibile."""
+    salt = (settings.study_account_salt or "aidb-study-account").encode("utf-8")
+    return hmac.new(salt, str(user_id).encode("utf-8"), hashlib.sha256).hexdigest()
 
 
 def new_code() -> str:
@@ -153,7 +165,7 @@ def _balanced_arm(session) -> str:
     return secrets.choice([a for a in ARMS if counts[a] == low])
 
 
-def enroll(consent: bool, consent_version: str | None, demographics) -> dict:
+def enroll(consent: bool, consent_version: str | None, demographics, account: str | None = None) -> dict:
     if consent is not True:
         raise StudyError("Serve il tuo consenso per partecipare.")
     if consent_version != CONSENT_VERSION:
@@ -163,12 +175,19 @@ def enroll(consent: bool, consent_version: str | None, demographics) -> dict:
     session = get_session(init_db())
     try:
         with _assign_lock:
+            if account and session.query(StudyParticipant.id).filter(
+                    StudyParticipant.account_hash == account, StudyParticipant.withdrawn_at.is_(None)).first():
+                raise StudyError("Risulti gia' iscritto allo studio. Per ripartire ritira prima la partecipazione.", 409)
             arm = _balanced_arm(session)
             p = StudyParticipant(id=uuid.uuid4().hex, code_hash=hash_code(code), arm=arm,
                                  consent_version=CONSENT_VERSION, consented_at=utcnow_naive(),
-                                 demographics=demo, step="task")
+                                 demographics=demo, step="task", account_hash=account)
             session.add(p)
-            session.commit()
+            try:
+                session.commit()
+            except IntegrityError:  # indice unico parziale: iscrizione concorrente dello stesso account
+                session.rollback()
+                raise StudyError("Risulti gia' iscritto allo studio.", 409)
             return {"participant_id": p.id, "code": code, "arm": arm, "step": p.step}
     finally:
         session.close()
@@ -199,6 +218,8 @@ def add_event(participant_id: str, code: str | None, etype: str, data) -> dict:
     session = get_session(init_db())
     try:
         p = _load(session, participant_id, code)
+        if session.query(StudyEvent).filter_by(participant_id=p.id).count() >= MAX_EVENTS_PER_PARTICIPANT:
+            raise StudyError("Limite di eventi raggiunto per questo partecipante.", 429)
         session.add(StudyEvent(participant_id=p.id, type=etype, data=clean_event_data(data)))
         session.commit()
         return {"status": "saved"}
@@ -242,11 +263,17 @@ def get_schema(participant_id: str, code: str | None) -> dict:
 
 
 def _advance(session, p: StudyParticipant, expected: str, nxt: str) -> None:
-    if p.step != expected:
-        raise StudyError("Questo passo non e' ancora disponibile o l'hai gia' completato.", 409)
-    p.step = nxt
+    """Avanza il passo con un UPDATE condizionale: due richieste concorrenti non lo completano due volte."""
+    values = {"step": nxt}
     if nxt == "done":
-        p.completed_at = utcnow_naive()
+        values["completed_at"] = utcnow_naive()
+    changed = session.execute(update(StudyParticipant).where(
+        StudyParticipant.id == p.id, StudyParticipant.step == expected,
+        StudyParticipant.withdrawn_at.is_(None)).values(**values)).rowcount
+    if not changed:
+        session.rollback()
+        raise StudyError("Questo passo non e' ancora disponibile o l'hai gia' completato.", 409)
+    session.refresh(p)
 
 
 def complete_task(participant_id: str, code: str | None) -> dict:
@@ -282,6 +309,7 @@ def _erase(session, p: StudyParticipant) -> None:
     session.query(StudyEvent).filter_by(participant_id=p.id).delete()
     session.query(StudyResponse).filter_by(participant_id=p.id).delete()
     p.demographics = None
+    p.account_hash = None  # il collegamento con l'account non serve piu'
     p.withdrawn_at = utcnow_naive()
     p.step = "withdrawn"
 

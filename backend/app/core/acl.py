@@ -13,6 +13,7 @@ import hashlib
 import secrets
 
 from fastapi import Depends
+from sqlalchemy.exc import IntegrityError
 
 from app.config import settings
 from app.core.auth import get_current_user
@@ -67,6 +68,12 @@ def ensure_user(user: dict) -> User:
             row = User(id=uid, email=email, display_name=user.get("name") or user.get("username"),
                        created_at=now, last_seen_at=now)
             session.add(row)
+            try:
+                session.flush()
+            except IntegrityError:  # due prime richieste dello stesso utente in parallelo
+                session.rollback()
+                row = session.get(User, uid)
+                row.last_seen_at = now
         else:
             row.last_seen_at = now
             if email and row.email != email:

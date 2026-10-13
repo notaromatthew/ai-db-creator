@@ -5,6 +5,15 @@ from app.config import settings
 from app.utils.logger import log
 
 
+class KeycloakConfigError(RuntimeError):
+    """Configurazione Keycloak non sicura o incompleta: il setup si ferma."""
+
+
+def _is_dev_environment() -> bool:
+    env = (os.getenv("APP_ENV") or os.getenv("ENVIRONMENT") or settings.environment or "").strip().lower()
+    return env in {"development", "dev", "test", "testing", "local"}
+
+
 def build_realm_config() -> dict:
     """Realm settings: login con registrazione self-service davanti all'app."""
     realm = {
@@ -14,6 +23,7 @@ def build_realm_config() -> dict:
         "sslRequired": "external",
         "registrationAllowed": settings.keycloak_allow_registration,
         "registrationEmailAsUsername": False,
+        "verifyEmail": settings.keycloak_verify_email,
         "loginWithEmailAllowed": True,
         "duplicateEmailsAllowed": False,
         "resetPasswordAllowed": True,
@@ -31,6 +41,11 @@ def build_realm_config() -> dict:
 def build_client_config() -> dict:
     """Client pubblico PKCE; redirect e origini limitati all'URL dell'app se noto."""
     origin = settings.app_public_url.rstrip("/")
+    if not origin and not _is_dev_environment():
+        raise KeycloakConfigError(
+            "APP_PUBLIC_URL non impostato: rifiuto di creare o sincronizzare il client Keycloak con "
+            "redirectUris=['*']. Imposta APP_PUBLIC_URL (es. https://aidbcreator.tecniaweb.it) "
+            "oppure ENVIRONMENT=development in locale.")
     redirect_uris = [f"{origin}/*"] if origin else ["*"]
     web_origins = [origin] if origin else ["*"]
     return {
@@ -75,9 +90,11 @@ async def ensure_admin_role(client, realm_url: str, headers: dict) -> bool:
         if holders.status_code != 200 or holders.json():
             return True
     found = await client.get(f"{realm_url}/users", headers=headers, params={"email": email, "exact": "true"})
-    users = [u for u in (found.json() if found.status_code == 200 else []) if (u.get("email") or "").lower() == email]
+    users = [u for u in (found.json() if found.status_code == 200 else [])
+             if (u.get("email") or "").lower() == email and u.get("emailVerified") is True]
     if not users:
-        log.info("Keycloak: primo admin non ancora registrato, il ruolo sara' assegnato alla prossima configurazione")
+        log.info("Keycloak: primo admin non ancora registrato o con email non verificata, "
+                 "il ruolo sara' assegnato alla prossima configurazione")
         return True
     mapped = await client.post(f"{realm_url}/users/{users[0]['id']}/role-mappings/realm", headers=headers,
                                json=[{"id": role["id"], "name": role["name"]}])
@@ -96,6 +113,12 @@ async def setup_keycloak_realm():
         "password": settings.keycloak_admin_password,
         "grant_type": "password",
     }
+
+    try:
+        client_config = build_client_config()  # fallisce subito se manca APP_PUBLIC_URL in produzione
+    except KeycloakConfigError as e:
+        log.error(str(e))
+        return False
 
     try:
         async with httpx.AsyncClient(verify=False, timeout=10.0) as client:
@@ -126,11 +149,10 @@ async def setup_keycloak_realm():
             existing = [c for c in existing if c.get("clientId") == settings.keycloak_client_id]
 
             if not existing:
-                c_res = await client.post(f"{realm_url}/clients", headers=headers, json=build_client_config())
+                c_res = await client.post(f"{realm_url}/clients", headers=headers, json=client_config)
                 log.info(f"Keycloak Client '{settings.keycloak_client_id}' created: {c_res.status_code}")
-            elif settings.app_public_url:
-                # Stringe redirect URI e origini solo quando l'URL pubblico è configurato.
-                cfg = build_client_config()
+            else:
+                cfg = client_config
                 u_res = await client.put(f"{realm_url}/clients/{existing[0]['id']}", headers=headers,
                                          json={**existing[0], **cfg})
                 log.info(f"Keycloak Client '{settings.keycloak_client_id}' synced: {u_res.status_code}")

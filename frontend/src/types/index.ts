@@ -94,6 +94,8 @@ export type JobStatus = 'queued' | 'running' | 'done' | 'failed' | 'cancelled'
 export interface Job {
   id: string
   project_id: string
+  mine?: boolean
+  author_label?: string | null
   kind: JobKind
   status: JobStatus
   progress: number
@@ -115,7 +117,9 @@ export type SchemaVersionOrigin = 'generazione' | 'chat' | 'manuale' | 'ripristi
 
 export interface SchemaVersionInfo {
   version: number
-  author?: string | null
+  /** Etichetta dell'autore ("Tu", "Altro membro" o il nome per il proprietario): mai un id interno. */
+  author_label?: string | null
+  mine?: boolean
   origin: SchemaVersionOrigin | string
   created_at?: string
   table_count?: number
@@ -129,6 +133,8 @@ export interface SchemaVersionList {
 
 export interface QueryHistoryItem {
   id: string | number
+  mine?: boolean
+  author_label?: string | null
   question?: string | null
   sql?: string | null
   source: 'query' | 'execute' | string

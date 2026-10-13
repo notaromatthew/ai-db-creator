@@ -1,7 +1,8 @@
 """Studio con partecipanti (RQ0/RQ3): percorso del partecipante e pannello del ricercatore.
 
 Dietro RESEARCH_MODE. I partecipanti devono avere un account ma l'id utente non viene mai salvato: la persona e'
-solo un id casuale con un codice di ritiro (intestazione `X-Study-Code`).
+solo un id casuale con un codice di ritiro (intestazione `X-Study-Code`). Per limitare le iscrizioni a una per
+account si salva solo un HMAC con sale dell'id utente, che si azzera al ritiro.
 """
 from __future__ import annotations
 
@@ -9,6 +10,7 @@ from fastapi import APIRouter, Body, Depends, Header, Query
 from fastapi.responses import Response
 
 from app.api.benchmark_runs import researcher_only
+from app.core.acl import ensure_user
 from app.core.auth import get_current_user
 from app.core.research import require_research
 from app.services import research_study as study
@@ -34,8 +36,10 @@ def info():
 
 
 @router.post("/participants", status_code=201, dependencies=PARTICIPANT)
-def enroll(body: dict = Body(...)):
-    return _run(study.enroll, body.get("consent"), body.get("consent_version"), body.get("demographics"))
+def enroll(body: dict = Body(...), user: dict = Depends(get_current_user)):
+    row = ensure_user(user)  # un account sospeso non puo' iscriversi (403)
+    return _run(study.enroll, body.get("consent"), body.get("consent_version"), body.get("demographics"),
+                study.account_hash(row.id))
 
 
 def _code(header: str | None, body: dict | None) -> str | None:

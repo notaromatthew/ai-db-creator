@@ -5,6 +5,8 @@
 - Registro dei token su stdout (JSON), interruttore AI e tetto giornaliero di richieste.
 Il contatore giornaliero e' in memoria: per questo Terraform imposta max istanze = 1.
 """
+import base64
+import binascii
 import datetime as dt
 import json
 import logging
@@ -12,8 +14,10 @@ import os
 import threading
 
 import httpx
+from typing import Annotated, Literal
+
 from fastapi import Depends, FastAPI, Header, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 _log = logging.getLogger("gateway")
@@ -80,9 +84,66 @@ def verify_caller(authorization: str = Header(default="")) -> str:
     return email
 
 
+MAX_PARTS_PER_MESSAGE = 8
+IMAGE_MIME_TYPES = ("image/png", "image/jpeg", "image/webp")
+
+
+class TextPart(BaseModel):
+    type: Literal["text"]
+    text: str
+
+
+class ImagePart(BaseModel):
+    type: Literal["image"]
+    mime_type: str
+    data: str  # base64
+
+    @field_validator("mime_type")
+    @classmethod
+    def _mime(cls, value):
+        if value not in IMAGE_MIME_TYPES:
+            raise ValueError("formato immagine non ammesso")
+        return value
+
+
 class Message(BaseModel):
     role: str = Field(pattern="^(system|user|assistant)$")
-    content: str
+    content: str | list[Annotated[TextPart | ImagePart, Field(discriminator="type")]]
+
+    @field_validator("content")
+    @classmethod
+    def _limit_parts(cls, value):
+        if isinstance(value, list) and not 1 <= len(value) <= MAX_PARTS_PER_MESSAGE:
+            raise ValueError("numero di parti non ammesso")
+        return value
+
+    def parts(self) -> list:
+        return [TextPart(type="text", text=self.content)] if isinstance(self.content, str) else self.content
+
+    def text(self) -> str:
+        return "".join(p.text for p in self.parts() if isinstance(p, TextPart))
+
+
+def validate_images(messages: list["Message"]) -> None:
+    """Immagini solo nei messaggi dell'utente, base64 valido, dimensione e numero entro i limiti."""
+    max_bytes = int(_env("MAX_IMAGE_BYTES", str(4 * 1024 * 1024)))
+    max_images = int(_env("MAX_IMAGES_PER_REQUEST", "8"))
+    total = 0
+    for message in messages:
+        for part in message.parts():
+            if not isinstance(part, ImagePart):
+                continue
+            if message.role != "user":
+                raise HTTPException(422, "immagini ammesse solo nei messaggi utente")
+            total += 1
+            try:
+                raw = base64.b64decode(part.data, validate=True)
+            except (binascii.Error, ValueError):
+                raise HTTPException(422, "immagine non valida")
+            if not raw or len(raw) > max_bytes:
+                raise HTTPException(413, "immagine troppo grande")
+    if total > max_images:
+        raise HTTPException(413, "troppe immagini nella richiesta")
 
 
 class GenerateRequest(BaseModel):
@@ -97,6 +158,11 @@ class GenerateResponse(BaseModel):
     output_tokens: int
 
 
+def _vertex_parts(message: Message) -> list[dict]:
+    return [{"text": p.text} if isinstance(p, TextPart) else {"inlineData": {"mimeType": p.mime_type, "data": p.data}}
+            for p in message.parts()]
+
+
 def call_vertex(messages: list[Message], temperature: float) -> dict:
     """Chiamata REST a Vertex con le credenziali del service account del gateway."""
     import google.auth
@@ -107,8 +173,8 @@ def call_vertex(messages: list[Message], temperature: float) -> dict:
     project, location, model = _env("VERTEX_PROJECT"), _env("VERTEX_LOCATION", "europe-west4"), _env("VERTEX_MODEL", "gemini-2.5-flash-lite")
     url = (f"https://{location}-aiplatform.googleapis.com/v1/projects/{project}"
            f"/locations/{location}/publishers/google/models/{model}:generateContent")
-    system = "\n\n".join(m.content for m in messages if m.role == "system")
-    contents = [{"role": "model" if m.role == "assistant" else "user", "parts": [{"text": m.content}]}
+    system = "\n\n".join(m.text() for m in messages if m.role == "system")
+    contents = [{"role": "model" if m.role == "assistant" else "user", "parts": _vertex_parts(m)}
                 for m in messages if m.role != "system"]
     body = {
         "contents": contents,
@@ -137,8 +203,9 @@ def generate(req: GenerateRequest, caller: str = Depends(verify_caller)):
     if not ai_enabled():
         log_event(event="blocked", reason="ai_disabled", caller=caller)
         raise HTTPException(503, "chiamate AI disattivate")
-    if sum(len(m.content) for m in req.messages) > int(_env("MAX_INPUT_CHARS", "200000")):
+    if sum(len(m.text()) for m in req.messages) > int(_env("MAX_INPUT_CHARS", "200000")):
         raise HTTPException(413, "richiesta troppo lunga")
+    validate_images(req.messages)
     if not counter.hit(int(_env("DAILY_REQUEST_CAP", "500"))):
         log_event(event="blocked", reason="daily_cap", caller=caller)
         raise HTTPException(429, "tetto giornaliero raggiunto")

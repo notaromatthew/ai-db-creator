@@ -49,9 +49,45 @@ def get_id_token(audience: str) -> str:
 _ROLES = {"system": "system", "human": "user", "ai": "assistant"}
 
 
+MAX_PARTS_PER_MESSAGE = 8
+MAX_IMAGE_BYTES = 4 * 1024 * 1024  # dimensione decodificata di una singola immagine
+IMAGE_MIME_TYPES = ("image/png", "image/jpeg", "image/webp")
+
+
+def _content_payload(content):
+    """Testo semplice oppure elenco di parti {type: text|image}: le immagini inline arrivano come base64."""
+    if isinstance(content, str):
+        return content
+    if not isinstance(content, list):
+        return str(content)
+    if len(content) > MAX_PARTS_PER_MESSAGE:
+        raise ValueError(f"Troppe parti nel messaggio (massimo {MAX_PARTS_PER_MESSAGE}).")
+    parts = []
+    for item in content:
+        if isinstance(item, str):
+            parts.append({"type": "text", "text": item})
+        elif isinstance(item, dict) and item.get("type") == "text":
+            parts.append({"type": "text", "text": str(item.get("text", ""))})
+        elif isinstance(item, dict) and item.get("type") == "image_url":
+            url = item.get("image_url")
+            url = url.get("url") if isinstance(url, dict) else url
+            head, _, data = str(url or "").partition(",")
+            if not (head.startswith("data:") and head.endswith(";base64")):
+                raise ValueError("Sono ammesse solo immagini inline in base64.")
+            mime = head[5:-7]
+            if mime not in IMAGE_MIME_TYPES:
+                raise ValueError("Formato immagine non ammesso.")
+            if len(data) * 3 // 4 > MAX_IMAGE_BYTES:
+                raise ValueError("Immagine troppo grande.")
+            parts.append({"type": "image", "mime_type": mime, "data": data})
+        else:
+            raise ValueError("Parte del messaggio non supportata.")
+    return parts
+
+
 def _payload(messages: List[BaseMessage], temperature: float) -> dict:
     return {
-        "messages": [{"role": _ROLES.get(m.type, "user"), "content": str(m.content)} for m in messages],
+        "messages": [{"role": _ROLES.get(m.type, "user"), "content": _content_payload(m.content)} for m in messages],
         "temperature": temperature,
     }
 

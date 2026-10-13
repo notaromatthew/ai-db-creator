@@ -67,7 +67,7 @@ export default function SchemaVersionsPanel({ projectId, readOnly = false }: Pro
                 <span className="min-w-0">
                   <b className="font-headline">Versione {v.version}</b>{current && <span className="tag ml-2">Attuale</span>}
                   <span className="block text-xs text-tecnia-muted dark:text-slate-400">
-                    {ORIGIN[v.origin] ?? v.origin}{v.author ? ` · ${v.author}` : ''}{formatDate(v.created_at) ? ` · ${formatDate(v.created_at)}` : ''}
+                    {ORIGIN[v.origin] ?? v.origin}{v.author_label ? ` · ${v.author_label}` : ''}{formatDate(v.created_at) ? ` · ${formatDate(v.created_at)}` : ''}
                     {typeof v.table_count === 'number' ? ` · ${v.table_count} ${v.table_count === 1 ? 'tabella' : 'tabelle'}` : ''}
                   </span>
                 </span>

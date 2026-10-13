@@ -62,6 +62,18 @@ class Settings(BaseSettings):
     # redirect URI e web origins del client Keycloak. Vuoto = nessuna restrizione.
     app_public_url: str = ""
     keycloak_allow_registration: bool = True
+    # Richiede la verifica dell'email (serve SMTP configurato nel realm). Il ruolo admin
+    # viene assegnato solo a email verificate, quindi non spegnerla in produzione.
+    keycloak_verify_email: bool = True
+    # Issuer atteso del token; vuoto = "{keycloak_url}/realms/{keycloak_realm}". Se il backend raggiunge Keycloak
+    # con un URL interno diverso da quello pubblico del token, impostalo al valore pubblico.
+    keycloak_issuer: str = ""
+    # Sale per l'HMAC che lega l'iscrizione allo studio all'account senza salvarne l'id (STUDY_ACCOUNT_SALT).
+    study_account_salt: str = ""
+    # Il token deve essere stato emesso per questo client (azp) o averlo tra le audience.
+    keycloak_check_client: bool = True
+    # development | test | production: solo in development/test sono ammessi redirect URI "*".
+    environment: str = "production"
     keycloak_login_theme: str = ""
 
     host: str = "0.0.0.0"

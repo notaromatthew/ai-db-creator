@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, String, Text, DateTime, JSON, ForeignKey, Float, Integer, Boolean, UniqueConstraint
+from sqlalchemy import create_engine, Column, String, Text, DateTime, JSON, ForeignKey, Float, Integer, Boolean, UniqueConstraint, Index, text
 from sqlalchemy.orm import DeclarativeBase, relationship
 from datetime import datetime, timezone
 import uuid
@@ -158,6 +158,12 @@ JOB_STATES = ("queued", "running", "done", "failed", "cancelled")
 class Job(Base):
     """Lavoro lungo (schema, dati, esportazione): lo stato sopravvive alla chiusura della pagina."""
     __tablename__ = "jobs"
+    # un solo lavoro schema/dati attivo per progetto, garantito dal database anche con richieste concorrenti
+    __table_args__ = (
+        Index("uq_jobs_active_project", "project_id", unique=True,
+              sqlite_where=text("kind IN ('schema','dati') AND status IN ('queued','running')"),
+              postgresql_where=text("kind IN ('schema','dati') AND status IN ('queued','running')")),
+    )
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     project_id = Column(String, ForeignKey("projects.id"), nullable=False, index=True)
@@ -273,9 +279,17 @@ class ResearchRun(Base):
 class StudyParticipant(Base):
     """Partecipante allo studio: solo un id pseudonimo casuale e l'hash del codice di ritiro."""
     __tablename__ = "study_participants"
+    # un solo partecipante attivo (non ritirato) per account, senza salvare l'id utente
+    __table_args__ = (
+        Index("uq_study_active_account", "account_hash", unique=True,
+              sqlite_where=text("account_hash IS NOT NULL AND withdrawn_at IS NULL"),
+              postgresql_where=text("account_hash IS NOT NULL AND withdrawn_at IS NULL")),
+    )
 
     id = Column(String, primary_key=True)  # pseudonimo casuale, non collegato all'utente
     code_hash = Column(String(64), nullable=False, unique=True)
+    # HMAC con sale del sub: impedisce iscrizioni multiple dello stesso account senza conservarne l'id
+    account_hash = Column(String(64), nullable=True)
     arm = Column(String(20), nullable=False, index=True)  # manual | ai_only | ai_interface
     consent_version = Column(String(20), nullable=True)
     consented_at = Column(DateTime, nullable=True)

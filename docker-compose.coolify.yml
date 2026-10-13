@@ -9,14 +9,15 @@ x-app-env: &app-env
   KEYCLOAK_URL: ${KEYCLOAK_URL:-https://keycloak-pw9ut4s1h3aodstrsw1gd84o.89.168.29.98.sslip.io}
   KEYCLOAK_REALM: ${KEYCLOAK_REALM:-aidbcreator}
   KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-aidbcreator-app}
-  KEYCLOAK_ADMIN_USER: ${KEYCLOAK_ADMIN_USER}
-  KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
   LLM_PROVIDER: ${LLM_PROVIDER:-vertex}
   OPENAI_API_KEY: ${OPENAI_API_KEY:-}
   # Modalita' ricerca: true = strumenti di studio accesi, false = solo il prodotto
   RESEARCH_MODE: ${RESEARCH_MODE:-false}
+  LOG_FORMAT: json
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
   # URL pubblico dell'app (senza slash finale): da' il redirect URI Keycloak <APP_PUBLIC_URL>/* (copre /app). docs/ops/dominio-https.md
-  APP_PUBLIC_URL: ${APP_PUBLIC_URL:-}
+  APP_PUBLIC_URL: ${APP_PUBLIC_URL:?imposta APP_PUBLIC_URL (es. https://aidbcreator.tecniaweb.it)}
+  ENVIRONMENT: production
   ADMIN_ROLE: ${ADMIN_ROLE:-aidb-admin}
   DEFAULT_DAILY_AI_QUOTA: ${DEFAULT_DAILY_AI_QUOTA:-20}
   DAILY_AI_BUDGET_TOTAL: ${DAILY_AI_BUDGET_TOTAL:-500}
@@ -32,7 +33,11 @@ services:
       dockerfile: Dockerfile
     expose:
       - "8000"
-    environment: *app-env
+    environment:
+      <<: *app-env
+      # Servono solo al bootstrap del realm (keycloak_setup.py): il worker non le riceve.
+      KEYCLOAK_ADMIN_USER: ${KEYCLOAK_ADMIN_USER}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
     depends_on:
       redis:
         condition: service_healthy

@@ -216,6 +216,102 @@ def _has_single_values_tuple(statement: str) -> bool:
         index += 1
     return tuple_count == 1 and depth == 0 and quote is None
 
+_SAFE_INSERT_HEAD = re.compile(
+    r"^INSERT(?:\s+OR\s+(?:IGNORE|REPLACE))?\s+INTO\s+(?:\[([^\]]+)\]|\"([^\"]+)\"|`([^`]+)`|([A-Za-z_][A-Za-z0-9_]*))"
+    r"\s*\([^()]*\)\s*VALUES\s*\(", re.IGNORECASE)
+
+
+def _has_sql_comment(statement: str) -> bool:
+    """True se fuori dalle stringhe compare un commento `--` o `/* */`."""
+    quote = None
+    pairs = {"[": "]", "'": "'", '"': '"', "`": "`"}
+    index = 0
+    while index < len(statement):
+        char = statement[index]
+        if quote:
+            if char == pairs[quote]:
+                quote = None
+        elif char in pairs:
+            quote = char
+        elif statement.startswith("--", index) or statement.startswith("/*", index):
+            return True
+        index += 1
+    return False
+
+
+def is_safe_population_insert(statement: str, table_names) -> bool:
+    """Accetta solo `INSERT [OR IGNORE|OR REPLACE] INTO <tabella dello schema> (...) VALUES (...)`.
+
+    Niente commenti, niente istruzioni multiple, nulla dopo la tupla dei valori."""
+    stmt = statement.strip().rstrip(";").strip()
+    if not stmt or ";" in _strip_quoted(stmt) or _has_sql_comment(stmt):
+        return False
+    head = _SAFE_INSERT_HEAD.match(stmt)
+    if not head:
+        return False
+    name = next(group for group in head.groups() if group)
+    if name not in set(table_names):
+        return False
+    # dopo la tupla di VALUES non deve restare nulla (RETURNING, ON CONFLICT, SELECT...)
+    depth, quote, pairs = 1, None, {"'": "'", '"': '"', "`": "`", "[": "]"}
+    index = head.end()
+    while index < len(stmt):
+        char = stmt[index]
+        if quote:
+            if char == pairs[quote]:
+                quote = None
+        elif char in pairs:
+            quote = char
+        elif char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+            if depth == 0:
+                return not stmt[index + 1:].strip()
+        index += 1
+    return False
+
+
+def _strip_quoted(statement: str) -> str:
+    out, quote, pairs = [], None, {"'": "'", '"': '"', "`": "`", "[": "]"}
+    for char in statement:
+        if quote:
+            if char == pairs[quote]:
+                quote = None
+        elif char in pairs:
+            quote = char
+        else:
+            out.append(char)
+    return "".join(out)
+
+
+def install_population_guard(engine, table_names):
+    """Autorizzatore SQLite per il popolamento da SQL dell'LLM: solo INSERT sulle tabelle dello schema."""
+    import sqlite3
+    from sqlalchemy import event
+
+    allowed_tables = set(table_names)
+    always_ok = {sqlite3.SQLITE_SELECT, sqlite3.SQLITE_READ, sqlite3.SQLITE_RECURSIVE,
+                 sqlite3.SQLITE_TRANSACTION, sqlite3.SQLITE_SAVEPOINT}
+
+    def authorizer(action, arg1, arg2, db_name, source):
+        if action in always_ok:
+            return sqlite3.SQLITE_OK
+        if action == sqlite3.SQLITE_FUNCTION:
+            if str(arg2).lower() in {"load_extension", "readfile", "writefile"}:
+                return sqlite3.SQLITE_DENY
+            return sqlite3.SQLITE_OK
+        if action == sqlite3.SQLITE_INSERT and arg1 in allowed_tables:
+            return sqlite3.SQLITE_OK
+        if action == sqlite3.SQLITE_PRAGMA and str(arg1).lower() == "foreign_keys":
+            return sqlite3.SQLITE_OK
+        return sqlite3.SQLITE_DENY
+
+    @event.listens_for(engine, "connect")
+    def _on_connect(dbapi_conn, _record):
+        dbapi_conn.set_authorizer(authorizer)
+
+
 def _normalize_col(name: str) -> str:
     name = name.lower().strip()
     name = name.replace(" ", "_").replace("'", "").replace('"', "")
@@ -287,7 +383,10 @@ class PopulationService:
                             llm_mapping[other_tn][idx] = rel.from_column
 
     async def populate(self, project_id, db_path, schema, document_ids,
-                       temperature: float | None = None):
+                       temperature: float | None = None, cancel_check=None):
+        """`cancel_check` (opzionale) viene chiamata prima dei passi pesanti o distruttivi e solleva
+        un'eccezione se il lavoro e' stato annullato."""
+        check = cancel_check or (lambda: None)
         # Validate the complete ownership set before touching the target database
         # or its parent directory. A 404 must be side-effect free.
         session = get_session(self.engine)
@@ -305,6 +404,7 @@ class PopulationService:
         db_dir = os.path.dirname(db_path)
         os.makedirs(db_dir, exist_ok=True)
 
+        check()
         db_engine = create_engine("sqlite:///" + db_path)
         inspector = inspect(db_engine)
         tables = inspector.get_table_names()
@@ -328,6 +428,7 @@ class PopulationService:
         llm_text_by_document = {}
 
         for doc in docs:
+            check()
             parser = get_parser(doc.file_type)
             try:
                 parsed = parser.parse(doc.file_path)
@@ -373,6 +474,7 @@ class PopulationService:
             scripts = []
             seen_statements: set[str] = set()
             for chunk in chunks:
+                check()
                 chunk_sql = await generate_sql_for_population(schema, chunk, temperature=temperature)
                 if not chunk_sql.strip():
                     continue
@@ -392,9 +494,13 @@ class PopulationService:
                     result["warnings"].extend(pipeline_warnings)
                 log.info(f"Executing {len(statements)} LLM-generated SQL statements...")
 
-                with db_engine.connect() as conn:
+                guard_engine = create_engine("sqlite:///" + db_path)
+                install_population_guard(guard_engine, tables)
+                with guard_engine.connect() as conn:
                     conn.execute(text("PRAGMA foreign_keys = OFF;"))
-                    for stmt in statements:
+                    for stmt_index, stmt in enumerate(statements):
+                        if stmt_index % 25 == 0:
+                            check()  # se solleva, la transazione non viene confermata
                         match = re.match(r"INSERT(?:\s+OR\s+IGNORE)?\s+INTO\s+[\[\"`]?([^\]\"`\s(]+)[\]\"`]?\s*\(([^)]+)\)", stmt, re.IGNORECASE)
                         table_name = match.group(1) if match else "unknown"
                         columns = [item.strip().strip("[]\"`") for item in match.group(2).split(",")] if match else []
@@ -410,6 +516,13 @@ class PopulationService:
                             table_result["warnings"].append({"category": "multi_row_or_unsupported_insert"})
                             table_result["provenance"]["rows"].append({
                                 **trace, "outcome": "failed", "reason": "multi_row_or_unsupported_insert"
+                            })
+                            continue
+                        if not is_safe_population_insert(stmt, tables):
+                            table_result["failed"] += 1
+                            table_result["warnings"].append({"category": "unsafe_sql_rejected"})
+                            table_result["provenance"]["rows"].append({
+                                **trace, "outcome": "failed", "reason": "unsafe_sql_rejected"
                             })
                             continue
                         try:

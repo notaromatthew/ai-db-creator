@@ -100,3 +100,34 @@ def test_run_migrations_on_a_fresh_database_stamps_head(engine):
     with engine.connect() as conn:
         version = conn.execute(sa.text("SELECT version_num FROM alembic_version")).scalar()
     assert version == ScriptDirectory.from_config(alembic_config(engine)).get_current_head()
+
+
+def test_g7_adds_unique_active_job_and_participant_indexes_and_is_idempotent(engine):
+    cfg = alembic_config(engine)
+    script = ScriptDirectory.from_config(cfg)
+    assert script.get_heads() == ["g7hardening00007"]
+    assert script.get_revision("g7hardening00007").down_revision == "f6research00006"
+    command.upgrade(cfg, "f6research00006")
+    with engine.begin() as conn:
+        conn.execute(sa.text("INSERT INTO users (id, blocked) VALUES ('u1', 0)"))
+        conn.execute(sa.text("INSERT INTO projects (id, owner_id, name) VALUES ('p1', 'u1', 'P')"))
+        for jid in ("a", "b"):  # duplicato attivo pre-esistente
+            conn.execute(sa.text("INSERT INTO jobs (id, project_id, user_id, kind, status, progress) "
+                                 "VALUES (:i, 'p1', 'u1', 'schema', 'queued', 0)"), {"i": jid})
+    command.upgrade(cfg, "head")
+    inspector = sa.inspect(engine)
+    assert {"uq_jobs_active_project"} <= {i["name"] for i in inspector.get_indexes("jobs")}
+    assert "account_hash" in {c["name"] for c in inspector.get_columns("study_participants")}
+    with engine.begin() as conn:
+        statuses = [r[0] for r in conn.execute(sa.text("SELECT status FROM jobs ORDER BY id"))]
+    assert sorted(statuses) == ["failed", "queued"]
+    with pytest.raises(sa.exc.IntegrityError):
+        with engine.begin() as conn:
+            conn.execute(sa.text("INSERT INTO jobs (id, project_id, user_id, kind, status, progress) "
+                                 "VALUES ('c', 'p1', 'u1', 'dati', 'running', 0)"))
+    command.downgrade(cfg, "f6research00006")
+    command.upgrade(cfg, "head")
+    Base.metadata.create_all(engine)
+    command.downgrade(cfg, "f6research00006")
+    Base.metadata.create_all(engine)
+    command.upgrade(cfg, "head")  # idempotente con colonna/indici gia' presenti

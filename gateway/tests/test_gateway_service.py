@@ -81,3 +81,68 @@ def test_model_not_selectable_by_caller(monkeypatch):
 
 def test_healthz():
     assert TestClient(main.app).get("/healthz").status_code == 200
+
+
+# --- parti multimodali (testo + immagine inline) ---
+import base64
+
+PNG = base64.b64encode(b"\x89PNG\r\n\x1a\n" + b"0" * 100).decode()
+
+
+def _multimodal(image=PNG, mime="image/png", role="user", extra=0):
+    parts = [{"type": "text", "text": "trascrivi"}, {"type": "image", "mime_type": mime, "data": image}]
+    parts += [{"type": "image", "mime_type": mime, "data": image}] * extra
+    return {"messages": [{"role": role, "content": parts}], "temperature": 0.0}
+
+
+REAL_CALL_VERTEX = main.call_vertex  # prima che la fixture lo sostituisca
+
+
+def test_image_parts_are_forwarded_to_vertex_as_inline_data(monkeypatch):
+    import google.auth
+    captured = {}
+
+    class Resp:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return VERTEX
+
+    class Creds:
+        token = "t"
+
+        def refresh(self, request):
+            pass
+    monkeypatch.setattr(google.auth, "default", lambda scopes=None: (Creds(), "p"))
+    monkeypatch.setenv("VERTEX_PROJECT", "p")
+
+    def fake_post(url, json=None, headers=None, timeout=None):
+        captured["body"] = json
+        return Resp()
+    monkeypatch.setattr(main.httpx, "post", fake_post)
+    messages = [main.Message(**m) for m in _multimodal()["messages"]]
+    REAL_CALL_VERTEX(messages, 0.0)
+    parts = captured["body"]["contents"][0]["parts"]
+    assert parts[0] == {"text": "trascrivi"}
+    assert parts[1] == {"inlineData": {"mimeType": "image/png", "data": PNG}}
+
+
+def test_multimodal_request_is_accepted(monkeypatch):
+    _claims(monkeypatch)
+    r = TestClient(main.app).post("/v1/generate", json=_multimodal(), headers=H)
+    assert r.status_code == 200
+
+
+def test_image_limits_and_validation(monkeypatch):
+    _claims(monkeypatch)
+    c = TestClient(main.app)
+    monkeypatch.setenv("MAX_IMAGE_BYTES", "50")
+    assert c.post("/v1/generate", json=_multimodal(), headers=H).status_code == 413
+    monkeypatch.delenv("MAX_IMAGE_BYTES")
+    assert c.post("/v1/generate", json=_multimodal(image="***non-base64***"), headers=H).status_code == 422
+    assert c.post("/v1/generate", json=_multimodal(mime="image/svg+xml"), headers=H).status_code == 422
+    assert c.post("/v1/generate", json=_multimodal(role="assistant"), headers=H).status_code == 422
+    assert c.post("/v1/generate", json=_multimodal(extra=8), headers=H).status_code == 422  # 10 parti > 8
+    monkeypatch.setenv("MAX_IMAGES_PER_REQUEST", "1")
+    assert c.post("/v1/generate", json=_multimodal(extra=1), headers=H).status_code == 413

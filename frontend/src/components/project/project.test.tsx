@@ -49,8 +49,8 @@ describe('SchemaVersionsPanel', () => {
   const versions = {
     current: 2, finalized: false,
     versions: [
-      { version: 2, author: 'giulia', origin: 'chat', created_at: '2026-01-02T10:00:00', table_count: 3 },
-      { version: 1, author: 'giulia', origin: 'generazione', created_at: '2026-01-01T10:00:00', table_count: 2 },
+      { version: 2, author_label: 'Altro membro', mine: false, origin: 'chat', created_at: '2026-01-02T10:00:00', table_count: 3 },
+      { version: 1, author_label: 'Tu', mine: true, origin: 'generazione', created_at: '2026-01-01T10:00:00', table_count: 2 },
     ],
   }
 
@@ -69,6 +69,13 @@ describe('SchemaVersionsPanel', () => {
     confirm.mockRestore()
   })
 
+  it('mostra solo etichette e mai id interni', async () => {
+    api.get.mockResolvedValue(versions)
+    wrap(<SchemaVersionsPanel projectId="p1" />)
+    expect(await screen.findByText(/Altro membro/)).toBeInTheDocument()
+    expect(screen.queryByText(/giulia/)).toBeNull()
+  })
+
   it('blocca il ripristino se lo schema è definitivo', async () => {
     api.get.mockResolvedValue({ ...versions, finalized: true })
     wrap(<SchemaVersionsPanel projectId="p1" />)
@@ -78,10 +85,11 @@ describe('SchemaVersionsPanel', () => {
 
 describe('QueryHistoryList', () => {
   it('ricarica l\'elenco e ripropone la domanda scelta', async () => {
-    const item = { id: 1, question: 'Quanti clienti ho?', sql: 'SELECT COUNT(*) FROM clienti', source: 'query', outcome: 'ok', rows: 1, created_at: '2026-01-01T10:00:00' }
+    const item = { id: 1, question: 'Quanti clienti ho?', sql: 'SELECT COUNT(*) FROM clienti', source: 'query', outcome: 'ok', rows: 1, created_at: '2026-01-01T10:00:00', mine: false, author_label: 'Altro membro' }
     api.get.mockResolvedValue({ queries: [item] })
     const onPick = vi.fn()
     wrap(<QueryHistoryList projectId="p1" onPick={onPick} />)
+    expect(await screen.findByText(/Altro membro/)).toBeInTheDocument()
     fireEvent.click(await screen.findByRole('button', { name: /quanti clienti ho/i }))
     expect(api.get).toHaveBeenCalledWith('/projects/p1/queries')
     expect(onPick).toHaveBeenCalledWith(item)

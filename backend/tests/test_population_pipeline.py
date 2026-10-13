@@ -233,3 +233,43 @@ def test_foreign_keys_are_built_into_the_generated_database(tmp_path):
     assert books[0]["referred_table"] == "authors"
     assert books[0]["constrained_columns"] == ["author_id"]
     assert books[0]["referred_columns"] == ["id"]
+
+
+@pytest.mark.parametrize("generated", [
+    "INSERT INTO persone (id, nome) VALUES (1, 'a') -- ; ATTACH DATABASE '/tmp/x.db' AS x",
+    "INSERT INTO persone (id, nome) /* ATTACH DATABASE 'x' AS y */ VALUES (1, 'a')",
+    "DELETE FROM persone WHERE id IN (VALUES (1))",
+    "INSERT INTO sqlite_master (name) VALUES ('x')",
+    "INSERT INTO persone (id, nome) VALUES (1, 'a') RETURNING id",
+    "INSERT INTO persone (id, nome) VALUES (1, (SELECT load_extension('x')))",
+])
+def test_disguised_llm_sql_is_never_executed(tmp_path, monkeypatch, generated):
+    monkeypatch.chdir(tmp_path)
+    service = PopulationService()
+    document_id = add_text(service, tmp_path, "p1")
+
+    async def generated_sql(*args, **kwargs):
+        return "INSERT INTO persone (id, nome) VALUES (7, 'seed'); " + generated
+    monkeypatch.setattr("app.services.population_service.generate_sql_for_population", generated_sql)
+    result = asyncio.run(service.populate("p1", str(tmp_path / "database.sqlite"), schema(), [document_id]))
+    assert result["persone"]["inserted"] == 1
+    engine = create_engine(f"sqlite:///{tmp_path / 'database.sqlite'}")
+    with engine.connect() as connection:
+        assert connection.execute(text("SELECT COUNT(*) FROM persone")).scalar() == 1
+
+
+def test_population_guard_authorizer_blocks_attach_and_delete(tmp_path):
+    from app.services.population_service import install_population_guard, is_safe_population_insert
+    engine = create_engine(f"sqlite:///{tmp_path / 'g.sqlite'}")
+    install_population_guard(engine, ["persone"])
+    raw = engine.raw_connection()
+    try:
+        # CREATE/ATTACH/PRAGMA pericolosi sono negati dall'autorizzatore
+        for sql in ("CREATE TABLE persone (id INTEGER)", f"ATTACH DATABASE '{tmp_path / 'o.db'}' AS o",
+                    "PRAGMA journal_mode=OFF"):
+            with pytest.raises(Exception):
+                raw.cursor().execute(sql)
+    finally:
+        raw.close()
+    assert is_safe_population_insert("INSERT OR IGNORE INTO persone (id) VALUES (1)", ["persone"])
+    assert not is_safe_population_insert("INSERT INTO altra (id) VALUES (1)", ["persone"])

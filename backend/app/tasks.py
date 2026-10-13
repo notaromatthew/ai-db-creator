@@ -197,20 +197,18 @@ def _now_naive():
     return datetime.now(timezone.utc).replace(tzinfo=None)
 
 
-def update_job(job_id: str, **fields) -> None:
-    """Aggiorna un lavoro; non sovrascrive mai uno stato terminale con "running"."""
+def update_job(job_id: str, **fields) -> bool:
+    """Aggiorna un lavoro solo se e' ancora attivo (queued/running), con un UPDATE condizionale:
+    un `cancelled` (o `failed`) non diventa mai `done`, nemmeno con aggiornamenti concorrenti."""
     from app.models.database import Job
     session = get_session(init_db())
     try:
-        job = session.get(Job, job_id)
-        if job is None:
-            return
-        if job.status in ("cancelled", "done", "failed") and fields.get("status") in (None, "running"):
-            return
-        for key, value in fields.items():
-            setattr(job, key, value)
-        job.updated_at = _now_naive()
+        fields["updated_at"] = _now_naive()
+        changed = session.query(Job).filter(
+            Job.id == job_id, Job.status.in_(("queued", "running"))
+        ).update(fields, synchronize_session=False)
         session.commit()
+        return bool(changed)
     finally:
         session.close()
 
@@ -251,12 +249,14 @@ def _run_schema_job(job, params: dict) -> dict:
     schema, repair = asyncio.run(generate())
     _check_cancelled(job.id)
     update_job(job.id, progress=80)
+    _check_cancelled(job.id)  # subito prima dei passi che modificano il progetto
     session = get_session(init_db())
     try:
         session.query(Project).filter(Project.id == job.project_id).update({"schema_finalized_at": None})
         session.commit()
     finally:
         session.close()
+    _check_cancelled(job.id)
     svc.apply_generated_schema(job.project_id, schema, prompt=request.prompt, author=job.user_id)
     return {"tables": len(schema.tables), "repair_attempts": repair["attempts"],
             "remaining_errors": repair["remaining_errors"]}
@@ -279,9 +279,12 @@ def _run_population_job(job, params: dict) -> dict:
         directory.mkdir(parents=True, exist_ok=True)
         db_path = str(directory / "database.sqlite")
     else:
+        _check_cancelled(job.id)
         BackupService().auto_backup(db_path, job.project_id, "populate")
     update_job(job.id, progress=30)
-    result = asyncio.run(PopulationService().populate(job.project_id, db_path, schema, document_ids))
+    _check_cancelled(job.id)  # il popolamento svuota le tabelle: ultimo controllo prima di iniziare
+    result = asyncio.run(PopulationService().populate(
+        job.project_id, db_path, schema, document_ids, cancel_check=lambda: _check_cancelled(job.id)))
     _check_cancelled(job.id)
     return {"tables": {name: {key: info.get(key, 0) for key in ("inserted", "skipped", "failed")}
                        for name, info in result.items() if isinstance(info, dict)}}

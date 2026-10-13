@@ -10,7 +10,7 @@ Una sola catena lineare, un solo `head`:
 
 `c25c5721cbb9` (iniziale) -> `d1a0acl00001` (utenti e condivisione) -> `d2adm00002` (admin e consumi)
 -> `d3chat00003` (chat) -> `d4final00004` (schema definitivo) -> `e5jobs00005` (lavori, versioni dello schema,
-cronologia query, dialetto di destinazione, OCR).
+cronologia query, dialetto di destinazione, OCR) -> `f6research00006` (ricerca) -> `g7hardening00007` (rafforzamenti).
 
 Il test `backend/tests/test_migrations.py` esegue tutta la catena su un SQLite vuoto fino a `head` e fallisce se
 esiste piu' di un head. Va sempre lasciato verde.
@@ -74,3 +74,17 @@ contiene una:
   reinstallazione dell'immagine precedente. Il downgrade serve soprattutto in sviluppo.
 - Una migrazione gia' applicata in produzione non si modifica mai: se contiene un errore si scrive una nuova
   migrazione correttiva.
+
+
+## Catena aggiornata
+
+`e5jobs00005` -> `f6research00006` (run di ricerca, partecipanti, eventi e risposte dello studio) -> `g7hardening00007`.
+Unico head: `g7hardening00007`.
+
+`g7hardening00007` (idempotente) aggiunge:
+- indice unico parziale `uq_jobs_active_project` su `jobs(project_id)` dove `kind IN ('schema','dati')` e `status IN ('queued','running')`:
+  un solo lavoro attivo per progetto, garantito dal database anche con richieste concorrenti (la creazione risponde 409).
+  Prima di crearlo chiude come `failed` gli eventuali duplicati attivi gia' presenti, tenendo il piu' recente;
+- colonna `study_participants.account_hash` (HMAC con sale dell'id utente, mai l'id) e indice unico parziale
+  `uq_study_active_account` dove `account_hash IS NOT NULL AND withdrawn_at IS NULL`: una iscrizione attiva per account.
+  Il sale e' `STUDY_ACCOUNT_SALT`: impostalo (stringa casuale lunga) prima di aprire lo studio e non cambiarlo durante lo studio.

@@ -38,7 +38,7 @@ export default function QueryHistoryList({ projectId, onPick }: Props) {
                 <span className="min-w-0 flex-1">
                   <span className={`block truncate ${q.source === 'execute' && !q.question ? 'font-mono text-xs' : ''}`}>{text}</span>
                   <span className="block text-xs text-tecnia-muted dark:text-slate-400">
-                    {formatDate(q.created_at)}{typeof q.rows === 'number' ? ` · ${q.rows} righe` : ''}{failed ? ' · non riuscita' : ''}
+                    {formatDate(q.created_at)}{q.author_label && !q.mine ? ` · ${q.author_label}` : ''}{typeof q.rows === 'number' ? ` · ${q.rows} righe` : ''}{failed ? ' · non riuscita' : ''}
                   </span>
                 </span>
               </button>

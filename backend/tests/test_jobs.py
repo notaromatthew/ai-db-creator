@@ -52,7 +52,7 @@ def test_schema_job_runs_in_fallback_thread_and_result_waits(client, project, mo
     response = post_job(c, pid, kind="schema", prompt="una biblioteca")
     assert response.status_code == 202
     job = response.json()
-    assert job["kind"] == "schema" and job["project_id"] == pid and job["user_id"] == "test-user"
+    assert job["kind"] == "schema" and job["project_id"] == pid and job["mine"] is True and "user_id" not in job
     final = wait(c, pid, job["id"])
     assert final["status"] == "done" and final["progress"] == 100 and final["error"] is None
     assert final["result"]["tables"] == 2 and final["result"]["repair_attempts"] == 0
@@ -183,8 +183,11 @@ def test_jobs_follow_the_acl_and_are_scoped_to_the_project(client, project, monk
     as_user("test-user", "owner@example.com")
     c.post(f"/api/projects/{pid}/invites", json={"email": "v@example.com", "role": "viewer"})
     as_user("viewer", "v@example.com")
-    assert c.get(f"/api/projects/{pid}/jobs").status_code == 200
+    assert c.get(f"/api/projects/{pid}/jobs").json()["jobs"] == []  # i lavori altrui non sono visibili
+    assert c.get(f"/api/projects/{pid}/jobs/{job['id']}").status_code == 404
+    as_user("test-user", "owner@example.com")
     assert c.get(f"/api/projects/{pid}/jobs/{job['id']}").status_code == 200
+    as_user("viewer", "v@example.com")
     assert post_job(c, pid, kind="schema", prompt="x").status_code == 403
     assert c.post(f"/api/projects/{pid}/jobs/{job['id']}/cancel").status_code == 403
     as_user("stranger", "s@example.com")

@@ -23,6 +23,21 @@ async def _get_jwks(force: bool = False):
         else:
             raise HTTPException(status_code=503, detail=f"Impossibile recuperare JWKS da Keycloak: {res.status_code}")
 
+def expected_issuer() -> str:
+    return (settings.keycloak_issuer or f"{settings.keycloak_url.rstrip('/')}/realms/{settings.keycloak_realm}").rstrip("/")
+
+
+def validate_claims(claims: dict) -> None:
+    """Issuer completo e client del token: un token di un altro realm/client o di un altro Keycloak e' rifiutato."""
+    if str(claims.get("iss", "")).rstrip("/") != expected_issuer():
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token emesso da un emittente non valido")
+    if settings.keycloak_check_client:
+        audience = claims.get("aud")
+        audiences = [audience] if isinstance(audience, str) else list(audience or [])
+        if claims.get("azp") != settings.keycloak_client_id and settings.keycloak_client_id not in audiences:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token non emesso per questa applicazione")
+
+
 async def get_current_user(
     request: Request,
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
@@ -58,9 +73,7 @@ async def get_current_user(
             audience="account",
             options={"verify_aud": False, "verify_iss": False}
         )
-        issuer = str(claims.get("iss", ""))
-        if issuer.rstrip("/").split("/realms/")[-1] != settings.keycloak_realm:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token emesso da un realm non valido")
+        validate_claims(claims)
 
         return {
             "sub": claims.get("sub"),
