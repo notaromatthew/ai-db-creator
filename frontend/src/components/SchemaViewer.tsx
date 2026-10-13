@@ -1,5 +1,5 @@
 import { NormalizedSchema, TableDef, ColumnDef } from '@/types'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { api } from '@/api/client'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -8,6 +8,8 @@ interface Props {
   projectId: string
   /** Ruolo di sola lettura: nasconde la modifica manuale. */
   readOnly?: boolean
+  /** Salva da solo le modifiche a mano dopo una breve pausa (ms). 0 o assente: solo con il pulsante Salva. */
+  autosaveMs?: number
 }
 
 const defaultColumn = (): ColumnDef => ({
@@ -19,14 +21,38 @@ const defaultColumn = (): ColumnDef => ({
   is_not_null: false,
 })
 
-export default function SchemaViewer({ schema, projectId, readOnly = false }: Props) {
+export default function SchemaViewer({ schema, projectId, readOnly = false, autosaveMs = 0 }: Props) {
   const queryClient = useQueryClient()
   const [editing, setEditing] = useState(false)
   const [localSchema, setLocalSchema] = useState<NormalizedSchema>(schema)
 
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const lastSaved = useRef(JSON.stringify(schema))
+
   useEffect(() => {
+    lastSaved.current = JSON.stringify(schema)
     setLocalSchema(schema)
   }, [schema])
+
+  // Salvataggio automatico con debounce: non ricarica lo schema, così non si perde ciò che stai scrivendo.
+  useEffect(() => {
+    if (!autosaveMs || !editing) return
+    const snapshot = JSON.stringify(localSchema)
+    if (snapshot === lastSaved.current) return
+    const timer = window.setTimeout(async () => {
+      setSaveState('saving')
+      try {
+        await api.put(`/projects/${projectId}/schema`, JSON.parse(snapshot))
+        lastSaved.current = snapshot
+        setSaveState('saved')
+        queryClient.invalidateQueries({ queryKey: ['schema-versions', projectId] })
+        queryClient.invalidateQueries({ queryKey: ['project', projectId] })
+      } catch {
+        setSaveState('error')
+      }
+    }, autosaveMs)
+    return () => window.clearTimeout(timer)
+  }, [localSchema, editing, autosaveMs, projectId, queryClient])
 
   const handleUpdate = async () => {
     await api.put(`/projects/${projectId}/schema`, localSchema)
@@ -102,6 +128,12 @@ export default function SchemaViewer({ schema, projectId, readOnly = false }: Pr
           )}
         </div>
       </div>
+
+      {autosaveMs > 0 && editing && (
+        <p className={`text-xs ${saveState === 'error' ? 'text-red-600' : 'text-tecnia-muted dark:text-slate-400'}`} role="status" aria-live="polite">
+          {saveState === 'saving' ? 'Salvo le modifiche…' : saveState === 'saved' ? 'Modifiche salvate in bozza.' : saveState === 'error' ? 'Non sono riuscito a salvare: riprova con il pulsante Salva.' : 'Le modifiche si salvano da sole.'}
+        </p>
+      )}
 
       {localSchema.description && <p className="text-gray-600">{localSchema.description}</p>}
 

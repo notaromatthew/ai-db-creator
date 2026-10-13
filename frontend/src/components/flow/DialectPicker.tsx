@@ -1,9 +1,10 @@
-export type Dialect = 'postgresql' | 'mysql' | 'mssql' | 'sqlite'
+export type Dialect = 'postgresql' | 'mysql' | 'mssql' | 'sqlite' | 'oracle'
 
 export const DIALECTS: { id: Dialect; label: string; hint: string }[] = [
   { id: 'postgresql', label: 'PostgreSQL', hint: 'Consigliato' },
   { id: 'mysql', label: 'MySQL e MariaDB', hint: 'Tipi INT, DATETIME' },
   { id: 'mssql', label: 'SQL Server', hint: 'Tipi NVARCHAR, BIT' },
+  { id: 'oracle', label: 'Oracle', hint: 'Tipi VARCHAR2, NUMBER' },
   { id: 'sqlite', label: 'SQLite', hint: 'File singolo, test locali' },
 ]
 
@@ -17,7 +18,7 @@ interface Props {
 
 export default function DialectPicker({ value, onChange, disabled }: Props) {
   return (
-    <div role="radiogroup" aria-label="Database di destinazione" className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+    <div role="radiogroup" aria-label="Database di destinazione" className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
       {DIALECTS.map((d) => {
         const checked = d.id === value
         return (

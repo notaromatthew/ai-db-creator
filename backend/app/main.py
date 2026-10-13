@@ -73,6 +73,7 @@ from app.api.sharing import router as sharing_router
 app.include_router(sharing_router)
 from app.api.admin import router as admin_router
 app.include_router(admin_router)
+from app.api import benchmark_runs, study; app.include_router(benchmark_runs.router); app.include_router(study.router)
 
 @app.get("/health")
 @limiter.limit("60/minute")

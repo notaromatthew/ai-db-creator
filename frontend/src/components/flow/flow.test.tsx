@@ -43,14 +43,16 @@ describe('ActionBar', () => {
 })
 
 describe('DialectPicker', () => {
-  it('offers the four dialects and reports the choice', () => {
+  it('offers the five dialects and reports the choice', () => {
     const onChange = vi.fn()
     render(<DialectPicker value="postgresql" onChange={onChange} />)
     const radios = screen.getAllByRole('radio')
-    expect(radios).toHaveLength(4)
+    expect(radios).toHaveLength(5)
     expect(screen.getByRole('radio', { name: /postgresql/i })).toHaveAttribute('aria-checked', 'true')
     fireEvent.click(screen.getByRole('radio', { name: /sql server/i }))
     expect(onChange).toHaveBeenCalledWith('mssql')
+    fireEvent.click(screen.getByRole('radio', { name: /oracle/i }))
+    expect(onChange).toHaveBeenCalledWith('oracle')
     fireEvent.click(screen.getByRole('radio', { name: /sqlite/i }))
     expect(onChange).toHaveBeenCalledWith('sqlite')
     fireEvent.click(screen.getByRole('radio', { name: /mysql/i }))

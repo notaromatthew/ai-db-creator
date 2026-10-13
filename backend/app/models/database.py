@@ -234,6 +234,80 @@ class UserVote(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
+RUN_STATES = ("queued", "running", "done", "failed", "cancelled")
+
+
+class ResearchRun(Base):
+    """Un run di benchmark (dataset x condizione x modello x temperatura) dello strumento di ricerca."""
+    __tablename__ = "research_runs"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    batch_id = Column(String, nullable=True, index=True)
+    dataset = Column(String(100), nullable=False, index=True)
+    condition = Column(String(50), nullable=False, index=True)
+    provider = Column(String(100), nullable=True)
+    model = Column(String(100), nullable=False, index=True)
+    temperature = Column(Float, nullable=True, index=True)
+    run_index = Column(Integer, nullable=False, default=1)
+    status = Column(String(20), nullable=False, default="queued", index=True)
+    cancel_requested = Column(Boolean, nullable=False, default=False)
+    precision = Column(Float, nullable=True)
+    recall = Column(Float, nullable=True)
+    f1 = Column(Float, nullable=True)
+    value_accuracy = Column(Float, nullable=True)  # celle corrette sul totale delle celle confrontate
+    judge_score = Column(Float, nullable=True)  # giudice LLM, 0-1
+    tokens_in = Column(Integer, nullable=True)
+    tokens_out = Column(Integer, nullable=True)
+    cost_usd = Column(Float, nullable=True)
+    latency_s = Column(Float, nullable=True)
+    per_table = Column(JSON, nullable=True)
+    schema_json = Column(JSON, nullable=True)
+    manifest = Column(JSON, nullable=True)
+    error = Column(Text, nullable=True)
+    created_by = Column(String(255), nullable=True)
+    created_at = Column(DateTime, default=_now, index=True)
+    started_at = Column(DateTime, nullable=True)
+    finished_at = Column(DateTime, nullable=True)
+
+
+class StudyParticipant(Base):
+    """Partecipante allo studio: solo un id pseudonimo casuale e l'hash del codice di ritiro."""
+    __tablename__ = "study_participants"
+
+    id = Column(String, primary_key=True)  # pseudonimo casuale, non collegato all'utente
+    code_hash = Column(String(64), nullable=False, unique=True)
+    arm = Column(String(20), nullable=False, index=True)  # manual | ai_only | ai_interface
+    consent_version = Column(String(20), nullable=True)
+    consented_at = Column(DateTime, nullable=True)
+    demographics = Column(JSON, nullable=True)  # solo fasce e livelli, mai dati identificativi
+    step = Column(String(20), nullable=False, default="consent")
+    completed_at = Column(DateTime, nullable=True)
+    withdrawn_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=_now)
+
+
+class StudyEvent(Base):
+    __tablename__ = "study_events"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    participant_id = Column(String, ForeignKey("study_participants.id"), nullable=False, index=True)
+    type = Column(String(40), nullable=False)
+    data = Column(JSON, nullable=True)
+    created_at = Column(DateTime, default=_now, index=True)
+
+
+class StudyResponse(Base):
+    """Risposte del partecipante: nasa_tlx, sus, debrief e lo schema dell'editor manuale."""
+    __tablename__ = "study_responses"
+    __table_args__ = (UniqueConstraint("participant_id", "kind", name="uq_study_response"),)
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    participant_id = Column(String, ForeignKey("study_participants.id"), nullable=False, index=True)
+    kind = Column(String(20), nullable=False)
+    data = Column(JSON, nullable=False)
+    created_at = Column(DateTime, default=_now)
+
+
 _engine = None
 
 def init_db(db_url: str | None = None):
@@ -290,7 +364,8 @@ def run_migrations(engine=None):
         # init_db ha appena creato (vuote) le tabelle nuove: vanno tolte perche' le crea la migrazione.
         from sqlalchemy import text
         with engine.begin() as conn:
-            for name in ("jobs", "schema_versions", "query_history",
+            for name in ("study_responses", "study_events", "study_participants", "research_runs",
+                         "jobs", "schema_versions", "query_history",
                          "chat_messages", "project_links", "project_invites", "project_members",
                          "usage_events", "admin_audit_log", "app_settings", "users"):
                 if name in tables:

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { api } from '@/api/client'
 import { NormalizedSchema, ExecuteQueryResponse } from '@/types'
 
@@ -6,9 +6,13 @@ interface Props {
   projectId: string
   schema: NormalizedSchema
   onDataChange?: () => void
+  /** Chiamata dopo ogni domanda o esecuzione, per ricaricare la cronologia. */
+  onActivity?: () => void
+  /** Riporta nei campi una domanda o una query precedente. `nonce` cambia a ogni scelta. */
+  prefill?: { question?: string | null; sql?: string | null; source?: string; nonce: number } | null
 }
 
-export default function QueryBuilder({ projectId, schema, onDataChange }: Props) {
+export default function QueryBuilder({ projectId, schema, onDataChange, onActivity, prefill }: Props) {
   const [mode, setMode] = useState<'nl' | 'sql'>('nl')
   const [prompt, setPrompt] = useState('')
   const [directSql, setDirectSql] = useState('')
@@ -18,6 +22,20 @@ export default function QueryBuilder({ projectId, schema, onDataChange }: Props)
   const [error, setError] = useState('')
   const [result, setResult] = useState<ExecuteQueryResponse | null>(null)
 
+  useEffect(() => {
+    if (!prefill) return
+    setError('')
+    setResult(null)
+    if (prefill.source === 'execute' && !prefill.question) {
+      setMode('sql')
+      setDirectSql(prefill.sql || '')
+    } else {
+      setMode('nl')
+      setPrompt(prefill.question || '')
+      setSql(prefill.sql || '')
+    }
+  }, [prefill?.nonce]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleGenerate = async () => {
     if (!prompt.trim()) return
     setLoading(true)
@@ -26,6 +44,7 @@ export default function QueryBuilder({ projectId, schema, onDataChange }: Props)
     try {
       const res = await api.post(`/projects/${projectId}/query`, { prompt, dialect: 'sqlite' })
       setSql(res.sql)
+      onActivity?.()
     } catch (e) {
       setError('Non sono riuscito a preparare la query. Controlla la richiesta e riprova.')
     } finally {
@@ -42,6 +61,7 @@ export default function QueryBuilder({ projectId, schema, onDataChange }: Props)
       const res = await api.post(`/projects/${projectId}/execute-query`, { sql: query })
       setResult(res)
       onDataChange?.()
+      onActivity?.()
     } catch (e: any) {
       setError(e?.message || 'Non è stato possibile eseguire la query.')
     } finally {

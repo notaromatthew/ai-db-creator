@@ -8,6 +8,7 @@ import BenchmarkPage from './pages/BenchmarkPage'
 import AdminPage from './pages/AdminPage'
 import SharedProjectPage from './pages/SharedProjectPage'
 import StudyPage from './pages/StudyPage'
+import ResearchPage from './pages/research/ResearchPage'
 import LegalPage from './pages/LegalPage'
 import OnboardingPage from './pages/OnboardingPage'
 import { OnboardingDialog, hasSeenOnboarding, markOnboardingSeen } from './components/Onboarding'
@@ -92,6 +93,8 @@ function AppShell() {
   const projectId = location.pathname.match(/^\/app\/projects\/([^/]+)/)?.[1]
   const { authenticated, username, login, register, logout, token, isAdmin } = useAuth()
   const { config } = useConfig()
+  const { roles: authRoles } = useAuth()
+  const canResearch = config.research_mode && (isAdmin || authRoles.includes('aidb-researcher'))
 
   useEffect(() => {
     api.setToken(token)
@@ -127,6 +130,7 @@ function AppShell() {
                 <NavLink to="/app" end className={navCls}>Progetti</NavLink>
                 {config.research_mode && <NavLink to="/app/benchmark" className={navCls}>Benchmark</NavLink>}
                 {config.research_mode && <NavLink to="/app/studio" className={navCls}>Studio</NavLink>}
+                {canResearch && <NavLink to="/app/ricerca" className={navCls}>Ricerca</NavLink>}
                 {isAdmin && <NavLink to="/app/admin" className={navCls}>Admin</NavLink>}
                 {isAdmin && <NavLink to="/app/settings" className={navCls}>Modelli</NavLink>}
                 <NavLink to="/app/help" className={navCls}>Aiuto</NavLink>
@@ -165,6 +169,7 @@ function AppShell() {
           <Route path="admin" element={<RequireAuth><RequireAdmin><AdminPage /></RequireAdmin></RequireAuth>} />
           {config.research_mode && <Route path="benchmark" element={<RequireAuth><BenchmarkPage /></RequireAuth>} />}
           {config.research_mode && <Route path="studio" element={<RequireAuth><StudyPage /></RequireAuth>} />}
+          {config.research_mode && <Route path="ricerca" element={<RequireAuth><ResearchPage /></RequireAuth>} />}
           <Route path="*" element={<Navigate to="/app" replace />} />
         </Routes>
       </main>

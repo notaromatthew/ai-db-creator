@@ -25,9 +25,11 @@ interface Props {
   progress: number
   error?: string
   onRetry?: () => void
+  onCancel?: () => void
+  cancelling?: boolean
 }
 
-export default function GenerationProgress({ progress, error, onRetry }: Props) {
+export default function GenerationProgress({ progress, error, onRetry, onCancel, cancelling }: Props) {
   const activeIndex = ITEMS.findIndex((item) => progress < item.until)
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-5 py-6">
@@ -43,6 +45,7 @@ export default function GenerationProgress({ progress, error, onRetry }: Props) 
           onRetry && <button type="button" className="primary-button w-fit" onClick={onRetry}>Riprova</button>
         ) : (
           <>
+            <p className="sr-only" role="status" aria-live="polite">Avanzamento: {progress}%</p>
             <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label="Avanzamento">
               <div className="h-full rounded-full bg-gradient-to-r from-orange-500 to-fuchsia-500 transition-all duration-700" style={{ width: `${progress}%` }} />
             </div>
@@ -63,6 +66,11 @@ export default function GenerationProgress({ progress, error, onRetry }: Props) 
                 )
               })}
             </ul>
+            {onCancel && (
+              <button type="button" className="secondary-button w-fit" onClick={onCancel} disabled={cancelling}>
+                {cancelling ? 'Annullo…' : 'Annulla la generazione'}
+              </button>
+            )}
           </>
         )}
       </div>

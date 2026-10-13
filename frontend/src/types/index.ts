@@ -47,6 +47,8 @@ export interface Project {
   status?: 'not_started' | 'schema_review' | 'data_ready'
   table_count?: number
   document_count?: number
+  schema_version?: number
+  target_dialect?: string | null
 }
 
 export interface Document {
@@ -57,6 +59,7 @@ export interface Document {
   file_path?: string
   content_summary?: string
   created_at: string
+  needs_ocr?: boolean
   provenance?: {
     sha256?: string | null
     method?: string
@@ -83,4 +86,53 @@ export interface ExecuteQueryResponse {
   columns: string[]
   rows: Record<string, unknown>[]
   affected: number | null
+}
+
+export type JobKind = 'schema' | 'dati' | 'esportazione'
+export type JobStatus = 'queued' | 'running' | 'done' | 'failed' | 'cancelled'
+
+export interface Job {
+  id: string
+  project_id: string
+  kind: JobKind
+  status: JobStatus
+  progress: number
+  error?: string | null
+  result?: any
+  created_at?: string
+  updated_at?: string
+}
+
+export interface JobRequest {
+  kind: JobKind
+  prompt?: string
+  document_ids?: string[]
+  format?: 'sql' | 'json'
+  dialect?: string
+}
+
+export type SchemaVersionOrigin = 'generazione' | 'chat' | 'manuale' | 'ripristino'
+
+export interface SchemaVersionInfo {
+  version: number
+  author?: string | null
+  origin: SchemaVersionOrigin | string
+  created_at?: string
+  table_count?: number
+}
+
+export interface SchemaVersionList {
+  current: number
+  finalized: boolean
+  versions: SchemaVersionInfo[]
+}
+
+export interface QueryHistoryItem {
+  id: string | number
+  question?: string | null
+  sql?: string | null
+  source: 'query' | 'execute' | string
+  outcome?: string | null
+  rows?: number | null
+  created_at?: string
 }

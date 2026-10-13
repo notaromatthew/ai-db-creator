@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-13T14:18:59.787224+00:00",
+  "label": "Risultati preliminari",
+  "rule": "Ogni numero riporta versione del software, modello e data.",
+  "numbers": [],
+  "skipped_without_provenance": []
+}

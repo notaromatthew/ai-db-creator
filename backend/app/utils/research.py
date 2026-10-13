@@ -178,3 +178,12 @@ def tracked_worker_run(event_type: str, template_version: str):
                 raise
         return wrapped
     return decorate
+
+
+RESEARCHER_ROLE = "aidb-researcher"
+
+
+def is_researcher(user: dict | None) -> bool:
+    """Ricercatore: ruolo Keycloak `aidb-researcher` oppure admin (`settings.admin_role`)."""
+    roles = (user or {}).get("roles") or []
+    return RESEARCHER_ROLE in roles or settings.admin_role in roles

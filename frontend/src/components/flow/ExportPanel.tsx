@@ -38,10 +38,9 @@ export default function ExportPanel({ projectId, schema, dialect, onDialectChang
     <section className="glass flex flex-col gap-4 p-5 sm:p-6" aria-labelledby="export-title">
       <div>
         <h3 id="export-title" className="text-lg font-bold">Per quale database vuoi lo script?</h3>
-        <p className="mt-1 text-sm text-tecnia-muted dark:text-slate-400">Adatto tipi di dato e sintassi al sistema che userai. Puoi cambiare scelta e riscaricare quando vuoi.</p>
+        <p className="mt-1 text-sm text-tecnia-muted dark:text-slate-400">Adatto tipi di dato e sintassi al sistema che userai. La scelta resta salvata nel progetto: puoi cambiarla e riscaricare quando vuoi.</p>
       </div>
       <DialectPicker value={dialect} onChange={onDialectChange} />
-      <p className="text-xs text-tecnia-muted dark:text-slate-400">Altri sistemi, come Oracle, si possono aggiungere in seguito.</p>
       <div className="flex flex-wrap items-center gap-3">
         <ExportButton projectId={projectId} dialect={dialect} />
         <button type="button" className="secondary-button" aria-expanded={csvOpen} onClick={() => setCsvOpen((v) => !v)}>
