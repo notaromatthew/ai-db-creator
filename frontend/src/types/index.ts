@@ -39,6 +39,13 @@ export interface Project {
   db_path?: string
   created_at: string
   updated_at: string
+  owner_id?: string
+  owner_name?: string | null
+  my_role?: 'owner' | 'editor' | 'viewer'
+  step?: number
+  status?: 'not_started' | 'schema_review' | 'data_ready'
+  table_count?: number
+  document_count?: number
 }
 
 export interface Document {

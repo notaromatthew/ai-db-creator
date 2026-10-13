@@ -1,144 +1,173 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMemo, useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
 import { api } from '@/api/client'
 import { Project } from '@/types'
-import { useState } from 'react'
+import { useAuth } from '@/context/KeycloakContext'
 import { ProjectWizardModal } from '@/components/ProjectWizardModal'
+
+const ROLE_LABEL: Record<string, string> = { owner: 'Proprietario', editor: 'Editor', viewer: 'Lettore' }
+const ROLE_COLOR: Record<string, string> = { owner: 'text-tecnia-primary', editor: 'text-tecnia-magentaDeep', viewer: 'text-tecnia-muted' }
+const STATUS: Record<string, { label: string; color: string }> = {
+  not_started: { label: 'Da iniziare', color: 'text-tecnia-muted' },
+  schema_review: { label: 'Schema da rivedere', color: 'text-amber-700' },
+  data_ready: { label: 'Dati pronti', color: 'text-tecnia-ok' },
+}
+
+function ProjectCard({ project, onDelete, onLeave, busy }: {
+  project: Project
+  onDelete: (p: Project) => void
+  onLeave: (p: Project) => void
+  busy: boolean
+}) {
+  const role = project.my_role ?? 'owner'
+  const status = STATUS[project.status ?? 'not_started'] ?? STATUS.not_started
+  const step = project.step ?? 1
+  const docs = project.document_count ?? 0
+  return (
+    <article className="glass group relative flex flex-col gap-3 p-5 transition hover:-translate-y-0.5 hover:border-orange-300">
+      <Link to={`/app/projects/${project.id}`} className="flex flex-col gap-3 rounded-xl" aria-label={`Apri ${project.name}`}>
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="truncate text-lg font-bold group-hover:text-tecnia-primary">{project.name}</h3>
+          <span className={`tag shrink-0 ${status.color}`}>{status.label}</span>
+        </div>
+        <div className="h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800" role="progressbar" aria-valuemin={0} aria-valuemax={4} aria-valuenow={step} aria-label={`Passo ${step} di 4`}>
+          <i className="block h-full bg-gradient-to-r from-[#ff6b00] to-[#fe3ac6]" style={{ width: `${(step / 4) * 100}%` }} />
+        </div>
+        <p className="text-[13px] text-tecnia-muted dark:text-slate-400">
+          Passo {step} di 4 · {docs} {docs === 1 ? 'documento' : 'documenti'}
+          {project.owner_name && role !== 'owner' ? ` · di ${project.owner_name}` : ''}
+        </p>
+      </Link>
+      <div className="flex items-center justify-between gap-2">
+        <span className={`tag ${ROLE_COLOR[role]}`}>{ROLE_LABEL[role]}</span>
+        {role === 'owner' ? (
+          <button type="button" onClick={() => onDelete(project)} disabled={busy} className="flex min-h-9 items-center gap-1 rounded-full px-3 text-xs font-semibold text-slate-500 hover:bg-red-50 hover:text-red-700" aria-label={`Elimina ${project.name}`}>
+            <span className="material-symbols-outlined !text-[18px]">delete</span>Elimina
+          </button>
+        ) : (
+          <button type="button" onClick={() => onLeave(project)} disabled={busy} className="flex min-h-9 items-center gap-1 rounded-full px-3 text-xs font-semibold text-slate-500 hover:bg-orange-50 hover:text-tecnia-primary" aria-label={`Lascia il progetto ${project.name}`}>
+            <span className="material-symbols-outlined !text-[18px]">logout</span>Lascia il progetto
+          </button>
+        )}
+      </div>
+    </article>
+  )
+}
 
 export default function Dashboard() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const [name, setName] = useState('')
-  const [prompt, setPrompt] = useState('')
+  const { username } = useAuth()
   const [error, setError] = useState('')
-  const [isWizardOpen, setIsWizardOpen] = useState(false)
+  const [isNewOpen, setIsNewOpen] = useState(false)
 
-  const { data: projects, isLoading } = useQuery<Project[]>({ queryKey: ['projects'], queryFn: () => api.get('/projects') })
+  const { data: projects, isLoading, isError } = useQuery<Project[]>({ queryKey: ['projects'], queryFn: () => api.get('/projects') })
 
   const createMut = useMutation({
     mutationFn: (data: { name: string; prompt: string }) => api.post('/projects', data),
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['projects'] })
-      setName(''); setPrompt(''); navigate(`/app/projects/${result.id}`)
+      setIsNewOpen(false)
+      navigate(`/app/projects/${result.id}`)
     },
-    onError: (caught: any) => setError(caught?.message || 'Impossibile creare il progetto. Verifica che il servizio sia attivo.'),
+    onError: (caught: any) => setError(caught?.message || 'Non siamo riusciti a creare il progetto. Riprova tra poco.'),
   })
 
   const deleteMut = useMutation({
     mutationFn: (id: string) => api.delete(`/projects/${id}`),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projects'] }),
   })
+  const leaveMut = useMutation({
+    mutationFn: (id: string) => api.delete(`/projects/${id}/membership`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projects'] }),
+  })
 
-  const handleCreate = (event: React.FormEvent) => {
-    event.preventDefault()
-    if (!name.trim()) return
-    setError('')
-    createMut.mutate({ name: name.trim(), prompt: prompt.trim() })
-  }
+  const { mine, shared } = useMemo(() => {
+    const list = projects ?? []
+    return {
+      mine: list.filter((p) => (p.my_role ?? 'owner') === 'owner'),
+      shared: list.filter((p) => (p.my_role ?? 'owner') !== 'owner'),
+    }
+  }, [projects])
 
-  const handleWizardCreate = (wName: string, wPrompt: string, mode: 'quick' | 'wizard') => {
-    createMut.mutate({ name: wName, prompt: wPrompt })
-  }
+  const next = mine.find((p) => p.status === 'schema_review')
 
-  const handleDelete = (event: React.MouseEvent, project: Project) => {
-    event.preventDefault(); event.stopPropagation()
-    if (window.confirm(`Eliminare definitivamente “${project.name}”?`)) deleteMut.mutate(project.id)
+  const handleDelete = (project: Project) => {
+    if (window.confirm(`Eliminare definitivamente “${project.name}”? Schema, dati e documenti andranno persi.`)) deleteMut.mutate(project.id)
   }
+  const handleLeave = (project: Project) => {
+    if (window.confirm(`Vuoi lasciare “${project.name}”? Non lo vedrai più, a meno di un nuovo invito.`)) leaveMut.mutate(project.id)
+  }
+  const busy = deleteMut.isPending || leaveMut.isPending
+  const first = username && username !== 'Ospite' ? username.split(/[\s@]/)[0] : ''
 
   return (
-    <div className="mx-auto max-w-6xl">
-      <header className="mb-8 grid items-center gap-6 lg:grid-cols-[1.3fr_.7fr]">
+    <div className="mx-auto flex max-w-6xl flex-col gap-8">
+      <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <span className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-blue-700 dark:bg-blue-950 dark:text-blue-300">Assistente per database</span>
-          <h1 className="mt-4 max-w-3xl text-3xl font-black tracking-tight text-slate-950 sm:text-4xl dark:text-white">Crea un database senza partire dal codice.</h1>
-          <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300">Descrivi ciò che ti serve, aggiungi i tuoi documenti e lasciati guidare nella creazione di tabelle, relazioni e dati.</p>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{first ? `Ciao ${first}` : 'I tuoi progetti'}</h1>
+          <p className="mt-1.5 text-base text-tecnia-muted dark:text-slate-400">Riparti da dove eri, oppure inizia un nuovo database.</p>
         </div>
-        <div className="surface grid grid-cols-3 gap-2 p-4 text-center">
-          {[['1', 'Descrivi'], ['2', 'Carica'], ['3', 'Verifica']].map(([step, label]) => (
-            <div key={step} className="rounded-xl bg-slate-50 p-3 dark:bg-slate-800">
-              <span className="mx-auto grid h-7 w-7 place-items-center rounded-full bg-blue-600 text-xs font-bold text-white">{step}</span>
-              <span className="mt-2 block text-xs font-semibold">{label}</span>
-            </div>
-          ))}
-        </div>
+        <button type="button" onClick={() => { setError(''); setIsNewOpen(true) }} className="primary-button">
+          <span className="material-symbols-outlined">add</span>Nuovo progetto
+        </button>
       </header>
 
-      <section className="surface mb-10 overflow-hidden" aria-labelledby="new-project-title">
-        <div className="flex items-center justify-between border-b border-slate-100 bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-4 sm:px-7 dark:border-slate-800 dark:from-blue-950/40 dark:to-indigo-950/40">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Inizia qui</p>
-            <h2 id="new-project-title" className="mt-1 text-xl font-bold">Crea un nuovo progetto</h2>
+      {next && (
+        <section className="glass flex flex-wrap items-center gap-5 border-orange-300 p-6" aria-label="Prossimo passo">
+          <span className="material-symbols-outlined !text-[32px] text-tecnia-primary">play_circle</span>
+          <div className="min-w-[220px] flex-1">
+            <h2 className="text-lg font-bold">Prossimo passo: controlla lo schema di “{next.name}”</h2>
+            <p className="mt-1 text-sm text-tecnia-muted dark:text-slate-400">L'IA ha proposto {next.table_count ?? 0} {next.table_count === 1 ? 'tabella' : 'tabelle'}. Servono circa 2 minuti.</p>
           </div>
-          <button
-            onClick={() => setIsWizardOpen(true)}
-            className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-xs font-bold text-white shadow hover:from-blue-700 hover:to-indigo-700"
-          >
-            🧙‍♂️ Apri Wizard Guidato
-          </button>
+          <Link to={`/app/projects/${next.id}`} className="primary-button">Continua<span className="material-symbols-outlined">arrow_forward</span></Link>
+        </section>
+      )}
+
+      {isLoading ? (
+        <div className="glass p-8 text-center text-tecnia-muted" role="status">Sto caricando i tuoi progetti…</div>
+      ) : isError ? (
+        <div className="glass p-8 text-center" role="alert">
+          <p className="font-semibold">Non riusciamo a caricare i progetti.</p>
+          <p className="mt-1 text-sm text-tecnia-muted">Controlla la connessione e ricarica la pagina.</p>
         </div>
-        <form onSubmit={handleCreate} className="space-y-5 p-5 sm:p-7">
-          <div>
-            <label htmlFor="project-name" className="mb-2 block text-sm font-semibold">Nome del progetto <span className="text-red-500" aria-hidden="true">*</span></label>
-            <input id="project-name" type="text" placeholder="Es. Gestione biblioteca" value={name} onChange={(event) => setName(event.target.value)} className="field" required autoComplete="off" />
-            <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">Scegli un nome semplice per riconoscerlo in seguito.</p>
-          </div>
-          <div>
-            <div className="mb-2 flex items-baseline justify-between gap-3">
-              <label htmlFor="project-description" className="block text-sm font-semibold">Cosa deve gestire il database?</label>
-              <span className="text-xs text-slate-400">Puoi completarlo più tardi</span>
-            </div>
-            <textarea id="project-description" placeholder="Es. Una biblioteca con libri, autori, prestiti e lettori. Ogni libro può avere più autori..." value={prompt} onChange={(event) => setPrompt(event.target.value)} className="field min-h-28 resize-y" />
-            <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">Più dettagli fornisci, più accurato sarà il primo schema proposto.</p>
-          </div>
-          {error && <p role="alert" className="rounded-xl bg-red-50 px-3 py-2 text-sm font-medium text-red-700 dark:bg-red-950/40 dark:text-red-300">{error}</p>}
-          <button type="submit" disabled={!name.trim() || createMut.isPending} className="primary-button w-full sm:w-auto">
-            {createMut.isPending ? 'Creazione in corso…' : 'Crea progetto e continua →'}
-          </button>
-        </form>
-      </section>
+      ) : (
+        <>
+          <section aria-labelledby="mine-title" className="flex flex-col gap-3.5">
+            <h2 id="mine-title" className="text-xl font-bold">I tuoi progetti</h2>
+            {mine.length === 0 ? (
+              <div className="glass border-dashed p-10 text-center">
+                <span className="material-symbols-outlined !text-[36px] text-tecnia-primary">upload_file</span>
+                <h3 className="mt-2 text-lg font-bold">Non hai ancora progetti</h3>
+                <p className="mx-auto mt-1 max-w-md text-sm text-tecnia-muted dark:text-slate-400">Crea il primo: descrivi cosa ti serve, carica i tuoi documenti e l'IA propone tabelle e relazioni.</p>
+                <button type="button" onClick={() => { setError(''); setIsNewOpen(true) }} className="primary-button mt-5">Crea il primo progetto</button>
+              </div>
+            ) : (
+              <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+                {mine.map((p) => <ProjectCard key={p.id} project={p} onDelete={handleDelete} onLeave={handleLeave} busy={busy} />)}
+              </div>
+            )}
+          </section>
+
+          {shared.length > 0 && (
+            <section aria-labelledby="shared-title" className="flex flex-col gap-3.5">
+              <h2 id="shared-title" className="text-xl font-bold">Condivisi con me</h2>
+              <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+                {shared.map((p) => <ProjectCard key={p.id} project={p} onDelete={handleDelete} onLeave={handleLeave} busy={busy} />)}
+              </div>
+            </section>
+          )}
+        </>
+      )}
 
       <ProjectWizardModal
-        isOpen={isWizardOpen}
-        onClose={() => setIsWizardOpen(false)}
-        onCreateProject={handleWizardCreate}
+        isOpen={isNewOpen}
+        onClose={() => setIsNewOpen(false)}
+        onCreateProject={(name, prompt) => { setError(''); createMut.mutate({ name, prompt }) }}
+        busy={createMut.isPending}
+        error={error}
       />
-
-
-      <section aria-labelledby="projects-title">
-        <div className="mb-4 flex items-end justify-between">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Il tuo spazio di lavoro</p>
-            <h2 id="projects-title" className="mt-1 text-2xl font-bold">Progetti recenti</h2>
-          </div>
-          {!!projects?.length && <span className="text-sm text-slate-500">{projects.length} {projects.length === 1 ? 'progetto' : 'progetti'}</span>}
-        </div>
-
-        {isLoading ? (
-          <div className="surface p-8 text-center text-slate-500" role="status">Caricamento dei progetti…</div>
-        ) : projects?.length === 0 ? (
-          <div className="surface border-dashed p-10 text-center">
-            <div className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-slate-500 dark:bg-slate-800">＋</div>
-            <h3 className="font-bold">Non ci sono ancora progetti</h3>
-            <p className="mt-1 text-sm text-slate-500">Compila il modulo qui sopra per creare il primo.</p>
-          </div>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2">
-            {projects?.map((project) => (
-              <article key={project.id} className="surface group relative transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:hover:border-blue-700">
-                <Link to={`/app/projects/${project.id}`} className="block min-h-36 p-5 pr-14">
-                  <span className="mb-3 grid h-10 w-10 place-items-center rounded-xl bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300" aria-hidden="true">▦</span>
-                  <h3 className="truncate text-lg font-bold group-hover:text-blue-700 dark:group-hover:text-blue-300">{project.name}</h3>
-                  <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{project.prompt || 'Nessuna descrizione: apri il progetto per iniziare.'}</p>
-                  <span className="mt-4 inline-block text-sm font-semibold text-blue-600 dark:text-blue-400">Apri progetto →</span>
-                </Link>
-                <button onClick={(event) => handleDelete(event, project)} disabled={deleteMut.isPending} className="absolute right-4 top-4 rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30" aria-label={`Elimina ${project.name}`} title="Elimina progetto">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg>
-                </button>
-              </article>
-            ))}
-          </div>
-        )}
-      </section>
     </div>
   )
 }

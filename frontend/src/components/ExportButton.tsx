@@ -1,86 +1,66 @@
 import { useState } from 'react'
 import { api } from '@/api/client'
+import { dialectLabel, type Dialect } from '@/components/flow/DialectPicker'
+
+function saveFile(name: string, content: string, type: string) {
+  const blob = new Blob([content], { type })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = name
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+/** Scarica schema e dati come script SQL nel dialetto scelto. */
+export async function downloadScript(projectId: string, dialect: Dialect) {
+  const data = await api.get(`/projects/${projectId}/export-full?dialect=${dialect}`)
+  saveFile(`db_${projectId}_${dialect}.${data.extension || 'sql'}`, data.content, 'text/sql')
+}
+
+/** Scarica una tabella intera come CSV (lettura completa, non l'anteprima da 100 righe). */
+export async function downloadTableCsv(projectId: string, table: string) {
+  const res = await api.post(`/projects/${projectId}/execute-query`, { sql: `SELECT * FROM [${table}]` })
+  const esc = (v: unknown) => {
+    const s = v === null || v === undefined ? '' : String(v)
+    return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+  }
+  const lines = [res.columns.map(esc).join(',')]
+  for (const row of res.rows as Record<string, unknown>[]) lines.push(res.columns.map((c: string) => esc(row[c])).join(','))
+  saveFile(`${table}.csv`, lines.join('\n') + '\n', 'text/csv')
+}
 
 interface Props {
   projectId: string
+  dialect: Dialect
+  className?: string
 }
 
-const dialects = ['sqlite', 'postgresql', 'mysql', 'mssql'] as const
-
-export default function ExportButton({ projectId }: Props) {
-  const [showOptions, setShowOptions] = useState(false)
+export default function ExportButton({ projectId, dialect, className = 'primary-button' }: Props) {
   const [exporting, setExporting] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleExport = async (format: string) => {
+  const handleClick = async () => {
     setExporting(true)
+    setError('')
     try {
-      const data = await api.get(`/projects/${projectId}/export?format=${format}`)
-      const content = data.content
-
-      const blob = new Blob([content], {
-        type: format === 'sql' ? 'text/sql' : format === 'json' ? 'application/json' : 'text/csv',
-      })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `schema_${projectId}.${format}`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-    } catch (e) {
-      console.error(e)
+      await downloadScript(projectId, dialect)
+    } catch (e: any) {
+      setError(e?.message || 'Non è stato possibile preparare lo script.')
     } finally {
       setExporting(false)
-      setShowOptions(false)
-    }
-  }
-
-  const handleExportFull = async (dialect: string) => {
-    setExporting(true)
-    try {
-      const data = await api.get(`/projects/${projectId}/export-full?dialect=${dialect}`)
-      const content = data.content
-
-      const blob = new Blob([content], { type: 'text/sql' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `db_${projectId}_${dialect}.sql`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setExporting(false)
-      setShowOptions(false)
     }
   }
 
   return (
-    <div className="relative inline-block">
-      <button
-        onClick={() => setShowOptions(!showOptions)}
-        className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded text-sm hover:bg-gray-300 dark:hover:bg-gray-600"
-        disabled={exporting}
-      >
-        {exporting ? 'Exporting...' : 'Export'}
+    <>
+      <button type="button" onClick={handleClick} disabled={exporting} className={className}>
+        <span className="material-symbols-outlined text-[18px]" aria-hidden="true">download</span>
+        {exporting ? 'Preparo lo script…' : `Scarica lo script per ${dialectLabel(dialect)}`}
       </button>
-      {showOptions && (
-        <div className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg z-10 min-w-40">
-          <div className="px-3 py-1 text-xs text-gray-500 uppercase tracking-wider">Schema only</div>
-          <button onClick={() => handleExport('sql')} className="block w-full px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-left">SQL (DDL)</button>
-          <button onClick={() => handleExport('json')} className="block w-full px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-left">JSON</button>
-          <button onClick={() => handleExport('csv')} className="block w-full px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-left">CSV</button>
-          <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
-          <div className="px-3 py-1 text-xs text-gray-500 uppercase tracking-wider">Full DB (DDL + Data)</div>
-          {dialects.map(d => (
-            <button key={d} onClick={() => handleExportFull(d)} className="block w-full px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-left capitalize">{d}</button>
-          ))}
-        </div>
-      )}
-    </div>
+      {error && <p role="alert" className="w-full text-sm text-red-600">{error}</p>}
+    </>
   )
 }

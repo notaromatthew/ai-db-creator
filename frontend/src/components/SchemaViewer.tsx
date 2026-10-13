@@ -6,6 +6,8 @@ import { useQueryClient } from '@tanstack/react-query'
 interface Props {
   schema: NormalizedSchema
   projectId: string
+  /** Ruolo di sola lettura: nasconde la modifica manuale. */
+  readOnly?: boolean
 }
 
 const defaultColumn = (): ColumnDef => ({
@@ -17,7 +19,7 @@ const defaultColumn = (): ColumnDef => ({
   is_not_null: false,
 })
 
-export default function SchemaViewer({ schema, projectId }: Props) {
+export default function SchemaViewer({ schema, projectId, readOnly = false }: Props) {
   const queryClient = useQueryClient()
   const [editing, setEditing] = useState(false)
   const [localSchema, setLocalSchema] = useState<NormalizedSchema>(schema)
@@ -30,6 +32,7 @@ export default function SchemaViewer({ schema, projectId }: Props) {
     await api.put(`/projects/${projectId}/schema`, localSchema)
     queryClient.invalidateQueries({ queryKey: ['schema', projectId] })
     queryClient.invalidateQueries({ queryKey: ['stats', projectId] })
+    queryClient.invalidateQueries({ queryKey: ['project', projectId] })
     setEditing(false)
   }
 
@@ -74,7 +77,7 @@ export default function SchemaViewer({ schema, projectId }: Props) {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Database Schema</h2>
+        <h2 className="text-xl font-semibold">Struttura delle tabelle</h2>
         <div className="flex gap-2">
           {editing && (
             <button onClick={addTable} className="bg-green-600 text-white px-3 py-1 rounded text-sm">
@@ -83,17 +86,19 @@ export default function SchemaViewer({ schema, projectId }: Props) {
           )}
           {editing ? (
             <div className="space-x-2">
-              <button onClick={handleUpdate} className="bg-blue-600 text-white px-3 py-1 rounded">
+              <button onClick={handleUpdate} className="primary-button min-h-9 px-4">
                 Salva
               </button>
-              <button onClick={toggleEditing} className="bg-gray-400 text-white px-3 py-1 rounded">
+              <button onClick={toggleEditing} className="secondary-button min-h-9 px-4">
                 Annulla
               </button>
             </div>
           ) : (
-            <button onClick={toggleEditing} className="bg-gray-600 text-white px-3 py-1 rounded">
-              Modifica
-            </button>
+            !readOnly && (
+              <button onClick={toggleEditing} className="secondary-button min-h-9 px-4">
+                Modifica a mano
+              </button>
+            )
           )}
         </div>
       </div>

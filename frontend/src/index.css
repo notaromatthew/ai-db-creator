@@ -17,5 +17,6 @@
   .secondary-button { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-tecnia-line bg-white/70 px-5 py-2.5 font-headline text-xs font-bold uppercase tracking-wide text-tecnia-ink transition hover:border-orange-300 hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700; }
   .field { @apply w-full rounded-xl border border-tecnia-line bg-white px-3.5 py-2.5 text-tecnia-ink placeholder:text-slate-400 transition hover:border-orange-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:focus:ring-orange-900; }
   .tag { @apply inline-flex rounded-full border border-current px-3 py-0.5 font-headline text-[11px] font-bold uppercase tracking-wider; }
+  .avatar { @apply flex h-9 w-9 flex-none items-center justify-center rounded-full bg-gradient-to-br from-[#ff6b00] to-[#fe3ac6] font-headline text-[13px] font-bold text-white; }
   .orb { @apply pointer-events-none absolute rounded-full opacity-20 blur-[95px]; }
 }

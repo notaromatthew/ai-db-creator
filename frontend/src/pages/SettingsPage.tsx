@@ -15,6 +15,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [successMsg, setSuccessMsg] = useState('')
+  const [saveError, setSaveError] = useState('')
   const [ollamaModels, setOllamaModels] = useState<string[]>([])
   const [loadingModels, setLoadingModels] = useState(false)
 
@@ -54,7 +55,7 @@ export default function SettingsPage() {
     try {
       const query = new URLSearchParams()
       if (baseUrl) query.append('base_url', baseUrl)
-      if (apiKey !== undefined && apiKey !== null) query.append('api_key', apiKey)
+      if (apiKey !== undefined && apiKey !== null && !String(apiKey).startsWith('••••')) query.append('api_key', apiKey)
       const res = await api.get(`/settings/ollama-models?${query.toString()}`)
       const fetchedModels: string[] = res?.models || []
       setOllamaModels(fetchedModels)
@@ -104,6 +105,7 @@ export default function SettingsPage() {
     e.preventDefault()
     setSaving(true)
     setSuccessMsg('')
+    setSaveError('')
     try {
       const payload: any = {
         llm_provider: settingsData.llm_provider || 'ollama',
@@ -126,6 +128,10 @@ export default function SettingsPage() {
         llm_max_requests_per_minute: numOr(settingsData.llm_max_requests_per_minute, 15),
       }
 
+      // Le chiavi arrivano mascherate (••••xxxx): se non le hai cambiate non vanno rimandate.
+      for (const key of Object.keys(payload)) {
+        if (key.endsWith('_api_key') && typeof payload[key] === 'string' && payload[key].startsWith('••••')) delete payload[key]
+      }
       const updated = await api.put('/settings', payload)
       setSettingsData(updated)
       queryClient.invalidateQueries({ queryKey: ['llm-info'] })
@@ -134,7 +140,8 @@ export default function SettingsPage() {
       setTimeout(() => setSuccessMsg(''), 4000)
     } catch (e: any) {
       console.error('Save settings error:', e)
-      alert(`Errore durante il salvataggio: ${e.message || e}`)
+      setSuccessMsg('')
+      setSaveError(`Non siamo riusciti a salvare: ${e.message || e}`)
     } finally {
       setSaving(false)
     }
@@ -156,22 +163,26 @@ export default function SettingsPage() {
     <div className="mx-auto max-w-3xl space-y-6 py-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Configurazione Provider & Iperparametri AI</h1>
-          <p className="text-xs text-slate-500">
-            Seleziona il provider attivo. Per Ollama, i modelli disponibili vengono letti in tempo reale dal server scelto (`ollama list`).
+          <h1 className="text-3xl font-bold tracking-tight text-tecnia-ink dark:text-white">Modelli IA</h1>
+          <p className="mt-1.5 text-sm text-tecnia-muted">
+            Scegli il fornitore attivo e i parametri di generazione. Per Ollama, i modelli disponibili vengono letti in tempo reale dal server scelto (`ollama list`).
           </p>
         </div>
       </div>
 
       {successMsg && (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-300">
-          ✓ {successMsg}
+          {successMsg}
         </div>
+      )}
+
+      {saveError && (
+        <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700 dark:border-red-900 dark:bg-red-950/50 dark:text-red-300">{saveError}</div>
       )}
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* Step 1: Provider Selection */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="glass p-6">
           <h3 className="text-base font-bold text-slate-900 dark:text-white">1. Selezione Provider AI</h3>
           <div className="mt-4">
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">Provider Principale</label>
@@ -206,7 +217,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Step 2: Dynamic Provider Configuration */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="glass p-6">
           <h3 className="text-base font-bold text-slate-900 dark:text-white">
             2. Configurazione Specifica: <span className="text-blue-600 dark:text-blue-400 uppercase">{currentProvider}</span>
           </h3>
@@ -251,7 +262,7 @@ export default function SettingsPage() {
                     type="text"
                     value={settingsData.ollama_base_url || ''}
                     onChange={(e) => setSettingsData({ ...settingsData, ollama_base_url: e.target.value })}
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-mono text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                    className="mt-1 field"
                   />
                 </div>
 
@@ -262,7 +273,7 @@ export default function SettingsPage() {
                       type="password"
                       value={settingsData.ollama_api_key || ''}
                       onChange={(e) => setSettingsData({ ...settingsData, ollama_api_key: e.target.value })}
-                      className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-mono text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                      className="mt-1 field"
                     />
                   </div>
                 )}
@@ -291,7 +302,7 @@ export default function SettingsPage() {
                     <select
                       value={settingsData.ollama_model || ollamaModels[0]}
                       onChange={(e) => setSettingsData({ ...settingsData, ollama_model: e.target.value })}
-                      className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-sm font-semibold font-mono text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                      className="mt-1 field"
                     >
                       {ollamaModels.map((m) => (
                         <option key={m} value={m}>
@@ -319,7 +330,7 @@ export default function SettingsPage() {
                   placeholder="AIzaSy..."
                   value={settingsData.google_api_key || ''}
                   onChange={(e) => setSettingsData({ ...settingsData, google_api_key: e.target.value })}
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-mono text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                  className="mt-1 field"
                 />
               </div>
 
@@ -330,7 +341,7 @@ export default function SettingsPage() {
                   placeholder="gemini-2.0-flash"
                   value={settingsData.google_model || ''}
                   onChange={(e) => setSettingsData({ ...settingsData, google_model: e.target.value })}
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-mono text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                  className="mt-1 field"
                 />
               </div>
             </div>
@@ -346,7 +357,7 @@ export default function SettingsPage() {
                   placeholder="sk-..."
                   value={settingsData.openai_api_key || ''}
                   onChange={(e) => setSettingsData({ ...settingsData, openai_api_key: e.target.value })}
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-mono text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                  className="mt-1 field"
                 />
               </div>
 
@@ -357,7 +368,7 @@ export default function SettingsPage() {
                   placeholder="gpt-4o-mini"
                   value={settingsData.openai_model || ''}
                   onChange={(e) => setSettingsData({ ...settingsData, openai_model: e.target.value })}
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-mono text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                  className="mt-1 field"
                 />
               </div>
             </div>
@@ -373,7 +384,7 @@ export default function SettingsPage() {
                   placeholder="gsk_..."
                   value={settingsData.groq_api_key || ''}
                   onChange={(e) => setSettingsData({ ...settingsData, groq_api_key: e.target.value })}
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-mono text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                  className="mt-1 field"
                 />
               </div>
 
@@ -384,7 +395,7 @@ export default function SettingsPage() {
                   placeholder="llama3-70b-8192"
                   value={settingsData.groq_model || ''}
                   onChange={(e) => setSettingsData({ ...settingsData, groq_model: e.target.value })}
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-mono text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                  className="mt-1 field"
                 />
               </div>
             </div>
@@ -400,7 +411,7 @@ export default function SettingsPage() {
                   placeholder="sk-or-..."
                   value={settingsData.openrouter_api_key || ''}
                   onChange={(e) => setSettingsData({ ...settingsData, openrouter_api_key: e.target.value })}
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-mono text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                  className="mt-1 field"
                 />
               </div>
 
@@ -411,7 +422,7 @@ export default function SettingsPage() {
                   placeholder="openai/gpt-4o-mini"
                   value={settingsData.openrouter_model || ''}
                   onChange={(e) => setSettingsData({ ...settingsData, openrouter_model: e.target.value })}
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-mono text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                  className="mt-1 field"
                 />
               </div>
             </div>
@@ -419,7 +430,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Step 3: Hyperparameters */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="glass p-6">
           <h3 className="text-base font-bold text-slate-900 dark:text-white">3. Iperparametri di Generazione</h3>
           <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div>
@@ -461,7 +472,7 @@ export default function SettingsPage() {
                 type="number"
                 value={settingsData.llm_max_tokens}
                 onChange={(e) => setSettingsData({ ...settingsData, llm_max_tokens: e.target.value })}
-                className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-mono text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                className="mt-1 field"
               />
             </div>
 
@@ -471,7 +482,7 @@ export default function SettingsPage() {
                 type="number"
                 value={settingsData.llm_max_requests_per_minute}
                 onChange={(e) => setSettingsData({ ...settingsData, llm_max_requests_per_minute: e.target.value })}
-                className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-mono text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                className="mt-1 field"
               />
             </div>
           </div>
@@ -481,7 +492,7 @@ export default function SettingsPage() {
           <button
             type="submit"
             disabled={saving}
-            className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50"
+            className="primary-button"
           >
             {saving ? 'Salvataggio in corso...' : 'Salva Impostazioni'}
           </button>
@@ -489,8 +500,8 @@ export default function SettingsPage() {
       </form>
 
       {/* Test Prompt Ollama Section */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white">🧪 Test Connessione Provider</h2>
+      <div className="glass p-6">
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Test Connessione Provider</h2>
         <p className="mt-1 text-xs text-slate-500">
           Invia un prompt di test al provider corrente per verificare che la connessione funzioni correttamente.
         </p>
@@ -502,7 +513,7 @@ export default function SettingsPage() {
               value={testPrompt}
               onChange={(e) => setTestPrompt(e.target.value)}
               rows={2}
-              className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+              className="mt-1 field"
               placeholder="Scrivi un prompt di test..."
             />
           </div>
@@ -512,7 +523,7 @@ export default function SettingsPage() {
             <select
               value={testModel || settingsData?.ollama_model || ''}
               onChange={(e) => setTestModel(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-sm text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+              className="mt-1 field"
             >
               {ollamaModels.map((m) => (
                 <option key={m} value={m}>{m}</option>

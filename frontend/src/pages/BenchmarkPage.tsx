@@ -127,7 +127,7 @@ export default function BenchmarkPage() {
       await loadData()
       setTimeout(() => setVoteSuccess(''), 4000)
     } catch (e) {
-      alert('Errore nel salvataggio del voto')
+      setRunError('Non siamo riusciti a salvare il voto. Riprova.')
     } finally {
       setVoting(false)
     }
@@ -145,260 +145,169 @@ export default function BenchmarkPage() {
     alert('Tabella LaTeX copiata negli appunti!')
   }
 
+  const rows = resultsData.results
+  const avg = (key: string) => (rows.length ? rows.reduce((sum, r) => sum + (Number(r[key]) || 0), 0) / rows.length : null)
+  const kpis = [
+    { label: 'Esecuzioni registrate', value: String(rows.length), hint: 'nel database dei risultati' },
+    { label: 'Schemi in 3NF', value: avg('norm3_score') === null ? '—' : `${Math.round(avg('norm3_score')!)}%`, hint: 'media delle esecuzioni' },
+    { label: 'Tempo medio', value: avg('latency_seconds') === null ? '—' : `${avg('latency_seconds')!.toFixed(1)} s`, hint: 'dal documento allo schema' },
+    { label: 'Voti degli esperti', value: String(resultsData.votes?.length ?? 0), hint: 'valutazioni soggettive' },
+  ]
+  const selectCls = 'field mt-1'
+  const labelCls = 'block font-headline text-[13px] font-semibold'
+
   return (
-    <div className="mx-auto max-w-6xl space-y-8 py-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="mx-auto flex max-w-6xl flex-col gap-6">
+      <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Benchmark Scientifico Modelli LLM</h1>
-          <p className="mt-1 text-xs text-slate-500">
-            Valutazione quantitativa delle prestazioni (3NF, Relationship F1, Cell Precision) e feedback qualitativo umano per il Paper.
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Benchmark</h1>
+          <p className="mt-1.5 max-w-xl text-base text-tecnia-muted dark:text-slate-400">
+            Quanto bene i modelli costruiscono schemi e dati. Ogni numero rimanda a un'esecuzione registrata.
           </p>
         </div>
-        <button
-          onClick={generateLatexTable}
-          className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
-        >
-          📋 Copia Tabella LaTeX
+        <button onClick={generateLatexTable} className="secondary-button">
+          <span className="material-symbols-outlined">content_copy</span>Copia tabella LaTeX
         </button>
+      </header>
+
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {kpis.map((k) => (
+          <div key={k.label} className="glass flex flex-col gap-1.5 p-5">
+            <span className="text-[13px] text-tecnia-muted dark:text-slate-400">{k.label}</span>
+            <b className="font-headline text-3xl">{k.value}</b>
+            <span className="text-xs text-tecnia-muted dark:text-slate-400">{k.hint}</span>
+          </div>
+        ))}
       </div>
 
-      {/* Benchmark Control Panel */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Esegui Nuovo Test di Benchmark</h2>
-        <p className="mt-1 text-xs text-slate-500">Seleziona lo scenario, il provider ed il modello specifico da testare.</p>
+      <section className="glass p-6" aria-labelledby="run-title">
+        <h2 id="run-title" className="text-lg font-bold">Esegui un nuovo test</h2>
+        <p className="mt-1 text-sm text-tecnia-muted dark:text-slate-400">Scegli lo scenario di riferimento, il fornitore e il modello da valutare.</p>
 
-        {runError && (
-          <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 text-xs font-semibold text-red-700 dark:border-red-900/50 dark:bg-red-950/50 dark:text-red-300">
-            ⚠️ {runError}
-          </div>
-        )}
-
-        {runSuccess && (
-          <div className="mt-4 rounded-xl border border-green-200 bg-green-50 p-4 text-xs font-semibold text-green-700 dark:border-green-900/50 dark:bg-green-950/50 dark:text-green-300">
-            🎉 {runSuccess}
-          </div>
-        )}
+        {runError && <div role="alert" className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700 dark:border-red-900/50 dark:bg-red-950/50 dark:text-red-300">{runError}</div>}
+        {runSuccess && <div role="status" className="mt-4 rounded-xl border border-green-200 bg-green-50 p-4 text-sm font-semibold text-tecnia-ok dark:border-green-900/50 dark:bg-green-950/50 dark:text-green-300">{runSuccess}</div>}
 
         {running && (
-          <div className="mt-4 rounded-2xl border border-blue-200 bg-blue-50/60 p-4 dark:border-blue-900/50 dark:bg-blue-950/60">
-            <div className="flex items-center justify-between text-xs font-semibold text-blue-700 dark:text-blue-300">
+          <div className="mt-4 rounded-2xl border border-orange-200 bg-orange-50/60 p-4 dark:border-orange-900/50 dark:bg-orange-950/40" role="status">
+            <div className="flex items-center justify-between text-sm font-semibold text-tecnia-primary dark:text-orange-300">
               <span className="flex items-center gap-2">
-                <span className="inline-block h-2 w-2 animate-ping rounded-full bg-blue-500"></span>
-                {progressState.message || `Esecuzione benchmark per ${selectedModel}...`}
+                <span className="inline-block h-2 w-2 animate-ping rounded-full bg-orange-500"></span>
+                {progressState.message || `Test in corso per ${selectedModel}…`}
               </span>
               <span>{progressState.progress || 15}%</span>
             </div>
-            <div className="mt-2.5 h-2.5 w-full overflow-hidden rounded-full bg-blue-200/60 dark:bg-blue-900/40">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 transition-all duration-300"
-                style={{ width: `${Math.max(10, progressState.progress || 15)}%` }}
-              ></div>
+            <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-orange-100 dark:bg-orange-900/40">
+              <div className="h-full rounded-full bg-gradient-to-r from-[#ff6b00] to-[#fe3ac6] transition-all duration-300" style={{ width: `${Math.max(10, progressState.progress || 15)}%` }}></div>
             </div>
             {progressState.etc_seconds !== null && progressState.etc_seconds > 0 && (
-              <div className="mt-2 text-right text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                ⏱️ Tempo stimato al completamento (ETC): ~{Math.round(progressState.etc_seconds)} sec
-              </div>
+              <div className="mt-2 text-right text-xs font-semibold text-tecnia-muted dark:text-slate-400">Tempo stimato: circa {Math.round(progressState.etc_seconds)} secondi</div>
             )}
           </div>
         )}
 
-
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <label className="block text-xs font-semibold uppercase text-slate-500">Scenario Gold Standard</label>
-            <select
-              value={selectedScenario}
-              onChange={(e) => setSelectedScenario(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-sm text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
-            >
-              {scenarios.map((s) => (
-                <option key={s.key} value={s.key}>
-                  {s.title}
-                </option>
-              ))}
+            <label htmlFor="bm-scenario" className={labelCls}>Scenario di riferimento</label>
+            <select id="bm-scenario" value={selectedScenario} onChange={(e) => setSelectedScenario(e.target.value)} className={selectCls}>
+              {scenarios.map((s) => <option key={s.key} value={s.key}>{s.title}</option>)}
             </select>
           </div>
-
           <div>
-            <label className="block text-xs font-semibold uppercase text-slate-500">Provider IA</label>
-            <select
-              value={selectedProvider}
-              onChange={(e) => setSelectedProvider(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-sm text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
-            >
-              <option value="ollama">Ollama (Remoto/Locale)</option>
+            <label htmlFor="bm-provider" className={labelCls}>Fornitore IA</label>
+            <select id="bm-provider" value={selectedProvider} onChange={(e) => setSelectedProvider(e.target.value)} className={selectCls}>
+              <option value="ollama">Ollama (remoto o locale)</option>
               <option value="google">Google Gemini</option>
               <option value="openai">OpenAI</option>
               <option value="groq">Groq</option>
               <option value="openrouter">OpenRouter</option>
             </select>
           </div>
-
           <div>
-            <label className="block text-xs font-semibold uppercase text-slate-500">Modello da Valutare</label>
+            <label htmlFor="bm-model" className={labelCls}>Modello da valutare</label>
             {selectedProvider === 'ollama' ? (
-              <select
-                value={selectedModel}
-                onChange={(e) => setSelectedModel(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-sm text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
-              >
-                {ollamaModels.map((m) => (
-                  <option key={m} value={m}>
-                    {m}
-                  </option>
-                ))}
+              <select id="bm-model" value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)} className={selectCls}>
+                {ollamaModels.map((m) => <option key={m} value={m}>{m}</option>)}
               </select>
             ) : (
-              <input
-                type="text"
-                value={selectedModel}
-                onChange={(e) => setSelectedModel(e.target.value)}
-                placeholder="es. gemini-2.0-flash"
-                className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-sm text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
-              />
+              <input id="bm-model" type="text" value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)} placeholder="es. gemini-2.0-flash" className={selectCls} />
             )}
           </div>
-
           <div>
-            <label className="block text-xs font-semibold uppercase text-slate-500">Temperatura: {temperature}</label>
-            <input
-              type="range"
-              min="0.0"
-              max="1.0"
-              step="0.05"
-              value={temperature}
-              onChange={(e) => setTemperature(parseFloat(e.target.value))}
-              className="mt-3 w-full accent-blue-600"
-            />
+            <label htmlFor="bm-temp" className={labelCls}>Temperatura: {temperature}</label>
+            <input id="bm-temp" type="range" min="0.0" max="1.0" step="0.05" value={temperature} onChange={(e) => setTemperature(parseFloat(e.target.value))} className="mt-3 w-full accent-orange-600" />
           </div>
         </div>
 
-        <div className="mt-4 flex justify-end">
-          <button
-            onClick={handleRunBenchmark}
-            disabled={running}
-            className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 text-sm font-bold text-white shadow-md hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50"
-          >
-            {running ? '🚀 Esecuzione Benchmark in corso...' : '🚀 Avvia Test Benchmark'}
+        <div className="mt-5 flex justify-end">
+          <button onClick={handleRunBenchmark} disabled={running} className="primary-button">
+            {running ? 'Test in corso…' : 'Avvia il test'}
           </button>
         </div>
-      </div>
+      </section>
 
-
-      {/* Automated Benchmark Results Table */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Risultati Sperimentali Quantitativi</h2>
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-600 dark:text-slate-300">
-            <thead className="border-b border-slate-100 bg-slate-50 text-xs font-semibold uppercase text-slate-500 dark:border-slate-800 dark:bg-slate-950">
-              <tr>
-                <th className="px-4 py-3">Scenario</th>
-                <th className="px-4 py-3">Provider</th>
-                <th className="px-4 py-3">Modello</th>
-                <th className="px-4 py-3">3NF Score</th>
-                <th className="px-4 py-3">Rel F1</th>
-                <th className="px-4 py-3">Cell Precision</th>
-                <th className="px-4 py-3">Latenza</th>
+      <section className="glass py-2" aria-labelledby="res-title">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-5 pb-2 pt-4">
+          <h2 id="res-title" className="text-lg font-bold">Risultati sperimentali</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[680px] text-left text-sm">
+            <thead>
+              <tr className="text-xs uppercase tracking-wide text-tecnia-muted">
+                <th className="px-5 py-2 font-semibold">Scenario</th>
+                <th className="px-3 py-2 font-semibold">Fornitore</th>
+                <th className="px-3 py-2 font-semibold">Modello</th>
+                <th className="px-3 py-2 font-semibold">Schema 3NF</th>
+                <th className="px-3 py-2 font-semibold">Relazioni (F1)</th>
+                <th className="px-3 py-2 font-semibold">Precisione dati</th>
+                <th className="px-5 py-2 font-semibold">Tempo</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {resultsData.results.map((r) => (
-                <tr key={r.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50">
-                  <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">{r.scenario}</td>
-                  <td className="px-4 py-3">{r.provider}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-blue-600 dark:text-blue-400">{r.model}</td>
-                  <td className="px-4 py-3">
-                    <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-bold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-                      {r.norm3_score}%
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 font-bold">{r.relationship_f1}</td>
-                  <td className="px-4 py-3">{r.cell_precision}</td>
-                  <td className="px-4 py-3 text-xs text-slate-400">{r.latency_seconds}s</td>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.id} className="border-t border-tecnia-line/40">
+                  <td className="px-5 py-3 font-headline font-bold">{r.scenario}</td>
+                  <td className="px-3 py-3">{r.provider}</td>
+                  <td className="px-3 py-3 font-mono text-xs text-tecnia-primary">{r.model}</td>
+                  <td className="px-3 py-3"><span className="tag text-tecnia-ok">{r.norm3_score}%</span></td>
+                  <td className="px-3 py-3 font-semibold">{r.relationship_f1}</td>
+                  <td className="px-3 py-3">{r.cell_precision}</td>
+                  <td className="px-5 py-3 text-xs text-tecnia-muted">{r.latency_seconds}s</td>
                 </tr>
               ))}
-
-              {!resultsData.results.length && (
-                <tr>
-                  <td colSpan={7} className="px-4 py-6 text-center text-xs text-slate-400">
-                    Nessun risultato di benchmark registrato. Clicca su "Esegui Test Benchmark" per iniziare.
-                  </td>
-                </tr>
+              {!rows.length && (
+                <tr><td colSpan={7} className="px-5 py-8 text-center text-sm text-tecnia-muted">Nessuna esecuzione registrata. Avvia il primo test qui sopra: nessun numero compare senza un'esecuzione alle spalle.</td></tr>
               )}
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
 
-      {/* Human Expert Evaluation & Vote Form */}
-      <div className="rounded-2xl border border-indigo-100 bg-indigo-50/40 p-6 dark:border-indigo-950 dark:bg-indigo-950/20">
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white">⭐ Valutazione Soggettiva dell'Utente / Esperto</h2>
-        <p className="mt-1 text-xs text-slate-500">
-          Valuta la qualità della generazione degli schemi e dei dati in scala Likert (1-5) come previsto dal protocollo di ricerca del paper.
+      <section className="glass p-6" aria-labelledby="vote-title">
+        <h2 id="vote-title" className="text-lg font-bold">Valutazione dell'esperto</h2>
+        <p className="mt-1 text-sm text-tecnia-muted dark:text-slate-400">
+          Dai un giudizio da 1 a 5 sulla qualità di schema e dati, come previsto dal protocollo di ricerca.
         </p>
-
-        {voteSuccess && (
-          <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-100/80 p-3 text-xs font-bold text-emerald-800">
-            ✓ {voteSuccess}
-          </div>
-        )}
-
+        {voteSuccess && <div role="status" className="mt-4 rounded-xl border border-green-200 bg-green-50 p-3 text-sm font-semibold text-tecnia-ok">{voteSuccess}</div>}
         <form onSubmit={handleVoteSubmit} className="mt-5 space-y-4">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                Qualità Schema Relazionale (1 = Scarso, 5 = Eccellente 3NF): {schemaRating}/5
-              </label>
-              <input
-                type="range"
-                min="1"
-                max="5"
-                value={schemaRating}
-                onChange={(e) => setSchemaRating(parseInt(e.target.value))}
-                className="mt-2 w-full accent-indigo-600"
-              />
+              <label htmlFor="bm-schema" className={labelCls}>Schema relazionale (1 scarso, 5 eccellente): {schemaRating}/5</label>
+              <input id="bm-schema" type="range" min="1" max="5" value={schemaRating} onChange={(e) => setSchemaRating(parseInt(e.target.value))} className="mt-2 w-full accent-orange-600" />
             </div>
-
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                Accuratezza Popolamento Dati (1 = Molti Errori, 5 = Perfetta Coerenza FK): {dataRating}/5
-              </label>
-              <input
-                type="range"
-                min="1"
-                max="5"
-                value={dataRating}
-                onChange={(e) => setDataRating(parseInt(e.target.value))}
-                className="mt-2 w-full accent-purple-600"
-              />
+              <label htmlFor="bm-data" className={labelCls}>Accuratezza dei dati (1 molti errori, 5 coerenza perfetta): {dataRating}/5</label>
+              <input id="bm-data" type="range" min="1" max="5" value={dataRating} onChange={(e) => setDataRating(parseInt(e.target.value))} className="mt-2 w-full accent-fuchsia-700" />
             </div>
           </div>
-
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Note & Commenti Qualitativi dell'Esperto
-            </label>
-            <textarea
-              rows={2}
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Inserisci eventuali considerazioni sulla completezza delle chiavi esterne o correttezza semantica..."
-              className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-white"
-            />
+            <label htmlFor="bm-comment" className={labelCls}>Note e commenti</label>
+            <textarea id="bm-comment" rows={2} value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Annota completezza delle chiavi esterne, correttezza semantica, dubbi…" className="field mt-1" />
           </div>
-
           <div className="flex justify-end">
-            <button
-              type="submit"
-              disabled={voting}
-              className="rounded-xl bg-indigo-600 px-5 py-2 text-sm font-bold text-white shadow hover:bg-indigo-700 disabled:opacity-50"
-            >
-              {voting ? 'Salvataggio Voto...' : 'Registra Voto Esperto'}
-            </button>
+            <button type="submit" disabled={voting} className="primary-button">{voting ? 'Salvataggio…' : 'Registra il voto'}</button>
           </div>
         </form>
-      </div>
+      </section>
     </div>
   )
 }
