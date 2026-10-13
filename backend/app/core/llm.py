@@ -9,6 +9,9 @@ from app.utils.logger import log
 import asyncio
 import time
 import re
+import json
+import threading
+from collections import OrderedDict
 from app.utils.research import sha256_text
 
 
@@ -51,10 +54,85 @@ _llm_rate_limiter = AsyncRateLimiter(
 )
 
 
-async def _invoke(chain, payload: dict):
-    """Await the shared rate limit, then run a LangChain runnable."""
+class _ResponseCache:
+    """Cache LRU in memoria per risposte deterministiche (temperatura 0)."""
+
+    def __init__(self, max_entries: int = 256):
+        self.max_entries = max_entries
+        self._data: "OrderedDict[str, object]" = OrderedDict()
+        self._lock = threading.Lock()
+
+    def get(self, key: str):
+        with self._lock:
+            if key in self._data:
+                self._data.move_to_end(key)
+                return self._data[key]
+        return None
+
+    def put(self, key: str, value) -> None:
+        with self._lock:
+            self._data[key] = value
+            self._data.move_to_end(key)
+            while len(self._data) > self.max_entries:
+                self._data.popitem(last=False)
+
+    def clear(self) -> None:
+        with self._lock:
+            self._data.clear()
+
+
+_response_cache = _ResponseCache(settings.llm_cache_max_entries)
+
+
+def _cache_key(chain, payload: dict) -> str:
+    info = get_llm_info()
+    raw = json.dumps(
+        {"p": info["provider"], "m": info["model"], "c": repr(chain), "x": payload},
+        sort_keys=True, default=str,
+    )
+    return sha256_text(raw)
+
+
+def _log_usage(result) -> None:
+    usage = getattr(result, "usage_metadata", None)
+    if usage:
+        log.info(
+            f"LLM usage in={usage.get('input_tokens')} out={usage.get('output_tokens')}"
+        )
+
+
+async def _invoke(chain, payload: dict, cacheable: bool = False):
+    """Await the shared rate limit, then run a LangChain runnable.
+
+    When ``cacheable`` is true (deterministic, temperature-0 calls) and
+    ``settings.llm_cache_enabled`` is on, identical requests are answered from
+    an in-memory cache instead of paying for a second model call.
+    """
+    use_cache = cacheable and settings.llm_cache_enabled
+    key = _cache_key(chain, payload) if use_cache else None
+    if key is not None:
+        hit = _response_cache.get(key)
+        if hit is not None:
+            log.info("LLM cache hit")
+            return hit
     await _llm_rate_limiter.acquire()
-    return await chain.ainvoke(payload)
+    result = await chain.ainvoke(payload)
+    _log_usage(result)
+    if key is not None:
+        _response_cache.put(key, result)
+    return result
+
+
+def _vertex_credentials():
+    """Service account da JSON in env; None = Application Default Credentials."""
+    raw = (settings.vertex_credentials_json or "").strip()
+    if not raw:
+        return None
+    from google.oauth2 import service_account
+    info = json.loads(raw)
+    return service_account.Credentials.from_service_account_info(
+        info, scopes=["https://www.googleapis.com/auth/cloud-platform"]
+    )
 
 
 def _get_llm(temperature: float = 0.1, force_local: bool = False):
@@ -71,6 +149,23 @@ def _get_llm(temperature: float = 0.1, force_local: bool = False):
             kwargs["headers"] = {"Authorization": f"Bearer {settings.ollama_api_key}"}
         return ChatOllama(**kwargs)
 
+
+    if provider == "vertex":
+        from langchain_google_vertexai import ChatVertexAI
+        kwargs = {
+            "model_name": settings.vertex_model,
+            "location": settings.vertex_location,
+            "temperature": temperature,
+            "max_output_tokens": settings.vertex_max_output_tokens,
+        }
+        if settings.vertex_project:
+            kwargs["project"] = settings.vertex_project
+        creds = _vertex_credentials()
+        if creds is not None:
+            kwargs["credentials"] = creds
+            if not settings.vertex_project:
+                kwargs["project"] = creds.project_id
+        return ChatVertexAI(**kwargs)
 
     if provider == "groq":
         return ChatOpenAI(
@@ -163,7 +258,7 @@ async def generate_data_for_table(table_def, text_content: str) -> list[dict]:
     try:
         llm = _get_llm(temperature=0.0)
         chain = prompt | llm | JsonOutputParser()
-        result = await _invoke(chain, {
+        result = await _invoke(chain, cacheable=True, payload={
             "table_name": table_def.name,
             "columns": "\n".join(f"- {c.name} ({c.data_type}){' PK' if c.is_primary_key else ''}{' FK → '+c.foreign_key_table+'.'+c.foreign_key_column if c.is_foreign_key else ''}" for c in table_def.columns),
             "document_text": text_content[:20000],
@@ -221,7 +316,7 @@ async def map_columns_to_tables(headers: list[str], sample_rows: list[list], sch
     try:
         llm = _get_llm(temperature=0.0)
         chain = prompt | llm | JsonOutputParser()
-        result = await _invoke(chain, {
+        result = await _invoke(chain, cacheable=True, payload={
             "tables": "\n".join(tables_desc),
             "relationships": "\n".join(rels_desc) if rels_desc else "none",
             "headers": " | ".join(f"[{i}] {h}" for i, h in enumerate(headers)),
@@ -241,7 +336,7 @@ async def generate_query(prompt: str, schema: str, dialect: str = "sqlite") -> Q
     try:
         llm = _get_llm(temperature=0.0)
         chain = QUERY_PROMPT | llm
-        result = await _invoke(chain, {
+        result = await _invoke(chain, cacheable=True, payload={
             "prompt": prompt,
             "schema": schema,
             "dialect": dialect,
@@ -263,6 +358,7 @@ _PROVIDER_LABELS = {
     "groq": "Groq",
     "openrouter": "OpenRouter",
     "google": "Google Gemini",
+    "vertex": "Google Vertex AI",
     "ollama": "Ollama",
 }
 
@@ -279,6 +375,7 @@ def get_llm_info():
             "groq": settings.groq_model,
             "openrouter": settings.openrouter_model,
             "google": settings.google_model,
+            "vertex": settings.vertex_model,
         }
         model = models.get(provider, settings.openai_model)
 

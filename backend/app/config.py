@@ -16,6 +16,16 @@ class Settings(BaseSettings):
     google_api_key: str = ""
     google_model: str = "gemini-2.0-flash"
 
+    # Vertex AI (Google Cloud). Pensato per il costo minimo: modello "lite",
+    # tetto ai token di output e regione UE. Le credenziali arrivano da un
+    # service account (JSON in variabile d'ambiente) oppure da ADC/Workload
+    # Identity quando l'app gira su Google Cloud.
+    vertex_project: str = ""
+    vertex_location: str = "europe-west4"
+    vertex_model: str = "gemini-2.5-flash-lite"
+    vertex_credentials_json: str = ""
+    vertex_max_output_tokens: int = 2048
+
     ollama_mode: str = "remote"  # "remote" vs "local"
     ollama_base_url: str = "https://ollamaapi-u11fj34m2h9druz26hamz3xb.89.168.29.98.sslip.io"
     ollama_api_key: str = ""
@@ -37,6 +47,11 @@ class Settings(BaseSettings):
     keycloak_admin_user: str = "admin"
     keycloak_admin_password: str = ""
     enable_auth: bool = True
+    # URL pubblico dell'app (es. https://app.tecniaweb.it): usato per limitare
+    # redirect URI e web origins del client Keycloak. Vuoto = nessuna restrizione.
+    app_public_url: str = ""
+    keycloak_allow_registration: bool = True
+    keycloak_login_theme: str = ""
 
     host: str = "0.0.0.0"
     port: int = 8000
@@ -54,6 +69,10 @@ class Settings(BaseSettings):
     llm_temperature: float = 0.1
     llm_top_p: float = 0.95
     llm_max_tokens: int = 4096
+    # Cache opzionale delle risposte deterministiche (temperatura 0). Spenta
+    # di default: negli esperimenti ogni run deve campionare davvero il modello.
+    llm_cache_enabled: bool = False
+    llm_cache_max_entries: int = 256
 
     class Config:
         env_file = ".env"

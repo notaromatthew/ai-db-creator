@@ -1,10 +1,10 @@
 fastapi==0.115.0
 uvicorn==0.30.6
 sqlalchemy==2.0.35
-langchain-openai==0.2.0
-langchain-ollama==0.2.0
-langchain-google-genai==2.0.0
-langchain-core==0.3.0
+langchain-openai>=0.2.0,<0.4
+langchain-ollama>=0.2.0,<0.4
+langchain-google-genai>=2.0.0,<3
+langchain-core>=0.3.30,<0.4
 pydantic==2.9.0
 pydantic-settings==2.5.0
 loguru==0.7.2
@@ -26,3 +26,6 @@ redis==5.0.7
 psycopg2-binary==2.9.9
 python-jose[cryptography]==3.3.0
 pyjwt==2.9.0
+
+# Vertex AI (provider "vertex")
+langchain-google-vertexai>=2.0.0,<3
