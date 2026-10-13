@@ -4,14 +4,17 @@ import { api } from '@/api/client'
 
 interface Overview { users: number; projects: number; ai_calls_today: number; daily_budget: number; research_mode: boolean; llm_provider: string }
 interface AdminUser { id: string; email: string | null; name: string | null; blocked: boolean; projects: number; ai_calls_total: number; daily_quota: number; custom_quota: boolean; last_seen_at: string | null }
-interface Settings { default_daily_ai_quota: number; daily_ai_budget_total: number; max_upload_mb: number; max_projects_per_user: number; registration_open: boolean; maintenance_message: string }
-interface UsageRow { day: string; kind: string; count: number }
+interface Settings { default_daily_ai_quota: number; daily_ai_budget_total: number; max_upload_mb: number; max_projects_per_user: number; registration_open: boolean; maintenance_message: string; ai_enabled?: boolean }
+type FormSettings = Omit<Settings, 'ai_enabled'>
+interface LinkItem { id: string; project_id: string; project_name: string | null; created_by: string | null; expires_at: string }
+interface UsageCount { key: string; count: number }
 interface AuditRow { actor: string | null; action: string; target: string | null; detail: Record<string, unknown> | null; at: string }
 
 const TABS = [
   { id: 'settings', label: 'Impostazioni' },
   { id: 'users', label: 'Utenti' },
   { id: 'usage', label: 'Uso e costi' },
+  { id: 'links', label: 'Link pubblici' },
   { id: 'audit', label: 'Registro modifiche' },
 ] as const
 type TabId = typeof TABS[number]['id']
@@ -20,7 +23,7 @@ const KIND_LABEL: Record<string, string> = { generate: 'Generazione schema', pop
 const ACTION_LABEL: Record<string, string> = { 'user.update': 'Modifica utente', 'settings.update': 'Modifica impostazioni' }
 const SETTING_LABEL: Record<string, string> = {
   default_daily_ai_quota: 'Quota giornaliera', daily_ai_budget_total: 'Tetto giornaliero', max_upload_mb: 'Limite upload',
-  max_projects_per_user: 'Progetti per utente', registration_open: 'Registrazione', maintenance_message: 'Avviso',
+  max_projects_per_user: 'Progetti per utente', registration_open: 'Registrazione', maintenance_message: 'Avviso', ai_enabled: 'Chiamate AI attive',
 }
 
 const fmtDateTime = (iso: string) => new Date(iso.endsWith('Z') ? iso : iso + 'Z').toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
@@ -51,18 +54,19 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: 
 function SettingsTab({ overview }: { overview?: Overview }) {
   const queryClient = useQueryClient()
   const { data } = useQuery<Settings>({ queryKey: ['admin', 'settings'], queryFn: () => api.get('/admin/settings') })
-  const [form, setForm] = useState<Settings | null>(null)
+  const [form, setForm] = useState<FormSettings | null>(null)
+  const [aiBusy, setAiBusy] = useState(false)
   const [msg, setMsg] = useState('')
   const [err, setErr] = useState('')
-  useEffect(() => { if (data) setForm(data) }, [data])
+  useEffect(() => { if (data) { const { ai_enabled: _ai, ...rest } = data; setForm(rest) } }, [data])
   if (!form || !data) return <p role="status" className="text-tecnia-muted">Sto caricando le impostazioni…</p>
 
-  const set = <K extends keyof Settings>(k: K, v: Settings[K]) => setForm({ ...form, [k]: v })
-  const num = (k: keyof Settings) => (e: React.ChangeEvent<HTMLInputElement>) => set(k, (e.target.value === '' ? 0 : Math.max(0, parseInt(e.target.value, 10) || 0)) as never)
+  const set = <K extends keyof FormSettings>(k: K, v: FormSettings[K]) => setForm({ ...form, [k]: v })
+  const num = (k: keyof FormSettings) => (e: React.ChangeEvent<HTMLInputElement>) => set(k, (e.target.value === '' ? 0 : Math.max(0, parseInt(e.target.value, 10) || 0)) as never)
 
   const save = async () => {
     setErr(''); setMsg('')
-    const changed = Object.fromEntries((Object.keys(form) as (keyof Settings)[]).filter((k) => form[k] !== data[k]).map((k) => [k, form[k]]))
+    const changed = Object.fromEntries((Object.keys(form) as (keyof FormSettings)[]).filter((k) => form[k] !== data[k]).map((k) => [k, form[k]]))
     if (!Object.keys(changed).length) { setMsg('Non c\'è nulla da salvare.'); return }
     try {
       await api.put('/admin/settings', changed)
@@ -71,11 +75,29 @@ function SettingsTab({ overview }: { overview?: Overview }) {
     } catch (e: any) { setErr(errText(e, 'Non siamo riusciti a salvare. Riprova.')) }
   }
 
+  const aiEnabled = data.ai_enabled !== false
+  const toggleAi = async (next: boolean) => {
+    const question = next
+      ? 'Riattivare le chiamate AI per tutti gli utenti?'
+      : 'Spegnere le chiamate AI per tutti gli utenti? Generazione, chat e popolamento si fermano subito, finché non le riattivi.'
+    if (!window.confirm(question)) return
+    setErr(''); setMsg(''); setAiBusy(true)
+    try {
+      await api.put('/admin/settings', { ai_enabled: next })
+      setMsg(next ? 'Chiamate AI riattivate per tutti.' : 'Chiamate AI spente per tutti.')
+      queryClient.invalidateQueries({ queryKey: ['admin'] })
+    } catch (e: any) { setErr(errText(e, 'Non siamo riusciti a cambiare l\'interruttore. Riprova.')) }
+    finally { setAiBusy(false) }
+  }
+
   const numCls = '!w-28 text-right'
   return (
     <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
       <section className="glass px-6 py-2" aria-labelledby="mod-title">
         <h2 id="mod-title" className="pb-1 pt-4 text-lg font-bold">Modificabili ora</h2>
+        <Row title="Chiamate AI attive" hint={aiEnabled ? 'Interruttore generale: se lo spegni, nessuno può usare l\'IA finché non lo riaccendi.' : 'Le chiamate AI sono spente per tutti. Gli utenti vedono un avviso.'}>
+          <span className={aiBusy ? 'opacity-50' : ''}><Toggle checked={aiEnabled} onChange={toggleAi} label="Chiamate AI attive" /></span>
+        </Row>
         <Row title="Registrazione aperta" hint="Chiudila se serve fermare nuovi iscritti."><Toggle checked={form.registration_open} onChange={(v) => set('registration_open', v)} label="Registrazione aperta" /></Row>
         <Row title="Chiamate AI al giorno per utente" hint="Superata la quota l'utente vede un messaggio chiaro." htmlFor="s-quota"><input id="s-quota" type="number" min={0} className={`field ${numCls}`} value={form.default_daily_ai_quota} onChange={num('default_daily_ai_quota')} /></Row>
         <Row title="Tetto di chiamate AI giornaliero" hint="Raggiunto il tetto, le chiamate AI si fermano fino a domani." htmlFor="s-budget"><input id="s-budget" type="number" min={0} className={`field ${numCls}`} value={form.daily_ai_budget_total} onChange={num('daily_ai_budget_total')} /></Row>
@@ -84,7 +106,7 @@ function SettingsTab({ overview }: { overview?: Overview }) {
         <Row title="Messaggio di manutenzione" hint="Mostrato in alto in tutta l'app. Vuoto = nessun avviso." htmlFor="s-msg"><input id="s-msg" type="text" maxLength={300} className="field !w-64" placeholder="Nessun avviso" value={form.maintenance_message} onChange={(e) => set('maintenance_message', e.target.value)} /></Row>
         <div className="flex flex-wrap items-center gap-4 pb-4 pt-4">
           <button type="button" onClick={save} className="primary-button">Salva le modifiche</button>
-          <span aria-live="polite" className="text-sm">{msg && <span className="font-medium text-tecnia-ok">{msg}</span>}{err && <span role="alert" className="font-medium text-red-700">{err}</span>}</span>
+          <span aria-live="polite" className="text-sm">{msg && <span className="font-medium text-tecnia-ok">{msg}</span>}{err && <span role="alert" className="font-medium text-red-700 dark:text-red-300">{err}</span>}</span>
         </div>
       </section>
       <aside className="glass px-6 py-2 self-start" aria-labelledby="cool-title">
@@ -117,7 +139,7 @@ function UsersTab() {
   return (
     <section className="glass py-2" aria-labelledby="users-title">
       <div className="px-5 pb-2 pt-4"><h2 id="users-title" className="text-lg font-bold">Utenti</h2>
-        <div aria-live="polite" className="min-h-5 text-sm">{msg && <span className="font-medium text-tecnia-ok">{msg}</span>}{err && <span role="alert" className="font-medium text-red-700">{err}</span>}</div></div>
+        <div aria-live="polite" className="min-h-5 text-sm">{msg && <span className="font-medium text-tecnia-ok">{msg}</span>}{err && <span role="alert" className="font-medium text-red-700 dark:text-red-300">{err}</span>}</div></div>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[760px] text-sm">
           <thead><tr className="text-left text-xs uppercase tracking-wide text-tecnia-muted">
@@ -129,7 +151,7 @@ function UsersTab() {
               const draft = quota[u.id]
               return (
                 <tr key={u.id} className="border-t border-tecnia-line/40 align-middle">
-                  <td className="px-5 py-3"><b className="block font-headline">{label}</b><span className="text-xs text-tecnia-muted">{u.email}</span>{u.blocked && <span className="tag ml-2 text-red-700">Sospeso</span>}</td>
+                  <td className="px-5 py-3"><b className="block font-headline">{label}</b><span className="text-xs text-tecnia-muted">{u.email}</span>{u.blocked && <span className="tag ml-2 text-red-700 dark:text-red-300">Sospeso</span>}</td>
                   <td className="px-2 py-3">{u.projects}</td>
                   <td className="px-2 py-3">{u.ai_calls_total}</td>
                   <td className="px-2 py-3">
@@ -159,15 +181,27 @@ function UsersTab() {
   )
 }
 
+function UsageList({ title, id, rows, label, loading, error }: { title: string; id: string; rows: UsageCount[]; label?: (key: string) => string; loading: boolean; error: unknown }) {
+  return (
+    <section className="glass self-start px-6 py-4" aria-labelledby={id}>
+      <h2 id={id} className="text-lg font-bold">{title}</h2>
+      {loading ? <p role="status" className="mt-3 text-tecnia-muted">Sto caricando i consumi…</p>
+        : error ? <p role="alert" className="mt-3 font-medium text-red-700 dark:text-red-300">{errText(error, 'Non riusciamo a caricare questi consumi. Riprova tra poco.')}</p>
+        : rows.length === 0 ? <p className="mt-3 text-tecnia-muted">Nessuna chiamata AI in questo periodo.</p>
+        : <ul className="mt-3 divide-y divide-tecnia-line/40">
+            {rows.map((r) => <li key={r.key} className="flex justify-between gap-3 py-2.5 text-sm"><span className="min-w-0 truncate">{label ? label(r.key) : r.key}</span><b className="font-headline">{r.count}</b></li>)}
+          </ul>}
+    </section>
+  )
+}
+
 function UsageTab() {
   const [days, setDays] = useState(14)
-  const { data, isLoading } = useQuery<UsageRow[]>({ queryKey: ['admin', 'usage', days], queryFn: () => api.get(`/admin/usage?days=${days}`) })
-  const { byDay, byKind, total, max } = useMemo(() => {
-    const d: Record<string, number> = {}; const k: Record<string, number> = {}
-    for (const r of data ?? []) { d[r.day] = (d[r.day] ?? 0) + r.count; k[r.kind] = (k[r.kind] ?? 0) + r.count }
-    const days = Object.entries(d).sort((a, b) => b[0].localeCompare(a[0]))
-    return { byDay: days, byKind: Object.entries(k).sort((a, b) => b[1] - a[1]), total: days.reduce((s, [, n]) => s + n, 0), max: Math.max(1, ...days.map(([, n]) => n)) }
-  }, [data])
+  const q = (group: 'user' | 'day' | 'kind') => useQuery<UsageCount[]>({ queryKey: ['admin', 'usage', group, days], queryFn: () => api.get(`/admin/usage?group=${group}&days=${days}`) })
+  const byDayQ = q('day'); const byKindQ = q('kind'); const byUserQ = q('user')
+  const byDay = useMemo(() => [...(byDayQ.data ?? [])].sort((a, b) => b.key.localeCompare(a.key)), [byDayQ.data])
+  const total = byDay.reduce((s, r) => s + r.count, 0)
+  const max = Math.max(1, ...byDay.map((r) => r.count))
   return (
     <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
       <section className="glass px-6 py-4" aria-labelledby="usage-title">
@@ -177,28 +211,71 @@ function UsageTab() {
             {[7, 14, 30].map((n) => <button key={n} type="button" aria-pressed={days === n} onClick={() => setDays(n)} className={`rounded-full border px-3.5 py-1.5 font-headline text-[13px] font-semibold ${days === n ? 'border-orange-500 text-tecnia-primary' : 'border-tecnia-line'}`}>{n} giorni</button>)}
           </div>
         </div>
-        {isLoading ? <p role="status" className="mt-4 text-tecnia-muted">Sto caricando i consumi…</p> : byDay.length === 0 ? (
-          <p className="mt-4 text-tecnia-muted">Nessuna chiamata AI in questo periodo.</p>
-        ) : (
+        <p className="mt-1 text-sm text-tecnia-muted">{total} chiamate negli ultimi {days} giorni.</p>
+        {byDayQ.isLoading ? <p role="status" className="mt-4 text-tecnia-muted">Sto caricando i consumi…</p>
+          : byDayQ.error ? <p role="alert" className="mt-4 font-medium text-red-700 dark:text-red-300">{errText(byDayQ.error, 'Non riusciamo a caricare i consumi. Riprova tra poco.')}</p>
+          : byDay.length === 0 ? <p className="mt-4 text-tecnia-muted">Nessuna chiamata AI in questo periodo.</p>
+          : (
           <ul className="mt-4 space-y-2">
-            {byDay.map(([day, n]) => (
-              <li key={day} className="flex items-center gap-3 text-sm">
-                <span className="w-24 flex-none text-tecnia-muted">{new Date(day).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}</span>
-                <span className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"><i className="block h-full bg-gradient-to-r from-[#ff6b00] to-[#fe3ac6]" style={{ width: `${(n / max) * 100}%` }} /></span>
-                <b className="w-10 text-right font-headline">{n}</b>
+            {byDay.map((r) => (
+              <li key={r.key} className="flex items-center gap-3 text-sm">
+                <span className="w-24 flex-none text-tecnia-muted">{new Date(r.key).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}</span>
+                <span className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"><i className="block h-full bg-gradient-to-r from-[#ff6b00] to-[#fe3ac6]" style={{ width: `${(r.count / max) * 100}%` }} /></span>
+                <b className="w-10 text-right font-headline">{r.count}</b>
               </li>
             ))}
           </ul>
         )}
       </section>
-      <aside className="glass self-start px-6 py-4" aria-labelledby="kind-title">
-        <h2 id="kind-title" className="text-lg font-bold">Per tipo di operazione</h2>
-        <p className="mt-1 text-sm text-tecnia-muted">{total} chiamate negli ultimi {days} giorni.</p>
-        <ul className="mt-3 divide-y divide-tecnia-line/40">
-          {byKind.map(([kind, n]) => <li key={kind} className="flex justify-between py-2.5 text-sm"><span>{KIND_LABEL[kind] ?? kind}</span><b className="font-headline">{n}</b></li>)}
-        </ul>
-      </aside>
+      <div className="flex flex-col gap-6">
+        <UsageList id="kind-title" title="Per tipo di operazione" rows={byKindQ.data ?? []} label={(k) => KIND_LABEL[k] ?? k} loading={byKindQ.isLoading} error={byKindQ.error} />
+        <UsageList id="user-title" title="Per utente" rows={byUserQ.data ?? []} loading={byUserQ.isLoading} error={byUserQ.error} />
+      </div>
     </div>
+  )
+}
+
+function LinksTab() {
+  const queryClient = useQueryClient()
+  const { data, isLoading, error } = useQuery<LinkItem[]>({ queryKey: ['admin', 'links'], queryFn: () => api.get('/admin/links') })
+  const [msg, setMsg] = useState('')
+  const [err, setErr] = useState('')
+  const [busy, setBusy] = useState<string | null>(null)
+
+  const revoke = async (l: LinkItem) => {
+    const name = l.project_name || l.project_id
+    if (!window.confirm(`Revocare il link pubblico del progetto “${name}”? Smette di funzionare subito.`)) return
+    setErr(''); setMsg(''); setBusy(l.id)
+    try {
+      await api.delete(`/admin/links/${l.id}`)
+      setMsg(`Link di “${name}” revocato.`)
+      queryClient.invalidateQueries({ queryKey: ['admin', 'links'] })
+    } catch (e: any) { setErr(errText(e, 'Non siamo riusciti a revocare il link. Riprova.')) }
+    finally { setBusy(null) }
+  }
+
+  return (
+    <section className="glass px-6 py-2" aria-labelledby="links-title">
+      <h2 id="links-title" className="pb-1 pt-4 text-lg font-bold">Link pubblici attivi</h2>
+      <p className="text-sm text-tecnia-muted">Link in sola lettura creati dai proprietari dei progetti. Revocandone uno smette di funzionare subito.</p>
+      <div aria-live="polite" className="min-h-5 pt-2 text-sm">{msg && <span className="font-medium text-tecnia-ok">{msg}</span>}{err && <span role="alert" className="font-medium text-red-700 dark:text-red-300">{err}</span>}</div>
+      {isLoading ? <p role="status" className="py-6 text-tecnia-muted">Sto caricando i link…</p>
+        : error ? <p role="alert" className="py-6 font-medium text-red-700 dark:text-red-300">{errText(error, 'Non riusciamo a caricare i link. Riprova tra poco.')}</p>
+        : !data?.length ? <p className="py-6 text-tecnia-muted">Nessun link pubblico attivo.</p>
+        : (
+        <ul>
+          {data.map((l) => (
+            <li key={l.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-tecnia-line/40 py-3.5 last:border-b-0">
+              <div className="min-w-0">
+                <b className="block truncate font-headline text-[15px]">{l.project_name || l.project_id}</b>
+                <span className="text-[13px] text-tecnia-muted">Creato da {l.created_by ?? 'sconosciuto'} · scade il {fmtDateTime(l.expires_at)}</span>
+              </div>
+              <button type="button" disabled={busy === l.id} onClick={() => revoke(l)} aria-label={`Revoca il link di ${l.project_name || l.project_id}`} className="secondary-button !min-h-9 !border-red-700 !px-4 !text-red-700 dark:!text-red-300">Revoca</button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   )
 }
 
@@ -267,6 +344,7 @@ export default function AdminPage(_props: { lang?: 'it' | 'en' }) {
         {tab === 'settings' && <SettingsTab overview={overview} />}
         {tab === 'users' && <UsersTab />}
         {tab === 'usage' && <UsageTab />}
+        {tab === 'links' && <LinksTab />}
         {tab === 'audit' && <AuditTab />}
       </div>
     </div>

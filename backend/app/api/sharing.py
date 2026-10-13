@@ -9,11 +9,16 @@ from app.core.acl import (
     new_token, project_owner, project_viewer, utcnow_naive,
 )
 from app.models.database import (
-    Project, ProjectInvite, ProjectLink, ProjectMember, User, get_session, init_db,
+    AdminAuditLog, Project, ProjectInvite, ProjectLink, ProjectMember, User, get_session, init_db,
 )
 from app.utils.exceptions import AppException
 
 router = APIRouter(prefix="/api")
+
+def _audit(session, access: ProjectAccess, action: str, detail: dict | None = None):
+    """Registro delle modifiche di condivisione: nel dettaglio solo id, mai email salvo quella invitata."""
+    session.add(AdminAuditLog(actor_id=access.user_id, action=action, target=access.project_id, detail=detail))
+
 
 INVITE_DAYS = 14
 LINK_DAYS = 30
@@ -77,14 +82,17 @@ def invite(project_id: str, body: InviteRequest, access: ProjectAccess = Depends
             member = session.query(ProjectMember).filter_by(project_id=project_id, user_id=existing.id).first()
             if member:
                 member.role = role
+                _audit(session, access, "share.role_change", {"user_id": existing.id, "role": role})
             else:
                 session.add(ProjectMember(project_id=project_id, user_id=existing.id, role=role,
                                           invited_by=access.user_id))
+                _audit(session, access, "share.invite", {"email": email, "role": role, "user_id": existing.id})
             session.commit()
             return {"status": "shared", "email": email, "role": role}
         token = new_token()
         session.add(ProjectInvite(project_id=project_id, email=email, role=role, token_hash=hash_token(token),
                                   invited_by=access.user_id, expires_at=utcnow_naive() + timedelta(days=INVITE_DAYS)))
+        _audit(session, access, "share.invite", {"email": email, "role": role})
         session.commit()
         return {"status": "shared", "email": email, "role": role}
     finally:
@@ -100,6 +108,7 @@ def update_member(project_id: str, user_id: str, body: RoleUpdate, access: Proje
         if member is None:
             raise AppException(detail="Membro non trovato", status_code=404)
         member.role = role
+        _audit(session, access, "share.role_change", {"user_id": user_id, "role": role})
         session.commit()
         return {"user_id": user_id, "role": role}
     finally:
@@ -114,6 +123,7 @@ def remove_member(project_id: str, user_id: str, access: ProjectAccess = Depends
         if member is None:
             raise AppException(detail="Membro non trovato", status_code=404)
         session.delete(member)
+        _audit(session, access, "share.member_remove", {"user_id": user_id})
         session.commit()
         return {"removed": user_id}
     finally:
@@ -128,6 +138,7 @@ def revoke_invite(project_id: str, invite_id: str, access: ProjectAccess = Depen
         if row is None:
             raise AppException(detail="Invito non trovato", status_code=404)
         session.delete(row)
+        _audit(session, access, "share.invite_revoke", {"invite_id": invite_id})
         session.commit()
         return {"revoked": invite_id}
     finally:
@@ -141,6 +152,7 @@ def leave_project(project_id: str, access: ProjectAccess = Depends(project_viewe
     session = get_session(init_db())
     try:
         session.query(ProjectMember).filter_by(project_id=project_id, user_id=access.user_id).delete()
+        _audit(session, access, "share.leave", {"user_id": access.user_id})
         session.commit()
         return {"left": project_id}
     finally:
@@ -154,6 +166,7 @@ def create_link(project_id: str, access: ProjectAccess = Depends(project_owner))
     try:
         session.add(ProjectLink(project_id=project_id, token_hash=hash_token(token), created_by=access.user_id,
                                 expires_at=utcnow_naive() + timedelta(days=LINK_DAYS)))
+        _audit(session, access, "link.create", {"expires_in_days": LINK_DAYS})
         session.commit()
         # Il token in chiaro si mostra una sola volta: nel database resta solo l'hash.
         return {"token": token, "path": f"/app/shared/{token}", "expires_in_days": LINK_DAYS}
@@ -169,6 +182,7 @@ def revoke_link(project_id: str, link_id: str, access: ProjectAccess = Depends(p
         if row is None:
             raise AppException(detail="Link non trovato", status_code=404)
         row.revoked_at = utcnow_naive()
+        _audit(session, access, "link.revoke", {"link_id": link_id})
         session.commit()
         return {"revoked": link_id}
     finally:

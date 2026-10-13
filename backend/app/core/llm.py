@@ -151,6 +151,9 @@ def _get_llm(temperature: float = 0.1, force_local: bool = False):
 
 
     if provider == "vertex":
+        from app.core.gateway import gateway_enabled, GatewayChatModel
+        if gateway_enabled():
+            return GatewayChatModel(temperature=temperature)
         from langchain_google_vertexai import ChatVertexAI
         kwargs = {
             "model_name": settings.vertex_model,

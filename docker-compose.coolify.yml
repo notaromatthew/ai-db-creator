@@ -1,4 +1,29 @@
+# Produzione su Coolify. Nessun Ollama, nessuna GOOGLE_API_KEY, nessuna chiave Vertex:
+# l'AI passa dal gateway su Cloud Run (LLM_GATEWAY_URL). Ollama resta solo in docker-compose.yml (sviluppo).
+# Postgres NON e' in questo file: e' una risorsa Coolify a parte (volume persistente + backup: docs/ops/backup.md).
 version: '3.8'
+
+x-app-env: &app-env
+  DATABASE_URL: ${DATABASE_URL}
+  REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+  KEYCLOAK_URL: ${KEYCLOAK_URL:-https://keycloak-pw9ut4s1h3aodstrsw1gd84o.89.168.29.98.sslip.io}
+  KEYCLOAK_REALM: ${KEYCLOAK_REALM:-aidbcreator}
+  KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-aidbcreator-app}
+  KEYCLOAK_ADMIN_USER: ${KEYCLOAK_ADMIN_USER}
+  KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+  LLM_PROVIDER: ${LLM_PROVIDER:-vertex}
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  # Modalita' ricerca: true = strumenti di studio accesi, false = solo il prodotto
+  RESEARCH_MODE: ${RESEARCH_MODE:-false}
+  # URL pubblico dell'app (senza slash finale): da' il redirect URI Keycloak <APP_PUBLIC_URL>/* (copre /app). docs/ops/dominio-https.md
+  APP_PUBLIC_URL: ${APP_PUBLIC_URL:-}
+  ADMIN_ROLE: ${ADMIN_ROLE:-aidb-admin}
+  DEFAULT_DAILY_AI_QUOTA: ${DEFAULT_DAILY_AI_QUOTA:-20}
+  DAILY_AI_BUDGET_TOTAL: ${DAILY_AI_BUDGET_TOTAL:-500}
+  # Gateway Cloud Run (infra/gcp): output gateway_url; la chiave del chiamante sta nei secrets di Coolify
+  LLM_GATEWAY_URL: ${LLM_GATEWAY_URL:-}
+  GATEWAY_CALLER_CREDENTIALS_JSON: ${GATEWAY_CALLER_CREDENTIALS_JSON:-}
+  VERTEX_MODEL: ${VERTEX_MODEL:-gemini-2.5-flash-lite}
 
 services:
   app:
@@ -7,34 +32,50 @@ services:
       dockerfile: Dockerfile
     expose:
       - "8000"
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - KEYCLOAK_URL=${KEYCLOAK_URL:-https://keycloak-pw9ut4s1h3aodstrsw1gd84o.89.168.29.98.sslip.io}
-      - KEYCLOAK_REALM=${KEYCLOAK_REALM:-aidbcreator}
-      - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID:-aidbcreator-app}
-      - KEYCLOAK_ADMIN_USER=${KEYCLOAK_ADMIN_USER}
-      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
-      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-https://ollamaapi-u11fj34m2h9druz26hamz3xb.89.168.29.98.sslip.io}
-
-      - OLLAMA_API_KEY=${OLLAMA_API_KEY}
-      - OLLAMA_MODE=${OLLAMA_MODE:-remote}
-      - LLM_PROVIDER=${LLM_PROVIDER:-ollama}
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      # Modalita' ricerca: true = strumenti di studio accesi, false = solo il prodotto
-      - RESEARCH_MODE=${RESEARCH_MODE:-false}
-      - APP_PUBLIC_URL=${APP_PUBLIC_URL:-}
-      - ADMIN_ROLE=${ADMIN_ROLE:-aidb-admin}
-      - DEFAULT_DAILY_AI_QUOTA=${DEFAULT_DAILY_AI_QUOTA:-20}
-      - DAILY_AI_BUDGET_TOTAL=${DAILY_AI_BUDGET_TOTAL:-500}
-      # Vertex AI tramite il gateway su Cloud Run (vedi infra/gcp)
-      - VERTEX_PROJECT=${VERTEX_PROJECT:-}
-      - VERTEX_LOCATION=${VERTEX_LOCATION:-europe-west4}
-      - VERTEX_MODEL=${VERTEX_MODEL:-gemini-2.5-flash-lite}
-      - VERTEX_CREDENTIALS_JSON=${VERTEX_CREDENTIALS_JSON:-}
+    environment: *app-env
+    depends_on:
+      redis:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/ready"]
       interval: 15s
       timeout: 5s
       retries: 3
+      start_period: 40s
     restart: always
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["celery", "-A", "app.tasks", "worker", "--loglevel=info"]
+    environment: *app-env
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A app.tasks inspect ping -t 5 >/dev/null 2>&1 || exit 1"]
+      interval: 60s
+      timeout: 15s
+      retries: 3
+      start_period: 60s
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    # Password obbligatoria (REDIS_PASSWORD: stringa esadecimale, openssl rand -hex 24). Nessuna porta pubblicata.
+    command: ["sh", "-c", "exec redis-server --requirepass \"$$REDIS_PASSWORD\" --appendonly yes"]
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?imposta REDIS_PASSWORD nei secrets di Coolify}
+      REDISCLI_AUTH: ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: always
+
+volumes:
+  redis_data:

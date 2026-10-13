@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { api } from '@/api/client'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { Document as ProjectDocument } from '@/types'
@@ -12,6 +12,25 @@ interface Props {
 
 const ACCEPTED_EXTENSIONS = ['pdf', 'xls', 'xlsx', 'txt', 'csv', 'sql']
 const MAX_FILE_SIZE = 25 * 1024 * 1024
+const MAX_RETRIES = 3
+/** Attese prima di ogni nuovo tentativo automatico (backoff). */
+export const RETRY_DELAYS_MS = [1000, 2000, 4000]
+
+type ItemStatus = 'queued' | 'uploading' | 'waiting' | 'done' | 'error'
+interface QueueItem { id: number; file: File; status: ItemStatus; attempt: number; error?: string }
+
+const STATUS_LABEL: Record<ItemStatus, string> = {
+  queued: 'In coda', uploading: 'In corso', waiting: 'Nuovo tentativo a breve', done: 'Caricato', error: 'Errore',
+}
+const STATUS_ICON: Record<ItemStatus, string> = {
+  queued: 'schedule', uploading: 'sync', waiting: 'replay', done: 'check_circle', error: 'error',
+}
+/** Ritentabili: rete assente (0), tempo scaduto, troppe richieste, errori del server. */
+const isRetryable = (e: unknown) => {
+  const status = (e as { status?: number } | null)?.status
+  return status === 0 || status === 408 || status === 429 || (typeof status === 'number' && status >= 500)
+}
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 function formatSize(bytes: number) {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`
@@ -19,13 +38,19 @@ function formatSize(bytes: number) {
 }
 
 export default function DocumentUploader({ projectId, onUpload, readOnly = false }: Props) {
-  const [file, setFile] = useState<File | null>(null)
-  const [uploading, setUploading] = useState(false)
+  const [items, setItems] = useState<QueueItem[]>([])
   const [dragging, setDragging] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
+  const nextId = useRef(1)
+  const alive = useRef(true)
+  const running = useRef(false)
   const queryClient = useQueryClient()
+  const uploading = items.some((i) => i.status === 'uploading' || i.status === 'waiting')
+  const pending = items.filter((i) => i.status === 'queued')
+
+  useEffect(() => () => { alive.current = false }, [])
 
   const { data: documents = [] } = useQuery<ProjectDocument[]>({
     queryKey: ['documents', projectId],
@@ -33,70 +58,96 @@ export default function DocumentUploader({ projectId, onUpload, readOnly = false
     enabled: !!projectId,
   })
 
-  const selectFile = (nextFile?: File) => {
+  const patch = (id: number, change: Partial<QueueItem>) =>
+    alive.current && setItems((list) => list.map((i) => (i.id === id ? { ...i, ...change } : i)))
+
+  const selectFiles = (picked?: FileList | File[] | null) => {
     setError('')
     setSuccess('')
-    if (!nextFile) {
-      setFile(null)
-      return
+    const list = Array.from(picked ?? [])
+    if (!list.length) return
+    const accepted: QueueItem[] = []
+    const problems: string[] = []
+    for (const f of list) {
+      const extension = f.name.split('.').pop()?.toLowerCase() || ''
+      if (!ACCEPTED_EXTENSIONS.includes(extension)) problems.push('Formato non supportato. Usa PDF, Excel, CSV, TXT o SQL.')
+      else if (f.size > MAX_FILE_SIZE) problems.push('Il file supera il limite di 25 MB.')
+      else accepted.push({ id: nextId.current++, file: f, status: 'queued', attempt: 0 })
     }
-    const extension = nextFile.name.split('.').pop()?.toLowerCase() || ''
-    if (!ACCEPTED_EXTENSIONS.includes(extension)) {
-      setFile(null)
-      setError('Formato non supportato. Usa PDF, Excel, CSV, TXT o SQL.')
-      return
-    }
-    if (nextFile.size > MAX_FILE_SIZE) {
-      setFile(null)
-      setError('Il file supera il limite di 25 MB.')
-      return
-    }
-    setFile(nextFile)
+    // i file gia' caricati dell'elenco precedente si tolgono: restano in "File disponibili"
+    setItems((current) => [...current.filter((i) => i.status !== 'done'), ...accepted])
+    if (problems.length) setError(problems[0])
   }
+
+  const removeItem = (id: number) => setItems((list) => list.filter((i) => i.id !== id))
 
   const refreshDocuments = async () => {
     await queryClient.invalidateQueries({ queryKey: ['documents', projectId] })
     onUpload()
   }
 
-  const handleUpload = async () => {
-    if (!file) return
-    const uploadedName = file.name
-    setUploading(true)
-    setError('')
-    setSuccess('')
+  /** Carica un solo file: ogni file si salva appena arriva, quindi un'interruzione perde solo quello in corso. */
+  const uploadOne = async (item: QueueItem) => {
+    const uploadedName = item.file.name
     let baselineIds = new Set(documents.map((document) => document.id))
+    patch(item.id, { status: 'uploading', attempt: 0, error: undefined })
     try {
       const baseline: ProjectDocument[] = await api.get(`/projects/${projectId}/documents`)
       baselineIds = new Set(baseline.map((document) => document.id))
-      await api.postFile(`/projects/${projectId}/documents`, file)
-      await refreshDocuments()
-      setSuccess(`“${uploadedName}” è pronto per essere usato.`)
-      setFile(null)
-      if (inputRef.current) inputRef.current.value = ''
-    } catch (uploadError: any) {
-      // Un file Excel può terminare l'elaborazione sul server dopo che il browser
-      // ha perso la risposta. Verifichiamo lo stato reale prima di mostrare errore.
+    } catch { /* si prosegue con l'elenco gia' noto */ }
+
+    for (let attempt = 0; ; attempt++) {
       try {
-        const latest: ProjectDocument[] = await api.get(`/projects/${projectId}/documents`)
-        const isActuallyUploaded = latest.some(
-          (document) => !baselineIds.has(document.id) && document.filename === uploadedName,
-        )
-        if (isActuallyUploaded) {
-          await refreshDocuments()
-          setSuccess(`“${uploadedName}” è stato caricato correttamente.`)
-          setFile(null)
-          if (inputRef.current) inputRef.current.value = ''
-          return
+        await api.postFile(`/projects/${projectId}/documents`, item.file)
+        await refreshDocuments()
+        if (alive.current) { setSuccess(`“${uploadedName}” è pronto per essere usato.`); patch(item.id, { status: 'done' }) }
+        return
+      } catch (uploadError: any) {
+        // Un file Excel può terminare l'elaborazione sul server dopo che il browser
+        // ha perso la risposta. Verifichiamo lo stato reale prima di mostrare errore.
+        try {
+          const latest: ProjectDocument[] = await api.get(`/projects/${projectId}/documents`)
+          const isActuallyUploaded = latest.some(
+            (document) => !baselineIds.has(document.id) && document.filename === uploadedName,
+          )
+          if (isActuallyUploaded) {
+            await refreshDocuments()
+            if (alive.current) { setSuccess(`“${uploadedName}” è stato caricato correttamente.`); patch(item.id, { status: 'done' }) }
+            return
+          }
+        } catch {
+          // Mantiene il messaggio originale se anche la verifica non è disponibile.
         }
-      } catch {
-        // Mantiene il messaggio originale se anche la verifica non è disponibile.
+        if (attempt < MAX_RETRIES && isRetryable(uploadError) && alive.current) {
+          patch(item.id, { status: 'waiting', attempt: attempt + 1 })
+          await sleep(RETRY_DELAYS_MS[attempt] ?? 4000)
+          if (!alive.current) return
+          patch(item.id, { status: 'uploading' })
+          continue
+        }
+        const message = uploadError?.message || 'Non è stato possibile caricare il file. Riprova.'
+        patch(item.id, { status: 'error', error: message })
+        if (alive.current) setError(`${uploadedName}: ${message}`)
+        return
       }
-      setError(uploadError?.message || 'Non è stato possibile caricare il file. Riprova.')
-    } finally {
-      setUploading(false)
     }
   }
+
+  const runQueue = async (list: QueueItem[]) => {
+    if (running.current) return
+    running.current = true
+    setError('')
+    setSuccess('')
+    try {
+      for (const item of list) await uploadOne(item)
+    } finally {
+      running.current = false
+      if (inputRef.current) inputRef.current.value = ''
+    }
+  }
+
+  const handleUpload = () => runQueue(pending)
+  const retryItem = (item: QueueItem) => runQueue([item])
 
   const handleDelete = async (document: ProjectDocument) => {
     if (!window.confirm(`Rimuovere “${document.filename}”?`)) return
@@ -114,7 +165,7 @@ export default function DocumentUploader({ projectId, onUpload, readOnly = false
       <div className="border-b border-slate-100 px-4 py-4 sm:px-6 dark:border-slate-800">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="mb-1 text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Documenti di partenza</p>
+            <p className="mb-1 text-xs font-bold uppercase tracking-wider text-tecnia-primary">Documenti di partenza</p>
             <h2 id="documents-title" className="text-lg font-bold">I tuoi file</h2>
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">L'IA li userà per capire struttura e contenuti del database.</p>
           </div>
@@ -134,13 +185,14 @@ export default function DocumentUploader({ projectId, onUpload, readOnly = false
           className={`rounded-3xl border-2 border-dashed p-6 text-center transition sm:p-10 ${dragging ? 'border-orange-500 bg-orange-500/10' : 'border-orange-500 bg-orange-500/5'}`}
           onDragOver={(event) => { event.preventDefault(); setDragging(true) }}
           onDragLeave={() => setDragging(false)}
-          onDrop={(event) => { event.preventDefault(); setDragging(false); selectFile(event.dataTransfer.files[0]) }}
+          onDrop={(event) => { event.preventDefault(); setDragging(false); selectFiles(event.dataTransfer.files) }}
         >
           <input
             ref={inputRef}
             type="file"
+            multiple
             accept=".pdf,.xls,.xlsx,.txt,.csv,.sql"
-            onChange={(event) => selectFile(event.target.files?.[0])}
+            onChange={(event) => selectFiles(event.target.files)}
             className="sr-only"
             id="document-file"
           />
@@ -152,18 +204,32 @@ export default function DocumentUploader({ projectId, onUpload, readOnly = false
         </div>
         )}
 
-        {file && (
-          <div className="mt-4 flex flex-col gap-3 rounded-xl border border-blue-200 bg-blue-50 p-3 sm:flex-row sm:items-center dark:border-blue-800 dark:bg-blue-950/30">
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-slate-800 dark:text-slate-100">{file.name}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">{formatSize(file.size)} · pronto per il caricamento</p>
-            </div>
-            <div className="flex gap-2">
-              <button type="button" onClick={() => selectFile()} disabled={uploading} className="secondary-button min-h-10 px-3">Annulla</button>
-              <button type="button" onClick={handleUpload} disabled={uploading} className="primary-button min-h-10 px-4">
-                {uploading ? 'Caricamento…' : 'Carica file'}
-              </button>
-            </div>
+        {items.length > 0 && (
+          <div className="mt-4 rounded-xl border border-orange-200 bg-orange-50/60 p-3 dark:border-orange-900 dark:bg-orange-950/20">
+            <ul className="divide-y divide-tecnia-line/40" aria-label="File da caricare">
+              {items.map((item) => (
+                <li key={item.id} className="flex flex-wrap items-center gap-3 py-2" data-status={item.status}>
+                  <span className={`material-symbols-outlined text-[20px] ${item.status === 'done' ? 'text-tecnia-ok' : item.status === 'error' ? 'text-red-700 dark:text-red-300' : 'text-tecnia-primary'} ${item.status === 'uploading' ? 'animate-spin' : ''}`} aria-hidden="true">{STATUS_ICON[item.status]}</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold">{item.file.name}</p>
+                    <p className="text-xs text-tecnia-muted">
+                      {formatSize(item.file.size)} · {STATUS_LABEL[item.status]}
+                      {item.status === 'waiting' && ` (${item.attempt} di ${MAX_RETRIES})`}
+                      {item.status === 'error' && item.error ? ` · ${item.error}` : ''}
+                    </p>
+                  </div>
+                  {item.status === 'error' && <button type="button" onClick={() => retryItem(item)} disabled={uploading} className="secondary-button !min-h-9 !px-3" aria-label={`Riprova a caricare ${item.file.name}`}>Riprova</button>}
+                  {(item.status === 'queued' || item.status === 'error') && <button type="button" onClick={() => removeItem(item.id)} className="rounded-lg p-2 text-tecnia-muted hover:bg-orange-50 dark:hover:bg-slate-800" aria-label={`Togli ${item.file.name} dall'elenco`}><span className="material-symbols-outlined text-[18px]" aria-hidden="true">close</span></button>}
+                </li>
+              ))}
+            </ul>
+            {pending.length > 0 && (
+              <div className="mt-3 flex justify-end">
+                <button type="button" onClick={handleUpload} disabled={uploading} className="primary-button min-h-10 px-4">
+                  {uploading ? 'Caricamento…' : 'Carica file'}
+                </button>
+              </div>
+            )}
           </div>
         )}
 

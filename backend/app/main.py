@@ -58,7 +58,9 @@ async def app_exception_handler(request: Request, exc: AppException):
 
 @app.exception_handler(StarletteHTTPException)
 async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
-    if exc.status_code == 404 and not request.url.path.startswith("/api"):
+    path = request.url.path
+    is_api = path == "/api" or path.startswith("/api/")
+    if exc.status_code == 404 and not is_api and request.method in ("GET", "HEAD"):
         index_file = Path("static/index.html")
         if index_file.exists():
             return FileResponse(index_file)
@@ -88,6 +90,19 @@ def ready(request: Request):
     except Exception as exc:
         log.warning(f"Readiness check failed: {exc}")
         return JSONResponse(status_code=503, content={"status": "unavailable", "database": "down"})
+    redis_url = os.getenv("REDIS_URL", "").strip()
+    if redis_url:
+        try:
+            import redis
+            client = redis.Redis.from_url(redis_url, socket_connect_timeout=2, socket_timeout=2)
+            try:
+                client.ping()
+            finally:
+                client.close()
+        except Exception as exc:
+            log.warning(f"Readiness check failed (redis): {type(exc).__name__}")
+            return JSONResponse(status_code=503, content={"status": "unavailable", "database": "ok", "redis": "down"})
+        return {"status": "ready", "database": "ok", "redis": "ok"}
     return {"status": "ready", "database": "ok"}
 
 

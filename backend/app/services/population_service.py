@@ -10,15 +10,180 @@ from app.core.sql_importer import split_sql_statements
 from sqlalchemy import create_engine, inspect, text
 import re
 
-MAX_LLM_DOCUMENT_CHARS = 5000
+# Tetto ai caratteri inviati al modello in una sola richiesta. Si puo' cambiare a caldo con l'impostazione
+# runtime `max_chars_per_request` (se esiste); altrimenti vale questa costante.
+DEFAULT_MAX_CHARS_PER_REQUEST = 60000
+CHUNK_OVERLAP_CHARS = 1000      # sovrapposizione tra blocchi consecutivi (al massimo un quarto del blocco)
+MAX_CHUNKS_PER_RUN = 8          # tetto di richieste al modello per popolamento: oltre, il testo si tronca
+
+
+def max_chars_per_request() -> int:
+    try:
+        from app.core.runtime import get_setting
+        value = int(get_setting("max_chars_per_request"))
+        if value >= 500:
+            return value
+    except Exception:
+        pass
+    return DEFAULT_MAX_CHARS_PER_REQUEST
+
+
+def split_text(text_value: str, max_chars: int, overlap: int = CHUNK_OVERLAP_CHARS) -> list[str]:
+    """Divide il testo in blocchi di al massimo `max_chars` con sovrapposizione, tagliando di preferenza a capo."""
+    if max_chars <= 0 or len(text_value) <= max_chars:
+        return [text_value]
+    overlap = max(0, min(overlap, max_chars // 4))
+    chunks = []
+    start = 0
+    while start < len(text_value):
+        end = min(start + max_chars, len(text_value))
+        if end < len(text_value):
+            cut = text_value.rfind("\n", start + max_chars // 2, end)
+            if cut > start:
+                end = cut + 1
+        chunks.append(text_value[start:end])
+        if end >= len(text_value):
+            break
+        start = max(end - overlap, start + 1)
+    return chunks
 
 
 def _llm_document_text(document, text_value: str, warnings: list[dict]) -> str:
-    if len(text_value) > MAX_LLM_DOCUMENT_CHARS:
+    limit = max_chars_per_request() * MAX_CHUNKS_PER_RUN
+    if len(text_value) > limit:
         warnings.append({"category": "llm_input_truncated", "document_id": document.id,
                          "document_hash": sha256_file(document.file_path),
-                         "original_chars": len(text_value), "used_chars": MAX_LLM_DOCUMENT_CHARS})
-    return text_value[:MAX_LLM_DOCUMENT_CHARS]
+                         "original_chars": len(text_value), "used_chars": limit})
+    return text_value[:limit]
+
+
+# --- normalizzazione dei valori -------------------------------------------------
+
+_NULL_TOKENS = {"", "nan", "null", "none", "nat", "n/a", "<na>"}
+_TRUE_TOKENS = {"1", "true", "t", "yes", "y", "si", "s\u00ec", "vero", "x", "on"}
+_FALSE_TOKENS = {"0", "false", "f", "no", "n", "falso", "off"}
+_INT_TYPES = {"integer", "int"}
+_REAL_TYPES = {"real", "float", "double"}
+_BOOL_TYPES = {"boolean", "bool"}
+_MONTHS = {"gen": 1, "jan": 1, "feb": 2, "mar": 3, "apr": 4, "mag": 5, "may": 5, "giu": 6, "jun": 6,
+           "lug": 7, "jul": 7, "ago": 8, "aug": 8, "set": 9, "sep": 9, "ott": 10, "oct": 10,
+           "nov": 11, "dic": 12, "dec": 12}
+_DATE_FORMATS = ("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y", "%d.%m.%Y", "%Y/%m/%d", "%d/%m/%y", "%d-%m-%y",
+                 "%d.%m.%y", "%Y%m%d")
+_TIME_FORMATS = ("%H:%M:%S", "%H:%M")
+
+
+def _parse_number(raw: str, integer_kind: bool = False):
+    """Interpreta numeri all'italiana (1.234,56) e all'inglese (1,234.56). None se non e' un numero."""
+    value = re.sub(r"[\s\u00a0\u202f\u20ac$\u00a3%]", "", raw).replace("'", "")
+    if not value or not re.fullmatch(r"[+-]?[\d.,]+", value):
+        if re.fullmatch(r"[+-]?\d+(\.\d+)?[eE][+-]?\d+", value):
+            return float(value)
+        return None
+    if "." in value and "," in value:
+        decimal = "," if value.rfind(",") > value.rfind(".") else "."
+        thousand = "." if decimal == "," else ","
+        value = value.replace(thousand, "").replace(decimal, ".")
+    elif "," in value:
+        if value.count(",") > 1 or (integer_kind and re.fullmatch(r"[+-]?\d{1,3},\d{3}", value)):
+            value = value.replace(",", "")
+        else:
+            value = value.replace(",", ".")
+    elif "." in value:
+        if value.count(".") > 1 or (integer_kind and re.fullmatch(r"[+-]?\d{1,3}\.\d{3}", value)):
+            value = value.replace(".", "")
+    try:
+        return float(value)
+    except ValueError:
+        return None
+
+
+def _parse_datetime(raw: str):
+    """(datetime, ha_orario) oppure (None, False). Il giorno viene prima del mese (formato italiano)."""
+    from datetime import datetime
+    value = raw.strip()
+    iso = value.replace("Z", "+00:00") if value.endswith("Z") else value
+    try:
+        parsed = datetime.fromisoformat(iso)
+        has_time = ("T" in iso or " " in iso) and (parsed.hour or parsed.minute or parsed.second or ":" in iso)
+        return parsed.replace(tzinfo=None), bool(has_time)
+    except ValueError:
+        pass
+    for date_format in _DATE_FORMATS:
+        for suffix in ("",) + tuple(f"{sep}{t}" for sep in (" ", "T") for t in _TIME_FORMATS):
+            try:
+                return datetime.strptime(value, date_format + suffix), bool(suffix)
+            except ValueError:
+                continue
+    match = re.fullmatch(r"(\d{1,2})\s+([A-Za-z\u00e0-\u00f9]+)\.?,?\s+(\d{4})", value)
+    if match and match.group(2)[:3].lower() in _MONTHS:
+        try:
+            return datetime(int(match.group(3)), _MONTHS[match.group(2)[:3].lower()], int(match.group(1))), False
+        except ValueError:
+            return None, False
+    match = re.fullmatch(r"([A-Za-z]{3,9})\.?\s+(\d{1,2}),?\s+(\d{4})", value)
+    if match and match.group(1)[:3].lower() in _MONTHS:
+        try:
+            return datetime(int(match.group(3)), _MONTHS[match.group(1)[:3].lower()], int(match.group(2))), False
+        except ValueError:
+            return None, False
+    return None, False
+
+
+def normalize_value(value, data_type: str | None = None):
+    """Porta un valore estratto al formato atteso dalla colonna.
+
+    - stringhe vuote o segnaposto (nan, null, none...) diventano NULL;
+    - date in ISO (AAAA-MM-GG, oppure AAAA-MM-GG HH:MM:SS per i datetime);
+    - numeri con virgola decimale e separatore delle migliaia;
+    - booleani (si/no, vero/falso, true/false) come 1 o 0.
+    Se il valore non e' interpretabile resta com'e' (senza spazi ai bordi): non si perdono dati.
+    """
+    import math
+    from datetime import date as date_type, datetime as datetime_type
+    if value is None:
+        return None
+    kind = (data_type or "text").lower().split("(")[0].strip()
+    if isinstance(value, float) and math.isnan(value):
+        return None
+    if isinstance(value, bool):
+        return int(value) if kind in _BOOL_TYPES or kind in _INT_TYPES else value
+    if isinstance(value, datetime_type):
+        return value.strftime("%Y-%m-%d %H:%M:%S") if kind in ("datetime", "timestamp") else value.strftime("%Y-%m-%d")
+    if isinstance(value, date_type):
+        return value.isoformat()
+    if isinstance(value, (int, float)):
+        if kind in _BOOL_TYPES and value in (0, 1):
+            return int(value)
+        if kind in _INT_TYPES and isinstance(value, float) and value.is_integer():
+            return int(value)
+        return value
+    text_value = str(value).strip()
+    if text_value.lower() in _NULL_TOKENS:
+        return None
+    if kind in _INT_TYPES or kind in _REAL_TYPES:
+        number = _parse_number(text_value, integer_kind=kind in _INT_TYPES)
+        if number is None:
+            return text_value
+        if kind in _INT_TYPES:
+            return int(number) if float(number).is_integer() else number
+        return number
+    if kind in _BOOL_TYPES:
+        lowered = text_value.lower()
+        if lowered in _TRUE_TOKENS:
+            return 1
+        if lowered in _FALSE_TOKENS:
+            return 0
+        number = _parse_number(text_value)
+        return int(number) if number in (0, 1) else text_value
+    if kind in ("date", "datetime", "timestamp"):
+        parsed, has_time = _parse_datetime(text_value)
+        if parsed is None:
+            return text_value
+        if kind == "date":
+            return parsed.strftime("%Y-%m-%d")
+        return parsed.strftime("%Y-%m-%d %H:%M:%S") if has_time else parsed.strftime("%Y-%m-%d")
+    return text_value
 
 
 def _has_single_values_tuple(statement: str) -> bool:
@@ -172,6 +337,9 @@ class PopulationService:
                                           "document_hash": sha256_file(doc.file_path),
                                           "error_type": type(exc).__name__})
                 continue
+            if doc.file_type == "pdf" and not parsed.text_content.strip():
+                from app.services.document_service import load_ocr_text
+                parsed.text_content = load_ocr_text(doc.file_path)
             if not parsed.tables and not parsed.text_content.strip():
                 pipeline_warnings.append({"category": "parser_empty", "document_id": doc.id,
                                           "document_hash": sha256_file(doc.file_path)})
@@ -193,8 +361,27 @@ class PopulationService:
         # no usable SQL or no documents were provided.
         if all_docs_text.strip():
             log.info(f"Generating population SQL via LLM for project {project_id}...")
-            sql_script = await generate_sql_for_population(schema, all_docs_text,
-                                                            temperature=temperature)
+            cap = max_chars_per_request()
+            chunks = split_text(all_docs_text, cap)
+            if len(chunks) > MAX_CHUNKS_PER_RUN:
+                pipeline_warnings.append({"category": "llm_input_truncated", "document_id": None,
+                                          "original_chars": len(all_docs_text),
+                                          "used_chars": sum(len(c) for c in chunks[:MAX_CHUNKS_PER_RUN])})
+                chunks = chunks[:MAX_CHUNKS_PER_RUN]
+            if len(chunks) > 1:
+                pipeline_warnings.append({"category": "llm_input_split", "chunks": len(chunks), "max_chars": cap})
+            scripts = []
+            seen_statements: set[str] = set()
+            for chunk in chunks:
+                chunk_sql = await generate_sql_for_population(schema, chunk, temperature=temperature)
+                if not chunk_sql.strip():
+                    continue
+                clean_chunk = re.sub(r'```\w*', '', chunk_sql).replace('```', '').strip()
+                chunk_statements = split_sql_statements(clean_chunk)
+                # i blocchi si sovrappongono: lo stesso INSERT ripetuto in un blocco successivo si scarta
+                scripts.extend(st for st in chunk_statements if st not in seen_statements)
+                seen_statements.update(chunk_statements)
+            sql_script = ";\n".join(scripts) + (";" if scripts else "")
             if sql_script.strip():
                 clean_sql = re.sub(r'```\w*', '', sql_script).replace('```', '').strip()
                 statements = split_sql_statements(clean_sql)
@@ -377,11 +564,19 @@ class PopulationService:
                 col_names = [c["name"] for c in cols_info]
                 table_def = self._find_table_def(schema, table_name)
                 pk_cols = self._get_pk_columns(table_def) if table_def else []
+                column_types = {c.name: c.data_type for c in table_def.columns} if table_def else {}
 
                 candidates = structured_rows.get(table_name, [])
 
                 if table_def and not candidates and unstructured_text.strip():
-                    llm_rows = await generate_data_for_table(table_def, unstructured_text)
+                    llm_rows = []
+                    seen_rows = set()
+                    for chunk in split_text(unstructured_text, max_chars_per_request())[:MAX_CHUNKS_PER_RUN]:
+                        for item in await generate_data_for_table(table_def, chunk):
+                            key = repr(sorted((str(k), str(v)) for k, v in item.items())) if isinstance(item, dict) else repr(item)
+                            if key not in seen_rows:
+                                seen_rows.add(key)
+                                llm_rows.append(item)
                     if not llm_rows:
                         pipeline_warnings.append({"category": "llm_extraction_empty", "target_table": table_def.name})
                     for r in llm_rows:
@@ -431,7 +626,7 @@ class PopulationService:
                         provenance["rows"] = []
                     for candidate in candidates:
                         rd = candidate["values"]
-                        params = {c: rd.get(c, None) for c in col_names}
+                        params = {c: normalize_value(rd.get(c, None), column_types.get(c)) for c in col_names}
                         source = candidate.get("source")
                         trace = {**(source or {}), "target_table": table_name}
                         if all(v is None for v in params.values()):

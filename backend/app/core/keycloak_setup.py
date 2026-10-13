@@ -1,3 +1,5 @@
+import os
+
 import httpx
 from app.config import settings
 from app.utils.logger import log
@@ -41,6 +43,46 @@ def build_client_config() -> dict:
         "redirectUris": redirect_uris,
         "attributes": {"pkce.code.challenge.method": "S256"},
     }
+
+
+async def ensure_admin_role(client, realm_url: str, headers: dict) -> bool:
+    """Crea il ruolo realm admin (idempotente) e, alla prima configurazione, lo assegna.
+
+    Il primo admin e' l'utente con email FIRST_ADMIN_EMAIL. L'assegnazione avviene solo se il
+    ruolo e' appena stato creato o non ha ancora nessun titolare, mai su un ruolo gia' in uso.
+    """
+    role_name = settings.admin_role
+    role_url = f"{realm_url}/roles/{role_name}"
+    res = await client.get(role_url, headers=headers)
+    created = False
+    if res.status_code == 404:
+        post = await client.post(f"{realm_url}/roles", headers=headers,
+                                 json={"name": role_name, "description": "Amministratori di AI DB Creator"})
+        if post.status_code not in (201, 204, 409):
+            log.warning(f"Keycloak role '{role_name}' creation failed ({post.status_code})")
+            return False
+        created = post.status_code != 409
+        res = await client.get(role_url, headers=headers)
+    if res.status_code != 200:
+        return False
+    role = res.json()
+
+    email = (os.getenv("FIRST_ADMIN_EMAIL") or "").strip().lower()
+    if not email:
+        return True
+    if not created:
+        holders = await client.get(f"{role_url}/users", headers=headers, params={"max": 1})
+        if holders.status_code != 200 or holders.json():
+            return True
+    found = await client.get(f"{realm_url}/users", headers=headers, params={"email": email, "exact": "true"})
+    users = [u for u in (found.json() if found.status_code == 200 else []) if (u.get("email") or "").lower() == email]
+    if not users:
+        log.info("Keycloak: primo admin non ancora registrato, il ruolo sara' assegnato alla prossima configurazione")
+        return True
+    mapped = await client.post(f"{realm_url}/users/{users[0]['id']}/role-mappings/realm", headers=headers,
+                               json=[{"id": role["id"], "name": role["name"]}])
+    log.info(f"Keycloak: ruolo '{role_name}' assegnato al primo admin: {mapped.status_code}")
+    return True
 
 
 async def setup_keycloak_realm():
@@ -93,6 +135,7 @@ async def setup_keycloak_realm():
                                          json={**existing[0], **cfg})
                 log.info(f"Keycloak Client '{settings.keycloak_client_id}' synced: {u_res.status_code}")
 
+            await ensure_admin_role(client, realm_url, headers)
             return True
     except Exception as e:
         log.warning(f"Keycloak Realm setup skipped or unreachable: {e}")

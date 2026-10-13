@@ -2,8 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Token del design system TecnIA come triplette RGB: chiaro in :root, scuro in .dark.
+   Il contrasto minimo AA (4.5:1 sul testo) e' verificato da src/brand/tokens.test.ts. */
+:root {
+  color-scheme: light;
+  --tecnia-bg: 248 249 250;
+  --tecnia-ink: 25 28 29;
+  --tecnia-muted: 90 65 54;
+  --tecnia-line: 226 191 176;
+  --tecnia-primary: 160 65 0;
+  --tecnia-magenta-deep: 178 0 136;
+  --tecnia-ok: 27 122 67;
+}
+.dark {
+  color-scheme: dark;
+  --tecnia-bg: 11 15 23;
+  --tecnia-ink: 241 243 245;
+  --tecnia-muted: 200 188 180;
+  --tecnia-line: 58 63 75;
+  --tecnia-primary: 255 164 104;
+  --tecnia-magenta-deep: 255 150 220;
+  --tecnia-ok: 74 222 128;
+}
+
 @layer base {
   html { @apply scroll-smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, ::before, ::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
   body { @apply min-w-[320px] bg-tecnia-bg font-sans text-tecnia-ink antialiased dark:bg-slate-950 dark:text-slate-100; }
   h1, h2, h3 { @apply font-headline; }
   button, a, input, textarea, select, summary { @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900; }
@@ -15,8 +42,10 @@
   /* Pulsanti a pillola in maiuscolo, come da design TecnIA */
   .primary-button { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-orange-500 bg-white/70 px-6 py-2.5 font-headline text-xs font-bold uppercase tracking-wide text-tecnia-primary shadow-[0_2px_10px_rgba(255,107,0,.12)] transition hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-800 dark:text-orange-300 dark:hover:bg-slate-700; }
   .secondary-button { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-tecnia-line bg-white/70 px-5 py-2.5 font-headline text-xs font-bold uppercase tracking-wide text-tecnia-ink transition hover:border-orange-300 hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700; }
-  .field { @apply w-full rounded-xl border border-tecnia-line bg-white px-3.5 py-2.5 text-tecnia-ink placeholder:text-slate-400 transition hover:border-orange-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:focus:ring-orange-900; }
+  .field { @apply w-full rounded-xl border border-tecnia-line bg-white px-3.5 py-2.5 text-tecnia-ink placeholder:text-slate-500 dark:placeholder:text-slate-400 transition hover:border-orange-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:focus:ring-orange-900; }
   .tag { @apply inline-flex rounded-full border border-current px-3 py-0.5 font-headline text-[11px] font-bold uppercase tracking-wider; }
   .avatar { @apply flex h-9 w-9 flex-none items-center justify-center rounded-full bg-gradient-to-br from-[#ff6b00] to-[#fe3ac6] font-headline text-[13px] font-bold text-white; }
+  /* Salto al contenuto: visibile solo quando riceve il focus da tastiera */
+  .skip-link { @apply absolute left-4 top-2 z-[100] -translate-y-20 rounded-full bg-white px-5 py-2.5 font-headline text-sm font-bold text-tecnia-primary shadow-glass transition focus:translate-y-0 dark:bg-slate-900; }
   .orb { @apply pointer-events-none absolute rounded-full opacity-20 blur-[95px]; }
 }

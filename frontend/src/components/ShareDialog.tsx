@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api } from '@/api/client'
 import { useDialog } from '@/hooks/useDialog'
+import { useDraft } from '@/hooks/useDraft'
 
 interface Person { id?: string; user_id?: string; email: string | null; name: string | null; role?: string }
 interface Invite { id: string; email: string; role: string; expires_at: string }
@@ -24,8 +25,9 @@ export default function ShareDialog({ projectId, open, onClose }: { projectId: s
   const ref = useDialog<HTMLDivElement>(open, onClose)
   const [data, setData] = useState<Sharing | null>(null)
   const [loadError, setLoadError] = useState('')
-  const [email, setEmail] = useState('')
-  const [role, setRole] = useState('editor')
+  // email e ruolo in compilazione si salvano in sessione: se la sessione scade non si perdono
+  const [email, setEmail] = useDraft(`share.email.${projectId}`, '')
+  const [role, setRole] = useDraft(`share.role.${projectId}`, 'editor')
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -37,7 +39,7 @@ export default function ShareDialog({ projectId, open, onClose }: { projectId: s
       setData(await api.get(`/projects/${projectId}/sharing`))
       setLoadError('')
     } catch (e: any) {
-      setLoadError(errText(e, 'Non riusciamo a caricare la condivisione. Solo il proprietario può gestirla.'))
+      setLoadError(errText(e, 'Non riusciamo a caricare la condivisione. Solo il proprietario può gestirla: se lo sei, chiudi e riapri la finestra.'))
     }
   }, [projectId])
 
@@ -55,7 +57,7 @@ export default function ShareDialog({ projectId, open, onClose }: { projectId: s
       await load()
       return result
     } catch (e: any) {
-      setError(errText(e, 'Operazione non riuscita. Riprova.'))
+      setError(errText(e, 'Operazione non riuscita. Controlla la connessione e riprova.'))
     } finally {
       setBusy(false)
     }
@@ -91,11 +93,11 @@ export default function ShareDialog({ projectId, open, onClose }: { projectId: s
             <h2 id="share-title" className="text-2xl font-bold tracking-tight">Condividi il progetto</h2>
             <p className="mt-1 text-sm text-tecnia-muted dark:text-slate-400">Chi inviti lo trova tra i progetti condivisi con lui.</p>
           </div>
-          <button type="button" onClick={onClose} aria-label="Chiudi" className="rounded-full p-1 text-tecnia-muted hover:bg-orange-50"><span className="material-symbols-outlined">close</span></button>
+          <button type="button" onClick={onClose} aria-label="Chiudi" className="rounded-full p-1 text-tecnia-muted hover:bg-orange-50 dark:hover:bg-slate-800"><span className="material-symbols-outlined">close</span></button>
         </div>
 
         {loadError ? (
-          <p role="alert" className="rounded-xl bg-red-50 px-3 py-2 text-sm font-medium text-red-700">{loadError}</p>
+          <p role="alert" className="rounded-xl bg-red-50 px-3 py-2 text-sm font-medium text-red-700 dark:bg-red-950/40 dark:text-red-300">{loadError}</p>
         ) : !data ? (
           <p role="status" className="text-sm text-tecnia-muted">Sto caricando…</p>
         ) : (
@@ -113,8 +115,8 @@ export default function ShareDialog({ projectId, open, onClose }: { projectId: s
             </form>
 
             <div aria-live="polite">
-              {message && <p role="status" className="rounded-xl bg-green-50 px-3 py-2 text-sm font-medium text-tecnia-ok">{message}</p>}
-              {error && <p role="alert" className="rounded-xl bg-red-50 px-3 py-2 text-sm font-medium text-red-700">{error}</p>}
+              {message && <p role="status" className="rounded-xl bg-green-50 px-3 py-2 text-sm font-medium text-tecnia-ok dark:bg-green-950/40">{message}</p>}
+              {error && <p role="alert" className="rounded-xl bg-red-50 px-3 py-2 text-sm font-medium text-red-700 dark:bg-red-950/40 dark:text-red-300">{error}</p>}
             </div>
 
             <div>
@@ -132,7 +134,7 @@ export default function ShareDialog({ projectId, open, onClose }: { projectId: s
                     <select aria-label={`Ruolo di ${m.name || m.email}`} value={m.role} disabled={busy} onChange={(e) => run(() => api.put(`/projects/${projectId}/members/${m.user_id}`, { role: e.target.value }))} className="field !w-auto !py-2 font-headline text-sm font-semibold">
                       {ROLES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
                     </select>
-                    <button type="button" disabled={busy} onClick={() => run(() => api.delete(`/projects/${projectId}/members/${m.user_id}`))} className="rounded-full px-3 py-2 text-xs font-semibold text-red-700 hover:bg-red-50" aria-label={`Rimuovi ${m.name || m.email}`}>Rimuovi</button>
+                    <button type="button" disabled={busy} onClick={() => run(() => api.delete(`/projects/${projectId}/members/${m.user_id}`))} className="rounded-full px-3 py-2 text-xs font-semibold text-red-700 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/40" aria-label={`Rimuovi ${m.name || m.email}`}>Rimuovi</button>
                   </li>
                 ))}
                 {data.invites.map((i) => (
@@ -140,7 +142,7 @@ export default function ShareDialog({ projectId, open, onClose }: { projectId: s
                     <span className="avatar !bg-slate-500 !bg-none">{initials({ email: i.email })}</span>
                     <div className="min-w-0 flex-1"><b className="block truncate font-headline text-sm">{i.email}</b><span className="block text-xs text-tecnia-muted">Invito in attesa · {ROLES.find((r) => r.value === i.role)?.label.toLowerCase()} · scade il {fmtDate(i.expires_at)}</span></div>
                     <span className="tag text-amber-700">In attesa</span>
-                    <button type="button" disabled={busy} onClick={() => run(() => api.delete(`/projects/${projectId}/invites/${i.id}`))} className="rounded-full px-3 py-2 text-xs font-semibold text-red-700 hover:bg-red-50" aria-label={`Annulla l'invito a ${i.email}`}>Annulla</button>
+                    <button type="button" disabled={busy} onClick={() => run(() => api.delete(`/projects/${projectId}/invites/${i.id}`))} className="rounded-full px-3 py-2 text-xs font-semibold text-red-700 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/40" aria-label={`Annulla l'invito a ${i.email}`}>Annulla</button>
                   </li>
                 ))}
               </ul>

@@ -5,7 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI-DB-Creator · Dal documento al database | TecnIA</title>
     <meta name="description" content="Carica i tuoi documenti, rivedi lo schema, scarica il database. Un servizio TecnIA, nato da una ricerca sull'uso dei modelli linguistici nella progettazione di basi di dati." />
+    <meta name="theme-color" content="#f8f9fa" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b0f17" media="(prefers-color-scheme: dark)" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      /* Applica il tema salvato prima del primo disegno, per evitare il lampo chiaro */
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');
+      } catch (e) {}
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&family=Inter:wght@400;500;600&family=Material+Symbols+Outlined&display=swap" />
   </head>

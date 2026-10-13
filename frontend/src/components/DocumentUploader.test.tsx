@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import DocumentUploader from './DocumentUploader'
+import DocumentUploader, { RETRY_DELAYS_MS } from './DocumentUploader'
 import { api } from '@/api/client'
 
 vi.mock('@/api/client', () => ({ api: { get: vi.fn(), postFile: vi.fn(), delete: vi.fn() } }))
@@ -58,5 +58,57 @@ describe('DocumentUploader', () => {
     fireEvent.change(screen.getByLabelText(/scegli dal computer/i), { target: { files: [file] } })
     expect(await screen.findByRole('alert')).toHaveTextContent('25 MB')
     expect(mockedApi.postFile).not.toHaveBeenCalled()
+  })
+
+  describe('coda, stato per file e riprova', () => {
+    const transient = () => Object.assign(new Error('Servizio non disponibile'), { status: 503 })
+    beforeEach(() => { RETRY_DELAYS_MS.splice(0, RETRY_DELAYS_MS.length, 1, 1, 1) })
+
+    it('ritenta da solo gli errori temporanei e poi carica il file', async () => {
+      mockedApi.get.mockResolvedValue([])
+      mockedApi.postFile.mockRejectedValueOnce(transient()).mockRejectedValueOnce(transient()).mockResolvedValue({ id: 'n' })
+      renderUploader()
+      await userEvent.upload(screen.getByLabelText(/scegli dal computer/i), new File(['x'], 'dati.csv'))
+      expect(screen.getByText(/in coda/i)).toBeInTheDocument()
+      await userEvent.click(screen.getByRole('button', { name: /carica file/i }))
+      expect(await screen.findByText(/pronto per essere usato/i)).toBeInTheDocument()
+      expect(mockedApi.postFile).toHaveBeenCalledTimes(3)
+      expect(screen.getByText(/Caricato/)).toBeInTheDocument()
+    })
+
+    it('dopo 3 tentativi falliti mostra l\'errore e il pulsante Riprova', async () => {
+      mockedApi.get.mockResolvedValue([])
+      mockedApi.postFile.mockRejectedValue(transient())
+      renderUploader()
+      await userEvent.upload(screen.getByLabelText(/scegli dal computer/i), new File(['x'], 'dati.csv'))
+      await userEvent.click(screen.getByRole('button', { name: /carica file/i }))
+      const retry = await screen.findByRole('button', { name: /riprova a caricare dati.csv/i })
+      expect(mockedApi.postFile).toHaveBeenCalledTimes(4)
+      mockedApi.postFile.mockReset().mockResolvedValue({ id: 'n' })
+      await userEvent.click(retry)
+      expect(await screen.findByText(/pronto per essere usato/i)).toBeInTheDocument()
+    })
+
+    it('non ritenta gli errori di validazione (4xx)', async () => {
+      mockedApi.get.mockResolvedValue([])
+      mockedApi.postFile.mockRejectedValue(Object.assign(new Error('File vuoto'), { status: 422 }))
+      renderUploader()
+      await userEvent.upload(screen.getByLabelText(/scegli dal computer/i), new File(['x'], 'vuoto.csv'))
+      await userEvent.click(screen.getByRole('button', { name: /carica file/i }))
+      expect(await screen.findByRole('alert')).toHaveTextContent('File vuoto')
+      expect(mockedApi.postFile).toHaveBeenCalledTimes(1)
+    })
+
+    it('carica più file uno alla volta: un errore non ferma gli altri', async () => {
+      mockedApi.get.mockResolvedValue([])
+      mockedApi.postFile.mockRejectedValueOnce(Object.assign(new Error('Illeggibile'), { status: 400 })).mockResolvedValue({ id: 'n' })
+      renderUploader()
+      await userEvent.upload(screen.getByLabelText(/scegli dal computer/i), [new File(['a'], 'a.csv'), new File(['b'], 'b.csv')])
+      expect(screen.getAllByText(/in coda/i)).toHaveLength(2)
+      await userEvent.click(screen.getByRole('button', { name: /carica file/i }))
+      expect(await screen.findByText(/“b.csv” è pronto/i)).toBeInTheDocument()
+      expect(mockedApi.postFile).toHaveBeenCalledTimes(2)
+      expect(screen.getByRole('button', { name: /riprova a caricare a.csv/i })).toBeInTheDocument()
+    })
   })
 })

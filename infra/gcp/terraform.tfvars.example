@@ -1,2 +1,5 @@
+project_id         = "aidb-creator-xxxxxx" # output di bootstrap/
 billing_account_id = "XXXXXX-XXXXXX-XXXXXX"
 monthly_budget_eur = 20
+budget_alert_email = ""
+ai_enabled         = true

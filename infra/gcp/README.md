@@ -1,30 +1,43 @@
-# Infrastruttura Google Cloud (Vertex AI)
+# Infrastruttura Google Cloud (gateway AI + Vertex)
 
-Crea un progetto nuovo e dedicato, collega la fatturazione, abilita le API, prepara un service account
-con il solo ruolo `aiplatform.user` e imposta gli avvisi di spesa. Tutto passa da Terraform.
+Tutto passa da Terraform, mai dalla console. Nulla e' stato applicato. Ogni `apply` richiede il via di Davide
+(`docs/ops/azioni-con-sua-approvazione.md`) e passa dal flusso `plan -> lettura -> SI -> apply`.
 
-## Prima esecuzione (solo dopo il via esplicito di Davide)
+- `bootstrap/`: stato LOCALE; crea il progetto dedicato (`aidb-creator-<suffisso>`) e il bucket GCS versionato per lo stato.
+- radice (`infra/gcp`): stato remoto nel bucket; API, Artifact Registry, service account (gateway: solo `aiplatform.user`; chiamante: solo `run.invoker`), servizio Cloud Run `aidb-gateway` (istanze 0..1), segreto della chiave del chiamante, budget con soglie.
 
+## Prima esecuzione (solo dopo il via)
 ```bash
-cd infra/gcp
-cp terraform.tfvars.example terraform.tfvars   # inserisci l'ID dell'account di fatturazione
+# 1. bootstrap (stato locale: conservalo fuori dal repo)
+cd infra/gcp/bootstrap
+cp terraform.tfvars.example terraform.tfvars        # billing_account_id
 gcloud auth application-default login
 terraform init
-terraform plan -out plan.tfplan                # si legge, non si applica alla cieca
-terraform apply plan.tfplan
-```
+cd ../../..
+scripts/ops_terraform_flow.sh plan  infra/gcp/bootstrap
+scripts/ops_terraform_flow.sh apply infra/gcp/bootstrap
+terraform -chdir=infra/gcp/bootstrap output          # project_id, tfstate_bucket
 
-Per ottenere la chiave del service account da mettere in Coolify:
-`terraform apply -var create_service_account_key=true` poi
-`terraform output -raw service_account_key_json` (finisce solo nello stato locale, ignorato da git).
+# 2. infrastruttura principale
+cd infra/gcp
+cp terraform.tfvars.example terraform.tfvars        # project_id, billing_account_id, email avvisi
+terraform init -backend-config="bucket=<tfstate_bucket>"
+cd ../..
+scripts/ops_terraform_flow.sh plan  infra/gcp
+scripts/ops_terraform_flow.sh apply infra/gcp
+```
+Poi pubblica l'immagine del gateway e collega Coolify: `docs/ops/gateway.md`.
+Chiave del chiamante: `plan infra/gcp -var create_caller_key=true`, poi `gcloud secrets versions access latest --secret=gateway-caller-key` (incolla in Coolify come `GATEWAY_CALLER_CREDENTIALS_JSON`).
 
 ## Su Coolify
+`LLM_PROVIDER=vertex`, `LLM_GATEWAY_URL` = output `gateway_url`, `GATEWAY_CALLER_CREDENTIALS_JSON` = chiave del chiamante, `VERTEX_MODEL`.
+Nessuna chiave Vertex fuori da GCP.
 
-`VERTEX_PROJECT` = output `project_id`, `VERTEX_LOCATION` = `europe-west4`, `VERTEX_MODEL` = `gemini-2.5-flash-lite`,
-`VERTEX_CREDENTIALS_JSON` = chiave JSON, `LLM_PROVIDER` = `vertex`.
+## Spegnimento, revisione, ricreazione
+`docs/ops/spegnimento-gateway.md`, `docs/ops/terraform-review.md`, `docs/ops/ricreazione.md`.
 
-## Nota sul gateway
-
-Il piano prevedeva un gateway su Cloud Run davanti a Vertex. In questa fase l'app chiama Vertex direttamente
-con il service account a privilegio minimo e le quote dell'app (`/api/admin`) fanno da freno. Il gateway si aggiunge
-in seguito senza cambiare il resto: l'app legge solo `VERTEX_*`.
+## Validazione locale (senza toccare GCP)
+```bash
+for d in infra/gcp infra/gcp/bootstrap; do (cd $d && terraform init -backend=false && terraform validate); done
+rm -f infra/gcp/.terraform.lock.hcl infra/gcp/bootstrap/.terraform.lock.hcl
+```

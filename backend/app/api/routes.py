@@ -14,12 +14,13 @@ from app.services.benchmark_service import run_model_benchmark, save_user_vote, 
 from app.models.database import get_session, init_db, BenchmarkResult, UserVote
 from app.models.schema_models import GenerateRequest, NormalizedSchema, QueryRequest, QueryResponse, SchemaUpdate, PopulateRequest, ExecuteQueryRequest, ExecuteQueryResponse
 from app.models.database import get_session, Project
-from app.services.schema_service import SchemaService
+from app.services.schema_service import SchemaService, get_last_repair
 from app.services.document_service import DocumentService
 from app.services.population_service import PopulationService
-from app.services.query_service import QueryService
+from app.services.query_service import QueryService, record_query, list_queries
 from app.services.chat_service import chat, get_history, clear_history, extract_schema_with_fallback
 from app.tasks import generate_schema_task, populate_data_task, export_schema_task
+from app import tasks as job_tasks
 from app.core.llm import get_llm_info, get_llm_run_metadata
 from app.utils.research import atomic_write_json, new_run_id, record_run, run_manifest, sha256_file, sha256_text, stable_hash, utc_now
 from app.services.metrics_service import MetricsService
@@ -95,8 +96,16 @@ def delete_project(project_id: str, access: ProjectAccess = Depends(project_owne
     result["surveys_deleted"] = surveys_deleted
     return result
 
+def _with_repair(manifest: dict) -> dict:
+    """Aggiunge al manifesto di run i tentativi di riparazione dello schema generato."""
+    repair = get_last_repair()
+    manifest["repair_attempts"] = repair["attempts"]
+    manifest["repair_log"] = repair["log"]
+    return manifest
+
+
 @router.post("/projects/{project_id}/generate", dependencies=[Depends(project_editor), Depends(consume_ai("generate"))])
-async def generate_schema(project_id: str, req: GenerateRequest):
+async def generate_schema(project_id: str, req: GenerateRequest, access: ProjectAccess = Depends(project_editor)):
     _set_finalized(project_id, None)
     started_at = utc_now()
     run_id = new_run_id()
@@ -109,14 +118,14 @@ async def generate_schema(project_id: str, req: GenerateRequest):
         except AppException:
             continue
     try:
-        result = await schema_svc.generate_from_prompt(project_id, req)
+        result = await schema_svc.generate_from_prompt(project_id, req, author=access.user_id)
     except Exception as exc:
         _log_research_run("schema_generation_failed", project_id, {
             "status": "failed", "schema_initial_hash": None, "schema_final_hash": None,
             "warnings": [{"category": "generation_error", "error_type": type(exc).__name__}],
-            "run_manifest": run_manifest(started_at, "schema_prompt_v1", req, {
+            "run_manifest": _with_repair(run_manifest(started_at, "schema_prompt_v1", req, {
                 "prompt_sha256": sha256_text(req.prompt), "document_sha256": document_hashes,
-            }),
+            })),
         }, run_id=run_id)
         raise
     _log_research_run("schema_generated", project_id, {
@@ -126,9 +135,9 @@ async def generate_schema(project_id: str, req: GenerateRequest):
         "schema_initial_hash": stable_hash(result.model_dump()),
         "schema_final_hash": stable_hash(result.model_dump()),
         "document_ids": req.document_ids,
-        "run_manifest": run_manifest(started_at, "schema_prompt_v1", req, {
+        "run_manifest": _with_repair(run_manifest(started_at, "schema_prompt_v1", req, {
             "prompt_sha256": sha256_text(req.prompt), "document_sha256": document_hashes,
-        }),
+        })),
     }, run_id=run_id)
     return result
 
@@ -137,10 +146,10 @@ def get_schema(project_id: str):
     return schema_svc.get_schema(project_id)
 
 @router.put("/projects/{project_id}/schema", dependencies=[Depends(project_editor)])
-def update_schema(project_id: str, schema: NormalizedSchema):
+def update_schema(project_id: str, schema: NormalizedSchema, access: ProjectAccess = Depends(project_editor)):
     _ensure_not_finalized(project_id)
     previous = schema_svc.get_schema(project_id)
-    result = schema_svc.update_schema(project_id, schema)
+    result = schema_svc.update_schema(project_id, schema, author=access.user_id, origin="manuale")
     _log_research_run("schema_updated", project_id, {
         "schema_initial": previous.model_dump() if previous else None,
         "schema_final": schema.model_dump(),
@@ -243,9 +252,9 @@ def chat_history(project_id: str):
     return {"messages": get_history(project_id)}
 
 @router.post("/projects/{project_id}/chat-accept", dependencies=[Depends(project_editor)])
-def accept_chat_schema(project_id: str, schema: NormalizedSchema):
+def accept_chat_schema(project_id: str, schema: NormalizedSchema, access: ProjectAccess = Depends(project_editor)):
     previous = schema_svc.get_schema(project_id)
-    result = schema_svc.update_schema(project_id, schema)
+    result = schema_svc.update_schema(project_id, schema, author=access.user_id, origin="chat")
     _log_research_run("schema_updated", project_id, {
         "schema_initial": previous.model_dump() if previous else None,
         "schema_final": schema.model_dump(),
@@ -272,7 +281,7 @@ def _remove_temp_file(path: str, attempts: int = 5, retry_delay_seconds: float =
 
 
 @router.post("/projects/{project_id}/documents", dependencies=[Depends(project_editor)])
-async def upload_document(project_id: str, file: UploadFile = File(...)):
+async def upload_document(project_id: str, file: UploadFile = File(...), user: dict = Depends(get_current_user)):
     schema_svc.get_project(project_id)
     from app.core.runtime import get_setting
     upload_mb = int(get_setting("max_upload_mb"))
@@ -292,20 +301,33 @@ async def upload_document(project_id: str, file: UploadFile = File(...)):
                 raise HTTPException(status_code=413, detail=f"Il file supera il limite di {upload_mb} MB.")
             tmp.write(chunk)
         tmp.close()
-        doc = doc_svc.upload_document(project_id, tmp.name, original_filename=original_filename)
+        from starlette.concurrency import run_in_threadpool
+
+        def ocr_gate():
+            # l'OCR e' una chiamata al modello: consuma la quota come le altre
+            try:
+                _consume_ai_now(user, "ocr", project_id)
+                return True
+            except AppException:
+                return False
+
+        doc = await run_in_threadpool(doc_svc.upload_document, project_id, tmp.name,
+                                      original_filename=original_filename, ocr_gate=ocr_gate)
         digest = sha256_file(doc.file_path)
         interaction_logger.log_event("document_uploaded", project_id, {
             "document_id": doc.id, "file_type": doc.file_type, "sha256": digest,
             "size_bytes": total_size, "extraction_method": "deterministic",
 })
         return {"id": doc.id, "filename": doc.filename, "file_type": doc.file_type,
+                "needs_ocr": bool(doc.needs_ocr),
                 "provenance": {"sha256": digest, "method": "deterministic"}}
     finally:
         tmp.close()
         _remove_temp_file(tmp.name)
 
 @router.post("/projects/{project_id}/import-sql", dependencies=[Depends(project_editor)])
-async def import_sql(project_id: str, file: UploadFile = File(...), dialect: str = "sqlite"):
+async def import_sql(project_id: str, file: UploadFile = File(...), dialect: str = "sqlite",
+                     access: ProjectAccess = Depends(project_editor)):
     _set_finalized(project_id, None)
     started_at = utc_now()
     from app.core.sql_importer import extract_schema, clean_inserts, split_sql_statements
@@ -398,6 +420,7 @@ async def import_sql(project_id: str, file: UploadFile = File(...), dialect: str
         if rollback_path.exists():
             rollback_path.unlink()
 
+    schema_svc.record_version(project_id, schema, access.user_id, "manuale")
     _log_research_run("import_sql", project_id, {
         "dialect": dialect, "tables": len(schema.tables),
         "sql_input_hash": sha256_text(sql_text),
@@ -415,7 +438,7 @@ def list_documents(project_id: str):
     schema_svc.get_project(project_id)
     return [{
         "id": doc.id, "project_id": doc.project_id, "filename": doc.filename,
-        "file_type": doc.file_type,
+        "file_type": doc.file_type, "needs_ocr": bool(doc.needs_ocr),
         "created_at": doc.created_at, "provenance": {
             "sha256": sha256_file(doc.file_path), "method": "deterministic"
         }
@@ -480,8 +503,21 @@ async def populate(project_id: str, req: PopulateRequest):
     return result
 
 @router.post("/projects/{project_id}/query", dependencies=[Depends(project_viewer), Depends(consume_ai("query"))])
-async def generate_query(project_id: str, req: QueryRequest):
-    return await query_svc.generate(project_id, req.prompt, req.dialect)
+async def generate_query(project_id: str, req: QueryRequest, access: ProjectAccess = Depends(project_viewer)):
+    try:
+        response = await query_svc.generate(project_id, req.prompt, req.dialect)
+    except Exception:
+        record_query(project_id, access.user_id, req.prompt, None, "errore", source="query")
+        raise
+    record_query(project_id, access.user_id, req.prompt, response.sql, "ok", source="query")
+    return response
+
+
+@router.get("/projects/{project_id}/queries", dependencies=[Depends(project_viewer)])
+def query_history(project_id: str):
+    """Ultime 50 domande del progetto con la query generata e l'esito."""
+    schema_svc.get_project(project_id)
+    return {"queries": list_queries(project_id)}
 
 _WRITE_WORDS = re.compile(r"\b(INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|REPLACE|VACUUM|ATTACH|DETACH|PRAGMA|REINDEX)\b")
 
@@ -547,10 +583,13 @@ def execute_query(project_id: str, req: ExecuteQueryRequest, access: ProjectAcce
                 columns = list(last_result.keys())
                 rows = [dict(zip(columns, row)) for row in last_result.fetchall()]
                 interaction_logger.log_event("execute_query", project_id, {"type": "select", "columns": len(columns), "rows": len(rows)})
+                record_query(project_id, access.user_id, None, sql, "ok", rows=len(rows), source="execute")
                 return ExecuteQueryResponse(columns=columns, rows=rows, affected=len(rows))
             interaction_logger.log_event("execute_query", project_id, {"type": "write", "affected": total_affected})
+            record_query(project_id, access.user_id, None, sql, "ok", rows=total_affected, source="execute")
             return ExecuteQueryResponse(columns=[], rows=[], affected=total_affected)
     except Exception as e:
+        record_query(project_id, access.user_id, None, sql, "errore", source="execute")
         raise HTTPException(status_code=400, detail=f"Esecuzione query fallita: {str(e)}")
 
 @router.get("/projects/{project_id}/data/stats", dependencies=[Depends(project_viewer)])
@@ -816,16 +855,19 @@ def llm_info(user: dict = Depends(get_current_user)):
     return get_llm_info()
 
 @router.get("/projects/{project_id}/export-full", dependencies=[Depends(project_viewer)])
-def export_full(project_id: str, dialect: str = "sqlite"):
-    from app.core.db_export import export_full as do_export
+def export_full(project_id: str, dialect: str | None = None):
+    from app.core.db_export import export_full as do_export, SUPPORTED_DIALECTS
     project = schema_svc.get_project(project_id)
+    dialect = dialect or project.target_dialect or "sqlite"
+    if dialect not in SUPPORTED_DIALECTS:
+        raise HTTPException(status_code=422, detail="Dialetto non supportato. Usa: " + ", ".join(SUPPORTED_DIALECTS) + ".")
     schema = schema_svc.get_schema(project_id)
     if not schema:
         raise HTTPException(status_code=400, detail="Generate schema first")
     if not project.db_path:
         raise HTTPException(status_code=400, detail="No database found")
     content = do_export(dialect, project.db_path, schema)
-    ext_map = {"sqlite": "sql", "postgresql": "sql", "mysql": "sql", "mssql": "sql"}
+    ext_map = {name: "sql" for name in SUPPORTED_DIALECTS}
     return {"format": dialect, "content": content, "extension": ext_map.get(dialect, "sql")}
 
 @router.post("/projects/{project_id}/backup", dependencies=[Depends(project_editor)])
@@ -949,6 +991,178 @@ def get_task_status(task_id: str, user: dict = Depends(get_current_user)):
     task = celery.AsyncResult(task_id)
     return {"task_id": task_id, "status": task.status,
             "result": task.result if (task.ready() and is_admin(user)) else None}
+
+
+# ==========================================
+# Dialetto di destinazione, versioni dello schema, lavori in coda
+# ==========================================
+
+class DialectRequest(BaseModel):
+    dialect: str
+
+
+@router.put("/projects/{project_id}/dialect", dependencies=[Depends(project_editor)])
+def set_target_dialect(project_id: str, body: DialectRequest):
+    """Ricorda il dialetto di destinazione scelto per il progetto."""
+    from app.core.db_export import SUPPORTED_DIALECTS
+    if body.dialect not in SUPPORTED_DIALECTS:
+        raise HTTPException(status_code=422, detail="Dialetto non supportato. Usa: " + ", ".join(SUPPORTED_DIALECTS) + ".")
+    schema_svc.get_project(project_id)
+    session = get_session(schema_svc.engine)
+    try:
+        session.query(Project).filter(Project.id == project_id).update({"target_dialect": body.dialect})
+        session.commit()
+    finally:
+        session.close()
+    return {"target_dialect": body.dialect}
+
+
+@router.get("/projects/{project_id}/schema/versions", dependencies=[Depends(project_viewer)])
+def list_schema_versions(project_id: str):
+    project = schema_svc.get_project(project_id)
+    return {"current": project.schema_version or 0, "finalized": project.schema_finalized_at is not None,
+            "versions": schema_svc.list_versions(project_id)}
+
+
+@router.get("/projects/{project_id}/schema/versions/{version}", dependencies=[Depends(project_viewer)])
+def get_schema_version(project_id: str, version: int):
+    schema_svc.get_project(project_id)
+    return schema_svc.get_version(project_id, version)
+
+
+@router.post("/projects/{project_id}/schema/versions/{version}/restore")
+def restore_schema_version(project_id: str, version: int, access: ProjectAccess = Depends(project_editor)):
+    """Riporta lo schema a una versione precedente; il ripristino crea a sua volta una nuova versione."""
+    _ensure_not_finalized(project_id)
+    stored = schema_svc.get_version(project_id, version)
+    schema = NormalizedSchema(**stored["schema"])
+    previous = schema_svc.get_schema(project_id)
+    schema_svc.update_schema(project_id, schema, author=access.user_id, origin="ripristino")
+    _log_research_run("schema_updated", project_id, {
+        "schema_initial": previous.model_dump() if previous else None,
+        "schema_final": schema.model_dump(),
+        "schema_initial_hash": stable_hash(previous.model_dump()) if previous else None,
+        "schema_final_hash": stable_hash(schema.model_dump()),
+        "method": "schema_version_restore",
+    })
+    return {"schema": schema.model_dump(), "schema_version": schema_svc.get_project(project_id).schema_version,
+            "restored_from": version}
+
+
+class JobRequest(BaseModel):
+    kind: Literal["schema", "dati", "esportazione"]
+    prompt: str | None = None
+    document_ids: list[str] = []
+    format: Literal["sql", "json"] = "sql"
+    dialect: str | None = None
+
+
+def _job_to_dict(job) -> dict:
+    return {"id": job.id, "project_id": job.project_id, "user_id": job.user_id, "kind": job.kind,
+            "status": job.status, "progress": job.progress, "error": job.error, "result": job.result,
+            "created_at": job.created_at, "updated_at": job.updated_at}
+
+
+def _load_job(project_id: str, job_id: str):
+    from app.models.database import Job
+    session = get_session(schema_svc.engine)
+    try:
+        job = session.query(Job).filter(Job.id == job_id, Job.project_id == project_id).first()
+        if job is None:
+            raise AppException(detail="Lavoro non trovato", status_code=404)
+        return _job_to_dict(job)
+    finally:
+        session.close()
+
+
+@router.post("/projects/{project_id}/jobs", status_code=202, dependencies=[Depends(project_editor)])
+def create_job(project_id: str, req: JobRequest, user: dict = Depends(get_current_user)):
+    """Accoda un lavoro lungo: la risposta e' immediata, lo stato si legge con GET .../jobs/{id}."""
+    from app.models.database import Job
+    from app.core.db_export import SUPPORTED_DIALECTS
+    row = ensure_user(user)
+    schema_svc.get_project(project_id)
+    params: dict = {}
+    if req.kind == "schema":
+        if not (req.prompt or "").strip():
+            raise HTTPException(status_code=422, detail="Descrivi il database da generare.")
+        params = {"prompt": req.prompt}
+    if req.kind in ("schema", "dati"):
+        for document_id in set(req.document_ids):
+            doc_svc.get_document(document_id, project_id)
+        params["document_ids"] = list(req.document_ids)
+    if req.kind in ("dati", "esportazione") and not schema_svc.get_schema(project_id):
+        raise HTTPException(status_code=400, detail="Genera prima lo schema.")
+    if req.kind == "esportazione":
+        if req.dialect is not None and req.dialect not in SUPPORTED_DIALECTS:
+            raise HTTPException(status_code=422, detail="Dialetto non supportato.")
+        params.update({"format": req.format, "dialect": req.dialect})
+    job_tasks.expire_stale_jobs()
+    session = get_session(schema_svc.engine)
+    try:
+        if req.kind in ("schema", "dati"):
+            busy = session.query(Job).filter(
+                Job.project_id == project_id, Job.kind.in_(("schema", "dati")),
+                Job.status.in_(("queued", "running"))).first()
+            if busy is not None:
+                raise AppException(detail="C'è già un lavoro in corso su questo progetto. Attendi che finisca.", status_code=409)
+    finally:
+        session.close()
+    if req.kind in ("schema", "dati"):
+        _consume_ai_now(user, "generate" if req.kind == "schema" else "populate", project_id)
+    session = get_session(schema_svc.engine)
+    try:
+        job = Job(project_id=project_id, user_id=row.id, kind=req.kind, status="queued", progress=0, params=params)
+        session.add(job)
+        session.commit()
+        job_id = job.id
+    finally:
+        session.close()
+    executor = job_tasks.dispatch_job(job_id)
+    job_tasks.update_job(job_id, executor=executor)
+    return _load_job(project_id, job_id)
+
+
+@router.get("/projects/{project_id}/jobs", dependencies=[Depends(project_viewer)])
+def list_jobs(project_id: str, status: str | None = None):
+    from app.models.database import Job
+    schema_svc.get_project(project_id)
+    job_tasks.expire_stale_jobs()
+    session = get_session(schema_svc.engine)
+    try:
+        query = session.query(Job).filter(Job.project_id == project_id)
+        if status:
+            query = query.filter(Job.status == status)
+        jobs = query.order_by(Job.created_at.desc(), Job.id.desc()).limit(50).all()
+        return {"jobs": [_job_to_dict(j) for j in jobs]}
+    finally:
+        session.close()
+
+
+@router.get("/projects/{project_id}/jobs/{job_id}", dependencies=[Depends(project_viewer)])
+def get_job(project_id: str, job_id: str):
+    job_tasks.expire_stale_jobs()
+    return _load_job(project_id, job_id)
+
+
+@router.post("/projects/{project_id}/jobs/{job_id}/cancel", dependencies=[Depends(project_editor)])
+def cancel_job(project_id: str, job_id: str):
+    """Annulla un lavoro in coda o in corso: il risultato non viene salvato."""
+    from app.models.database import Job
+    session = get_session(schema_svc.engine)
+    try:
+        job = session.query(Job).filter(Job.id == job_id, Job.project_id == project_id).first()
+        if job is None:
+            raise AppException(detail="Lavoro non trovato", status_code=404)
+        if job.status not in ("queued", "running"):
+            raise AppException(detail="Il lavoro è già terminato.", status_code=409)
+        job.status = "cancelled"
+        job.updated_at = job_tasks._now_naive()
+        session.commit()
+    finally:
+        session.close()
+    job_tasks.revoke_job(job_id)
+    return _load_job(project_id, job_id)
 
 
 # ==========================================

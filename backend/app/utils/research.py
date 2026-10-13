@@ -11,6 +11,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from app.config import settings
+from app.core.revision import software_revision
+
 _SECRET_KEYS = re.compile(r"(api[_-]?key|authorization|token|password|secret)", re.IGNORECASE)
 _SECRET_VALUE = re.compile(
     r"(?i)(bearer\s+)[^\s,;]+|((?:api[_-]?key|token|password|secret)\s*[:=]\s*)[^\s,;]+"
@@ -64,7 +67,8 @@ def run_manifest(started_at: datetime, template_version: str, context: Any = Non
         "ended_at": utc_now().isoformat(),
         "prompt_template_version": template_version,
         "app_version": "1.0.0",
-        "software_revision": os.getenv("SOFTWARE_REVISION", "unknown"),
+        "software_revision": software_revision(),
+        "research_mode": bool(settings.research_mode),
         "condition": getattr(context, "condition", None),
         "session_id": getattr(context, "session_id", None),
         "participant_id": getattr(context, "participant_id", None),

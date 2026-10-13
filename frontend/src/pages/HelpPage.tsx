@@ -64,7 +64,10 @@ export default function HelpPage() {
           <h2 className="font-bold">Pronto a cominciare?</h2>
           <p className="text-sm text-tecnia-muted dark:text-slate-400">Crea il tuo primo progetto: bastano un nome e qualche documento.</p>
         </div>
-        <Link to="/app" className="primary-button">Vai ai progetti</Link>
+        <div className="flex flex-wrap gap-3">
+          <Link to="/app/benvenuto" className="secondary-button">Rivedi la presentazione</Link>
+          <Link to="/app" className="primary-button">Vai ai progetti</Link>
+        </div>
       </div>
     </div>
   )

@@ -13,9 +13,17 @@ export default {
       colors: {
         blue: orange,
         indigo: { ...orange, 500: '#fe3ac6', 600: '#b20088', 700: '#8f006e' },
+        // I colori che cambiano con il tema leggono le variabili CSS di src/index.css
+        // (chiaro in :root, scuro in .dark); arancione e magenta di marca restano fissi.
         tecnia: {
-          primary: '#a04100', orange: '#ff6b00', magenta: '#fe3ac6', magentaDeep: '#b20088',
-          bg: '#f8f9fa', ink: '#191c1d', muted: '#5a4136', line: '#e2bfb0', ok: '#1b7a43',
+          primary: 'rgb(var(--tecnia-primary) / <alpha-value>)',
+          orange: '#ff6b00', magenta: '#fe3ac6',
+          magentaDeep: 'rgb(var(--tecnia-magenta-deep) / <alpha-value>)',
+          bg: 'rgb(var(--tecnia-bg) / <alpha-value>)',
+          ink: 'rgb(var(--tecnia-ink) / <alpha-value>)',
+          muted: 'rgb(var(--tecnia-muted) / <alpha-value>)',
+          line: 'rgb(var(--tecnia-line) / <alpha-value>)',
+          ok: 'rgb(var(--tecnia-ok) / <alpha-value>)',
         },
       },
       fontFamily: {

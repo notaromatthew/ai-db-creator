@@ -6,7 +6,10 @@ from app.config import settings
 from app.core.acl import require_admin, utcnow_naive
 from app.core.quota import count_today, user_limit
 from app.core.runtime import all_settings, set_setting
-from app.models.database import AdminAuditLog, Project, UsageEvent, User, get_session, init_db
+from app.core.revision import software_revision
+from app.models.database import (
+    AdminAuditLog, Project, ProjectLink, UsageEvent, User, get_session, init_db,
+)
 from app.utils.exceptions import AppException
 
 router = APIRouter(prefix="/api")
@@ -22,6 +25,8 @@ def public_config():
         "keycloak_url": settings.keycloak_url,
         "keycloak_realm": settings.keycloak_realm,
         "keycloak_client_id": settings.keycloak_client_id,
+        "software_revision": software_revision(),
+        "ai_enabled": bool(get_setting("ai_enabled")),
         "registration_open": bool(get_setting("registration_open")) and settings.keycloak_allow_registration,
         "maintenance_message": get_setting("maintenance_message"),
     }
@@ -116,14 +121,54 @@ def put_admin_settings(values: dict = Body(...), admin: dict = Depends(require_a
 
 
 @router.get("/admin/usage")
-def usage(days: int = 14, admin: dict = Depends(require_admin)):
+def usage(days: int = 14, group: str | None = None, admin: dict = Depends(require_admin)):
+    """Consumi AI. Senza `group` righe (giorno, tipo); con group=user|day|kind righe {key, count}."""
     from datetime import timedelta
+    if group not in (None, "user", "day", "kind"):
+        raise AppException(detail="Raggruppamento non valido: usa user, day o kind", status_code=422)
     since = utcnow_naive() - timedelta(days=max(1, min(days, 90)))
     session = get_session(init_db())
     try:
-        rows = session.query(func.date(UsageEvent.created_at), UsageEvent.kind, func.count(UsageEvent.id))\
-            .filter(UsageEvent.created_at >= since).group_by(func.date(UsageEvent.created_at), UsageEvent.kind).all()
-        return [{"day": str(d), "kind": k, "count": c} for d, k, c in rows]
+        if group is None:
+            rows = session.query(func.date(UsageEvent.created_at), UsageEvent.kind, func.count(UsageEvent.id))\
+                .filter(UsageEvent.created_at >= since).group_by(func.date(UsageEvent.created_at), UsageEvent.kind).all()
+            return [{"day": str(d), "kind": k, "count": c} for d, k, c in rows]
+        column = {"user": UsageEvent.user_id, "day": func.date(UsageEvent.created_at), "kind": UsageEvent.kind}[group]
+        rows = session.query(column, func.count(UsageEvent.id)).filter(UsageEvent.created_at >= since)\
+            .group_by(column).order_by(column).all()
+        return [{"key": str(k), "count": c} for k, c in rows]
+    finally:
+        session.close()
+
+
+@router.get("/admin/links")
+def list_links(admin: dict = Depends(require_admin)):
+    """Link pubblici attivi (mai il token: nel database c'e' solo l'hash)."""
+    session = get_session(init_db())
+    try:
+        rows = session.query(ProjectLink, Project, User)\
+            .join(Project, Project.id == ProjectLink.project_id)\
+            .outerjoin(User, User.id == ProjectLink.created_by)\
+            .filter(ProjectLink.revoked_at.is_(None), ProjectLink.expires_at > utcnow_naive())\
+            .order_by(ProjectLink.created_at.desc()).all()
+        return [{"id": l.id, "project_id": p.id, "project_name": p.name, "created_by": l.created_by,
+                 "created_by_email": u.email if u else None, "expires_at": l.expires_at.isoformat()}
+                for l, p, u in rows]
+    finally:
+        session.close()
+
+
+@router.delete("/admin/links/{link_id}")
+def revoke_link(link_id: str, admin: dict = Depends(require_admin)):
+    session = get_session(init_db())
+    try:
+        link = session.get(ProjectLink, link_id)
+        if link is None or link.revoked_at is not None:
+            raise AppException(detail="Link non trovato", status_code=404)
+        link.revoked_at = utcnow_naive()
+        _audit(session, admin, "link.revoke", link.project_id, {"link_id": link_id, "by": "admin"})
+        session.commit()
+        return {"revoked": link_id}
     finally:
         session.close()
 

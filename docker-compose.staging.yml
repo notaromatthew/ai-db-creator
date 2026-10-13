@@ -1,0 +1,82 @@
+# STAGING su Coolify: stessi servizi della produzione (docker-compose.coolify.yml), nomi e volumi distinti, variabili STAGING_*.
+# Origine: produzione. Nessun Ollama, nessuna GOOGLE_API_KEY, nessuna chiave Vertex:
+# l'AI passa dal gateway su Cloud Run (LLM_GATEWAY_URL). Ollama resta solo in docker-compose.yml (sviluppo).
+# Postgres NON e' in questo file: e' una risorsa Coolify a parte (volume persistente + backup: docs/ops/backup.md).
+version: '3.8'
+
+x-app-env: &app-env
+  DATABASE_URL: ${STAGING_DATABASE_URL}
+  REDIS_URL: redis://:${STAGING_REDIS_PASSWORD}@redis-staging:6379/0
+  KEYCLOAK_URL: ${STAGING_KEYCLOAK_URL}
+  KEYCLOAK_REALM: ${STAGING_KEYCLOAK_REALM:-aidbcreator-staging}
+  KEYCLOAK_CLIENT_ID: ${STAGING_KEYCLOAK_CLIENT_ID:-aidbcreator-app}
+  KEYCLOAK_ADMIN_USER: ${STAGING_KEYCLOAK_ADMIN_USER}
+  KEYCLOAK_ADMIN_PASSWORD: ${STAGING_KEYCLOAK_ADMIN_PASSWORD}
+  LLM_PROVIDER: ${STAGING_LLM_PROVIDER:-vertex}
+  OPENAI_API_KEY: ${STAGING_OPENAI_API_KEY:-}
+  # Modalita' ricerca: true = strumenti di studio accesi, false = solo il prodotto
+  RESEARCH_MODE: ${STAGING_RESEARCH_MODE:-false}
+  # URL pubblico dell'app (senza slash finale): da' il redirect URI Keycloak <APP_PUBLIC_URL>/* (copre /app). docs/ops/dominio-https.md
+  APP_PUBLIC_URL: ${STAGING_APP_PUBLIC_URL:-}
+  ADMIN_ROLE: ${STAGING_ADMIN_ROLE:-aidb-admin}
+  DEFAULT_DAILY_AI_QUOTA: ${STAGING_DEFAULT_DAILY_AI_QUOTA:-5}
+  DAILY_AI_BUDGET_TOTAL: ${STAGING_DAILY_AI_BUDGET_TOTAL:-50}
+  # Gateway Cloud Run (infra/gcp): output gateway_url; la chiave del chiamante sta nei secrets di Coolify
+  LLM_GATEWAY_URL: ${STAGING_LLM_GATEWAY_URL:-}
+  GATEWAY_CALLER_CREDENTIALS_JSON: ${STAGING_GATEWAY_CALLER_CREDENTIALS_JSON:-}
+  VERTEX_MODEL: ${STAGING_VERTEX_MODEL:-gemini-2.5-flash-lite}
+
+services:
+  app-staging:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - "8000"
+    environment: *app-env
+    depends_on:
+      redis-staging:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/ready"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    restart: always
+
+  worker-staging:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["celery", "-A", "app.tasks", "worker", "--loglevel=info"]
+    environment: *app-env
+    depends_on:
+      redis-staging:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A app.tasks inspect ping -t 5 >/dev/null 2>&1 || exit 1"]
+      interval: 60s
+      timeout: 15s
+      retries: 3
+      start_period: 60s
+    restart: always
+
+  redis-staging:
+    image: redis:7-alpine
+    # Password obbligatoria (REDIS_PASSWORD: stringa esadecimale, openssl rand -hex 24). Nessuna porta pubblicata.
+    command: ["sh", "-c", "exec redis-server --requirepass \"$$REDIS_PASSWORD\" --appendonly yes"]
+    environment:
+      REDIS_PASSWORD: ${STAGING_REDIS_PASSWORD:?imposta STAGING_REDIS_PASSWORD nei secrets di Coolify}
+      REDISCLI_AUTH: ${STAGING_REDIS_PASSWORD}
+    volumes:
+      - redis_staging_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: always
+
+volumes:
+  redis_staging_data:

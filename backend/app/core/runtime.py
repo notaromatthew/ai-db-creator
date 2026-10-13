@@ -8,11 +8,21 @@ DEFAULTS = {
     "daily_ai_budget_total": lambda: settings.daily_ai_budget_total,
     "max_upload_mb": lambda: settings.max_upload_mb,
     "max_projects_per_user": lambda: settings.max_projects_per_user,
+    "ai_enabled": lambda: True,
     "registration_open": lambda: True,
     "invites_require_verified_email": lambda: True,
     "maintenance_message": lambda: "",
 }
 INT_KEYS = {"default_daily_ai_quota", "daily_ai_budget_total", "max_upload_mb", "max_projects_per_user"}
+BOOL_KEYS = {"ai_enabled", "registration_open", "invites_require_verified_email"}
+
+
+def _to_bool(value) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str) and value.strip().lower() in ("true", "false"):
+        return value.strip().lower() == "true"
+    raise ValueError("booleano atteso")
 
 
 def get_setting(key: str):
@@ -34,11 +44,13 @@ def set_setting(key: str, value, actor: str):
     if key not in DEFAULTS:
         raise KeyError(key)
     if key in INT_KEYS:
+        if isinstance(value, bool):
+            raise ValueError("intero atteso")
         value = int(value)
         if value < 0:
             raise ValueError("valore negativo")
-    elif key in ("registration_open", "invites_require_verified_email"):
-        value = bool(value)
+    elif key in BOOL_KEYS:
+        value = _to_bool(value)
     else:
         value = str(value)[:300]
     session = get_session(init_db())

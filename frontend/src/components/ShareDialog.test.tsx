@@ -14,6 +14,7 @@ const sharing = {
 }
 
 beforeEach(() => {
+  sessionStorage.clear()
   Object.values(api).forEach((fn) => fn.mockReset())
   api.get.mockResolvedValue(sharing)
   api.post.mockResolvedValue({})
@@ -66,5 +67,14 @@ describe('ShareDialog', () => {
     await screen.findByText('Marco Bianchi')
     await userEvent.keyboard('{Escape}')
     expect(onClose).toHaveBeenCalled()
+  })
+
+  it('conserva in sessione l\'email in compilazione e la ripropone alla riapertura', async () => {
+    const first = render(<ShareDialog projectId="p1" open onClose={() => {}} />)
+    await screen.findByText('Marco Bianchi')
+    await userEvent.type(screen.getByLabelText(/Invita con l'email/i), 'ada@esempio.it')
+    first.unmount()
+    render(<ShareDialog projectId="p1" open onClose={() => {}} />)
+    expect(await screen.findByLabelText(/Invita con l'email/i)).toHaveValue('ada@esempio.it')
   })
 })

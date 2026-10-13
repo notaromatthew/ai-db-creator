@@ -166,20 +166,24 @@ def test_unstructured_llm_sql_tracks_valid_and_failed_statements(tmp_path, monke
 
 
 def test_unstructured_llm_input_is_truncated_per_document_and_warned(tmp_path, monkeypatch):
+    # Oltre cap * MAX_CHUNKS_PER_RUN il testo di un documento si tronca e il risultato lo segnala.
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr("app.services.population_service.DEFAULT_MAX_CHARS_PER_REQUEST", 1000)
+    monkeypatch.setattr("app.services.population_service.MAX_CHUNKS_PER_RUN", 2)
     service = PopulationService()
     document_id = add_text(service, tmp_path, "p1", content="Z" * 7000)
-    captured = {}
+    captured = []
     async def generated_sql(_schema, document_content, temperature=None):
-        captured["content"] = document_content
+        captured.append(document_content)
         return "INSERT INTO persone (id, nome) VALUES (1, 'Ada');"
     monkeypatch.setattr("app.services.population_service.generate_sql_for_population", generated_sql)
     result = asyncio.run(service.populate("p1", str(tmp_path / "database.sqlite"), schema(), [document_id]))
-    assert "Z" * 5000 in captured["content"]
-    assert "Z" * 5001 not in captured["content"]
+    assert len(captured) == 2
+    assert all(len(chunk) <= 1000 for chunk in captured)
     warning = next(item for item in result["persone"]["warnings"] if item["category"] == "llm_input_truncated")
-    assert warning["used_chars"] == 5000
+    assert warning["used_chars"] == 2000
     assert "Z" not in str(warning)
+    assert any(item["category"] == "llm_input_split" for item in result["persone"]["warnings"])
 
 
 def test_parser_empty_is_propagated_as_warning(tmp_path, monkeypatch):

@@ -1,4 +1,6 @@
 version: '3.8'
+# SOLO SVILUPPO LOCALE. Qui restano Ollama/USE_OLLAMA e le chiavi dei provider per gli sviluppatori;
+# la produzione e lo staging (docker-compose.coolify.yml / .staging.yml) non li usano. Vedi docs/ops/ollama-solo-sviluppo.md
 
 services:
   redis:

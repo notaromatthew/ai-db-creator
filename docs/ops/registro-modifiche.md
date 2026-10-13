@@ -1,0 +1,29 @@
+# Registro delle modifiche reali (Coolify e Google Cloud)
+
+Ogni modifica che tocca un sistema vero (Coolify, Google Cloud, DNS, Keycloak di produzione) si scrive qui
+**prima** di farla (riga con stato "da fare") e si chiude **subito dopo** (stato "fatto" o "annullato").
+Nessun segreto in questo file: solo nomi di variabili, ID di risorse, link ai piani.
+
+Regola: nessuna modifica a GCP fuori da Terraform, nemmeno dalla console. Il piano Terraform letto e approvato
+da Davide e' l'allegato della riga.
+
+## Modello di riga
+
+| Campo | Contenuto |
+|---|---|
+| Data e ora (UTC) | 2026-01-01 12:00 |
+| Sistema | Coolify / GCP / DNS / Keycloak |
+| Cosa cambia | una frase |
+| Perche' (task) | ID del piano, es. 2.6#3 |
+| Chi l'ha chiesto / approvato | nome e riferimento al messaggio |
+| Come | `terraform apply plan.tfplan` / schermata Coolify / comando |
+| Piano o diff allegato | percorso o hash di `plan.tfplan` |
+| Come si annulla | procedura di ritorno |
+| Esito | fatto / annullato / parziale |
+| Verifica dopo | cosa e' stato controllato (es. /ready 200) |
+
+## Registro
+
+| Data (UTC) | Sistema | Cosa cambia | Task | Approvato da | Come | Annullamento | Esito | Verifica |
+|---|---|---|---|---|---|---|---|---|
+| _(nessuna modifica reale finora)_ | | | | | | | | |

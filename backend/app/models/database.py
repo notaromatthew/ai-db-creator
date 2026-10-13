@@ -68,6 +68,8 @@ class Project(Base):
     schema_json = Column(JSON, nullable=True)
     db_path = Column(String(512), nullable=True)
     schema_finalized_at = Column(DateTime, nullable=True)  # schema reso definitivo: chat e modifiche si chiudono
+    schema_version = Column(Integer, nullable=False, default=0)  # numero dell'ultima versione salvata dello schema
+    target_dialect = Column(String(20), nullable=True)  # dialetto di destinazione scelto per l'esportazione
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
@@ -76,6 +78,9 @@ class Project(Base):
     invites = relationship("ProjectInvite", cascade="all, delete-orphan")
     links = relationship("ProjectLink", cascade="all, delete-orphan")
     chat_messages = relationship("ChatMessage", cascade="all, delete-orphan")
+    jobs = relationship("Job", cascade="all, delete-orphan")
+    schema_versions = relationship("SchemaVersion", cascade="all, delete-orphan")
+    query_history = relationship("QueryHistory", cascade="all, delete-orphan")
 
 
 class ProjectMember(Base):
@@ -129,6 +134,7 @@ class Document(Base):
     file_type = Column(String(10), nullable=False)
     file_path = Column(String(512), nullable=False)
     content_summary = Column(Text, nullable=True)
+    needs_ocr = Column(Boolean, nullable=False, default=False)  # PDF senza testo estraibile e senza OCR riuscito
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     project = relationship("Project", back_populates="documents")
@@ -142,6 +148,60 @@ class ChatMessage(Base):
     project_id = Column(String, ForeignKey("projects.id"), nullable=False, index=True)
     role = Column(String(20), nullable=False)
     content = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=_now, index=True)
+
+
+JOB_KINDS = ("schema", "dati", "esportazione")
+JOB_STATES = ("queued", "running", "done", "failed", "cancelled")
+
+
+class Job(Base):
+    """Lavoro lungo (schema, dati, esportazione): lo stato sopravvive alla chiusura della pagina."""
+    __tablename__ = "jobs"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    project_id = Column(String, ForeignKey("projects.id"), nullable=False, index=True)
+    user_id = Column(String(255), nullable=False)
+    kind = Column(String(20), nullable=False)  # schema | dati | esportazione
+    status = Column(String(20), nullable=False, default="queued", index=True)  # queued | running | done | failed | cancelled
+    progress = Column(Integer, nullable=False, default=0)  # 0-100
+    error = Column(Text, nullable=True)
+    params = Column(JSON, nullable=True)  # parametri della richiesta (mai segreti)
+    result = Column(JSON, nullable=True)
+    executor = Column(String(20), nullable=True)  # celery | thread
+    created_at = Column(DateTime, default=_now, index=True)
+    updated_at = Column(DateTime, default=_now, onupdate=_now)
+
+
+SCHEMA_ORIGINS = ("generazione", "chat", "manuale", "ripristino")
+
+
+class SchemaVersion(Base):
+    """Cronologia delle versioni dello schema: ogni modifica ne salva una."""
+    __tablename__ = "schema_versions"
+    __table_args__ = (UniqueConstraint("project_id", "version", name="uq_schema_version"),)
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    project_id = Column(String, ForeignKey("projects.id"), nullable=False, index=True)
+    version = Column(Integer, nullable=False)
+    schema_json = Column(JSON, nullable=False)
+    author = Column(String(255), nullable=True)
+    origin = Column(String(20), nullable=False)  # generazione | chat | manuale | ripristino
+    created_at = Column(DateTime, default=_now)
+
+
+class QueryHistory(Base):
+    """Domande in linguaggio naturale e query eseguite, per progetto."""
+    __tablename__ = "query_history"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    project_id = Column(String, ForeignKey("projects.id"), nullable=False, index=True)
+    user_id = Column(String(255), nullable=True)
+    question = Column(Text, nullable=True)  # vuota se la query e' stata scritta a mano
+    generated_sql = Column(Text, nullable=True)
+    source = Column(String(20), nullable=False, default="query")  # query (generata) | execute (eseguita)
+    outcome = Column(String(10), nullable=False)  # ok | errore
+    rows = Column(Integer, nullable=True)
     created_at = Column(DateTime, default=_now, index=True)
 
 
@@ -230,7 +290,8 @@ def run_migrations(engine=None):
         # init_db ha appena creato (vuote) le tabelle nuove: vanno tolte perche' le crea la migrazione.
         from sqlalchemy import text
         with engine.begin() as conn:
-            for name in ("chat_messages", "project_links", "project_invites", "project_members",
+            for name in ("jobs", "schema_versions", "query_history",
+                         "chat_messages", "project_links", "project_invites", "project_members",
                          "usage_events", "admin_audit_log", "app_settings", "users"):
                 if name in tables:
                     conn.execute(text(f"DROP TABLE {name}"))

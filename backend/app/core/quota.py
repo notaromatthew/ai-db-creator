@@ -31,6 +31,8 @@ def user_limit(user: User) -> int:
 def consume_ai(kind: str):
     """Dipendenza FastAPI: controlla le quote e registra l'uso prima di chiamare il modello."""
     def dependency(project_id: str | None = None, user: User = Depends(current_app_user)):
+        if not get_setting("ai_enabled"):
+            raise AppException(detail="Le funzioni AI sono temporaneamente sospese dall'amministratore. Riprova piu' tardi.", status_code=503)
         if count_today() >= get_setting("daily_ai_budget_total"):
             raise AppException(detail="Il servizio ha raggiunto il limite giornaliero di richieste AI. Riprova domani.", status_code=429)
         if count_today(user.id) >= user_limit(user):

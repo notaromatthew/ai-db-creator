@@ -1,0 +1,114 @@
+/* Tema TecnIA per il login di Keycloak.
+   Token allineati a frontend/src/index.css (tema chiaro in :root, scuro con prefers-color-scheme).
+   Copre sia i selettori del tema classico (login-pf, kc-*) sia quelli PatternFly 5 (pf-v5-*). */
+:root {
+  --t-bg: #f8f9fa;
+  --t-ink: #191c1d;
+  --t-muted: #5a4136;
+  --t-line: #e2bfb0;
+  --t-primary: #a04100;
+  --t-orange: #ff6b00;
+  --t-magenta: #fe3ac6;
+  --t-card: rgba(255, 255, 255, 0.82);
+  --t-field: #ffffff;
+  --t-error: #b00020;
+  --t-font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --t-font-head: "Geist", "Inter", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --t-bg: #0b0f17;
+    --t-ink: #f1f3f5;
+    --t-muted: #c8bcb4;
+    --t-line: #3a3f4b;
+    --t-primary: #ffa468;
+    --t-card: rgba(15, 23, 42, 0.85);
+    --t-field: #1e293b;
+    --t-error: #ff8a9b;
+  }
+}
+
+html, body, .login-pf, .login-pf body, .pf-v5-c-login {
+  background: var(--t-bg) !important;
+  color: var(--t-ink);
+  font-family: var(--t-font);
+}
+.login-pf body {
+  background-image: radial-gradient(circle at 0% 0%, rgba(255, 107, 0, 0.16), transparent 45%), radial-gradient(circle at 100% 100%, rgba(254, 58, 198, 0.12), transparent 45%) !important;
+  background-attachment: fixed;
+}
+
+/* Intestazione con il marchio */
+#kc-header-wrapper, .pf-v5-c-login__header, .kc-logo-text {
+  font-family: var(--t-font-head);
+  font-weight: 700;
+  color: var(--t-ink) !important;
+  text-transform: none;
+  letter-spacing: -0.01em;
+}
+.kc-logo-text, div.kc-logo-text { background-image: url("../img/logo.svg") !important; background-repeat: no-repeat !important; background-size: 44px 44px !important; background-position: center top !important; height: 56px; width: 100%; background-color: transparent !important; }
+.kc-logo-text span { display: none; }
+
+/* Scheda centrale in vetro */
+.card-pf, .pf-v5-c-login__main {
+  background: var(--t-card) !important;
+  border: 1px solid var(--t-line) !important;
+  border-top: 1px solid var(--t-line) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 20px rgba(26, 34, 51, 0.12) !important;
+  backdrop-filter: blur(12px);
+  color: var(--t-ink);
+}
+#kc-page-title, .pf-v5-c-title {
+  font-family: var(--t-font-head);
+  color: var(--t-ink) !important;
+}
+
+/* Campi: contrasto alto e focus ben visibile */
+input[type="text"], input[type="password"], input[type="email"], .form-control, .pf-v5-c-form-control, .pf-v5-c-form-control input {
+  background: var(--t-field) !important;
+  color: var(--t-ink) !important;
+  border: 1px solid var(--t-line) !important;
+  border-radius: 12px !important;
+}
+input:focus, .form-control:focus, .pf-v5-c-form-control:focus-within {
+  outline: 2px solid var(--t-orange) !important;
+  outline-offset: 2px;
+  border-color: var(--t-orange) !important;
+  box-shadow: none !important;
+}
+label, .control-label, .pf-v5-c-form__label-text { color: var(--t-ink); font-weight: 600; }
+.help-block, .instruction, .subtitle { color: var(--t-muted) !important; }
+
+/* Pulsanti a pillola, come nell'app */
+#kc-login, #kc-register, .btn-primary, .pf-v5-c-button.pf-m-primary, input[type="submit"].btn {
+  background: var(--t-card) !important;
+  background-image: none !important;
+  color: var(--t-primary) !important;
+  border: 1px solid var(--t-orange) !important;
+  border-radius: 999px !important;
+  min-height: 44px;
+  padding: 10px 24px;
+  font-family: var(--t-font-head);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: 0 2px 10px rgba(255, 107, 0, 0.15);
+}
+#kc-login:hover, #kc-register:hover, .btn-primary:hover, .pf-v5-c-button.pf-m-primary:hover { background: rgba(255, 107, 0, 0.1) !important; }
+.btn-default, .pf-v5-c-button.pf-m-secondary { border-radius: 999px !important; border: 1px solid var(--t-line) !important; color: var(--t-ink) !important; background: transparent !important; }
+
+/* Link e messaggi */
+a, a:link, a:visited { color: var(--t-primary); text-decoration: underline; text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--t-orange); outline-offset: 2px; }
+.alert-error, .pf-v5-c-alert.pf-m-danger, .kc-feedback-text, .pf-v5-c-helper-text__item.pf-m-error { color: var(--t-error) !important; }
+.alert, .pf-v5-c-alert { border-radius: 12px; }
+
+/* Consenso al trattamento dei dati (Termini e condizioni in registrazione) */
+#termsAccepted, input[name="termsAccepted"] { width: 18px; height: 18px; accent-color: var(--t-orange); margin-right: 8px; vertical-align: middle; }
+#kc-registration-terms-text, .kc-terms-text { color: var(--t-muted); font-size: 13px; line-height: 1.5; max-height: 9rem; overflow: auto; }
+
+/* Lingua e piè di pagina */
+#kc-locale-dropdown a, .kc-dropdown a { color: var(--t-ink); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

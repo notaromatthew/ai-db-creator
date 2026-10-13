@@ -1,0 +1,15 @@
+{
+  "algorithm": "sha256 dell'AST (ast.dump) del valore del prompt",
+  "prompts": {
+    "backend/app/core/llm.py::POPULATE_SQL_PROMPT": "186069babb5bf8321154be01b411ae5dd62798365dcd2470d9355b267724cf9b",
+    "backend/app/core/llm.py::QUERY_PROMPT": "2d44c00939cba8a5c31783f626ca9ddd2213f3421ecd9a94d67658ce4fa964b8",
+    "backend/app/core/llm.py::SCHEMA_PROMPT": "9005e246a1b4c13f16a2a8a4537a79877d19cd81e197c0371831883c9f0eaf8e",
+    "backend/app/core/llm.py::generate_data_for_table#1": "6804bdadfed606f5cb0fbaa5beec83c12d6c5f9815c5f4e0a4450bd3378a2681",
+    "backend/app/core/llm.py::map_columns_to_tables#1": "d59034ec7e5c96b18120ab9fc87513d4d773493c0a20e0474d2c06fdb668626f",
+    "backend/app/services/chat_service.py::EXTRACTION_PROMPT": "1403b05e7d23850d20b4e1107f8bad740fd5969abcb6a2c7cf6f35e10fc21f7c",
+    "backend/app/services/chat_service.py::SYSTEM_PROMPT": "eb95e635b946d1c4816bfe1e600cc1caef38b5b79334c44c8d2c511856c46133",
+    "backend/app/services/chat_service.py::chat#1": "e60320c8b5e63ecfd2fb6cd4044577fe77408c249682693b22b4e9349fb1db91",
+    "backend/app/services/pdf_ocr.py::OCR_PROMPT": "e3e7a822ecba10f164e236c29974714a01ebbc51aaf3a62cac9fc255e72cc94b",
+    "backend/app/services/schema_service.py::SCHEMA_REPAIR_PROMPT": "b8118c3675e74195133af430fe5d24b27e23069eb760c6767b45d026ea0acf03"
+  }
+}

@@ -2,22 +2,27 @@ from app.models.schema_models import NormalizedSchema
 from app.utils.logger import log
 from sqlalchemy import create_engine, inspect, text
 from datetime import date, datetime
+import re
 
 TYPE_MAP = {
-    "integer":  {"sqlite": "INTEGER", "postgresql": "INTEGER", "mysql": "INT", "mssql": "INT"},
-    "int":      {"sqlite": "INTEGER", "postgresql": "INTEGER", "mysql": "INT", "mssql": "INT"},
-    "text":     {"sqlite": "TEXT",    "postgresql": "TEXT",    "mysql": "TEXT",   "mssql": "NVARCHAR(MAX)"},
-    "varchar":  {"sqlite": "TEXT",    "postgresql": "VARCHAR", "mysql": "VARCHAR","mssql": "NVARCHAR"},
-    "string":   {"sqlite": "TEXT",    "postgresql": "TEXT",    "mysql": "TEXT",   "mssql": "NVARCHAR(MAX)"},
-    "real":     {"sqlite": "REAL",    "postgresql": "REAL",    "mysql": "FLOAT",  "mssql": "FLOAT"},
-    "float":    {"sqlite": "REAL",    "postgresql": "REAL",    "mysql": "FLOAT",  "mssql": "FLOAT"},
-    "double":   {"sqlite": "REAL",    "postgresql": "DOUBLE PRECISION", "mysql": "DOUBLE", "mssql": "FLOAT"},
-    "boolean":  {"sqlite": "INTEGER", "postgresql": "BOOLEAN", "mysql": "TINYINT(1)", "mssql": "BIT"},
-    "bool":     {"sqlite": "INTEGER", "postgresql": "BOOLEAN", "mysql": "TINYINT(1)", "mssql": "BIT"},
-    "date":     {"sqlite": "TEXT",    "postgresql": "DATE",    "mysql": "DATE",   "mssql": "DATE"},
-    "datetime": {"sqlite": "TEXT",    "postgresql": "TIMESTAMP", "mysql": "DATETIME", "mssql": "DATETIME2"},
-    "timestamp":{"sqlite": "TEXT",    "postgresql": "TIMESTAMP", "mysql": "DATETIME", "mssql": "DATETIME2"},
+    "integer":  {"sqlite": "INTEGER", "postgresql": "INTEGER", "mysql": "INT", "mssql": "INT", "oracle": "NUMBER(10)"},
+    "int":      {"sqlite": "INTEGER", "postgresql": "INTEGER", "mysql": "INT", "mssql": "INT", "oracle": "NUMBER(10)"},
+    "text":     {"sqlite": "TEXT",    "postgresql": "TEXT",    "mysql": "TEXT",   "mssql": "NVARCHAR(MAX)", "oracle": "CLOB"},
+    "varchar":  {"sqlite": "TEXT",    "postgresql": "VARCHAR", "mysql": "VARCHAR","mssql": "NVARCHAR", "oracle": "VARCHAR2"},
+    "string":   {"sqlite": "TEXT",    "postgresql": "TEXT",    "mysql": "TEXT",   "mssql": "NVARCHAR(MAX)", "oracle": "VARCHAR2"},
+    "real":     {"sqlite": "REAL",    "postgresql": "REAL",    "mysql": "FLOAT",  "mssql": "FLOAT", "oracle": "NUMBER"},
+    "float":    {"sqlite": "REAL",    "postgresql": "REAL",    "mysql": "FLOAT",  "mssql": "FLOAT", "oracle": "NUMBER"},
+    "double":   {"sqlite": "REAL",    "postgresql": "DOUBLE PRECISION", "mysql": "DOUBLE", "mssql": "FLOAT", "oracle": "NUMBER"},
+    "boolean":  {"sqlite": "INTEGER", "postgresql": "BOOLEAN", "mysql": "TINYINT(1)", "mssql": "BIT", "oracle": "NUMBER(1)"},
+    "bool":     {"sqlite": "INTEGER", "postgresql": "BOOLEAN", "mysql": "TINYINT(1)", "mssql": "BIT", "oracle": "NUMBER(1)"},
+    "date":     {"sqlite": "TEXT",    "postgresql": "DATE",    "mysql": "DATE",   "mssql": "DATE", "oracle": "DATE"},
+    "datetime": {"sqlite": "TEXT",    "postgresql": "TIMESTAMP", "mysql": "DATETIME", "mssql": "DATETIME2", "oracle": "TIMESTAMP"},
+    "timestamp":{"sqlite": "TEXT",    "postgresql": "TIMESTAMP", "mysql": "DATETIME", "mssql": "DATETIME2", "oracle": "TIMESTAMP"},
 }
+
+SUPPORTED_DIALECTS = ("sqlite", "postgresql", "mysql", "mssql", "oracle")
+_INTEGER_KEYS = ("integer", "int")
+
 
 def _resolve_type(raw: str, dialect: str) -> str:
     key = raw.lower().split("(")[0].strip()
@@ -32,6 +37,8 @@ def _resolve_type(raw: str, dialect: str) -> str:
             return f"{mapped}({length})"
         except (IndexError, ValueError):
             pass
+    if dialect == "oracle" and mapped == "VARCHAR2":
+        return "VARCHAR2(255)"
     return mapped
 
 def _escape_val(val, dialect: str) -> str:
@@ -45,6 +52,8 @@ def _escape_val(val, dialect: str) -> str:
         return str(val)
     if isinstance(val, (date, datetime)):
         s = val.isoformat()
+        if dialect == "oracle":
+            return f"TIMESTAMP '{s.replace('T', ' ')}'" if isinstance(val, datetime) else f"DATE '{s}'"
         return f"'{s}'"
     s = str(val)
     if dialect in ("mysql", "mssql"):
@@ -53,13 +62,36 @@ def _escape_val(val, dialect: str) -> str:
         s = s.replace("'", "''")
     return f"'{s}'"
 
+_ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+_ISO_DATETIME = re.compile(r"^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}(:\d{2}(\.\d+)?)?$")
+
+
+def _escape_value_for_column(val, dialect: str, data_type: str | None) -> str:
+    """Come _escape_val, ma per Oracle scrive date e timestamp come letterali tipizzati."""
+    if dialect == "oracle" and isinstance(val, str) and data_type:
+        if data_type == "date" and _ISO_DATE.match(val):
+            return f"DATE '{val}'"
+        if data_type in ("datetime", "timestamp") and _ISO_DATETIME.match(val):
+            return f"TIMESTAMP '{val.replace('T', ' ')}'"
+        if data_type == "date" and _ISO_DATETIME.match(val):
+            return f"DATE '{val[:10]}'"
+    return _escape_val(val, dialect)
+
+
 def _generate_create_table(table_def, dialect: str, schema: NormalizedSchema) -> str:
     lines = []
     pk_cols = []
     fk_lines = []
+    single_pk = sum(1 for c in table_def.columns if c.is_primary_key) == 1
 
     for col in table_def.columns:
         col_type = _resolve_type(col.data_type, dialect)
+        if dialect == "oracle":
+            # Oracle non ammette CLOB in chiavi e vincoli di unicita'.
+            if col_type == "CLOB" and (col.is_primary_key or col.is_unique or col.is_foreign_key):
+                col_type = "VARCHAR2(255)"
+            if single_pk and col.is_primary_key and col.data_type.lower().split("(")[0].strip() in _INTEGER_KEYS:
+                col_type += " GENERATED BY DEFAULT AS IDENTITY"
         parts = [f"  {col.name} {col_type}"]
         if col.is_primary_key:
             pk_cols.append(col.name)
@@ -71,7 +103,10 @@ def _generate_create_table(table_def, dialect: str, schema: NormalizedSchema) ->
             default = col.default_value
             if default.upper() not in ("NULL", "CURRENT_TIMESTAMP", "CURRENT_DATE", "CURRENT_TIME"):
                 default = f"'{default}'"
-            parts.append(f"DEFAULT {default}")
+            if dialect == "oracle":
+                parts.insert(1, f"DEFAULT {default}")  # in Oracle DEFAULT precede i vincoli
+            else:
+                parts.append(f"DEFAULT {default}")
         lines.append(" ".join(parts))
 
     if len(pk_cols) == 1:
@@ -105,6 +140,14 @@ def export_full(dialect: str, db_path: str, schema: NormalizedSchema) -> str:
         for t in reversed(schema.tables):
             parts.append(f"DROP TABLE IF EXISTS {t.name};")
         parts.append("")
+    elif dialect == "oracle":
+        # Oracle (prima della 23c) non ha IF EXISTS: si ignora solo l'errore "tabella inesistente" (ORA-00942).
+        parts.append("-- DROP existing tables (reverse FK order)")
+        for t in reversed(schema.tables):
+            parts.append("BEGIN EXECUTE IMMEDIATE 'DROP TABLE %s CASCADE CONSTRAINTS'; "
+                         "EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;" % t.name)
+            parts.append("/")
+        parts.append("")
 
     for table in schema.tables:
         parts.append(_generate_create_table(table, dialect, schema))
@@ -117,8 +160,10 @@ def export_full(dialect: str, db_path: str, schema: NormalizedSchema) -> str:
             if not rows:
                 continue
             parts.append(f"-- Data for {table.name}")
+            type_by_col = {c.name: c.data_type.lower().split("(")[0].strip() for c in table.columns}
             for row in rows:
-                vals = ", ".join(_escape_val(v, dialect) for v in row)
+                vals = ", ".join(_escape_value_for_column(v, dialect, type_by_col.get(name))
+                                 for v, name in zip(row, col_names))
                 parts.append(f"INSERT INTO {table.name} ({', '.join(col_names)}) VALUES ({vals});")
             parts.append("")
 

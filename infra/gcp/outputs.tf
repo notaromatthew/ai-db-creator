@@ -1,17 +1,26 @@
 output "project_id" {
-  value = google_project.this.project_id
+  value = var.project_id
 }
 
-output "vertex_location" {
-  value = var.region
+output "gateway_url" {
+  description = "Valore di LLM_GATEWAY_URL in Coolify"
+  value       = google_cloud_run_v2_service.gateway.uri
 }
 
-output "service_account_email" {
-  value = google_service_account.vertex_caller.email
+output "gateway_audience" {
+  value = local.gateway_url
 }
 
-# Da incollare in Coolify come VERTEX_CREDENTIALS_JSON (solo se create_service_account_key = true)
-output "service_account_key_json" {
-  value     = var.create_service_account_key ? base64decode(google_service_account_key.vertex_caller[0].private_key) : ""
-  sensitive = true
+output "caller_service_account" {
+  value = google_service_account.caller.email
+}
+
+output "artifact_registry_image_base" {
+  description = "Prefisso per docker build/push del gateway"
+  value       = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.gateway.repository_id}/gateway"
+}
+
+output "caller_key_secret" {
+  description = "Segreto Secret Manager con la chiave del chiamante (se create_caller_key = true)"
+  value       = google_secret_manager_secret.caller_key.secret_id
 }
