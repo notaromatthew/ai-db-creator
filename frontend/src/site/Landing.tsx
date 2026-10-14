@@ -177,6 +177,7 @@ export default function Landing({ lang = 'it' }: { lang?: Lang }) {
           <nav aria-label="Principale" className="flex flex-wrap items-center gap-x-1">
             <a className={`${navLink} hidden sm:inline-block`} href="#come">{c.nav.how}</a>
             <a className={`${navLink} hidden sm:inline-block`} href="#ricerca">{c.nav.research}</a>
+            <a className={navLink} href="/app/examples">{c.nav.examples}</a>
             <a className={navLink} href="/app/help">{c.nav.help}</a>
             <span role="group" aria-label={c.nav.langLabel} className="flex">{langLink('it', '/')}{langLink('en', '/en/')}</span>
             <a className="primary-button ml-1" href="/app">{c.nav.login}</a>

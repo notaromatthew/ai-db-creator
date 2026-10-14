@@ -2,6 +2,13 @@
 
 Tutte le modifiche rilevanti del progetto sono raccolte in questo file. Il formato segue una struttura orientata alla ricerca: ogni voce distingue funzionalità applicative, infrastruttura scientifica, riproducibilità, documentazione e validazione.
 
+## 2026-10-14 - Pagina Esempi pubblica, impostazioni solo Vertex AI (Branch redesign/tecnia-research)
+
+- Nuove API pubbliche in sola lettura: `GET /api/examples`, `/api/examples/{name}`, `/api/examples/{name}/files/{filename}`. Leggono `data/datasets/{library,university,hospital}` (nome da elenco fisso, file solo se elencati in `source/`); il `Dockerfile` copia i dataset in `/app/example_datasets`. Nessuna chiamata AI, nessuna scrittura.
+- Frontend: pagine `/app/examples` e `/app/examples/:name` senza login, voce "Esempi" nel menu e nella landing. I testi di spiegazione stanno in `data/datasets/examples.json` (scritti a mano, non generati).
+- Impostazioni: `/app/settings` mostra solo Vertex AI (modello tra `gemini-2.5-flash-lite`, `gemini-2.5-flash`, `gemini-2.5-pro`, lunghezza massima, prova di connessione). `PUT /api/settings` rifiuta modelli fuori elenco; rimossi gli endpoint Ollama di settings e i controlli temperatura/top-p/richieste al minuto, che non avevano effetto su Vertex.
+- Infrastruttura: `infra/gcp/local-dev` (progetto GCP di sviluppo con Vertex AI, importato in Terraform), `docker-compose.local.vertex.yml`, admin locale predefinito.
+
 ## 2026-10-12 - Lifespan, /ready, test, correzioni e deploy GCP (Branch Davide)
 
 - Backend: migrazione a `lifespan` (RFC-001), endpoint `/ready`, `PORT`/CORS da configurazione; avvio resiliente se DB o Keycloak non rispondono. 26 nuovi test (auth, health/ready, settings, benchmark, multi-tenancy): 91 passati.

@@ -11,6 +11,14 @@
 | `GET` | `/api/projects/{id}` | Get project details | — | `{id, name, prompt, schema_json, db_path, created_at, updated_at}` |
 | `DELETE` | `/api/projects/{id}` | Delete project | — | `{...project}` |
 
+### 1.1b Examples (public, read-only)
+
+| Method | Path | Description | Request Body | Response |
+|---|---|---|---|---|
+| `GET` | `/api/examples` | Elenco pubblico (senza login) dei 3 esempi già analizzati | — | `{examples: [{name, title, subtitle, icon, tables, relationships}]}` |
+| `GET` | `/api/examples/{name}` | Dettaglio pubblico: testi, richiesta, schema, documenti e prime 20 righe per tabella (sola lettura). `name` ∈ library, university, hospital | — | `{...summary, intro, choices, notes, prompt, schema, sources, data}` |
+| `GET` | `/api/examples/{name}/files/{filename}` | Scarica un documento di partenza (solo quelli elencati in `sources`) | — | file |
+
 ### 1.2 Documents
 
 | Method | Path | Description | Request Body | Response |

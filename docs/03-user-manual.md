@@ -8,6 +8,10 @@ This guide walks through the complete workflow in 10 steps.
 
 ---
 
+## Examples
+
+The **Esempi** page (`/app/examples`) is public: no account is needed. It shows three analysed cases (library, university, hospital) with the source documents, the request, the resulting schema and a preview of the data. Everything is read-only.
+
 ## Step 1: Create a Project
 
 1. Open the application in your browser (default: `http://localhost:5173`).

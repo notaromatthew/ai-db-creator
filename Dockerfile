@@ -25,6 +25,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/app ./app
 COPY backend/alembic ./alembic
+COPY data/datasets ./example_datasets
 COPY --from=frontend-builder /app/frontend/dist ./static
 
 RUN useradd --system --uid 10001 --create-home appuser \

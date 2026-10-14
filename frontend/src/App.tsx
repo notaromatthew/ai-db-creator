@@ -7,6 +7,8 @@ import SettingsPage from './pages/SettingsPage'
 import BenchmarkPage from './pages/BenchmarkPage'
 import AdminPage from './pages/AdminPage'
 import SharedProjectPage from './pages/SharedProjectPage'
+import ExamplesPage from './pages/ExamplesPage'
+import ExampleDetailPage from './pages/ExampleDetailPage'
 import StudyPage from './pages/StudyPage'
 import ResearchPage from './pages/research/ResearchPage'
 import LegalPage from './pages/LegalPage'
@@ -125,17 +127,18 @@ function AppShell() {
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <div className="flex items-center gap-5">
             <Link to="/app" aria-label="AI-DB-Creator, torna ai progetti"><Logo size={34} /></Link>
-            {authenticated && (
-              <div className="hidden items-center gap-1 sm:flex">
-                <NavLink to="/app" end className={navCls}>Progetti</NavLink>
+            <div className="hidden items-center gap-1 sm:flex">
+              {authenticated && <NavLink to="/app" end className={navCls}>Progetti</NavLink>}
+              <NavLink to="/app/examples" className={navCls}>Esempi</NavLink>
+              {authenticated && (<>
                 {config.research_mode && <NavLink to="/app/benchmark" className={navCls}>Benchmark</NavLink>}
                 {config.research_mode && <NavLink to="/app/studio" className={navCls}>Studio</NavLink>}
                 {canResearch && <NavLink to="/app/ricerca" className={navCls}>Ricerca</NavLink>}
                 {isAdmin && <NavLink to="/app/admin" className={navCls}>Admin</NavLink>}
                 {isAdmin && <NavLink to="/app/settings" className={navCls}>Modelli</NavLink>}
-                <NavLink to="/app/help" className={navCls}>Aiuto</NavLink>
-              </div>
-            )}
+              </>)}
+              <NavLink to="/app/help" className={navCls}>Aiuto</NavLink>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             {authenticated ? (
@@ -159,6 +162,8 @@ function AppShell() {
           <Route index element={<RequireAuth><Dashboard /></RequireAuth>} />
           <Route path="projects/:id" element={<RequireAuth><ProjectPage /></RequireAuth>} />
           <Route path="shared/:token" element={<SharedProjectPage />} />
+          <Route path="examples" element={<ExamplesPage />} />
+          <Route path="examples/:name" element={<ExampleDetailPage />} />
           <Route path="login" element={<AuthEntry mode="login" />} />
           <Route path="register" element={<AuthEntry mode="register" />} />
           <Route path="benvenuto" element={<RequireAuth><OnboardingPage /></RequireAuth>} />

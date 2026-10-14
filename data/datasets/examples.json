@@ -1,0 +1,56 @@
+{
+  "library": {
+    "title": "Biblioteca: prestiti, iscritti e multe",
+    "subtitle": "Prestiti, iscritti e multe",
+    "icon": "local_library",
+    "intro": [
+      "Una biblioteca comunale tiene l'elenco degli iscritti, il catalogo dei libri e i prestiti in file separati. Il caso chiede di metterli insieme in un database ordinato, dove ogni informazione sta in un posto solo.",
+      "Il file dei prestiti è il più interessante: ogni riga ripete i dati dell'iscritto che ha preso il libro. L'analisi li riconosce, li separa in una tabella a parte e lascia in ogni prestito solo il riferimento all'iscritto e al libro."
+    ],
+    "choices": [
+      "Nel catalogo la categoria è scritta per esteso accanto a ogni libro. Diventa una tabella a sé (categories) e ogni libro punta alla sua categoria.",
+      "Ogni prestito collega un libro a un iscritto, con la data del prestito e quella di scadenza.",
+      "Le multe sono legate al prestito: una multa esiste solo se c'è un prestito in ritardo."
+    ],
+    "notes": [
+      "I prestiti e le multe di questo esempio sono generati apposta per avere dati realistici da mostrare. Non vengono da una biblioteca vera.",
+      "Il file dei prestiti ripete i dati degli iscritti di proposito: serve a mostrare come l'analisi li riconosce e li ricompone."
+    ]
+  },
+  "university": {
+    "title": "Università: studenti, corsi e iscrizioni",
+    "subtitle": "Studenti, corsi e iscrizioni",
+    "icon": "school",
+    "intro": [
+      "Una segreteria universitaria ha un unico foglio con una riga per ogni esame sostenuto: nome e email dello studente, codice, titolo e crediti del corso, semestre e voto. Lo stesso studente e lo stesso corso compaiono molte volte.",
+      "L'analisi capisce che nel foglio ci sono tre cose diverse e le separa: gli studenti, i corsi e le iscrizioni che li collegano."
+    ],
+    "choices": [
+      "Studenti e corsi diventano due tabelle, con una riga per ciascuno.",
+      "L'iscrizione è il legame tra uno studente e un corso. La sua chiave è la coppia studente più corso, quindi non può esistere due volte.",
+      "Semestre e voto appartengono all'iscrizione, non allo studente né al corso."
+    ],
+    "notes": [
+      "È l'esempio più piccolo: tre tabelle e due relazioni. È il punto di partenza giusto per capire come funziona.",
+      "Il foglio di partenza ha sette colonne: più comodo da leggere, ma meno ordinato di quanto servirebbe a un database."
+    ]
+  },
+  "hospital": {
+    "title": "Ospedale: visite, terapie e fatture",
+    "subtitle": "Visite, terapie e fatture",
+    "icon": "local_hospital",
+    "intro": [
+      "Un ospedale privato descrive pazienti, medici, reparti, appuntamenti, terapie, farmaci e fatture. Le informazioni stanno in un elenco di pazienti, in un elenco di appuntamenti e in una nota di testo libero con le regole di lavoro.",
+      "È il caso più complesso: otto tabelle e sette relazioni. Medici e farmaci non hanno un file proprio, e l'analisi li ricava dalla descrizione e dalle note."
+    ],
+    "choices": [
+      "Medici e reparti sono tabelle separate. La nota operativa dice che ogni specialità corrisponde a un reparto, e lo schema lo riflette.",
+      "Una terapia può richiedere più farmaci e un farmaco può servire in più terapie. Per questo c'è una tabella di collegamento (prescriptions), che porta anche la posologia.",
+      "Ogni fattura si riferisce a un appuntamento. La nota spiega l'importo: costo della terapia più il 15% di quota a carico del paziente."
+    ],
+    "notes": [
+      "I dati sono sintetici: nessun paziente è reale.",
+      "Le regole di reparti e fatturazione stanno in un testo libero, non in una tabella. L'esempio mostra come l'analisi le usa insieme ai file strutturati."
+    ]
+  }
+}
