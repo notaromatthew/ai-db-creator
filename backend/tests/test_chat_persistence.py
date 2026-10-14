@@ -31,8 +31,8 @@ def test_chat_writes_and_endpoint_returns_messages(client, project, monkeypatch)
     monkeypatch.setattr(chat_service, "_get_llm", lambda temperature=0.3: object())
     monkeypatch.setattr(chat_service.ChatPromptTemplate, "from_messages", staticmethod(lambda *_a, **_k: FakePrompt()))
 
-    reply = asyncio.run(chat_service.chat(pid, "voglio una biblioteca", []))
-    assert reply == "Risposta di prova"
+    turn = asyncio.run(chat_service.chat(pid, "voglio una biblioteca", []))
+    assert turn == {"reply": "Risposta di prova", "proposal": False, "apply": False}
 
     response = test_client.get(f"/api/projects/{pid}/chat/history")
     assert response.status_code == 200

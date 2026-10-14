@@ -9,30 +9,21 @@ from typing import Optional
 import json
 import re
 
-SYSTEM_PROMPT = """Sei un assistente esperto di progettazione di database. Il tuo scopo è aiutare l'utente a progettare uno schema di database normalizzato tramite conversazione in italiano.
+SYSTEM_PROMPT = """Sei un assistente che aiuta una persona a rifinire lo schema di un database. Parli in italiano semplice, senza termini tecnici, come a chi non sa cosa sia un database.
 
-Linee guida:
-1. Inizia chiedendo all'utente che tipo di dati deve memorizzare. Fai domande di chiarimento se necessario.
-2. Suggerisci tabelle, colonne, relazioni e tipi di dati in base alla descrizione e ai documenti caricati.
-3. Proponi miglioramenti: tabelle aggiuntive, migliore normalizzazione, relazioni mancanti.
-4. Quando hai abbastanza informazioni, proponi lo schema spiegandolo in italiano semplice, senza usare termini tecnici.
-5. Metti il JSON dello schema in un blocco ```json in modo che il sistema possa elaborarlo.
+Come lavori:
+- Capisci cosa vuole cambiare e proponi poche modifiche concrete, in una breve lista (al massimo 5 punti).
+- Non scrivere mai JSON, SQL, codice o l'elenco completo di tabelle e colonne: lo schema vero lo aggiorna il sistema solo dopo la conferma dell'utente.
+- Non dire mai che hai gia' applicato o salvato una modifica: tu proponi, il sistema applica quando l'utente conferma.
+- Risposte brevi: al massimo 90 parole. Puoi usare **grassetto** e liste con il trattino.
+- Se la richiesta non e' chiara, fai una sola domanda breve.
 
-Struttura JSON richiesta:
+Rispondi SEMPRE e SOLO con un oggetto JSON di questa forma, senza altro testo:
+{{"reply": "<testo per l'utente>", "proposal": true|false, "apply": true|false}}
 
-```json
-{{"schema": {{"tables": [...], "relationships": [...], "description": "..."}}}}
-```
-
-Ogni tabella:
-{{"name": "nome_tabelle_plurale", "description": "cosa contiene", "columns": [{{"name": "nome_colonna", "data_type": "INTEGER|TEXT|REAL|DATE|BOOLEAN", "is_primary_key": true|false, "is_foreign_key": true|false, "foreign_key_table": "..." se FK, "foreign_key_column": "..." se FK, "is_unique": true|false, "is_not_null": true|false, "default_value": "...", "description": "..."}}]}}
-
-REGOLE IMPORTANTI:
-- Non usare MAI comandi SQL. Usa solo il formato JSON qui sopra per proporre lo schema.
-- Spiega lo schema in italiano semplice, come se parlassi a una persona che non sa cosa sia un database.
-- Descrivi ogni tabella in modo chiaro: "questa tabella conterrà i clienti con nome e cognome", ecc.
-- Il JSON deve essere dentro un blocco ```json (verrà nascosto all'utente dal sistema).
-- Chiedi sempre all'utente se vuole accettare lo schema o apportare modifiche."""
+- "proposal" e' true solo se nel testo proponi modifiche concrete allo schema e aspetti la conferma; in quel caso chiudi con la domanda "Vuoi che le applichi?".
+- "apply" e' true solo se l'ultimo messaggio dell'utente accetta chiaramente la proposta in attesa (indicata sotto). In quel caso "reply" e' una frase breve tipo "Perfetto, applico le modifiche." e "proposal" e' false.
+- Se non c'e' nessuna proposta in attesa, "apply" e' sempre false."""
 
 
 def get_history(project_id: str) -> list:
@@ -41,19 +32,35 @@ def get_history(project_id: str) -> list:
     try:
         rows = (session.query(ChatMessage).filter(ChatMessage.project_id == project_id)
                 .order_by(ChatMessage.created_at).all())
-        return [{"id": r.id, "role": r.role, "content": r.content,
+        return [{"id": r.id, "role": r.role, "content": r.content, "proposal": bool(r.proposal),
                  "created_at": r.created_at.isoformat() if r.created_at else None} for r in rows]
     finally:
         session.close()
 
 
-def add_message(project_id: str, role: str, content: str, extra: Optional[dict] = None):
+def add_message(project_id: str, role: str, content: str, proposal: bool = False):
     session = get_session(init_db())
     try:
-        session.add(ChatMessage(project_id=project_id, role=role, content=content))
+        session.add(ChatMessage(project_id=project_id, role=role, content=content, proposal=proposal))
         session.commit()
     finally:
         session.close()
+
+
+def resolve_proposals(project_id: str):
+    """La proposta in attesa e' stata applicata o scartata: nessun messaggio resta in sospeso."""
+    session = get_session(init_db())
+    try:
+        session.query(ChatMessage).filter(ChatMessage.project_id == project_id,
+                                          ChatMessage.proposal.is_(True)).update({"proposal": False})
+        session.commit()
+    finally:
+        session.close()
+
+
+def has_pending_proposal(project_id: str) -> bool:
+    history = get_history(project_id)
+    return bool(history) and history[-1]["role"] == "assistant" and history[-1]["proposal"]
 
 
 def clear_history(project_id: str):
@@ -82,7 +89,33 @@ def build_doc_context(project_id: str, document_ids: list[str]) -> str:
     return "\n\n".join(parts)
 
 
-async def chat(project_id: str, message: str, document_ids: list[str], existing_schema: Optional[NormalizedSchema] = None) -> str:
+HISTORY_LIMIT = 10
+
+
+def _parse_turn(raw: str) -> dict:
+    """Legge la risposta strutturata del modello; se non e' JSON valido usa il testo senza codice."""
+    text = (raw or "").strip()
+    match = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", text)
+    candidate = match.group(1) if match else text
+    start, end = candidate.find("{"), candidate.rfind("}")
+    if start != -1 and end > start:
+        try:
+            data = json.loads(candidate[start:end + 1])
+            reply = str(data.get("reply", "")).strip()
+            if reply:
+                return {"reply": _strip_code(reply), "proposal": bool(data.get("proposal")),
+                        "apply": bool(data.get("apply"))}
+        except (ValueError, AttributeError):
+            pass
+    return {"reply": _strip_code(text) or "Non ho capito: puoi dirmelo in altre parole?", "proposal": False, "apply": False}
+
+
+def _strip_code(text: str) -> str:
+    return re.sub(r"```[\s\S]*?```", "", text).strip()
+
+
+async def chat(project_id: str, message: str, document_ids: list[str], existing_schema: Optional[NormalizedSchema] = None) -> dict:
+    """Un turno di conversazione. Restituisce {reply, proposal, apply}; non modifica lo schema."""
     doc_context = build_doc_context(project_id, document_ids)
     history = get_history(project_id)
 
@@ -94,6 +127,7 @@ async def chat(project_id: str, message: str, document_ids: list[str], existing_
         add_message(project_id, "assistant", intro)
         history = get_history(project_id)
 
+    pending = bool(history) and history[-1]["role"] == "assistant" and history[-1]["proposal"]
     add_message(project_id, "user", message)
     history = get_history(project_id)
 
@@ -102,36 +136,75 @@ async def chat(project_id: str, message: str, document_ids: list[str], existing_
 
         schema_context = ""
         if existing_schema:
-            schema_context = f"\nCurrent schema:\n{json.dumps(existing_schema.model_dump(), indent=2)}\n\nIf the user requests changes, modify the existing schema instead of creating a new one."
+            tables = "; ".join(f"{t.name} ({', '.join(c.name for c in t.columns)})" for t in existing_schema.tables)
+            schema_context = f"\nSchema attuale (sintesi): {tables}"
+        schema_context += f"\nProposta in attesa di conferma: {'si' if pending else 'no'}"
 
         msg_history = []
-        for h in history:
+        for h in history[-HISTORY_LIMIT:]:
             if h["role"] == "user":
                 msg_history.append(HumanMessage(content=h["content"]))
             else:
-                msg_history.append(AIMessage(content=h["content"]))
+                msg_history.append(AIMessage(content=_strip_code(h["content"])))
 
         prompt = ChatPromptTemplate.from_messages([
-            ("system", SYSTEM_PROMPT + "\n\nUploaded documents context:\n{doc_context}\n{schema_context}"),
+            ("system", SYSTEM_PROMPT + "\n\nContesto dei documenti caricati:\n{doc_context}\n{schema_context}"),
             MessagesPlaceholder(variable_name="history"),
             ("human", "{input}"),
         ])
 
         chain = prompt | llm
         result = await chain.ainvoke({
-            "doc_context": doc_context or "No documents uploaded.",
+            "doc_context": doc_context or "Nessun documento caricato.",
             "schema_context": schema_context,
             "history": msg_history[:-1],
             "input": message,
         })
-
-        response = result.content.strip()
+        turn = _parse_turn(result.content)
     except Exception as e:
         log.error(f"Chat LLM call failed ({type(e).__name__})")
         raise AppException(detail="Chat generation failed", status_code=502) from e
 
-    add_message(project_id, "assistant", response)
-    return response
+    turn["apply"] = bool(turn["apply"] and pending)
+    if turn["apply"]:
+        turn["proposal"] = False
+    add_message(project_id, "assistant", turn["reply"], proposal=turn["proposal"])
+    return turn
+
+
+APPLY_PROMPT = ChatPromptTemplate.from_messages([
+    ("system", "Sei un progettista di database. Ti do lo schema attuale e la conversazione con l'utente, che ha accettato "
+               "le modifiche proposte. Restituisci lo schema COMPLETO aggiornato con quelle modifiche e nient'altro cambiato: "
+               "stesso formato dello schema attuale, solo JSON grezzo, senza spiegazioni ne' markdown.\n"
+               "Struttura: {{\"tables\": [...], \"relationships\": [...], \"description\": \"...\"}}\n"
+               "Ogni relazione deve avere il campo \"type\": one_to_many, many_to_many oppure one_to_one. "
+               "Le chiavi esterne devono riferirsi a tabelle e colonne esistenti."),
+    ("system", "Schema attuale:\n{current}"),
+    ("system", "Conversazione:\n{history}"),
+    ("user", "Applica le modifiche accettate e restituisci lo schema completo in JSON."),
+])
+
+
+async def apply_proposal(project_id: str, existing_schema: NormalizedSchema) -> NormalizedSchema:
+    """Dopo la conferma dell'utente: costruisce lo schema aggiornato dal JSON del modello. Non salva nulla."""
+    history = [m for m in get_history(project_id)][-HISTORY_LIMIT:]
+    history_text = "\n".join(f"{m['role']}: {_strip_code(m['content'])}" for m in history)
+    try:
+        llm = _get_llm(temperature=0.1)
+        result = await (APPLY_PROMPT | llm).ainvoke({
+            "current": json.dumps(existing_schema.model_dump(), ensure_ascii=False),
+            "history": history_text,
+        })
+    except Exception as e:
+        log.error(f"Applicazione della proposta fallita ({type(e).__name__})")
+        raise AppException(detail="Non sono riuscito ad applicare le modifiche", status_code=502) from e
+    schema = extract_schema_from_response(result.content)
+    if schema is None or not schema.tables:
+        meta = getattr(result, "response_metadata", None) or {}
+        log.error(f"Schema aggiornato non valido: finish_reason={meta.get('finish_reason')}")
+        raise AppException(detail="Non sono riuscito ad applicare le modifiche: riprova", status_code=502)
+    resolve_proposals(project_id)
+    return schema
 
 
 def _truncate_json(raw: str) -> str:
@@ -158,9 +231,36 @@ def _normalize_schema(data: dict) -> dict:
     return data
 
 
+def _close_open_json(raw: str) -> str:
+    """Il modello a volte dimentica le ultime parentesi: le aggiunge, senza toccare il resto."""
+    stack, in_string, escaped = [], False, False
+    for ch in raw:
+        if in_string:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+        elif ch == '"':
+            in_string = True
+        elif ch in "{[":
+            stack.append("}" if ch == "{" else "]")
+        elif ch in "}]" and stack:
+            stack.pop()
+    return raw + "".join(reversed(stack)) if not in_string else raw
+
+
+def _load_json(raw: str):
+    try:
+        return json.loads(raw)
+    except ValueError:
+        return json.loads(_close_open_json(raw))
+
+
 def _try_build_schema(raw: str) -> NormalizedSchema | None:
     try:
-        data = json.loads(raw)
+        data = _load_json(raw)
         data = _normalize_schema(data)
         return NormalizedSchema(**data)
     except Exception as e:
@@ -183,38 +283,3 @@ def extract_schema_from_response(response: str) -> NormalizedSchema | None:
         if schema:
             return schema
     return None
-
-
-EXTRACTION_PROMPT = ChatPromptTemplate.from_messages([
-    ("system", "You are a database schema designer. Based on the conversation so far, output ONLY the complete JSON schema object for the database being designed. "
-               "Do NOT add explanations, comments, or markdown. Output only the raw JSON.\n"
-               "Structure: {{\"schema\": {{\"tables\": [...], \"relationships\": [...], \"description\": \"...\"}}}}\n"
-               "Each table: {{\"name\": \"nome_tabelle_plurale\", \"description\": \"cosa contiene\", \"columns\": [{{\"name\": \"nome_colonna\", \"data_type\": \"INTEGER|TEXT|REAL|DATE|BOOLEAN\", \"is_primary_key\": true|false, \"is_foreign_key\": true|false, \"foreign_key_table\": \"...\" se FK, \"foreign_key_column\": \"...\" se FK, \"is_unique\": false, \"is_not_null\": false, \"description\": \"...\"}}]}}\n"
-               "Each relationship MUST include the \"type\" field: one_to_many, many_to_many, or one_to_one."),
-    ("system", "Conversation so far:\n{history}"),
-    ("user", "Output the complete JSON schema for the database described above."),
-])
-
-
-async def extract_schema_with_fallback(project_id: str, response: str, existing_schema: Optional[NormalizedSchema] = None) -> NormalizedSchema | None:
-    """Try to extract a schema from the chat response; if not possible, ask the LLM for it explicitly."""
-    schema = extract_schema_from_response(response)
-    if schema:
-        return schema
-
-    history = get_history(project_id)
-    history_text = "\n".join(f"{m['role']}: {m['content']}" for m in history[-20:])
-    if existing_schema:
-        history_text += f"\n\nCurrent schema:\n{json.dumps(existing_schema.model_dump(), indent=2)}"
-
-    try:
-        llm = _get_llm(temperature=0.1)
-        chain = EXTRACTION_PROMPT | llm
-        result = await chain.ainvoke({"history": history_text or "No previous conversation."})
-        extracted = extract_schema_from_response(result.content)
-        if extracted:
-            log.info("Schema extracted via LLM fallback")
-        return extracted
-    except Exception as e:
-        log.error(f"Schema extraction fallback failed ({type(e).__name__})")
-        return None

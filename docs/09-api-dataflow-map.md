@@ -33,7 +33,9 @@
 | Method | Path | Description | Request Body | Response |
 |---|---|---|---|---|
 | `POST` | `/api/projects/{id}/generate` | Quick generate schema | `{prompt: str, document_ids: [str]}` | `NormalizedSchema` |
-| `POST` | `/api/projects/{id}/chat` | Chat for schema generation | `{message: str, document_ids: [str]}` | `{response: str, schema?: NormalizedSchema}` |
+| `POST` | `/api/projects/{id}/chat` | One chat turn: short reply, optional pending proposal; `schema` only when the user confirmed in text | `{message: str, document_ids: [str]}` | `{response: str, proposal: bool, schema?: NormalizedSchema}` |
+| `POST` | `/api/projects/{id}/chat/apply` | Confirm the pending proposal (button): builds the updated schema, the client saves it with `PUT /schema` | — | `{response, schema}` (409 if no proposal) |
+| `POST` | `/api/projects/{id}/chat/dismiss` | Discard the pending proposal | — | `{dismissed: true}` |
 | `POST` | `/api/projects/{id}/chat-accept` | Accept chat-generated schema | `NormalizedSchema` | `{...schema}` |
 | `GET` | `/api/projects/{id}/schema` | Get current schema | — | `NormalizedSchema \| null` |
 | `PUT` | `/api/projects/{id}/schema` | Update (edit) schema | `NormalizedSchema` | `{...updated_schema}` |

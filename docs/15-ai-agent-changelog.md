@@ -75,3 +75,13 @@ This document provides a machine-readable summary of architectural, model, API, 
   - Prompt nuovi in questa voce: `OCR_PROMPT` (`pdf_ocr.py`, hash `e3e7a822ecba10f1`), `SCHEMA_REPAIR_PROMPT` (`schema_service.py`, hash `b8118c3675e74195`). Gli altri prompt non sono stati modificati.
 - **Migrazione** `e5jobs00005` (tabelle nuove, colonne `schema_version`, `target_dialect`, `needs_ocr`, versione 1 per gli schemi esistenti, tabelle dei benchmark mancanti); strategia in `docs/migrazioni.md`.
 - **F1 per tipo di sorgente**: `scripts/f1_by_source.py`.
+
+---
+
+## 2026-10-14: chat dello schema con proposta e conferma (`schema_chat_prompt_v2`)
+
+Modifica ai prompt della chat (`chat_service.py`), **non comparabile** con le conversazioni registrate come `schema_chat_prompt_v1`:
+- `SYSTEM_PROMPT` (hash `26d246391d28c04d`, prima `eb95e635b946d1c4`): risposte brevi (max 90 parole) in JSON `{reply, proposal, apply}`, mai JSON o SQL nel testo, mai dire che una modifica e' gia' applicata; la proposta resta in attesa finche' l'utente conferma.
+- `chat#1` (hash `6ad5b7f6ccb5d1c2`): contesto con sintesi dello schema (non il JSON intero), ultimi 10 messaggi, indicazione di proposta in attesa.
+- `APPLY_PROMPT` (nuovo, hash `cbc87fc3d3c83dd7`): dopo la conferma costruisce lo schema completo aggiornato dal JSON; sostituisce `EXTRACTION_PROMPT`, rimosso insieme a `extract_schema_with_fallback`.
+- Nuovi endpoint: `POST /api/projects/{id}/chat/apply` e `.../chat/dismiss`; `POST /chat` restituisce `{response, proposal, schema}` (schema solo se l'utente ha confermato scrivendo). Migrazione `h8chatprop00008` (`chat_messages.proposal`).

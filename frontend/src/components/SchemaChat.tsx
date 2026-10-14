@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/api/client'
 import { NormalizedSchema } from '@/types'
+import Markdown from './Markdown'
 
 interface Props {
   projectId: string
@@ -16,13 +17,15 @@ interface Props {
 interface Message {
   role: 'user' | 'assistant'
   content: string
+  /** Proposta di modifica in attesa di conferma (solo l'ultima risposta puo' esserlo). */
+  proposal?: boolean
 }
 
 function stripCodeBlocks(text: string): string {
   return text.replace(/```[\s\S]*?```/g, '').trim()
 }
 
-const INTRO_NEW = 'Ciao! Descrivi cosa vuoi cambiare nello schema (per esempio "aggiungi la data di consegna agli ordini") e lo aggiorno io.'
+const INTRO_NEW = 'Ciao! Descrivi cosa vuoi cambiare nello schema (per esempio "aggiungi la data di consegna agli ordini"): ti propongo le modifiche e le applico quando confermi.'
 
 export default function SchemaChat({ projectId, schema, documentIds, locked = false, readOnly = false }: Props) {
   const queryClient = useQueryClient()
@@ -32,7 +35,7 @@ export default function SchemaChat({ projectId, schema, documentIds, locked = fa
   const bottomRef = useRef<HTMLDivElement>(null)
   const initialized = useRef(false)
 
-  const { data: history, isError: historyFailed } = useQuery<{ messages: { role: string; content: string }[] }>({
+  const { data: history, isError: historyFailed } = useQuery<{ messages: { role: string; content: string; proposal?: boolean }[] }>({
     queryKey: ['chat-history', projectId],
     queryFn: () => api.get(`/projects/${projectId}/chat/history`),
     staleTime: Infinity,
@@ -44,7 +47,7 @@ export default function SchemaChat({ projectId, schema, documentIds, locked = fa
     initialized.current = true
     const saved: Message[] = (history?.messages || [])
       .filter((m) => m.role === 'user' || m.role === 'assistant')
-      .map((m) => ({ role: m.role as Message['role'], content: m.role === 'assistant' ? stripCodeBlocks(m.content) : m.content }))
+      .map((m) => ({ role: m.role as Message['role'], content: m.role === 'assistant' ? stripCodeBlocks(m.content) : m.content, proposal: !!m.proposal }))
       .filter((m) => m.content)
     setMessages(saved.length ? saved : [{ role: 'assistant', content: INTRO_NEW }])
   }, [history, historyFailed])
@@ -63,28 +66,56 @@ export default function SchemaChat({ projectId, schema, documentIds, locked = fa
     queryClient.invalidateQueries({ queryKey: ['interactions', projectId] })
   }
 
+  const say = (content: string) => setMessages((prev) => [...prev, { role: 'assistant', content }])
+  const clearProposal = () => setMessages((prev) => prev.map((m) => (m.proposal ? { ...m, proposal: false } : m)))
+
+  const applyAndReport = async (proposal: NormalizedSchema) => {
+    try {
+      await applySchema(proposal)
+      say('Ho aggiornato lo schema: controlla il diagramma. Il database vuoto è stato rigenerato.')
+    } catch (e: any) {
+      say(`Non sono riuscito ad applicare la modifica: ${e?.message || 'errore sconosciuto'}`)
+    }
+  }
+
   const sendMessage = async () => {
     const msg = input.trim()
     if (!msg || loading || disabled) return
     setInput('')
+    clearProposal()
     setMessages((prev) => [...prev, { role: 'user', content: msg }])
     setLoading(true)
     try {
       const res = await api.post(`/projects/${projectId}/chat`, { message: msg, document_ids: documentIds })
-      const text = stripCodeBlocks(res.response) || 'Ho preparato una modifica allo schema.'
-      setMessages((prev) => [...prev, { role: 'assistant', content: text }])
-      if (res.schema) {
-        try {
-          await applySchema(res.schema)
-          setMessages((prev) => [...prev, { role: 'assistant', content: 'Ho aggiornato lo schema: controlla il diagramma. Il database vuoto è stato rigenerato.' }])
-        } catch (e: any) {
-          setMessages((prev) => [...prev, { role: 'assistant', content: `Non sono riuscito ad applicare la modifica: ${e?.message || 'errore sconosciuto'}` }])
-        }
-      }
+      setMessages((prev) => [...prev, { role: 'assistant', content: stripCodeBlocks(res.response) || 'Ho capito.', proposal: !!res.proposal }])
+      if (res.schema) await applyAndReport(res.schema)
     } catch (e: any) {
-      setMessages((prev) => [...prev, { role: 'assistant', content: `Qualcosa non ha funzionato: ${e?.message || 'riprova tra poco'}` }])
+      say(`Qualcosa non ha funzionato: ${e?.message || 'riprova tra poco'}`)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const acceptProposal = async () => {
+    if (loading || disabled) return
+    clearProposal()
+    setLoading(true)
+    try {
+      const res = await api.post(`/projects/${projectId}/chat/apply`, {})
+      await applyAndReport(res.schema)
+    } catch (e: any) {
+      say(`Non sono riuscito ad applicare la modifica: ${e?.message || 'riprova tra poco'}`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const dismissProposal = async () => {
+    clearProposal()
+    try {
+      await api.post(`/projects/${projectId}/chat/dismiss`, {})
+    } catch {
+      /* la proposta resta scartata nella conversazione anche se il server non risponde */
     }
   }
 
@@ -105,15 +136,21 @@ export default function SchemaChat({ projectId, schema, documentIds, locked = fa
         <p className="mt-1 text-xs leading-5 text-tecnia-muted dark:text-slate-400">
           {locked
             ? 'Lo schema è definitivo: la conversazione resta qui da rileggere, ma non si può più modificare.'
-            : 'Scrivi cosa cambiare: lo schema si aggiorna e approvi tu con "Continua". La conversazione resta salvata nel progetto.'}
+            : 'Scrivi cosa cambiare: ti propongo le modifiche e lo schema si aggiorna solo quando confermi. La conversazione resta salvata nel progetto.'}
         </p>
       </div>
 
       <div className="flex-1 space-y-3 overflow-y-auto p-4" aria-live="polite">
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[88%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm ${m.role === 'user' ? 'bg-orange-600 text-white' : 'bg-slate-100 text-tecnia-ink dark:bg-slate-800 dark:text-slate-100'}`}>
-              {m.content}
+            <div className={`max-w-[88%] rounded-2xl px-3 py-2 text-sm ${m.role === 'user' ? 'whitespace-pre-wrap bg-orange-600 text-white' : 'bg-slate-100 text-tecnia-ink dark:bg-slate-800 dark:text-slate-100'}`}>
+              {m.role === 'user' ? m.content : <Markdown text={m.content} />}
+              {m.proposal && !disabled && i === messages.length - 1 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button type="button" onClick={acceptProposal} disabled={loading} className="primary-button !min-h-9 !px-4">Applica le modifiche</button>
+                  <button type="button" onClick={dismissProposal} disabled={loading} className="secondary-button !min-h-9 !px-4">Non ora</button>
+                </div>
+              )}
             </div>
           </div>
         ))}

@@ -10,7 +10,7 @@ Una sola catena lineare, un solo `head`:
 
 `c25c5721cbb9` (iniziale) -> `d1a0acl00001` (utenti e condivisione) -> `d2adm00002` (admin e consumi)
 -> `d3chat00003` (chat) -> `d4final00004` (schema definitivo) -> `e5jobs00005` (lavori, versioni dello schema,
-cronologia query, dialetto di destinazione, OCR) -> `f6research00006` (ricerca) -> `g7hardening00007` (rafforzamenti).
+cronologia query, dialetto di destinazione, OCR) -> `f6research00006` (ricerca) -> `g7hardening00007` (rafforzamenti) -> `h8chatprop00008` (chat: `chat_messages.proposal`, proposta in attesa di conferma).
 
 Il test `backend/tests/test_migrations.py` esegue tutta la catena su un SQLite vuoto fino a `head` e fallisce se
 esiste piu' di un head. Va sempre lasciato verde.

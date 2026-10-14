@@ -131,7 +131,7 @@ def test_f6_is_single_head_and_creates_tables_idempotently(tmp_path):
     engine = sa.create_engine(f"sqlite:///{tmp_path / 'm.db'}")
     cfg = alembic_cfg(engine)
     script = ScriptDirectory.from_config(cfg)
-    assert script.get_heads() == ["g7hardening00007"]
+    assert script.get_heads() == ["h8chatprop00008"]
     assert script.get_revision("g7hardening00007").down_revision == "f6research00006"
     assert script.get_revision("f6research00006").down_revision == "e5jobs00005"
     command.upgrade(cfg, "e5jobs00005")

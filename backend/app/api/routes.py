@@ -19,7 +19,7 @@ from app.services.schema_service import SchemaService, get_last_repair
 from app.services.document_service import DocumentService
 from app.services.population_service import PopulationService
 from app.services.query_service import QueryService, record_query, list_queries
-from app.services.chat_service import chat, get_history, clear_history, extract_schema_with_fallback
+from app.services.chat_service import chat, get_history, clear_history, apply_proposal, resolve_proposals, has_pending_proposal
 from app.tasks import generate_schema_task, populate_data_task, export_schema_task
 from app import tasks as job_tasks
 from app.core.llm import get_llm_info, get_llm_run_metadata, _get_llm, allowed_vertex_models
@@ -230,14 +230,14 @@ async def chat_schema(project_id: str, req: ChatRequest):
             digest = sha256_file(doc_svc.get_document(doc_id, project_id).file_path)
             if digest:
                 document_hashes.append(digest)
-        response = await chat(project_id, req.message, req.document_ids, existing_schema=existing)
-        schema = await extract_schema_with_fallback(project_id, response, existing_schema=existing)
+        turn = await chat(project_id, req.message, req.document_ids, existing_schema=existing)
+        schema = await apply_proposal(project_id, existing) if turn["apply"] and existing else None
     except Exception as exc:
         _log_research_run("schema_chat_failed", project_id, {
             "status": "failed", "schema_initial_hash": stable_hash(existing.model_dump()) if existing else None,
             "schema_final_hash": None,
             "warnings": [{"category": "chat_generation_error", "error_type": type(exc).__name__}],
-            "run_manifest": run_manifest(started_at, "schema_chat_prompt_v1", req, {
+            "run_manifest": run_manifest(started_at, "schema_chat_prompt_v2", req, {
                 "prompt_sha256": sha256_text(req.message), "document_sha256": document_hashes,
             }),
         }, run_id=run_id)
@@ -249,11 +249,36 @@ async def chat_schema(project_id: str, req: ChatRequest):
         "schema_initial_hash": stable_hash(existing.model_dump()) if existing else None,
         "schema_final_hash": stable_hash(schema.model_dump()) if schema else None,
         "document_ids": req.document_ids,
-        "run_manifest": run_manifest(started_at, "schema_chat_prompt_v1", req, {
+        "run_manifest": run_manifest(started_at, "schema_chat_prompt_v2", req, {
             "prompt_sha256": sha256_text(req.message), "document_sha256": document_hashes,
         }),
     }, run_id=run_id)
-    return {"response": response, "schema": schema.model_dump() if schema else None}
+    return {"response": turn["reply"], "proposal": turn["proposal"], "schema": schema.model_dump() if schema else None}
+
+
+@router.post("/projects/{project_id}/chat/apply", dependencies=[Depends(project_editor), Depends(consume_ai("chat"))])
+async def chat_apply(project_id: str):
+    """Conferma con il pulsante: costruisce lo schema aggiornato dalla proposta in attesa."""
+    _ensure_not_finalized(project_id)
+    existing = schema_svc.get_schema(project_id)
+    if existing is None or not has_pending_proposal(project_id):
+        raise HTTPException(status_code=409, detail="Non c'e' nessuna proposta da applicare")
+    started_at = utc_now()
+    schema = await apply_proposal(project_id, existing)
+    _log_research_run("schema_chat", project_id, {
+        **get_llm_run_metadata(0.1, "chat_apply", []),
+        "schema_initial": existing.model_dump(), "schema_final": schema.model_dump(),
+        "schema_initial_hash": stable_hash(existing.model_dump()),
+        "schema_final_hash": stable_hash(schema.model_dump()),
+        "run_manifest": run_manifest(started_at, "schema_chat_prompt_v2", None, {"prompt_sha256": sha256_text("chat_apply")}),
+    }, run_id=new_run_id())
+    return {"response": "Ho preparato le modifiche.", "schema": schema.model_dump()}
+
+
+@router.post("/projects/{project_id}/chat/dismiss", dependencies=[Depends(project_editor)])
+def chat_dismiss(project_id: str):
+    resolve_proposals(project_id)
+    return {"dismissed": True}
 
 @router.get("/projects/{project_id}/chat/history", dependencies=[Depends(project_viewer)])
 def chat_history(project_id: str):

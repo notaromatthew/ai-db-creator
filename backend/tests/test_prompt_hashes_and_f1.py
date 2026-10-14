@@ -36,7 +36,7 @@ def test_all_known_prompt_constants_are_tracked():
     for expected in ("backend/app/core/llm.py::SCHEMA_PROMPT", "backend/app/core/llm.py::QUERY_PROMPT",
                      "backend/app/core/llm.py::POPULATE_SQL_PROMPT",
                      "backend/app/services/chat_service.py::SYSTEM_PROMPT",
-                     "backend/app/services/chat_service.py::EXTRACTION_PROMPT",
+                     "backend/app/services/chat_service.py::APPLY_PROMPT",
                      "backend/app/services/pdf_ocr.py::OCR_PROMPT",
                      "backend/app/services/schema_service.py::SCHEMA_REPAIR_PROMPT"):
         assert expected in keys

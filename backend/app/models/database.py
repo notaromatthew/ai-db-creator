@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, String, Text, DateTime, JSON, ForeignKey, Float, Integer, Boolean, UniqueConstraint, Index, text
+from sqlalchemy import create_engine, Column, String, Text, DateTime, JSON, ForeignKey, Float, Integer, Boolean, UniqueConstraint, Index, text, false
 from sqlalchemy.orm import DeclarativeBase, relationship
 from datetime import datetime, timezone
 import uuid
@@ -148,6 +148,7 @@ class ChatMessage(Base):
     project_id = Column(String, ForeignKey("projects.id"), nullable=False, index=True)
     role = Column(String(20), nullable=False)
     content = Column(Text, nullable=False)
+    proposal = Column(Boolean, nullable=False, default=False, server_default=false())
     created_at = Column(DateTime, default=_now, index=True)
 
 
