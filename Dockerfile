@@ -28,7 +28,7 @@ COPY backend/alembic ./alembic
 COPY --from=frontend-builder /app/frontend/dist ./static
 
 RUN useradd --system --uid 10001 --create-home appuser \
-    && mkdir -p /app/uploads /app/projects \
+    && mkdir -p /app/uploads /app/projects /app/data \
     && chown -R appuser:appuser /app
 
 USER appuser
