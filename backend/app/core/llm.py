@@ -230,12 +230,19 @@ async def generate_schema(prompt: str, document_context: str = "",
                           temperature: float | None = None) -> NormalizedSchema:
     try:
         llm = _get_llm(temperature=0.1 if temperature is None else temperature)
-        chain = SCHEMA_PROMPT | llm | schema_parser
-        result = await _invoke(chain, {
+        raw = await _invoke(SCHEMA_PROMPT | llm, {
             "prompt": prompt,
             "document_context": document_context,
             "format_instructions": schema_parser.get_format_instructions(),
         })
+        try:
+            result = schema_parser.invoke(raw)
+        except Exception:
+            meta = getattr(raw, "response_metadata", None) or {}
+            usage = getattr(raw, "usage_metadata", None) or {}
+            log.error("Schema output not parseable: finish_reason=%s output_tokens=%s max_output_tokens=%s" % (
+                meta.get("finish_reason"), usage.get("output_tokens"), settings.vertex_max_output_tokens))
+            raise
         log.info(f"Generated schema with {len(result.tables)} tables")
         return result
     except Exception as e:

@@ -41,7 +41,7 @@ export default function SettingsPage() {
     try {
       const updated = await api.put('/settings', {
         vertex_model: settingsData.vertex_model,
-        vertex_max_output_tokens: numOr(settingsData.vertex_max_output_tokens, 2048),
+        vertex_max_output_tokens: numOr(settingsData.vertex_max_output_tokens, 8192),
       })
       setSettingsData(updated)
       queryClient.invalidateQueries({ queryKey: ['llm-info'] })

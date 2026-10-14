@@ -8,7 +8,7 @@ L'app su Coolify usa `LLM_PROVIDER=vertex` e chiama Vertex AI con il service acc
 ## Costo
 - Infrastruttura: nessuna risorsa a pagamento oltre al server Coolify esistente.
 - Vertex: a consumo. `gemini-2.5-flash-lite` costa circa 0,07 centesimi di dollaro per richiesta tipica (stima, da verificare sui prezzi di Google).
-- Tetti: `DAILY_AI_BUDGET_TOTAL` (150 al giorno di default nel compose), `DEFAULT_DAILY_AI_QUOTA` (10 per utente), `VERTEX_MAX_OUTPUT_TOKENS` (2048), `VERTEX_ALLOWED_MODELS` (senza Pro).
+- Tetti: `DAILY_AI_BUDGET_TOTAL` (150 al giorno di default nel compose), `DEFAULT_DAILY_AI_QUOTA` (10 per utente), `VERTEX_MAX_OUTPUT_TOKENS` (8192: con meno, gli schemi grandi vengono troncati e la generazione fallisce), `VERTEX_ALLOWED_MODELS` (senza Pro).
 
 ## Terraform (`infra/gcp/local-dev`)
 Piano preparato: service account `aidb-prod`, ruolo, budget mensile (default 5 euro, solo avvisi) e API. La chiave di produzione si crea solo con `create_prod_key=true` e finisce in `.secrets/vertex-prod-sa.json` (ignorato da git) e nello stato locale di Terraform (non cifrato: custodiscilo fuori dal repo).

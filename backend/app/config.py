@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     vertex_location: str = "europe-west4"
     vertex_model: str = "gemini-2.5-flash-lite"
     vertex_credentials_json: str = ""
-    vertex_max_output_tokens: int = 2048
+    vertex_max_output_tokens: int = 8192
     # Modelli selezionabili dalle impostazioni (separati da virgola). In produzione lasciare fuori i modelli piu' costosi.
     vertex_allowed_models: str = "gemini-2.5-flash-lite,gemini-2.5-flash,gemini-2.5-pro"
 
