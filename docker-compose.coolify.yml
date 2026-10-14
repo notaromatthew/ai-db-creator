@@ -1,12 +1,13 @@
 # Produzione su Coolify, a costo minimo: nessun Ollama e nessun gateway. L'app chiama Vertex AI direttamente
 # con il service account di produzione (VERTEX_CREDENTIALS_JSON nei secrets di Coolify): docs/ops/vertex-diretto.md.
 # Ollama resta solo in docker-compose.yml (sviluppo).
-# Postgres NON e' in questo file: e' una risorsa Coolify a parte (volume persistente + backup: docs/ops/backup.md).
+# Postgres e Redis sono nel file, con password generate da Coolify (variabili SERVICE_PASSWORD_*): nessun segreto da incollare.
+# Segreti condivisi (una sola volta, in Coolify > Shared Variables del team): KEYCLOAK_ADMIN_USER, KEYCLOAK_ADMIN_PASSWORD, VERTEX_CREDENTIALS_JSON.
 version: '3.8'
 
 x-app-env: &app-env
-  DATABASE_URL: ${DATABASE_URL}
-  REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+  DATABASE_URL: postgresql://aidb:${SERVICE_PASSWORD_POSTGRES}@postgres:5432/aidb
+  REDIS_URL: redis://:${SERVICE_PASSWORD_REDIS}@redis:6379/0
   KEYCLOAK_URL: ${KEYCLOAK_URL:-https://keycloak-pw9ut4s1h3aodstrsw1gd84o.89.168.29.98.sslip.io}
   KEYCLOAK_REALM: ${KEYCLOAK_REALM:-aidbcreator}
   KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-aidbcreator-app}
@@ -19,6 +20,8 @@ x-app-env: &app-env
   APP_PUBLIC_URL: ${APP_PUBLIC_URL:?imposta APP_PUBLIC_URL (es. https://aidbcreator.tecniaweb.it)}
   ENVIRONMENT: production
   ADMIN_ROLE: ${ADMIN_ROLE:-aidb-admin}
+  FIRST_ADMIN_EMAIL: ${FIRST_ADMIN_EMAIL:-}
+  STUDY_ACCOUNT_SALT: ${SERVICE_PASSWORD_STUDYSALT}
   DEFAULT_DAILY_AI_QUOTA: ${DEFAULT_DAILY_AI_QUOTA:-10}
   DAILY_AI_BUDGET_TOTAL: ${DAILY_AI_BUDGET_TOTAL:-150}
   # Vertex AI diretto. VERTEX_CREDENTIALS_JSON = contenuto del JSON del service account aidb-prod (solo secret Coolify).
@@ -40,10 +43,12 @@ services:
     environment:
       <<: *app-env
       # Servono solo al bootstrap del realm (keycloak_setup.py): il worker non le riceve.
-      KEYCLOAK_ADMIN_USER: ${KEYCLOAK_ADMIN_USER}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KEYCLOAK_ADMIN_USER: ${KEYCLOAK_ADMIN_USER:?imposta KEYCLOAK_ADMIN_USER}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?imposta KEYCLOAK_ADMIN_PASSWORD}
     depends_on:
       redis:
+        condition: service_healthy
+      postgres:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8000/ready"]
@@ -62,6 +67,8 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+      postgres:
+        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "celery -A app.tasks inspect ping -t 5 >/dev/null 2>&1 || exit 1"]
       interval: 60s
@@ -75,8 +82,8 @@ services:
     # Password obbligatoria (REDIS_PASSWORD: stringa esadecimale, openssl rand -hex 24). Nessuna porta pubblicata.
     command: ["sh", "-c", "exec redis-server --requirepass \"$$REDIS_PASSWORD\" --appendonly yes"]
     environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD:?imposta REDIS_PASSWORD nei secrets di Coolify}
-      REDISCLI_AUTH: ${REDIS_PASSWORD}
+      REDIS_PASSWORD: ${SERVICE_PASSWORD_REDIS}
+      REDISCLI_AUTH: ${SERVICE_PASSWORD_REDIS}
     volumes:
       - redis_data:/data
     healthcheck:
@@ -86,5 +93,21 @@ services:
       retries: 5
     restart: always
 
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: aidb
+      POSTGRES_PASSWORD: ${SERVICE_PASSWORD_POSTGRES}
+      POSTGRES_DB: aidb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aidb -d aidb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+
 volumes:
+  postgres_data:
   redis_data:
