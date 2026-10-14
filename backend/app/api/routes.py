@@ -22,7 +22,7 @@ from app.services.query_service import QueryService, record_query, list_queries
 from app.services.chat_service import chat, get_history, clear_history, extract_schema_with_fallback
 from app.tasks import generate_schema_task, populate_data_task, export_schema_task
 from app import tasks as job_tasks
-from app.core.llm import get_llm_info, get_llm_run_metadata, _get_llm, VERTEX_MODELS
+from app.core.llm import get_llm_info, get_llm_run_metadata, _get_llm, allowed_vertex_models
 from app.utils.research import atomic_write_json, new_run_id, record_run, run_manifest, sha256_file, sha256_text, stable_hash, utc_now
 from app.services.metrics_service import MetricsService
 from app.services.interaction_logger import interaction_logger
@@ -1290,7 +1290,7 @@ def get_app_settings(user: dict = Depends(require_admin)):
         "vertex_project": settings.vertex_project,
         "vertex_location": settings.vertex_location,
         "vertex_model": settings.vertex_model,
-        "vertex_models": VERTEX_MODELS,
+        "vertex_models": allowed_vertex_models(),
         "vertex_max_output_tokens": settings.vertex_max_output_tokens,
         "user": user,
     }
@@ -1299,7 +1299,7 @@ def get_app_settings(user: dict = Depends(require_admin)):
 @router.put("/settings")
 def update_app_settings(body: SettingsUpdateSchema, user: dict = Depends(require_admin)):
     if body.vertex_model is not None:
-        if body.vertex_model not in VERTEX_MODELS:
+        if body.vertex_model not in allowed_vertex_models():
             raise HTTPException(status_code=400, detail="Modello non disponibile su Vertex AI")
         settings.vertex_model = body.vertex_model
     if body.vertex_max_output_tokens is not None:

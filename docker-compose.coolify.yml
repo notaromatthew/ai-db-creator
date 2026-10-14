@@ -1,5 +1,6 @@
-# Produzione su Coolify. Nessun Ollama, nessuna GOOGLE_API_KEY, nessuna chiave Vertex:
-# l'AI passa dal gateway su Cloud Run (LLM_GATEWAY_URL). Ollama resta solo in docker-compose.yml (sviluppo).
+# Produzione su Coolify, a costo minimo: nessun Ollama e nessun gateway. L'app chiama Vertex AI direttamente
+# con il service account di produzione (VERTEX_CREDENTIALS_JSON nei secrets di Coolify): docs/ops/vertex-diretto.md.
+# Ollama resta solo in docker-compose.yml (sviluppo).
 # Postgres NON e' in questo file: e' una risorsa Coolify a parte (volume persistente + backup: docs/ops/backup.md).
 version: '3.8'
 
@@ -10,7 +11,6 @@ x-app-env: &app-env
   KEYCLOAK_REALM: ${KEYCLOAK_REALM:-aidbcreator}
   KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-aidbcreator-app}
   LLM_PROVIDER: ${LLM_PROVIDER:-vertex}
-  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
   # Modalita' ricerca: true = strumenti di studio accesi, false = solo il prodotto
   RESEARCH_MODE: ${RESEARCH_MODE:-false}
   LOG_FORMAT: json
@@ -19,12 +19,16 @@ x-app-env: &app-env
   APP_PUBLIC_URL: ${APP_PUBLIC_URL:?imposta APP_PUBLIC_URL (es. https://aidbcreator.tecniaweb.it)}
   ENVIRONMENT: production
   ADMIN_ROLE: ${ADMIN_ROLE:-aidb-admin}
-  DEFAULT_DAILY_AI_QUOTA: ${DEFAULT_DAILY_AI_QUOTA:-20}
-  DAILY_AI_BUDGET_TOTAL: ${DAILY_AI_BUDGET_TOTAL:-500}
-  # Gateway Cloud Run (infra/gcp): output gateway_url; la chiave del chiamante sta nei secrets di Coolify
-  LLM_GATEWAY_URL: ${LLM_GATEWAY_URL:-}
-  GATEWAY_CALLER_CREDENTIALS_JSON: ${GATEWAY_CALLER_CREDENTIALS_JSON:-}
+  DEFAULT_DAILY_AI_QUOTA: ${DEFAULT_DAILY_AI_QUOTA:-10}
+  DAILY_AI_BUDGET_TOTAL: ${DAILY_AI_BUDGET_TOTAL:-150}
+  # Vertex AI diretto. VERTEX_CREDENTIALS_JSON = contenuto del JSON del service account aidb-prod (solo secret Coolify).
+  VERTEX_PROJECT: ${VERTEX_PROJECT:-aidbcreator-research-2026}
+  VERTEX_LOCATION: ${VERTEX_LOCATION:-europe-west4}
+  VERTEX_CREDENTIALS_JSON: ${VERTEX_CREDENTIALS_JSON:?imposta VERTEX_CREDENTIALS_JSON nei secrets di Coolify}
   VERTEX_MODEL: ${VERTEX_MODEL:-gemini-2.5-flash-lite}
+  VERTEX_MAX_OUTPUT_TOKENS: ${VERTEX_MAX_OUTPUT_TOKENS:-2048}
+  # Modelli selezionabili nelle impostazioni: in produzione senza il modello Pro (costo)
+  VERTEX_ALLOWED_MODELS: ${VERTEX_ALLOWED_MODELS:-gemini-2.5-flash-lite,gemini-2.5-flash}
 
 services:
   app:

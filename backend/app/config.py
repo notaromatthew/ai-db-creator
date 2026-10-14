@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     vertex_model: str = "gemini-2.5-flash-lite"
     vertex_credentials_json: str = ""
     vertex_max_output_tokens: int = 2048
+    # Modelli selezionabili dalle impostazioni (separati da virgola). In produzione lasciare fuori i modelli piu' costosi.
+    vertex_allowed_models: str = "gemini-2.5-flash-lite,gemini-2.5-flash,gemini-2.5-pro"
 
     ollama_mode: str = "remote"  # "remote" vs "local"
     ollama_base_url: str = "https://ollamaapi-u11fj34m2h9druz26hamz3xb.89.168.29.98.sslip.io"

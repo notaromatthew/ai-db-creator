@@ -1,5 +1,7 @@
 # Infrastruttura Google Cloud (gateway AI + Vertex)
 
+> A costo minimo si usa Vertex diretto senza gateway: `docs/ops/vertex-diretto.md` (Terraform in `local-dev/`).
+
 Tutto passa da Terraform, mai dalla console. Nulla e' stato applicato. Ogni `apply` richiede il via di Davide
 (`docs/ops/azioni-con-sua-approvazione.md`) e passa dal flusso `plan -> lettura -> SI -> apply`.
 

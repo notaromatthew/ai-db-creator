@@ -127,6 +127,15 @@ async def _invoke(chain, payload: dict, cacheable: bool = False):
 VERTEX_MODELS = ["gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-2.5-pro"]
 
 
+def allowed_vertex_models() -> list[str]:
+    """Modelli scelti da VERTEX_ALLOWED_MODELS, limitati a quelli noti; il modello in uso e' sempre presente."""
+    wanted = [m.strip() for m in settings.vertex_allowed_models.split(",") if m.strip()]
+    models = [m for m in VERTEX_MODELS if m in wanted] or list(VERTEX_MODELS[:1])
+    if settings.vertex_model not in models:
+        models.insert(0, settings.vertex_model)
+    return models
+
+
 def _vertex_credentials():
     """Service account da JSON in env; None = Application Default Credentials."""
     raw = (settings.vertex_credentials_json or "").strip()
