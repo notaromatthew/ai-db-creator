@@ -41,3 +41,12 @@ Nessuna chiave Vertex fuori da GCP.
 for d in infra/gcp infra/gcp/bootstrap; do (cd $d && terraform init -backend=false && terraform validate); done
 rm -f infra/gcp/.terraform.lock.hcl infra/gcp/bootstrap/.terraform.lock.hcl
 ```
+
+## Sviluppo locale (`local-dev/`)
+Progetto `aidbcreator-research-2026`, API, service account `aidb-runner` (solo `aiplatform.user`) e chiave scritta in `.secrets/vertex-sa.json` per `docker-compose.local.vertex.yml`. Stato locale, separato dalla produzione.
+```bash
+cd infra/gcp/local-dev
+cp terraform.tfvars.example terraform.tfvars
+terraform init && terraform plan -out=plan.tfplan   # lettura, poi apply
+```
+Le risorse create a mano il 2026-10-14 sono importate nello stato (blocchi `import`). La chiave si ruota con `terraform apply -replace=google_service_account_key.runner`.
