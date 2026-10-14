@@ -1,6 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, Body, Depends
 from pydantic import BaseModel, Field
 from sqlalchemy import create_engine, text
+import asyncio
 import json
 import re
 import httpx
@@ -21,7 +22,7 @@ from app.services.query_service import QueryService, record_query, list_queries
 from app.services.chat_service import chat, get_history, clear_history, extract_schema_with_fallback
 from app.tasks import generate_schema_task, populate_data_task, export_schema_task
 from app import tasks as job_tasks
-from app.core.llm import get_llm_info, get_llm_run_metadata
+from app.core.llm import get_llm_info, get_llm_run_metadata, _get_llm, VERTEX_MODELS
 from app.utils.research import atomic_write_json, new_run_id, record_run, run_manifest, sha256_file, sha256_text, stable_hash, utc_now
 from app.services.metrics_service import MetricsService
 from app.services.interaction_logger import interaction_logger
@@ -1269,101 +1270,12 @@ def cancel_job(project_id: str, job_id: str, access: ProjectAccess = Depends(pro
 # ==========================================
 
 class SettingsUpdateSchema(BaseModel):
-    llm_provider: str | None = None
-    openai_model: str | None = None
-    openai_api_key: str | None = None
-    google_model: str | None = None
-    google_api_key: str | None = None
-    groq_model: str | None = None
-    groq_api_key: str | None = None
-    openrouter_model: str | None = None
-    openrouter_api_key: str | None = None
-    ollama_mode: str | None = None
-    ollama_model: str | None = None
-    ollama_base_url: str | None = None
-    ollama_api_key: str | None = None
-    use_ollama: bool | None = None
-    llm_temperature: float | None = None
-    llm_top_p: float | None = None
-    llm_max_tokens: int | None = None
-    llm_max_requests_per_minute: int | None = None
-
-@router.get("/settings/ollama-models")
-
-async def list_ollama_models(
-    base_url: str | None = None,
-    api_key: str | None = None,
-    user: dict = Depends(require_admin)
-):
-    target_url = base_url if base_url else settings.ollama_base_url
-    target_key = api_key if api_key is not None else settings.ollama_api_key
-    try:
-        headers = {}
-        if target_key and target_key.strip():
-            headers["Authorization"] = f"Bearer {target_key.strip()}"
-        url = f"{target_url.rstrip('/')}/api/tags"
-        async with httpx.AsyncClient(verify=_outbound_tls_verify(), timeout=5.0) as client:
-            res = await client.get(url, headers=headers)
-            if res.status_code == 200:
-                models = res.json().get("models", [])
-                model_names = [m["name"] for m in models if "name" in m]
-                if model_names:
-                    return {"models": model_names}
-            else:
-                log.warning(f"Ollama tags endpoint returned status {res.status_code}: {res.text[:200]}")
-    except Exception as e:
-        log.warning(f"Failed to fetch Ollama models from {target_url}: {e}")
-    return {"models": [settings.ollama_model]}
+    vertex_model: str | None = None
+    vertex_max_output_tokens: int | None = Field(default=None, ge=256, le=65536)
 
 
-class OllamaTestRequest(BaseModel):
-    prompt: str = "Rispondi in italiano: Che giorno è oggi?"
-    model: str | None = None
-
-@router.post("/settings/ollama-test")
-async def test_ollama_prompt(body: OllamaTestRequest, user: dict = Depends(require_admin)):
-    target_url = settings.ollama_base_url
-    target_key = settings.ollama_api_key
-    model = body.model or settings.ollama_model or "gemma2:9b"
-
-    headers = {"Content-Type": "application/json"}
-    if target_key and target_key.strip():
-        headers["Authorization"] = f"Bearer {target_key.strip()}"
-
-    api_url = f"{target_url.rstrip('/')}/api/generate"
-    payload = {
-        "model": model,
-        "prompt": body.prompt,
-        "stream": False,
-    }
-
-    log.info(f"🧪 Ollama test: POST {api_url} model={model} prompt={body.prompt[:60]}...")
-    try:
-        async with httpx.AsyncClient(verify=_outbound_tls_verify(), timeout=60.0) as client:
-            res = await client.post(api_url, json=payload, headers=headers)
-            if res.status_code == 200:
-                data = res.json()
-                return {
-                    "success": True,
-                    "model": model,
-                    "response": data.get("response", ""),
-                    "total_duration_ms": round(data.get("total_duration", 0) / 1_000_000, 1),
-                    "eval_count": data.get("eval_count", 0),
-                }
-            else:
-                log.error(f"Ollama test failed: {res.status_code} - {res.text[:300]}")
-                return {
-                    "success": False,
-                    "model": model,
-                    "error": f"HTTP {res.status_code}: {res.text[:300]}",
-                }
-    except Exception as e:
-        log.error(f"Ollama test connection error: {e}")
-        return {
-            "success": False,
-            "model": model,
-            "error": f"Connessione fallita: {str(e)}",
-        }
+class LlmTestRequest(BaseModel):
+    prompt: str = Field(min_length=1, max_length=2000)
 
 
 def _mask(value: str) -> str:
@@ -1372,105 +1284,54 @@ def _mask(value: str) -> str:
 
 @router.get("/settings")
 def get_app_settings(user: dict = Depends(require_admin)):
-    info = get_llm_info()
     return {
-        "provider": info["provider"],
-        "model": info["model"],
-        "llm_provider": settings.llm_provider,
-        "openai_model": settings.openai_model,
-        "openai_api_key": _mask(settings.openai_api_key),
-        "google_model": settings.google_model,
-        "google_api_key": _mask(settings.google_api_key),
-        "groq_model": settings.groq_model,
-        "groq_api_key": _mask(settings.groq_api_key),
-        "openrouter_model": settings.openrouter_model,
-        "openrouter_api_key": _mask(settings.openrouter_api_key),
-        "ollama_mode": settings.ollama_mode,
-        "ollama_model": settings.ollama_model,
-        "ollama_base_url": settings.ollama_base_url,
-        "ollama_api_key": _mask(settings.ollama_api_key),
-        "use_ollama": settings.use_ollama,
-        "llm_temperature": settings.llm_temperature,
-        "llm_top_p": settings.llm_top_p,
-        "llm_max_tokens": settings.llm_max_tokens,
-        "llm_max_requests_per_minute": settings.llm_max_requests_per_minute,
+        "provider": "Google Vertex AI",
+        "model": settings.vertex_model,
+        "vertex_project": settings.vertex_project,
+        "vertex_location": settings.vertex_location,
+        "vertex_model": settings.vertex_model,
+        "vertex_models": VERTEX_MODELS,
+        "vertex_max_output_tokens": settings.vertex_max_output_tokens,
         "user": user,
     }
 
+
 @router.put("/settings")
 def update_app_settings(body: SettingsUpdateSchema, user: dict = Depends(require_admin)):
-    if body.llm_provider is not None:
-        settings.llm_provider = body.llm_provider
-        settings.use_ollama = (body.llm_provider == "ollama")
+    if body.vertex_model is not None:
+        if body.vertex_model not in VERTEX_MODELS:
+            raise HTTPException(status_code=400, detail="Modello non disponibile su Vertex AI")
+        settings.vertex_model = body.vertex_model
+    if body.vertex_max_output_tokens is not None:
+        settings.vertex_max_output_tokens = body.vertex_max_output_tokens
+    settings.llm_provider = "vertex"
+    settings.use_ollama = False
 
-    if body.openai_model is not None:
-        settings.openai_model = body.openai_model
-    if body.openai_api_key is not None and not body.openai_api_key.startswith("••••"):
-        settings.openai_api_key = body.openai_api_key
-    if body.google_model is not None:
-        settings.google_model = body.google_model
-    if body.google_api_key is not None and not body.google_api_key.startswith("••••"):
-        settings.google_api_key = body.google_api_key
-    if body.groq_model is not None:
-        settings.groq_model = body.groq_model
-    if body.groq_api_key is not None and not body.groq_api_key.startswith("••••"):
-        settings.groq_api_key = body.groq_api_key
-    if body.openrouter_model is not None:
-        settings.openrouter_model = body.openrouter_model
-    if body.openrouter_api_key is not None and not body.openrouter_api_key.startswith("••••"):
-        settings.openrouter_api_key = body.openrouter_api_key
-    if body.ollama_mode is not None:
-        settings.ollama_mode = body.ollama_mode
-        if body.ollama_mode == "local" and not body.ollama_base_url:
-            settings.ollama_base_url = "http://localhost:11434"
-        elif body.ollama_mode == "remote" and not body.ollama_base_url:
-            settings.ollama_base_url = "https://ollamaapi-u11fj34m2h9druz26hamz3xb.89.168.29.98.sslip.io"
-
-    if body.ollama_model is not None:
-        settings.ollama_model = body.ollama_model
-    if body.ollama_base_url is not None:
-        settings.ollama_base_url = body.ollama_base_url
-    if body.ollama_api_key is not None and not body.ollama_api_key.startswith("••••"):
-        settings.ollama_api_key = body.ollama_api_key
-    if body.use_ollama is not None:
-        settings.use_ollama = body.use_ollama
-    if body.llm_temperature is not None:
-        settings.llm_temperature = body.llm_temperature
-
-    if body.llm_top_p is not None:
-        settings.llm_top_p = body.llm_top_p
-    if body.llm_max_tokens is not None:
-        settings.llm_max_tokens = body.llm_max_tokens
-    if body.llm_max_requests_per_minute is not None:
-        settings.llm_max_requests_per_minute = body.llm_max_requests_per_minute
-
-    # Persist updated settings directly to backend/.env
     try:
-        env_path = Path(".env")
-        env_content = f"""LLM_PROVIDER={settings.llm_provider}
-USE_OLLAMA={'true' if settings.use_ollama else 'false'}
-OLLAMA_MODE={settings.ollama_mode}
-OLLAMA_BASE_URL={settings.ollama_base_url}
-OLLAMA_API_KEY={settings.ollama_api_key}
-OLLAMA_MODEL={settings.ollama_model}
-
-OPENAI_API_KEY={settings.openai_api_key}
-OPENAI_MODEL={settings.openai_model}
-
-GROQ_API_KEY={settings.groq_api_key}
-GROQ_MODEL={settings.groq_model}
-
-OPENROUTER_API_KEY={settings.openrouter_api_key}
-OPENROUTER_MODEL={settings.openrouter_model}
-
-GOOGLE_API_KEY={settings.google_api_key}
-GOOGLE_MODEL={settings.google_model}
-"""
-        env_path.write_text(env_content, encoding="utf-8")
+        Path(".env").write_text(
+            f"LLM_PROVIDER=vertex\nVERTEX_PROJECT={settings.vertex_project}\n"
+            f"VERTEX_LOCATION={settings.vertex_location}\nVERTEX_MODEL={settings.vertex_model}\n"
+            f"VERTEX_MAX_OUTPUT_TOKENS={settings.vertex_max_output_tokens}\n",
+            encoding="utf-8")
     except Exception as err:
         log.warning(f"Could not persist settings to .env file: {err}")
 
     return get_app_settings(user)
+
+
+@router.post("/settings/test")
+async def test_llm_prompt(body: LlmTestRequest, user: dict = Depends(require_admin)):
+    import time
+    started = time.perf_counter()
+    try:
+        llm = _get_llm()
+        result = await asyncio.to_thread(llm.invoke, body.prompt)
+        text = result.content if isinstance(result.content, str) else str(result.content)
+        return {"success": True, "model": settings.vertex_model, "response": text,
+                "total_duration_ms": round((time.perf_counter() - started) * 1000, 1)}
+    except Exception as e:
+        log.error(f"Test Vertex AI non riuscito: {e}")
+        return {"success": False, "model": settings.vertex_model, "error": str(e)[:300]}
 
 
 

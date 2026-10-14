@@ -123,6 +123,10 @@ async def _invoke(chain, payload: dict, cacheable: bool = False):
     return result
 
 
+# Modelli Gemini selezionabili su Vertex AI in questa versione (nessun altro fornitore).
+VERTEX_MODELS = ["gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-2.5-pro"]
+
+
 def _vertex_credentials():
     """Service account da JSON in env; None = Application Default Credentials."""
     raw = (settings.vertex_credentials_json or "").strip()
