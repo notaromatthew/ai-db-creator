@@ -42,3 +42,6 @@ backend/coverage.xml
 .scannerwork/
 backend/.coverage
 .sonar.env
+
+# credenziali locali
+.secrets/

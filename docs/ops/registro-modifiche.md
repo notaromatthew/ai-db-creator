@@ -26,4 +26,4 @@ da Davide e' l'allegato della riga.
 
 | Data (UTC) | Sistema | Cosa cambia | Task | Approvato da | Come | Annullamento | Esito | Verifica |
 |---|---|---|---|---|---|---|---|---|
-| _(nessuna modifica reale finora)_ | | | | | | | | |
+| 2026-10-14 08:25 | GCP | Nuovo progetto `aidbcreator-research-2026` (billing 01976E-58E7D6-376FBF), API Vertex AI, service account `aidb-runner` con `roles/aiplatform.user`, una chiave JSON locale in `.secrets/` (non versionata) | uso locale | Davide (richiesta in chat) | `gcloud` (fuori da Terraform, su richiesta esplicita) | eliminare la chiave con `gcloud iam service-accounts keys delete`, oppure `gcloud projects delete aidbcreator-research-2026` | fatto | chiamata di prova a Gemini dal container: ok |

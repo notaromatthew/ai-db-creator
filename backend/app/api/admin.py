@@ -15,6 +15,14 @@ from app.utils.exceptions import AppException
 router = APIRouter(prefix="/api")
 
 
+def _public_keycloak_url() -> str:
+    issuer = (settings.keycloak_issuer or "").rstrip("/")
+    suffix = f"/realms/{settings.keycloak_realm}"
+    if issuer.endswith(suffix):
+        return issuer[: -len(suffix)]
+    return settings.keycloak_url
+
+
 @router.get("/config")
 def public_config():
     """Configurazione pubblica per il frontend: nessun segreto."""
@@ -22,7 +30,7 @@ def public_config():
     return {
         "research_mode": settings.research_mode,
         "auth_enabled": settings.enable_auth,
-        "keycloak_url": settings.keycloak_url,
+        "keycloak_url": _public_keycloak_url(),
         "keycloak_realm": settings.keycloak_realm,
         "keycloak_client_id": settings.keycloak_client_id,
         "software_revision": software_revision(),

@@ -1,0 +1,14 @@
+services:
+  app:
+    environment:
+      LLM_PROVIDER: vertex
+      VERTEX_PROJECT: aidbcreator-research-2026
+      VERTEX_LOCATION: ${VERTEX_LOCATION:-europe-west4}
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/vertex-sa.json
+    volumes:
+      - type: bind
+        source: ./.secrets/vertex-sa.json
+        target: /run/secrets/vertex-sa.json
+        read_only: true
+        bind:
+          create_host_path: false

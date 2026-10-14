@@ -102,6 +102,43 @@ async def ensure_admin_role(client, realm_url: str, headers: dict) -> bool:
     return True
 
 
+async def ensure_default_admin(client, realm_url: str, headers: dict) -> None:
+    """Solo sviluppo: crea (idempotente) un utente admin predefinito con ruolo admin."""
+    username = (os.getenv("DEFAULT_ADMIN_USER") or "").strip()
+    password = os.getenv("DEFAULT_ADMIN_PASSWORD") or ""
+    if not username or not password:
+        return
+    if not _is_dev_environment():
+        log.warning("Keycloak: DEFAULT_ADMIN_USER ignorato fuori dall'ambiente di sviluppo")
+        return
+    email = (os.getenv("DEFAULT_ADMIN_EMAIL") or f"{username}@tecnia.local").strip().lower()
+    found = await client.get(f"{realm_url}/users", headers=headers, params={"username": username, "exact": "true"})
+    users = found.json() if found.status_code == 200 else []
+    if users:
+        user_id = users[0]["id"]
+    else:
+        created = await client.post(f"{realm_url}/users", headers=headers, json={
+            "username": username, "email": email, "emailVerified": True, "enabled": True,
+            "firstName": "Admin", "lastName": "Locale",
+            "credentials": [{"type": "password", "value": password, "temporary": False}],
+        })
+        if created.status_code not in (201, 204):
+            log.warning(f"Keycloak: creazione admin predefinito fallita ({created.status_code})")
+            return
+        found = await client.get(f"{realm_url}/users", headers=headers, params={"username": username, "exact": "true"})
+        users = found.json() if found.status_code == 200 else []
+        if not users:
+            return
+        user_id = users[0]["id"]
+    role = await client.get(f"{realm_url}/roles/{settings.admin_role}", headers=headers)
+    if role.status_code != 200:
+        return
+    body = role.json()
+    mapped = await client.post(f"{realm_url}/users/{user_id}/role-mappings/realm", headers=headers,
+                               json=[{"id": body["id"], "name": body["name"]}])
+    log.info(f"Keycloak: admin predefinito '{username}' pronto: {mapped.status_code}")
+
+
 async def setup_keycloak_realm():
     """Ensure realm and client exist and that self-registration is enabled."""
     admin_url = settings.keycloak_url.rstrip('/')
@@ -158,6 +195,7 @@ async def setup_keycloak_realm():
                 log.info(f"Keycloak Client '{settings.keycloak_client_id}' synced: {u_res.status_code}")
 
             await ensure_admin_role(client, realm_url, headers)
+            await ensure_default_admin(client, realm_url, headers)
             return True
     except Exception as e:
         log.warning(f"Keycloak Realm setup skipped or unreachable: {e}")
