@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 class Settings(BaseSettings):
-    llm_provider: str = "ollama"
+    llm_provider: str = "vertex"
     openai_api_key: str = ""
     openai_model: str = "gpt-4o-mini"
 
@@ -28,11 +28,6 @@ class Settings(BaseSettings):
     # Modelli selezionabili dalle impostazioni (separati da virgola). In produzione lasciare fuori i modelli piu' costosi.
     vertex_allowed_models: str = "gemini-2.5-flash-lite,gemini-2.5-flash,gemini-2.5-pro"
 
-    ollama_mode: str = "remote"  # "remote" vs "local"
-    ollama_base_url: str = "https://ollamaapi-u11fj34m2h9druz26hamz3xb.89.168.29.98.sslip.io"
-    ollama_api_key: str = ""
-    ollama_model: str = "gemma2:9b"
-    use_ollama: bool = True
 
     upload_dir: str = str(Path(__file__).parent.parent / "uploads")
     projects_dir: str = str(Path(__file__).parent.parent / "projects")

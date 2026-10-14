@@ -38,7 +38,7 @@ from typing import Literal
 
 
 def _outbound_tls_verify() -> bool:
-    """Verifica del certificato attiva di default; si spegne solo con OUTBOUND_TLS_VERIFY=0 (sviluppo, Ollama con certificato autofirmato)."""
+    """Verifica del certificato attiva di default; si spegne solo con OUTBOUND_TLS_VERIFY=0."""
     return os.getenv("OUTBOUND_TLS_VERIFY", "1") != "0"
 
 
@@ -1305,7 +1305,6 @@ def update_app_settings(body: SettingsUpdateSchema, user: dict = Depends(require
     if body.vertex_max_output_tokens is not None:
         settings.vertex_max_output_tokens = body.vertex_max_output_tokens
     settings.llm_provider = "vertex"
-    settings.use_ollama = False
 
     try:
         Path(".env").write_text(

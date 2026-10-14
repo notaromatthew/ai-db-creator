@@ -1,6 +1,6 @@
 # STAGING su Coolify: stessi servizi della produzione (docker-compose.coolify.yml), nomi e volumi distinti, variabili STAGING_*.
-# Origine: produzione. Nessun Ollama, nessuna GOOGLE_API_KEY, nessuna chiave Vertex:
-# l'AI passa dal gateway su Cloud Run (LLM_GATEWAY_URL). Ollama resta solo in docker-compose.yml (sviluppo).
+# Origine: produzione. Nessuna GOOGLE_API_KEY, nessuna chiave Vertex:
+# l'AI passa dal gateway su Cloud Run (LLM_GATEWAY_URL).
 # Postgres NON e' in questo file: e' una risorsa Coolify a parte (volume persistente + backup: docs/ops/backup.md).
 version: '3.8'
 

@@ -65,7 +65,6 @@ def test_async_call_and_error(monkeypatch):
 def test_llm_uses_gateway_for_vertex(monkeypatch):
     from app.core import llm
     monkeypatch.setattr(llm.settings, "llm_provider", "vertex")
-    monkeypatch.setattr(llm.settings, "use_ollama", False)
     assert isinstance(llm._get_llm(0.2), gateway.GatewayChatModel)
 
 

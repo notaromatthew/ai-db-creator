@@ -1,6 +1,6 @@
-# Produzione su Coolify, a costo minimo: nessun Ollama e nessun gateway. L'app chiama Vertex AI direttamente
+# Produzione su Coolify, a costo minimo: nessun gateway. L'app chiama Vertex AI direttamente
 # con il service account di produzione (VERTEX_CREDENTIALS_JSON nei secrets di Coolify): docs/ops/vertex-diretto.md.
-# Ollama resta solo in docker-compose.yml (sviluppo).
+#
 # Postgres e Redis sono nel file, con password generate da Coolify (variabili SERVICE_PASSWORD_*): nessun segreto da incollare.
 # Segreti condivisi (una sola volta, in Coolify > Shared Variables del team): KEYCLOAK_ADMIN_USER, KEYCLOAK_ADMIN_PASSWORD, VERTEX_CREDENTIALS_JSON.
 version: '3.8'

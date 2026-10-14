@@ -1,6 +1,6 @@
 version: '3.8'
-# SOLO SVILUPPO LOCALE. Qui restano Ollama/USE_OLLAMA e le chiavi dei provider per gli sviluppatori;
-# la produzione e lo staging (docker-compose.coolify.yml / .staging.yml) non li usano. Vedi docs/ops/ollama-solo-sviluppo.md
+# SOLO SVILUPPO LOCALE. Qui restano le chiavi dei provider per gli sviluppatori;
+# la produzione e lo staging (docker-compose.coolify.yml / .staging.yml) usano solo Vertex AI.
 
 services:
   redis:
@@ -19,7 +19,6 @@ services:
       - GROQ_API_KEY=${GROQ_API_KEY}
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-      - USE_OLLAMA=${USE_OLLAMA:-false}
       - REDIS_URL=redis://redis:6379/0
     volumes:
       - ./backend/uploads:/app/uploads
@@ -44,7 +43,6 @@ services:
       - GROQ_API_KEY=${GROQ_API_KEY}
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-      - USE_OLLAMA=${USE_OLLAMA:-false}
       - REDIS_URL=redis://redis:6379/0
     volumes:
       - ./backend/uploads:/app/uploads

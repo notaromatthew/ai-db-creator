@@ -53,11 +53,13 @@ async def run_model_benchmark(
 ) -> dict:
     scenario = BENCHMARK_SCENARIOS.get(scenario_key, BENCHMARK_SCENARIOS["ecommerce"])
     from app.config import settings
-    if model_name:
-        settings.ollama_model = model_name
     if provider:
         settings.llm_provider = provider
-        settings.use_ollama = (provider == "ollama")
+    if model_name:
+        model_field = {"vertex": "vertex_model", "openai": "openai_model", "google": "google_model",
+                       "groq": "groq_model", "openrouter": "openrouter_model"}.get(settings.llm_provider)
+        if model_field:
+            setattr(settings, model_field, model_name)
 
     from app.api.progress import set_progress
     llm_info = get_llm_info()

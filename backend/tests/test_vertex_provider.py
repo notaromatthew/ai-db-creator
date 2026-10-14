@@ -18,7 +18,6 @@ def fake_vertex(monkeypatch):
     module = types.ModuleType("langchain_google_vertexai")
     module.ChatVertexAI = _FakeVertex
     monkeypatch.setitem(sys.modules, "langchain_google_vertexai", module)
-    monkeypatch.setattr(settings, "use_ollama", False)
     monkeypatch.setattr(settings, "llm_provider", "vertex")
     monkeypatch.setattr(settings, "vertex_project", "demo-project")
     monkeypatch.setattr(settings, "vertex_credentials_json", "")
@@ -67,7 +66,6 @@ def test_cache_off_by_default_calls_model_every_time(monkeypatch):
 
 def test_cache_reuses_deterministic_calls_when_enabled(monkeypatch):
     monkeypatch.setattr(settings, "llm_cache_enabled", True)
-    monkeypatch.setattr(settings, "use_ollama", False)
     monkeypatch.setattr(settings, "llm_provider", "openai")
     llm._response_cache.clear()
     chain = _Chain()

@@ -435,7 +435,7 @@ def _execute(job: dict) -> None:
 
 # ------------------------------------------------------------------ esecutore reale
 _PROVIDER_MODEL_SETTING = {"vertex": "vertex_model", "openai": "openai_model", "google": "google_model",
-                           "groq": "groq_model", "openrouter": "openrouter_model", "ollama": "ollama_model"}
+                           "groq": "groq_model", "openrouter": "openrouter_model"}
 _usage = {"in": 0, "out": 0}
 _real_lock = threading.Lock()
 

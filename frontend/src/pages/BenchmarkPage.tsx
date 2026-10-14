@@ -5,9 +5,9 @@ export default function BenchmarkPage() {
   const [scenarios, setScenarios] = useState<any[]>([])
   const [resultsData, setResultsData] = useState<{ results: any[]; votes: any[] }>({ results: [], votes: [] })
   const [selectedScenario, setSelectedScenario] = useState('ecommerce')
-  const [selectedProvider, setSelectedProvider] = useState('ollama')
-  const [selectedModel, setSelectedModel] = useState('gemma2:9b')
-  const [ollamaModels, setOllamaModels] = useState<string[]>(['gemma2:9b', 'qwen3:0.6b', 'llama3.2:1b', 'gemma3:270m'])
+  const selectedProvider = 'vertex'
+  const vertexModels = ['gemini-2.5-flash-lite', 'gemini-2.5-flash']
+  const [selectedModel, setSelectedModel] = useState('gemini-2.5-flash-lite')
   const [temperature, setTemperature] = useState(0.1)
   const [running, setRunning] = useState(false)
   const [runError, setRunError] = useState('')
@@ -71,19 +71,12 @@ export default function BenchmarkPage() {
   const loadData = async () => {
 
     try {
-      const [scen, res, modelsRes] = await Promise.all([
+      const [scen, res] = await Promise.all([
         api.get('/benchmark/scenarios'),
         api.get('/benchmark/results'),
-        api.get('/settings/ollama-models').catch(() => ({ models: [] })),
       ])
       setScenarios(scen)
       setResultsData(res)
-      if (modelsRes?.models?.length) {
-        setOllamaModels(modelsRes.models)
-        if (!modelsRes.models.includes(selectedModel)) {
-          setSelectedModel(modelsRes.models[0])
-        }
-      }
     } catch (e) {
       console.error('Error loading benchmark data:', e)
     }
@@ -205,7 +198,7 @@ export default function BenchmarkPage() {
           </div>
         )}
 
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div>
             <label htmlFor="bm-scenario" className={labelCls}>Scenario di riferimento</label>
             <select id="bm-scenario" value={selectedScenario} onChange={(e) => setSelectedScenario(e.target.value)} className={selectCls}>
@@ -213,24 +206,10 @@ export default function BenchmarkPage() {
             </select>
           </div>
           <div>
-            <label htmlFor="bm-provider" className={labelCls}>Fornitore IA</label>
-            <select id="bm-provider" value={selectedProvider} onChange={(e) => setSelectedProvider(e.target.value)} className={selectCls}>
-              <option value="ollama">Ollama (remoto o locale)</option>
-              <option value="google">Google Gemini</option>
-              <option value="openai">OpenAI</option>
-              <option value="groq">Groq</option>
-              <option value="openrouter">OpenRouter</option>
+            <label htmlFor="bm-model" className={labelCls}>Modello Vertex AI da valutare</label>
+            <select id="bm-model" value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)} className={selectCls}>
+              {vertexModels.map((m) => <option key={m} value={m}>{m}</option>)}
             </select>
-          </div>
-          <div>
-            <label htmlFor="bm-model" className={labelCls}>Modello da valutare</label>
-            {selectedProvider === 'ollama' ? (
-              <select id="bm-model" value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)} className={selectCls}>
-                {ollamaModels.map((m) => <option key={m} value={m}>{m}</option>)}
-              </select>
-            ) : (
-              <input id="bm-model" type="text" value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)} placeholder="es. gemini-2.0-flash" className={selectCls} />
-            )}
           </div>
           <div>
             <label htmlFor="bm-temp" className={labelCls}>Temperatura: {temperature}</label>

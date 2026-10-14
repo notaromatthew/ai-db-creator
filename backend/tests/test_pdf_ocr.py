@@ -89,7 +89,6 @@ def test_list_content_from_the_model_is_flattened(tmp_path):
 
 def test_multimodal_available_only_for_vertex(monkeypatch):
     from app.config import settings
-    monkeypatch.setattr(settings, "use_ollama", False)
     monkeypatch.setattr(settings, "llm_provider", "vertex")
     assert pdf_ocr.multimodal_available()
     monkeypatch.setattr(settings, "llm_provider", "groq")

@@ -33,7 +33,7 @@ def test_admin_endpoints_need_role(client, project):
     as_user("plain")
     for path in ("/api/admin/overview", "/api/admin/users", "/api/settings", "/api/admin/audit"):
         assert c.get(path).status_code == 403
-    assert c.put("/api/settings", json={"llm_provider": "ollama"}).status_code == 403
+    assert c.put("/api/settings", json={"vertex_model": "gemini-2.5-flash"}).status_code == 403
 
 
 def test_admin_sees_metadata_and_audits_changes(client, project):

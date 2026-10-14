@@ -37,7 +37,7 @@ def multimodal_available() -> bool:
     """True se il provider configurato e' Vertex (l'unico usato per i PDF scansionati)."""
     try:
         from app.config import settings
-        return settings.llm_provider == "vertex" and not settings.use_ollama
+        return settings.llm_provider == "vertex"
     except Exception:
         return False
 

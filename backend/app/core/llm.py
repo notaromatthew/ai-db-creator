@@ -1,5 +1,4 @@
 from langchain_openai import ChatOpenAI
-from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from app.config import settings
@@ -148,20 +147,8 @@ def _vertex_credentials():
     )
 
 
-def _get_llm(temperature: float = 0.1, force_local: bool = False):
-    provider = "ollama" if (force_local or settings.use_ollama) else settings.llm_provider
-
-    if provider == "ollama":
-        model = _detect_local_model()
-        kwargs = {
-            "base_url": settings.ollama_base_url,
-            "model": model,
-            "temperature": temperature,
-        }
-        if settings.ollama_api_key:
-            kwargs["headers"] = {"Authorization": f"Bearer {settings.ollama_api_key}"}
-        return ChatOllama(**kwargs)
-
+def _get_llm(temperature: float = 0.1):
+    provider = settings.llm_provider
 
     if provider == "vertex":
         from app.core.gateway import gateway_enabled, GatewayChatModel
@@ -362,43 +349,28 @@ async def generate_query(prompt: str, schema: str, dialect: str = "sqlite") -> Q
         log.error(f"Query generation failed ({type(e).__name__})")
         raise LLMException(detail="Query generation failed") from e
 
-def _detect_local_model():
-    """Returns configured Ollama model without blocking network calls."""
-    return settings.ollama_model or "gemma2:9b"
-
-
-
-
 _PROVIDER_LABELS = {
     "openai": "OpenAI",
     "groq": "Groq",
     "openrouter": "OpenRouter",
     "google": "Google Gemini",
     "vertex": "Google Vertex AI",
-    "ollama": "Ollama",
 }
 
 def get_llm_info():
     """Get current LLM configuration info."""
-    provider = "ollama" if settings.use_ollama else settings.llm_provider
-    if provider == "ollama":
-        label = f"Ollama ({'Remoto' if settings.ollama_mode == 'remote' else 'Locale'})"
-        model = settings.ollama_model or _detect_local_model()
-    else:
-        label = _PROVIDER_LABELS.get(provider, provider.capitalize())
-        models = {
-            "openai": settings.openai_model,
-            "groq": settings.groq_model,
-            "openrouter": settings.openrouter_model,
-            "google": settings.google_model,
-            "vertex": settings.vertex_model,
-        }
-        model = models.get(provider, settings.openai_model)
-
+    provider = settings.llm_provider
+    label = _PROVIDER_LABELS.get(provider, provider.capitalize())
+    models = {
+        "openai": settings.openai_model,
+        "groq": settings.groq_model,
+        "openrouter": settings.openrouter_model,
+        "google": settings.google_model,
+        "vertex": settings.vertex_model,
+    }
     return {
         "provider": label,
-        "model": model,
-        "use_ollama": settings.use_ollama,
+        "model": models.get(provider, settings.openai_model),
     }
 
 
