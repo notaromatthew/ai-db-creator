@@ -16,8 +16,8 @@ x-app-env: &app-env
   RESEARCH_MODE: ${RESEARCH_MODE:-false}
   LOG_FORMAT: json
   LOG_LEVEL: ${LOG_LEVEL:-INFO}
-  # URL pubblico dell'app (senza slash finale): da' il redirect URI Keycloak <APP_PUBLIC_URL>/* (copre /app). docs/ops/dominio-https.md
-  APP_PUBLIC_URL: ${APP_PUBLIC_URL:?imposta APP_PUBLIC_URL (es. https://aidbcreator.tecniaweb.it)}
+  # URL pubblico dell'app: lo fornisce Coolify dal dominio assegnato al servizio app (SERVICE_URL_APP). Da' il redirect URI Keycloak <APP_PUBLIC_URL>/*. docs/ops/dominio-https.md
+  APP_PUBLIC_URL: ${SERVICE_URL_APP}
   ENVIRONMENT: production
   ADMIN_ROLE: ${ADMIN_ROLE:-aidb-admin}
   FIRST_ADMIN_EMAIL: ${FIRST_ADMIN_EMAIL:-}
