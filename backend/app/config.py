@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     rq4_hash_salt: str = "development-only-change-me"
     bootstrap_keycloak: bool = False
 
-    # Database PostgreSQL
+    # Database PostgreSQL / SQLite
     database_url: str = "sqlite:///./app.db"
 
     # Keycloak OIDC Auth & Realm Admin
@@ -47,8 +47,9 @@ class Settings(BaseSettings):
     enable_auth: bool = True
     cors_allowed_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
 
-
-
+    # Expert Review (RQ1) & Administration
+    admin_secret_key: str = "admin123"
+    expert_package_dir: str = str(Path(__file__).parent.parent / "reports" / "rq1_expert_package")
 
     # SonarQube
     sonarqube_url: str = "http://localhost:9000"
@@ -70,4 +71,3 @@ class Settings(BaseSettings):
         return self
 
 settings = Settings()
-

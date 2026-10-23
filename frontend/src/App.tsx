@@ -12,6 +12,8 @@ const ProjectPage = lazy(() => import('./pages/ProjectPage'))
 const HelpPage = lazy(() => import('./pages/HelpPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const BenchmarkPage = lazy(() => import('./pages/BenchmarkPage'))
+const ExpertReviewPage = lazy(() => import('./pages/ExpertReviewPage'))
+const AdminEvaluationsPage = lazy(() => import('./pages/AdminEvaluationsPage'))
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { authenticated, login } = useAuth()
@@ -75,6 +77,12 @@ function MainContent() {
                   </Link>
                 </>
               )}
+              <Link to="/expert-review" className="rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
+                ⭐ Valutazione Esperti
+              </Link>
+              <Link to="/admin/evaluations" className="rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
+                🛡️ Admin RQ1
+              </Link>
               <Link to="/help" className="rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
                 📚 Aiuto
               </Link>
@@ -132,6 +140,8 @@ function MainContent() {
           <Routes>
             <Route path="/" element={<RequireAuth><Dashboard /></RequireAuth>} />
             <Route path="/projects/:id" element={<RequireAuth><ExperimentShell projectId={projectId || ''}><ProjectPage /></ExperimentShell></RequireAuth>} />
+            <Route path="/expert-review" element={<ExpertReviewPage />} />
+            <Route path="/admin/evaluations" element={<AdminEvaluationsPage />} />
             <Route path="/help" element={<HelpPage />} />
             <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
             <Route path="/benchmark" element={<RequireAuth><BenchmarkPage /></RequireAuth>} />

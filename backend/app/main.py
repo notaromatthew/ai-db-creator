@@ -7,6 +7,7 @@ from slowapi.errors import RateLimitExceeded
 from app.api.routes import router
 from app.api.progress import router as progress_router
 from app.api.experiments import router as experiment_router
+from app.api.expert_routes import router as expert_router
 from app.utils.logger import log
 from app.utils.exceptions import AppException, NotFoundException, ValidationException, LLMException, ParsingException
 from app.core.keycloak_setup import setup_keycloak_realm
@@ -58,10 +59,10 @@ async def custom_http_exception_handler(request: Request, exc: StarletteHTTPExce
             return FileResponse(index_file)
     return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
-
 app.include_router(router)
 app.include_router(progress_router)
 app.include_router(experiment_router)
+app.include_router(expert_router)
 
 @app.get("/health")
 @limiter.limit("60/minute")
@@ -91,4 +92,3 @@ from fastapi.staticfiles import StaticFiles
 static_dir = Path("static")
 if static_dir.exists():
     app.mount("/", StaticFiles(directory="static", html=True), name="static")
-
