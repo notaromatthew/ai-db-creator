@@ -1,6 +1,35 @@
-import React, { useEffect, useState } from 'react'
+import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react'
 import { expertApi, ExpertSchema, EvaluationSubmission } from '../api/expertClient'
 import { useAuth } from '../context/KeycloakContext'
+import type { NormalizedSchema } from '../types'
+
+const SchemaDiagram = lazy(() => import('../components/SchemaDiagram'))
+
+function toDiagramSchema(schema: ExpertSchema): NormalizedSchema {
+  const split = (ref: string) => {
+    const i = ref.lastIndexOf('.')
+    return i < 0 ? { table: ref, column: '' } : { table: ref.slice(0, i), column: ref.slice(i + 1) }
+  }
+  return {
+    tables: schema.tables.map((t) => ({
+      name: t.name,
+      columns: t.columns.map((c) => ({
+        name: c.name,
+        data_type: c.data_type,
+        is_primary_key: c.is_primary_key,
+        is_foreign_key: c.is_foreign_key,
+        is_unique: c.is_unique,
+        is_not_null: c.is_not_null,
+      })),
+    })),
+    relationships: schema.relationships.map((r) => {
+      const from = split(r.from)
+      const to = split(r.to)
+      const type = r.type === 'many_to_many' || r.type === 'one_to_one' ? r.type : 'one_to_many'
+      return { type, from_table: from.table, from_column: from.column, to_table: to.table, to_column: to.column }
+    }),
+  }
+}
 
 const DIMENSIONS_RUBRIC = [
   {
@@ -78,7 +107,7 @@ export default function ExpertReviewPage() {
   const [loading, setLoading] = useState<boolean>(true)
   const [saving, setSaving] = useState<boolean>(false)
   const [saveMessage, setSaveMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
-  const [viewMode, setViewMode] = useState<'visual' | 'markdown'>('visual')
+  const [viewMode, setViewMode] = useState<'diagram' | 'visual' | 'markdown'>('diagram')
   const [filterMode, setFilterMode] = useState<'all' | 'pending' | 'completed'>('all')
 
   // Form ratings state
@@ -122,6 +151,7 @@ export default function ExpertReviewPage() {
 
   // Sync current schema rating into form
   const activeSchema = schemas[selectedIndex] || null
+  const diagramSchema = useMemo(() => (activeSchema ? toDiagramSchema(activeSchema) : null), [activeSchema])
 
   useEffect(() => {
     if (activeSchema) {
@@ -412,6 +442,16 @@ export default function ExpertReviewPage() {
                 {/* View Mode Toggle */}
                 <div className="flex rounded-lg border border-slate-200 p-0.5 dark:border-slate-800">
                   <button
+                    onClick={() => setViewMode('diagram')}
+                    className={`rounded-md px-2.5 py-1 text-xs font-semibold ${
+                      viewMode === 'diagram'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                    }`}
+                  >
+                    Diagramma
+                  </button>
+                  <button
                     onClick={() => setViewMode('visual')}
                     className={`rounded-md px-2.5 py-1 text-xs font-semibold ${
                       viewMode === 'visual'
@@ -444,7 +484,11 @@ export default function ExpertReviewPage() {
 
               {/* Schema Display */}
               <div className="mt-4">
-                {viewMode === 'visual' ? (
+                {viewMode === 'diagram' ? (
+                  <Suspense fallback={<div className="py-12 text-center text-sm text-slate-500">Caricamento diagramma…</div>}>
+                    {diagramSchema && <SchemaDiagram key={activeSchema.code} schema={diagramSchema} />}
+                  </Suspense>
+                ) : viewMode === 'visual' ? (
                   <div className="space-y-4">
                     {activeSchema.tables.map((table) => (
                       <div

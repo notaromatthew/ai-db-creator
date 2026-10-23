@@ -11,6 +11,8 @@ vi.mock('../api/expertClient', () => ({
   },
 }))
 
+vi.mock('../components/SchemaDiagram', () => ({ default: () => <div>diagramma</div> }))
+
 vi.mock('../context/KeycloakContext', () => ({
   useAuth: () => ({
     username: 'TestEvaluator',
@@ -69,6 +71,8 @@ describe('ExpertReviewPage', () => {
     render(<ExpertReviewPage />)
 
     expect(await screen.findByText('Schema S01')).toBeInTheDocument()
+    expect(await screen.findByText('diagramma')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Visuale Tabelle' }))
     expect(screen.getByText('TABLE')).toBeInTheDocument()
     expect(screen.getByText('students')).toBeInTheDocument()
 
