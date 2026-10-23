@@ -132,11 +132,13 @@ function AppShell() {
             <div className="hidden items-center gap-1 sm:flex">
               {authenticated && <NavLink to="/app" end className={navCls}>Progetti</NavLink>}
               <NavLink to="/app/examples" className={navCls}>Esempi</NavLink>
+              {config.research_mode && <NavLink to="/app/expert-review" className={navCls}>Valutazione esperti</NavLink>}
               {authenticated && (<>
                 {config.research_mode && <NavLink to="/app/benchmark" className={navCls}>Benchmark</NavLink>}
                 {config.research_mode && <NavLink to="/app/studio" className={navCls}>Studio</NavLink>}
                 {canResearch && <NavLink to="/app/ricerca" className={navCls}>Ricerca</NavLink>}
                 {isAdmin && <NavLink to="/app/admin" className={navCls}>Admin</NavLink>}
+                {isAdmin && <NavLink to="/app/admin/evaluations" className={navCls}>Valutazioni RQ1</NavLink>}
                 {isAdmin && <NavLink to="/app/settings" className={navCls}>Modelli</NavLink>}
               </>)}
               <NavLink to="/app/help" className={navCls}>Aiuto</NavLink>
