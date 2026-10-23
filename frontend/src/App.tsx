@@ -6,6 +6,8 @@ import HelpPage from './pages/HelpPage'
 import SettingsPage from './pages/SettingsPage'
 import BenchmarkPage from './pages/BenchmarkPage'
 import AdminPage from './pages/AdminPage'
+import ExpertReviewPage from './pages/ExpertReviewPage'
+import AdminEvaluationsPage from './pages/AdminEvaluationsPage'
 import SharedProjectPage from './pages/SharedProjectPage'
 import ExamplesPage from './pages/ExamplesPage'
 import ExampleDetailPage from './pages/ExampleDetailPage'
@@ -172,6 +174,8 @@ function AppShell() {
           <Route path="help" element={<HelpPage />} />
           <Route path="settings" element={<RequireAuth><RequireAdmin><SettingsPage /></RequireAdmin></RequireAuth>} />
           <Route path="admin" element={<RequireAuth><RequireAdmin><AdminPage /></RequireAdmin></RequireAuth>} />
+          <Route path="expert-review" element={<ExpertReviewPage />} />
+          <Route path="admin/evaluations" element={<AdminEvaluationsPage />} />
           {config.research_mode && <Route path="benchmark" element={<RequireAuth><BenchmarkPage /></RequireAuth>} />}
           {config.research_mode && <Route path="studio" element={<RequireAuth><StudyPage /></RequireAuth>} />}
           {config.research_mode && <Route path="ricerca" element={<RequireAuth><ResearchPage /></RequireAuth>} />}

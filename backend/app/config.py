@@ -77,8 +77,9 @@ class Settings(BaseSettings):
     port: int = 8000
     cors_allow_origin_regex: str = r"https?://.*"
 
-
-
+    # Expert Review (RQ1) & Administration
+    admin_secret_key: str = "admin123"
+    expert_package_dir: str = str(Path(__file__).parent.parent / "reports" / "rq1_expert_package")
 
     # SonarQube
     sonarqube_url: str = "http://o4sn9bs961jvxn32hs18a81p.89.168.29.98.sslip.io:9000"
@@ -100,4 +101,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-

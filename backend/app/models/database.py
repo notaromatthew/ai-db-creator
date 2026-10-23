@@ -323,6 +323,22 @@ class StudyResponse(Base):
     created_at = Column(DateTime, default=_now)
 
 
+class ExpertEvaluation(Base):
+    __tablename__ = "expert_evaluations"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    evaluator_name = Column(String(255), nullable=False, index=True)
+    schema_code = Column(String(50), nullable=False, index=True)
+    d1_3nf = Column(Integer, nullable=False)           # 1 to 5 Likert
+    d2_naming = Column(Integer, nullable=False)        # 1 to 5 Likert
+    d3_constraints = Column(Integer, nullable=False)   # 1 to 5 Likert
+    d4_relationships = Column(Integer, nullable=False) # 1 to 5 Likert
+    d5_domain = Column(Integer, nullable=False)        # 1 to 5 Likert
+    comment = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+
 _engine = None
 
 def init_db(db_url: str | None = None):

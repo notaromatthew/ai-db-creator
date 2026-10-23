@@ -105,7 +105,7 @@ def test_run_migrations_on_a_fresh_database_stamps_head(engine):
 def test_g7_adds_unique_active_job_and_participant_indexes_and_is_idempotent(engine):
     cfg = alembic_config(engine)
     script = ScriptDirectory.from_config(cfg)
-    assert script.get_heads() == ["h8chatprop00008"]
+    assert script.get_heads() == ["20261024_expert"]
     assert script.get_revision("g7hardening00007").down_revision == "f6research00006"
     command.upgrade(cfg, "f6research00006")
     with engine.begin() as conn:

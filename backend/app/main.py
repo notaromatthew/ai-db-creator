@@ -8,6 +8,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from app.api.routes import router
 from app.api.progress import router as progress_router
+from app.api.expert_routes import router as expert_router
 from app.utils.logger import log
 from app.utils.exceptions import AppException, NotFoundException, ValidationException, LLMException, ParsingException
 from app.config import settings
@@ -76,7 +77,6 @@ async def custom_http_exception_handler(request: Request, exc: StarletteHTTPExce
             return FileResponse(index_file)
     return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
-
 app.include_router(router)
 app.include_router(progress_router)
 from app.api.sharing import router as sharing_router
@@ -86,6 +86,7 @@ app.include_router(admin_router)
 from app.api.examples import router as examples_router
 app.include_router(examples_router)
 from app.api import benchmark_runs, study; app.include_router(benchmark_runs.router); app.include_router(study.router)
+app.include_router(expert_router)
 
 @app.get("/health")
 @limiter.limit("60/minute")
