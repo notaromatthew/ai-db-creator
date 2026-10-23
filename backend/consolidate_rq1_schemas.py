@@ -137,8 +137,8 @@ def main(argv: list[str] | None = None) -> int:
         path = out_schemas / f"{name}.md"
         path.write_text(
             f"# Schema {name}\n\n"
-            f"*Anonymous expert review copy. Do not record any identifying "
-            f"information on this sheet.*\n\n"
+            f"*Copia anonima per la revisione degli esperti. Non annotare su questa "
+            f"scheda alcuna informazione identificativa.*\n\n"
             f"---\n\n"
             f"{schemas[run['project_id']]}\n",
             encoding="utf-8",
