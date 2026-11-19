@@ -1,6 +1,102 @@
 # Changelog
 
+## 2026-11-18 - Emendamento pre-raccolta RQ0/RQ3/RQ4
+
+- Registrata come determinazione istituzionale riferita dall'utente la comunicazione che l'approvazione etica preventiva non è richiesta per lo studio corrente; consenso, ritiro e minimizzazione dei dati restano invariati.
+- Esclusi Raw NASA-TLX e SUS dal protocollo corrente e riservati a un'eventuale revisione futura separata.
+- Semplificato il percorso partecipante a compito, debrief e completamento; gli endpoint questionario rifiutano nuove risposte nel flusso corrente.
+- Allineati export e pipeline di analisi: gli outcome primari restano qualità dello schema e tasso di errori residui, mentre il tempo resta secondario.
+
+## 2026-11-18 - Completamento del pannello RQ1 a tre esperti
+
+- Integrato il terzo export di 30 valutazioni, ottenendo il pannello pianificato di 3 esperti × 30 schemi senza pooling con i 45 trained student raters.
+- Estesa l'analisi a sorgenti CSV multiple con formati misti, mantenendo hash separati, input canonico pseudonimizzato e assenza di identificativi originali negli artefatti.
+- Aggiornati accordo e confronto fra condizioni: alpha complessivo 0,054, accordo esatto 20/150 celle e D1 full-LLM meno baseline +0,800 (p Holm 0,0021). Il basso accordo impedisce di presentare il pannello come consenso forte.
+- Registrata come ancora mancante la conferma esplicita di indipendenza e cecità alle condizioni del terzo esperto; l'idoneità deriva dalla qualifica fornita dall'utente.
+- Rimossi dagli artefatti pubblicabili RQ1 i timestamp delle valutazioni e qualsiasi durata derivata; i file sorgente grezzi restano invariati e sono rappresentati solo tramite hash.
+
+## 2026-11-14 - Replica RQ1 separata con due esperti
+
+- Integrato un export headerless semicolon di 60 valutazioni come replica separata, senza pooling con i 45 trained student raters e senza persistere gli identificativi originali.
+- Aggiunto `backend/analyze_rq1_expert_replication.py` con validazione 2×30, input canonico pseudonimizzato, hash distinti sorgente/canonico, descrittive, accordo ordinale e confronto a livello schema.
+- Documentata la deviazione 2 esperti osservati vs 3 pianificati, l'attestazione utente di indipendenza e cecità, l'accordo perfetto osservato senza inferenze causali e D2 costante con statistiche inferenziali non definite.
+
 Tutte le modifiche rilevanti del progetto sono raccolte in questo file. Il formato segue una struttura orientata alla ricerca: ogni voce distingue funzionalità applicative, infrastruttura scientifica, riproducibilità, documentazione e validazione.
+
+## 2026-11-13 - Recupero della matrice collegata alle valutazioni RQ1
+
+- Recuperata la matrice storica completa 3×2×5 che ha generato i 30 schemi valutati; verificati mapping seed 42 e corrispondenza strutturale diretta 30/30 fra codice anonimo e `schema_json` del progetto.
+- Creato `recover_expert_linked_matrix.py` con guardie sull'output, marker di completamento, manifesti SHA-256 e snapshot sanitizzato; il vecchio `app.db` completo non viene redistribuito perché contiene dati estranei.
+- Verificati 30/30 database integri e non vuoti, 100/100 record documento collegati a upload esistenti e 100/100 hash coincidenti con le sorgenti storiche.
+- La matrice è classificata `primary_expert_linked` per RQ1 e `recovered_historical_secondary` per RQ2. Le matrici RQ2 strutturate restano separate e non vengono sostituite.
+- Rivalutati offline i 30 database con il valutatore corrente; risultati e limiti sono documentati in `docs/22-rq1-expert-linked-matrix-recovery.md`.
+
+## 2026-11-07 - Secondo tentativo dei tre errori OpenRouter
+
+- Ritentati in modalità `--resume --retry-failed` soltanto Hospital `full_llm` run 2, 3 e 4 del recovery selettivo, mantenendo invariati modello e parametri.
+- I tre run hanno nuovamente fallito durante la generazione dello schema; gli otto run già riusciti non sono stati rieseguiti né sovrascritti.
+- Aggiunto `retry_attempt_20261107.json` per registrare selezione, configurazione e outcome; i tre errori non sono interpretati come punteggi prestazionali pari a zero.
+- Dopo il reset della quota, una richiesta minima ha verificato la disponibilità del provider e i tre run sono stati ripetuti singolarmente: il run 3 è riuscito, i run 2 e 4 hanno restituito uno schema non analizzabile. La cella Hospital `full_llm` passa così a 3/5 successi; il nuovo tentativo è registrato in `retry_after_quota_reset_20261107.json`.
+- Introdotto come opt-in `schema-json-v2`, che invia a OpenRouter il JSON Schema di `NormalizedSchema` e mantiene invariato il contratto legacy per default. Nella sensibilità selettiva preregistrata, i due errori residui Hospital `full_llm` (run 2 e 4) sono riusciti entrambi; F1 medio `0.4802`, query funzionali `0.0000`. I risultati restano separati dai run legacy.
+- Preregistrata una nuova matrice completa `schema-json-v2` su due giorni, con 15 run bilanciati per dataset in ciascun giorno e 16384 token massimi. Il blocco del 7 novembre è completo: 15/15 successi, 97 hash artefatto e 50 hash sorgente verificati senza discrepanze; gli aggregati restano intermedi fino al blocco dell'8 novembre.
+
+## 2026-11-08 - Completamento matrice OpenRouter strutturata
+
+- Completato il secondo blocco preregistrato: 15/15 successi. La matrice finale raggiunge 30/30 run riusciti, zero fallback, una revisione software e configurazione uniforme `schema-json-v2`.
+- Verificati 195 hash artefatto, 100 hash sorgente e 30 hash delle specifiche di valutazione senza discrepanze; scansione segreti pulita.
+- Risultati finali F1/query funzionali: University baseline `0.9638/0.4400`, University `full_llm` `0.6651/0.3600`, Library baseline `0.9348/0.6200`, Library `full_llm` `0.9848/0.4000`, Hospital baseline `0.9496/0.4200`, Hospital `full_llm` `0.6427/0.2000`.
+- Il giorno 2 mostra F1 inferiore in quattro celle su sei; la possibile deriva temporale del provider resta una limitazione descrittiva. La matrice non viene aggregata con Gemini, pilot legacy o recovery selettivi.
+
+## 2026-11-06 - Pilot OpenRouter con modelli gratuiti
+
+- Il client OpenRouter invia esplicitamente `reasoning.enabled=false`, limita i token di output e applica timeout e retry configurabili. Il cambiamento evita che i modelli reasoning gratuiti consumino l'intero budget senza restituire il JSON dello schema.
+- Le esecuzioni OpenRouter restano pilot separati e non vengono aggregate con la matrice Gemini RQ2.
+- Il pilot University `full_llm` con `nvidia/nemotron-3.5-super-vl:free` è terminato senza fallback: precisione 0,8333, recall 0,6737, F1 0,6899 e query funzionali 0,3000. Il risultato singolo è solo una verifica di fattibilità.
+- Il runner accetta `--run-indices` per eseguire un insieme esplicito di repliche, evitando di rieseguire celle già riuscite durante i recovery selettivi.
+- Il recovery OpenRouter degli 11 errori Gemini ha prodotto 8 run riusciti e 3 errori di parsing dello schema Hospital `full_llm`; 11 manifest e 57 hash sono stati verificati. I risultati restano una sensibilità selettiva e non vengono combinati con Gemini.
+- Preregistrata prima dell'esecuzione una matrice Nemotron completa 3×2×5 in una directory nuova, con ordine interlacciato e limite output 8192; resta una sensibilità OpenRouter separata dalla matrice Gemini e dal recovery selettivo.
+
+## 2026-11-05 - Esecuzione primaria RQ2 e controllo del fallback
+
+- Il runner assegna i progetti batch all'account tecnico `research-benchmark-runner`, coerentemente con il vincolo `owner_id` obbligatorio.
+- I run che ricadono sul popolamento deterministico sono ora marcati come falliti (`population_mode=fallback`) e non entrano negli aggregati RQ2.
+- Prima di osservare outcome primari, il protocollo è stato emendato da `gemini-2.5-flash-lite`, non più disponibile per nuovi utenti, a `gemini-3.5-flash-lite`, verificato con una richiesta minima riuscita sulla Gemini Developer API.
+- Corretto il supporto alle risposte Gemini in content blocks, che causava falsi fallback tramite `.strip()` su liste; aggiunta ripresa sicura dei bundle con verifica di provider, modello e temperatura.
+- La matrice v2 contiene 30/30 manifest con zero errori di hash, ma resta descrittiva: la quota del provider si è esaurita nei run Hospital `full_llm` eseguiti per ultimi, confondendo condizione e ordine temporale.
+- Il controllo QA ha inoltre classificato la v2 come pilot: usa due revisioni software, `research_mode=false`, omette gli hash sorgente nei nove fallimenti precoci e contiene un `ci95_f1` Wilson non valido per la media degli F1 per-run; questi limiti sono dichiarati senza riscrivere gli artefatti congelati.
+- Il runner successivo registra gli hash dei sorgenti anche quando la generazione schema fallisce, separa run valutabili, non valutabili ed errori, termina con exit nonzero sugli errori e sostituisce il Wilson improprio sulla media F1 con il solo range descrittivo osservato. Gli artefatti v2 congelati non vengono riscritti.
+- La selezione del provider LLM è ora fail-closed: provider sconosciuti e dipendenza Google assente producono un errore esplicito invece di un fallback OpenAI con provenance incoerente; il rate limiter recepisce gli aggiornamenti runtime.
+- Aggiunta l'opzione esplicita `--resume --retry-failed`: dopo aver verificato manifest e configurazione conserva i run `ok` e `not_evaluable` e riesegue esclusivamente quelli con `status=error`, senza riscrivere gli altri artefatti.
+- Aggiunto il contratto di output schema opt-in `schema-json-v2`: con `OPENROUTER_SCHEMA_JSON_MODE=true`, OpenRouter riceve il JSON Schema completo di `NormalizedSchema` esclusivamente durante la generazione schema; il default resta `legacy-pydantic-v1` per riprodurre gli esperimenti precedenti. Se il parser primario fallisce viene tentata una sola estrazione JSON deterministica locale con validazione Pydantic. Prompt e semantica restano invariati; manifest e retry verificano la versione del contratto e la diagnostica registra solo categoria, finish reason e token, senza prompt, documenti o output grezzi.
+
+## 2026-11-04 - Protocollo osservabile ed equivalenza funzionale RQ2
+
+- Aggiunte specifiche versionate `evaluation_spec.json` per University, Library e Hospital con scope osservabile, chiavi naturali, canonicalizzazione, soglie congelate e dieci query funzionali per dataset.
+- Corretto il valutatore cell-level: valori numerici/date/booleani differenti non sono più classificati come equivalenti; `NULL` resta distinto dalla stringa vuota; lo scope osservabile è applicato simmetricamente e le righe relazionali possono essere allineate tramite chiavi di business invece degli ID sintetici.
+- Il runner supporta celle isolate per formato, mantiene separata la sensibilità full-gold e genera per ogni run un bundle autosufficiente con database, schema, valutazione, ledger, allineamento, risultati delle query, manifest e hash.
+- L'equivalenza funzionale verifica query critiche, result hash e differenze, duplicati di chiavi naturali e violazioni FK. Errori e metadata sensibili vengono redatti prima della persistenza.
+- Documentata l'assenza di varianti XLSX e la non equivalenza fattuale degli attuali file CSV/PDF/TXT: nessuna conclusione causale sul formato viene prodotta finché non sarà validato un unico fact set reso nei quattro formati.
+- RQ1 descrive il campione osservato come `trained student raters`, non come esperti professionali; la deviazione dal protocollo pianificato resta esplicita.
+- Validazione: 26 test RQ2, 16 test delle pipeline di ricerca, 110 test frontend, build Vite e compilazione LaTeX completati.
+
+## 2026-11-03 - Chiusura automatizzabile RQ1 (Branch redesign/tecnia-research)
+
+- Aggiunto `backend/analyze_rq1_ratings.py`: valida la matrice completa, pseudonimizza i valutatori, calcola descrittive, effetto soffitto, alpha di Krippendorff ordinale con bootstrap, confronto fra condizioni a livello di schema, correzione Holm e sensibilità appaiata dataset/run.
+- Generato `backend/reports/rq1_analysis/` da 1.350 valutazioni (45 valutatori × 30 schemi), senza marcare singole risposte come nuove o imputate. Il manifesto registra hash, revisione, seed e parametri.
+- Corretto il contratto della scala RQ1 da 0–4 a 1–5 nel generatore e nel pacchetto esperti; ricreato `ratings_template.csv`.
+- Rimosso il lock temporaneo OpenOffice dal pacchetto e aggiunta la relativa regola a `.gitignore`.
+- Documentata la deviazione tra i tre esperti pianificati e i 45 valutatori osservati, che richiede verifica umana dei criteri di idoneità prima dell'interpretazione confermativa.
+
+## 2026-11-03 - Preparazione analisi RQ0/RQ3/RQ4 e allineamento del protocollo
+
+- Allineato il target operativo del pannello dello studio al protocollo confermativo: 34 completamenti per braccio invece di 20.
+- Aggiunto `backend/analyze_user_study.py`, che valida gli export pseudonimi, deriva i tempi dagli eventi, esegue i contrasti preregistrati RQ0/RQ3 con correzione Holm e prepara pattern, correlazioni FDR e cluster esplorativi RQ4.
+- Aggiunti test della matrice completa, delle correzioni per confronti multipli e degli artefatti generati.
+- Documentato il contratto degli input in `docs/19-user-study-analysis.md`; la pipeline non produce risultati senza outcome osservati completi.
+- Corretto lo stato scientifico di RQ2: il codice di valutazione è presente, ma gli artefatti grezzi e aggregati citati nella bozza non sono nella copia corrente e devono essere recuperati o rigenerati prima della pubblicazione.
+- Aggiornati roadmap e paper per distinguere le condizioni benchmark RQ1 (`baseline`, `full_llm`) dai bracci partecipanti RQ0/RQ3 e per rimuovere attività tecniche già completate dalla checklist.
+- Propagato il contesto pseudonimo fra pagina dello studio e applicazione; il backend verifica account, partecipante e braccio, impedisce modifiche/chat ad AI-Only e chiamate AI al braccio Manuale, esporta eventi granulari RQ4 e cancella la telemetria collegata al ritiro.
+- Aggiornati Vite 5→8, Vitest 2→5, React Router 6→7 e il plugin React compatibile; l'audit npm passa da 15 vulnerabilità a 0. Le route secondarie e il diagramma sono caricati in modo differito, eliminando i warning Vite sul chunk principale e riducendolo da circa 682 kB a 386 kB.
 
 ## 2026-10-14 - Pagina Esempi pubblica, impostazioni solo Vertex AI (Branch redesign/tecnia-research)
 

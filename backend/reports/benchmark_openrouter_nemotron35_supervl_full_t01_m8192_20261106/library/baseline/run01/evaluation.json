@@ -1,0 +1,2852 @@
+{
+  "per_table": {
+    "categories": {
+      "exact": 10,
+      "type_consistent": 0,
+      "null_in_source": 0,
+      "wrong_value": 0,
+      "fk_violations": 0,
+      "type_mismatch": 0,
+      "missing_rows": 0,
+      "extra_rows": 0,
+      "duplicate_generated_keys": 0,
+      "duplicate_ground_keys": 0,
+      "total_cells": 10,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "ci95_precision": [
+        0.7225,
+        1.0
+      ],
+      "ci95_recall": [
+        0.7225,
+        1.0
+      ],
+      "ci95_f1": [
+        1.0,
+        1.0
+      ],
+      "row_key_columns": [
+        "name"
+      ],
+      "discrepancies": []
+    },
+    "members": {
+      "exact": 60,
+      "type_consistent": 0,
+      "null_in_source": 0,
+      "wrong_value": 0,
+      "fk_violations": 0,
+      "type_mismatch": 0,
+      "missing_rows": 0,
+      "extra_rows": 0,
+      "duplicate_generated_keys": 0,
+      "duplicate_ground_keys": 0,
+      "total_cells": 60,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "ci95_precision": [
+        0.9398,
+        1.0
+      ],
+      "ci95_recall": [
+        0.9398,
+        1.0
+      ],
+      "ci95_f1": [
+        1.0,
+        1.0
+      ],
+      "row_key_columns": [
+        "email"
+      ],
+      "discrepancies": []
+    },
+    "books": {
+      "exact": 108,
+      "type_consistent": 0,
+      "null_in_source": 0,
+      "wrong_value": 0,
+      "fk_violations": 0,
+      "type_mismatch": 0,
+      "missing_rows": 14,
+      "extra_rows": 0,
+      "duplicate_generated_keys": 0,
+      "duplicate_ground_keys": 0,
+      "total_cells": 108,
+      "precision": 1.0,
+      "recall": 0.8852,
+      "f1": 0.9391,
+      "ci95_precision": [
+        0.9657,
+        1.0
+      ],
+      "ci95_recall": [
+        0.8166,
+        0.9304
+      ],
+      "ci95_f1": [
+        0.9391,
+        0.9391
+      ],
+      "row_key_columns": [
+        "isbn"
+      ],
+      "discrepancies": [
+        {
+          "row_key": [
+            "978-0141-352-5056"
+          ],
+          "column": null,
+          "error_type": "MR",
+          "generated_value": null,
+          "ground_value": {
+            "book_id": 44,
+            "isbn": "978-0141-352-5056",
+            "title": "L'inverno La valle",
+            "author": "Cesare Pavese",
+            "category_id": [
+              "__business_key__",
+              "Avventura"
+            ]
+          }
+        },
+        {
+          "row_key": [
+            "978-0167-367-6631"
+          ],
+          "column": null,
+          "error_type": "MR",
+          "generated_value": null,
+          "ground_value": {
+            "book_id": 38,
+            "isbn": "978-0167-367-6631",
+            "title": "Il giardino La soglia",
+            "author": "Leonardo Sciascia",
+            "category_id": [
+              "__business_key__",
+              "Giallo"
+            ]
+          }
+        },
+        {
+          "row_key": [
+            "978-0375-967-7500"
+          ],
+          "column": null,
+          "error_type": "MR",
+          "generated_value": null,
+          "ground_value": {
+            "book_id": 45,
+            "isbn": "978-0375-967-7500",
+            "title": "Silenzi La corrente",
+            "author": "Andrea Camilleri",
+            "category_id": [
+              "__business_key__",
+              "Fiction"
+            ]
+          }
+        },
+        {
+          "row_key": [
+            "978-0389-601-1448"
+          ],
+          "column": null,
+          "error_type": "MR",
+          "generated_value": null,
+          "ground_value": {
+            "book_id": 40,
+            "isbn": "978-0389-601-1448",
+            "title": "Il ritorno Specchi",
+            "author": "Natalia Ginzburg",
+            "category_id": [
+              "__business_key__",
+              "Tecnologia"
+            ]
+          }
+        },
+        {
+          "row_key": [
+            "978-0428-471-8276"
+          ],
+          "column": null,
+          "error_type": "MR",
+          "generated_value": null,
+          "ground_value": {
+            "book_id": 49,
+            "isbn": "978-0428-471-8276",
+            "title": "La valle Ombre",
+            "author": "Cesare Pavese",
+            "category_id": [
+              "__business_key__",
+              "Biografia"
+            ]
+          }
+        },
+        {
+          "row_key": [
+            "978-0467-994-6073"
+          ],
+          "column": null,
+          "error_type": "MR",
+          "generated_value": null,
+          "ground_value": {
+            "book_id": 50,
+            "isbn": "978-0467-994-6073",
+            "title": "Sabbia L'inverno",
+            "author": "Cesare Pavese",
+            "category_id": [
+              "__business_key__",
+              "Storia"
+            ]
+          }
+        },
+        {
+          "row_key": [
+            "978-0528-447-3542"
+          ],
+          "column": null,
+          "error_type": "MR",
+          "generated_value": null,
+          "ground_value": {
+            "book_id": 43,
+            "isbn": "978-0528-447-3542",
+            "title": "L'inverno Il confine",
+            "author": "Dino Buzzati",
+            "category_id": [
+              "__business_key__",
+              "Poesia"
+            ]
+          }
+        },
+        {
+          "row_key": [
+            "978-0599-227-5643"
+          ],
+          "column": null,
+          "error_type": "MR",
+          "generated_value": null,
+          "ground_value": {
+            "book_id": 37,
+            "isbn": "978-0599-227-5643",
+            "title": "L'inverno Il giardino",
+            "author": "Andrea Camilleri",
+            "category_id": [
+              "__business_key__",
+              "Poesia"
+            ]
+          }
+        },
+        {
+          "row_key": [
+            "978-0609-371-4505"
+          ],
+          "column": null,
+          "error_type": "MR",
+          "generated_value": null,
+          "ground_value": {
+            "book_id": 46,
+            "isbn": "978-0609-371-4505",
+            "title": "La valle La valle",
+            "author": "Leonardo Sciascia",
+            "category_id": [
+              "__business_key__",
+              "Scienza"
+            ]
+          }
+        },
+        {
+          "row_key": [
+            "978-0627-774-8958"
+          ],
+          "column": null,
+          "error_type": "MR",
+          "generated_value": null,
+          "ground_value": {
+            "book_id": 39,
+            "isbn": "978-0627-774-8958",
+            "title": "Il custode Il giardino",
+            "author": "Umberto Eco",
+            "category_id": [
+              "__business_key__",
+              "Saggistica"
+            ]
+          }
+        },
+        {
+          "row_key": [
+            "978-0629-235-4312"
+          ],
+          "column": null,
+          "error_type": "MR",
+          "generated_value": null,
+          "ground_value": {
+            "book_id": 41,
+            "isbn": "978-0629-235-4312",
+            "title": "Il porto Radici",
+            "author": "Alessandro Manzoni",
+            "category_id": [
+              "__business_key__",
+              "Biografia"
+            ]
+          }
+        },
+        {
+          "row_key": [
+            "978-0968-525-7554"
+          ],
+          "column": null,
+          "error_type": "MR",
+          "generated_value": null,
+          "ground_value": {
+            "book_id": 48,
+            "isbn": "978-0968-525-7554",
+            "title": "Cronache Memorie",
+            "author": "Luigi Pirandello",
+            "category_id": [
+              "__business_key__",
+              "Tecnologia"
+            ]
+          }
+        },
+        {
+          "row_key": [
+            "978-0977-478-5016"
+          ],
+          "column": null,
+          "error_type": "MR",
+          "generated_value": null,
+          "ground_value": {
+            "book_id": 42,
+            "isbn": "978-0977-478-5016",
+            "title": "Radici Nebbia",
+            "author": "Andrea Camilleri",
+            "category_id": [
+              "__business_key__",
+              "Fiction"
+            ]
+          }
+        },
+        {
+          "row_key": [
+            "978-0999-780-1177"
+          ],
+          "column": null,
+          "error_type": "MR",
+          "generated_value": null,
+          "ground_value": {
+            "book_id": 47,
+            "isbn": "978-0999-780-1177",
+            "title": "Il ritorno Radici",
+            "author": "Alberto Moravia",
+            "category_id": [
+              "__business_key__",
+              "Storia"
+            ]
+          }
+        }
+      ]
+    },
+    "loans": {
+      "exact": 120,
+      "type_consistent": 0,
+      "null_in_source": 0,
+      "wrong_value": 0,
+      "fk_violations": 0,
+      "type_mismatch": 0,
+      "missing_rows": 0,
+      "extra_rows": 0,
+      "duplicate_generated_keys": 0,
+      "duplicate_ground_keys": 0,
+      "total_cells": 120,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "ci95_precision": [
+        0.969,
+        1.0
+      ],
+      "ci95_recall": [
+        0.969,
+        1.0
+      ],
+      "ci95_f1": [
+        1.0,
+        1.0
+      ],
+      "row_key_columns": [
+        "member_id",
+        "loan_date",
+        "due_date"
+      ],
+      "discrepancies": []
+    }
+  },
+  "global": {
+    "precision": 1.0,
+    "recall": 0.9713,
+    "f1": 0.9848,
+    "total_cells": 298,
+    "missing_rows": 14,
+    "extra_rows": 0
+  },
+  "scope": {
+    "mode": "observable",
+    "excluded_tables": {
+      "loans.book_id": {
+        "reason": "The supplied loans_members.csv does not identify the borrowed book."
+      },
+      "books.category_id": {
+        "reason": "Synthetic identifier; the category relationship is evaluated by functional query L03."
+      },
+      "loans.member_id": {
+        "reason": "Synthetic identifier; row alignment resolves it through members.email."
+      },
+      "fines": {
+        "reason": "Fine rows, amounts and payment dates are generated only in the gold builder and are absent from source documents."
+      }
+    }
+  },
+  "full_gold_sensitivity": {
+    "per_table": {
+      "categories": {
+        "exact": 10,
+        "type_consistent": 0,
+        "null_in_source": 0,
+        "wrong_value": 10,
+        "fk_violations": 0,
+        "type_mismatch": 0,
+        "missing_rows": 0,
+        "extra_rows": 0,
+        "duplicate_generated_keys": 0,
+        "duplicate_ground_keys": 0,
+        "total_cells": 20,
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6667,
+        "ci95_precision": [
+          0.2993,
+          0.7007
+        ],
+        "ci95_recall": [
+          0.7225,
+          1.0
+        ],
+        "ci95_f1": [
+          0.6667,
+          0.6667
+        ],
+        "row_key_columns": [
+          "name"
+        ],
+        "discrepancies": [
+          {
+            "row_key": [
+              "Giallo"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 5,
+            "ground_value": 6
+          },
+          {
+            "row_key": [
+              "Storia"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 7,
+            "ground_value": 3
+          },
+          {
+            "row_key": [
+              "Biografia"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 4,
+            "ground_value": 8
+          },
+          {
+            "row_key": [
+              "Fantascienza"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 9,
+            "ground_value": 5
+          },
+          {
+            "row_key": [
+              "Fiction"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 3,
+            "ground_value": 1
+          },
+          {
+            "row_key": [
+              "Saggistica"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 1,
+            "ground_value": 2
+          },
+          {
+            "row_key": [
+              "Tecnologia"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 8,
+            "ground_value": 10
+          },
+          {
+            "row_key": [
+              "Poesia"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 10,
+            "ground_value": 7
+          },
+          {
+            "row_key": [
+              "Avventura"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 6,
+            "ground_value": 9
+          },
+          {
+            "row_key": [
+              "Scienza"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 2,
+            "ground_value": 4
+          }
+        ]
+      },
+      "members": {
+        "exact": 80,
+        "type_consistent": 0,
+        "null_in_source": 0,
+        "wrong_value": 0,
+        "fk_violations": 0,
+        "type_mismatch": 0,
+        "missing_rows": 0,
+        "extra_rows": 0,
+        "duplicate_generated_keys": 0,
+        "duplicate_ground_keys": 0,
+        "total_cells": 80,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "ci95_precision": [
+          0.9542,
+          1.0
+        ],
+        "ci95_recall": [
+          0.9542,
+          1.0
+        ],
+        "ci95_f1": [
+          1.0,
+          1.0
+        ],
+        "row_key_columns": [
+          "email"
+        ],
+        "discrepancies": []
+      },
+      "books": {
+        "exact": 144,
+        "type_consistent": 0,
+        "null_in_source": 0,
+        "wrong_value": 36,
+        "fk_violations": 0,
+        "type_mismatch": 0,
+        "missing_rows": 14,
+        "extra_rows": 0,
+        "duplicate_generated_keys": 0,
+        "duplicate_ground_keys": 0,
+        "total_cells": 180,
+        "precision": 0.8,
+        "recall": 0.9114,
+        "f1": 0.8521,
+        "ci95_precision": [
+          0.7356,
+          0.8519
+        ],
+        "ci95_recall": [
+          0.8568,
+          0.9465
+        ],
+        "ci95_f1": [
+          0.8521,
+          0.8521
+        ],
+        "row_key_columns": [
+          "isbn"
+        ],
+        "discrepancies": [
+          {
+            "row_key": [
+              "978-0141-352-5056"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "book_id": 44,
+              "isbn": "978-0141-352-5056",
+              "title": "L'inverno La valle",
+              "author": "Cesare Pavese",
+              "category_id": 9
+            }
+          },
+          {
+            "row_key": [
+              "978-0167-367-6631"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "book_id": 38,
+              "isbn": "978-0167-367-6631",
+              "title": "Il giardino La soglia",
+              "author": "Leonardo Sciascia",
+              "category_id": 6
+            }
+          },
+          {
+            "row_key": [
+              "978-0375-967-7500"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "book_id": 45,
+              "isbn": "978-0375-967-7500",
+              "title": "Silenzi La corrente",
+              "author": "Andrea Camilleri",
+              "category_id": 1
+            }
+          },
+          {
+            "row_key": [
+              "978-0389-601-1448"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "book_id": 40,
+              "isbn": "978-0389-601-1448",
+              "title": "Il ritorno Specchi",
+              "author": "Natalia Ginzburg",
+              "category_id": 10
+            }
+          },
+          {
+            "row_key": [
+              "978-0428-471-8276"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "book_id": 49,
+              "isbn": "978-0428-471-8276",
+              "title": "La valle Ombre",
+              "author": "Cesare Pavese",
+              "category_id": 8
+            }
+          },
+          {
+            "row_key": [
+              "978-0467-994-6073"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "book_id": 50,
+              "isbn": "978-0467-994-6073",
+              "title": "Sabbia L'inverno",
+              "author": "Cesare Pavese",
+              "category_id": 3
+            }
+          },
+          {
+            "row_key": [
+              "978-0528-447-3542"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "book_id": 43,
+              "isbn": "978-0528-447-3542",
+              "title": "L'inverno Il confine",
+              "author": "Dino Buzzati",
+              "category_id": 7
+            }
+          },
+          {
+            "row_key": [
+              "978-0599-227-5643"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "book_id": 37,
+              "isbn": "978-0599-227-5643",
+              "title": "L'inverno Il giardino",
+              "author": "Andrea Camilleri",
+              "category_id": 7
+            }
+          },
+          {
+            "row_key": [
+              "978-0609-371-4505"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "book_id": 46,
+              "isbn": "978-0609-371-4505",
+              "title": "La valle La valle",
+              "author": "Leonardo Sciascia",
+              "category_id": 4
+            }
+          },
+          {
+            "row_key": [
+              "978-0627-774-8958"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "book_id": 39,
+              "isbn": "978-0627-774-8958",
+              "title": "Il custode Il giardino",
+              "author": "Umberto Eco",
+              "category_id": 2
+            }
+          },
+          {
+            "row_key": [
+              "978-0629-235-4312"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "book_id": 41,
+              "isbn": "978-0629-235-4312",
+              "title": "Il porto Radici",
+              "author": "Alessandro Manzoni",
+              "category_id": 8
+            }
+          },
+          {
+            "row_key": [
+              "978-0968-525-7554"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "book_id": 48,
+              "isbn": "978-0968-525-7554",
+              "title": "Cronache Memorie",
+              "author": "Luigi Pirandello",
+              "category_id": 10
+            }
+          },
+          {
+            "row_key": [
+              "978-0977-478-5016"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "book_id": 42,
+              "isbn": "978-0977-478-5016",
+              "title": "Radici Nebbia",
+              "author": "Andrea Camilleri",
+              "category_id": 1
+            }
+          },
+          {
+            "row_key": [
+              "978-0999-780-1177"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "book_id": 47,
+              "isbn": "978-0999-780-1177",
+              "title": "Il ritorno Radici",
+              "author": "Alberto Moravia",
+              "category_id": 3
+            }
+          },
+          {
+            "row_key": [
+              "978-0955-709-1593"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 3,
+            "ground_value": 1
+          },
+          {
+            "row_key": [
+              "978-0256-971-1276"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 1,
+            "ground_value": 2
+          },
+          {
+            "row_key": [
+              "978-0865-356-7564"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 8,
+            "ground_value": 10
+          },
+          {
+            "row_key": [
+              "978-0468-187-9230"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 7,
+            "ground_value": 3
+          },
+          {
+            "row_key": [
+              "978-0890-352-8956"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 1,
+            "ground_value": 2
+          },
+          {
+            "row_key": [
+              "978-0622-401-8832"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 2,
+            "ground_value": 4
+          },
+          {
+            "row_key": [
+              "978-0993-113-2062"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 10,
+            "ground_value": 7
+          },
+          {
+            "row_key": [
+              "978-0813-205-6167"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 5,
+            "ground_value": 6
+          },
+          {
+            "row_key": [
+              "978-0811-592-8049"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 8,
+            "ground_value": 10
+          },
+          {
+            "row_key": [
+              "978-0445-604-6522"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 8,
+            "ground_value": 10
+          },
+          {
+            "row_key": [
+              "978-0106-194-4032"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 9,
+            "ground_value": 5
+          },
+          {
+            "row_key": [
+              "978-0534-980-3129"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 10,
+            "ground_value": 7
+          },
+          {
+            "row_key": [
+              "978-0632-640-2390"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 5,
+            "ground_value": 6
+          },
+          {
+            "row_key": [
+              "978-0353-447-9476"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 3,
+            "ground_value": 1
+          },
+          {
+            "row_key": [
+              "978-0668-513-5116"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 5,
+            "ground_value": 6
+          },
+          {
+            "row_key": [
+              "978-0523-287-6067"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 6,
+            "ground_value": 9
+          },
+          {
+            "row_key": [
+              "978-0698-226-5110"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 6,
+            "ground_value": 9
+          },
+          {
+            "row_key": [
+              "978-0536-660-9539"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 1,
+            "ground_value": 2
+          },
+          {
+            "row_key": [
+              "978-0358-177-6870"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 4,
+            "ground_value": 8
+          },
+          {
+            "row_key": [
+              "978-0673-708-9382"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 4,
+            "ground_value": 8
+          },
+          {
+            "row_key": [
+              "978-0963-626-2979"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 2,
+            "ground_value": 4
+          },
+          {
+            "row_key": [
+              "978-0357-640-1407"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 3,
+            "ground_value": 1
+          },
+          {
+            "row_key": [
+              "978-0351-217-8965"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 9,
+            "ground_value": 5
+          },
+          {
+            "row_key": [
+              "978-0778-751-7546"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 1,
+            "ground_value": 2
+          },
+          {
+            "row_key": [
+              "978-0205-598-4727"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 2,
+            "ground_value": 4
+          },
+          {
+            "row_key": [
+              "978-0172-591-4353"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 3,
+            "ground_value": 1
+          },
+          {
+            "row_key": [
+              "978-0325-207-1406"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 9,
+            "ground_value": 5
+          },
+          {
+            "row_key": [
+              "978-0988-331-5894"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 6,
+            "ground_value": 9
+          },
+          {
+            "row_key": [
+              "978-0263-297-4947"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 6,
+            "ground_value": 9
+          },
+          {
+            "row_key": [
+              "978-0927-310-3695"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 1,
+            "ground_value": 2
+          },
+          {
+            "row_key": [
+              "978-0735-286-2542"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 3,
+            "ground_value": 1
+          },
+          {
+            "row_key": [
+              "978-0475-875-3366"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 7,
+            "ground_value": 3
+          },
+          {
+            "row_key": [
+              "978-0962-520-7674"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 1,
+            "ground_value": 2
+          },
+          {
+            "row_key": [
+              "978-0653-207-4670"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 2,
+            "ground_value": 4
+          },
+          {
+            "row_key": [
+              "978-0194-479-2288"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 10,
+            "ground_value": 7
+          },
+          {
+            "row_key": [
+              "978-0780-255-2798"
+            ],
+            "column": "category_id",
+            "error_type": "WV",
+            "generated_value": 2,
+            "ground_value": 4
+          }
+        ]
+      },
+      "loans": {
+        "exact": 182,
+        "type_consistent": 0,
+        "null_in_source": 0,
+        "wrong_value": 118,
+        "fk_violations": 0,
+        "type_mismatch": 0,
+        "missing_rows": 0,
+        "extra_rows": 0,
+        "duplicate_generated_keys": 0,
+        "duplicate_ground_keys": 0,
+        "total_cells": 300,
+        "precision": 0.6067,
+        "recall": 1.0,
+        "f1": 0.7552,
+        "ci95_precision": [
+          0.5504,
+          0.6603
+        ],
+        "ci95_recall": [
+          0.9793,
+          1.0
+        ],
+        "ci95_f1": [
+          0.7552,
+          0.7552
+        ],
+        "row_key_columns": [
+          "member_id",
+          "loan_date",
+          "due_date"
+        ],
+        "discrepancies": [
+          {
+            "row_key": [
+              "20",
+              "2026-04-18",
+              "2026-05-08"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 25,
+            "ground_value": 14
+          },
+          {
+            "row_key": [
+              "20",
+              "2026-04-18",
+              "2026-05-08"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 25,
+            "ground_value": 2
+          },
+          {
+            "row_key": [
+              "5",
+              "2026-04-08",
+              "2026-05-14"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 36,
+            "ground_value": 17
+          },
+          {
+            "row_key": [
+              "5",
+              "2026-04-08",
+              "2026-05-14"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 36,
+            "ground_value": 50
+          },
+          {
+            "row_key": [
+              "9",
+              "2026-03-12",
+              "2026-04-21"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 4,
+            "ground_value": 36
+          },
+          {
+            "row_key": [
+              "9",
+              "2026-03-12",
+              "2026-04-21"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 4,
+            "ground_value": 40
+          },
+          {
+            "row_key": [
+              "15",
+              "2026-05-20",
+              "2026-06-22"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 19,
+            "ground_value": 33
+          },
+          {
+            "row_key": [
+              "15",
+              "2026-05-20",
+              "2026-06-22"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 19,
+            "ground_value": 20
+          },
+          {
+            "row_key": [
+              "14",
+              "2026-03-02",
+              "2026-03-25"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 30,
+            "ground_value": 24
+          },
+          {
+            "row_key": [
+              "14",
+              "2026-03-02",
+              "2026-03-25"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 30,
+            "ground_value": 19
+          },
+          {
+            "row_key": [
+              "11",
+              "2026-05-31",
+              "2026-06-07"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 47,
+            "ground_value": 28
+          },
+          {
+            "row_key": [
+              "11",
+              "2026-05-31",
+              "2026-06-07"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 47,
+            "ground_value": 36
+          },
+          {
+            "row_key": [
+              "19",
+              "2026-03-24",
+              "2026-05-04"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 32,
+            "ground_value": 18
+          },
+          {
+            "row_key": [
+              "19",
+              "2026-03-24",
+              "2026-05-04"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 32,
+            "ground_value": 10
+          },
+          {
+            "row_key": [
+              "20",
+              "2026-01-20",
+              "2026-02-23"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 27,
+            "ground_value": 32
+          },
+          {
+            "row_key": [
+              "20",
+              "2026-01-20",
+              "2026-02-23"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 27,
+            "ground_value": 12
+          },
+          {
+            "row_key": [
+              "11",
+              "2026-01-12",
+              "2026-02-07"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 48,
+            "ground_value": 58
+          },
+          {
+            "row_key": [
+              "11",
+              "2026-01-12",
+              "2026-02-07"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 48,
+            "ground_value": 44
+          },
+          {
+            "row_key": [
+              "5",
+              "2026-03-03",
+              "2026-03-14"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 37,
+            "ground_value": 19
+          },
+          {
+            "row_key": [
+              "5",
+              "2026-03-03",
+              "2026-03-14"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 37,
+            "ground_value": 38
+          },
+          {
+            "row_key": [
+              "12",
+              "2026-03-25",
+              "2026-04-16"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 14,
+            "ground_value": 54
+          },
+          {
+            "row_key": [
+              "12",
+              "2026-03-25",
+              "2026-04-16"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 14,
+            "ground_value": 35
+          },
+          {
+            "row_key": [
+              "4",
+              "2026-05-03",
+              "2026-05-24"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 39,
+            "ground_value": 22
+          },
+          {
+            "row_key": [
+              "4",
+              "2026-05-03",
+              "2026-05-24"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 39,
+            "ground_value": 38
+          },
+          {
+            "row_key": [
+              "10",
+              "2026-02-12",
+              "2026-03-20"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 58,
+            "ground_value": 43
+          },
+          {
+            "row_key": [
+              "10",
+              "2026-02-12",
+              "2026-03-20"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 8,
+            "ground_value": 39
+          },
+          {
+            "row_key": [
+              "7",
+              "2026-04-13",
+              "2026-04-21"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 9,
+            "ground_value": 57
+          },
+          {
+            "row_key": [
+              "7",
+              "2026-04-13",
+              "2026-04-21"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 9,
+            "ground_value": 5
+          },
+          {
+            "row_key": [
+              "14",
+              "2026-03-03",
+              "2026-03-23"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 29,
+            "ground_value": 10
+          },
+          {
+            "row_key": [
+              "14",
+              "2026-03-03",
+              "2026-03-23"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 29,
+            "ground_value": 17
+          },
+          {
+            "row_key": [
+              "12",
+              "2026-06-28",
+              "2026-07-31"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 10,
+            "ground_value": 3
+          },
+          {
+            "row_key": [
+              "12",
+              "2026-06-28",
+              "2026-07-31"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 10,
+            "ground_value": 41
+          },
+          {
+            "row_key": [
+              "19",
+              "2026-04-16",
+              "2026-04-26"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 33,
+            "ground_value": 40
+          },
+          {
+            "row_key": [
+              "19",
+              "2026-04-16",
+              "2026-04-26"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 33,
+            "ground_value": 16
+          },
+          {
+            "row_key": [
+              "10",
+              "2026-05-16",
+              "2026-06-14"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 59,
+            "ground_value": 53
+          },
+          {
+            "row_key": [
+              "10",
+              "2026-05-16",
+              "2026-06-14"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 9,
+            "ground_value": 46
+          },
+          {
+            "row_key": [
+              "15",
+              "2026-05-20",
+              "2026-06-15"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 17,
+            "ground_value": 8
+          },
+          {
+            "row_key": [
+              "15",
+              "2026-05-20",
+              "2026-06-15"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 17,
+            "ground_value": 22
+          },
+          {
+            "row_key": [
+              "4",
+              "2026-03-04",
+              "2026-04-07"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 38,
+            "ground_value": 16
+          },
+          {
+            "row_key": [
+              "4",
+              "2026-03-04",
+              "2026-04-07"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 38,
+            "ground_value": 30
+          },
+          {
+            "row_key": [
+              "6",
+              "2026-01-11",
+              "2026-01-18"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 23,
+            "ground_value": 15
+          },
+          {
+            "row_key": [
+              "6",
+              "2026-01-11",
+              "2026-01-18"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 23,
+            "ground_value": 28
+          },
+          {
+            "row_key": [
+              "16",
+              "2026-01-21",
+              "2026-02-13"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 54,
+            "ground_value": 44
+          },
+          {
+            "row_key": [
+              "16",
+              "2026-01-21",
+              "2026-02-13"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 4,
+            "ground_value": 15
+          },
+          {
+            "row_key": [
+              "12",
+              "2026-06-13",
+              "2026-07-17"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 13,
+            "ground_value": 50
+          },
+          {
+            "row_key": [
+              "12",
+              "2026-06-13",
+              "2026-07-17"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 13,
+            "ground_value": 6
+          },
+          {
+            "row_key": [
+              "20",
+              "2026-06-25",
+              "2026-07-10"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 28,
+            "ground_value": 55
+          },
+          {
+            "row_key": [
+              "20",
+              "2026-06-25",
+              "2026-07-10"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 28,
+            "ground_value": 48
+          },
+          {
+            "row_key": [
+              "8",
+              "2026-02-10",
+              "2026-03-02"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 52,
+            "ground_value": 51
+          },
+          {
+            "row_key": [
+              "8",
+              "2026-02-10",
+              "2026-03-02"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 2,
+            "ground_value": 44
+          },
+          {
+            "row_key": [
+              "5",
+              "2026-02-25",
+              "2026-03-09"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 35,
+            "ground_value": 13
+          },
+          {
+            "row_key": [
+              "5",
+              "2026-02-25",
+              "2026-03-09"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 35,
+            "ground_value": 25
+          },
+          {
+            "row_key": [
+              "19",
+              "2026-05-31",
+              "2026-07-11"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 34,
+            "ground_value": 46
+          },
+          {
+            "row_key": [
+              "19",
+              "2026-05-31",
+              "2026-07-11"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 34,
+            "ground_value": 20
+          },
+          {
+            "row_key": [
+              "18",
+              "2026-05-07",
+              "2026-05-17"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 41,
+            "ground_value": 20
+          },
+          {
+            "row_key": [
+              "18",
+              "2026-05-07",
+              "2026-05-17"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 41,
+            "ground_value": 50
+          },
+          {
+            "row_key": [
+              "9",
+              "2026-02-14",
+              "2026-03-17"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 5,
+            "ground_value": 37
+          },
+          {
+            "row_key": [
+              "9",
+              "2026-02-14",
+              "2026-03-17"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 5,
+            "ground_value": 6
+          },
+          {
+            "row_key": [
+              "15",
+              "2026-01-20",
+              "2026-02-14"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 16,
+            "ground_value": 6
+          },
+          {
+            "row_key": [
+              "15",
+              "2026-01-20",
+              "2026-02-14"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 16,
+            "ground_value": 41
+          },
+          {
+            "row_key": [
+              "12",
+              "2026-06-16",
+              "2026-07-08"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 11,
+            "ground_value": 12
+          },
+          {
+            "row_key": [
+              "12",
+              "2026-06-16",
+              "2026-07-08"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 11,
+            "ground_value": 13
+          },
+          {
+            "row_key": [
+              "15",
+              "2026-01-16",
+              "2026-02-13"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 18,
+            "ground_value": 23
+          },
+          {
+            "row_key": [
+              "15",
+              "2026-01-16",
+              "2026-02-13"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 18,
+            "ground_value": 29
+          },
+          {
+            "row_key": [
+              "9",
+              "2026-04-06",
+              "2026-05-01"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 6,
+            "ground_value": 45
+          },
+          {
+            "row_key": [
+              "9",
+              "2026-04-06",
+              "2026-05-01"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 6,
+            "ground_value": 48
+          },
+          {
+            "row_key": [
+              "9",
+              "2026-01-09",
+              "2026-01-22"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 3,
+            "ground_value": 31
+          },
+          {
+            "row_key": [
+              "9",
+              "2026-01-09",
+              "2026-01-22"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 3,
+            "ground_value": 46
+          },
+          {
+            "row_key": [
+              "20",
+              "2026-06-02",
+              "2026-07-13"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 26,
+            "ground_value": 27
+          },
+          {
+            "row_key": [
+              "20",
+              "2026-06-02",
+              "2026-07-13"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 26,
+            "ground_value": 45
+          },
+          {
+            "row_key": [
+              "16",
+              "2026-03-31",
+              "2026-05-01"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 53,
+            "ground_value": 34
+          },
+          {
+            "row_key": [
+              "16",
+              "2026-03-31",
+              "2026-05-01"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 3,
+            "ground_value": 23
+          },
+          {
+            "row_key": [
+              "8",
+              "2026-02-05",
+              "2026-03-09"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 50,
+            "ground_value": 30
+          },
+          {
+            "row_key": [
+              "8",
+              "2026-02-05",
+              "2026-03-09"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 50,
+            "ground_value": 10
+          },
+          {
+            "row_key": [
+              "10",
+              "2026-03-19",
+              "2026-04-04"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 57,
+            "ground_value": 42
+          },
+          {
+            "row_key": [
+              "10",
+              "2026-03-19",
+              "2026-04-04"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 7,
+            "ground_value": 17
+          },
+          {
+            "row_key": [
+              "7",
+              "2026-06-25",
+              "2026-07-14"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 8,
+            "ground_value": 41
+          },
+          {
+            "row_key": [
+              "7",
+              "2026-06-25",
+              "2026-07-14"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 8,
+            "ground_value": 24
+          },
+          {
+            "row_key": [
+              "19",
+              "2026-02-27",
+              "2026-03-23"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 31,
+            "ground_value": 11
+          },
+          {
+            "row_key": [
+              "19",
+              "2026-02-27",
+              "2026-03-23"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 31,
+            "ground_value": 22
+          },
+          {
+            "row_key": [
+              "12",
+              "2026-06-27",
+              "2026-07-26"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 12,
+            "ground_value": 38
+          },
+          {
+            "row_key": [
+              "12",
+              "2026-06-27",
+              "2026-07-26"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 12,
+            "ground_value": 34
+          },
+          {
+            "row_key": [
+              "4",
+              "2026-05-22",
+              "2026-06-25"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 40,
+            "ground_value": 49
+          },
+          {
+            "row_key": [
+              "4",
+              "2026-05-22",
+              "2026-06-25"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 40,
+            "ground_value": 46
+          },
+          {
+            "row_key": [
+              "9",
+              "2026-01-12",
+              "2026-01-26"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 1,
+            "ground_value": 16
+          },
+          {
+            "row_key": [
+              "2",
+              "2026-04-22",
+              "2026-05-02"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 43,
+            "ground_value": 26
+          },
+          {
+            "row_key": [
+              "2",
+              "2026-04-22",
+              "2026-05-02"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 43,
+            "ground_value": 36
+          },
+          {
+            "row_key": [
+              "3",
+              "2026-01-11",
+              "2026-02-02"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 42,
+            "ground_value": 25
+          },
+          {
+            "row_key": [
+              "3",
+              "2026-01-11",
+              "2026-02-02"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 42,
+            "ground_value": 2
+          },
+          {
+            "row_key": [
+              "2",
+              "2026-03-08",
+              "2026-04-06"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 46,
+            "ground_value": 52
+          },
+          {
+            "row_key": [
+              "2",
+              "2026-03-08",
+              "2026-04-06"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 46,
+            "ground_value": 19
+          },
+          {
+            "row_key": [
+              "1",
+              "2026-06-24",
+              "2026-07-24"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 20,
+            "ground_value": 5
+          },
+          {
+            "row_key": [
+              "1",
+              "2026-06-24",
+              "2026-07-24"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 20,
+            "ground_value": 3
+          },
+          {
+            "row_key": [
+              "17",
+              "2026-01-20",
+              "2026-02-20"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 56,
+            "ground_value": 35
+          },
+          {
+            "row_key": [
+              "17",
+              "2026-01-20",
+              "2026-02-20"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 6,
+            "ground_value": 35
+          },
+          {
+            "row_key": [
+              "1",
+              "2026-05-13",
+              "2026-06-04"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 21,
+            "ground_value": 40
+          },
+          {
+            "row_key": [
+              "7",
+              "2026-03-17",
+              "2026-04-16"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 7,
+            "ground_value": 2
+          },
+          {
+            "row_key": [
+              "7",
+              "2026-03-17",
+              "2026-04-16"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 7,
+            "ground_value": 29
+          },
+          {
+            "row_key": [
+              "10",
+              "2026-03-19",
+              "2026-04-08"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 60,
+            "ground_value": 56
+          },
+          {
+            "row_key": [
+              "10",
+              "2026-03-19",
+              "2026-04-08"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 10,
+            "ground_value": 33
+          },
+          {
+            "row_key": [
+              "20",
+              "2026-01-25",
+              "2026-03-02"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 24,
+            "ground_value": 9
+          },
+          {
+            "row_key": [
+              "20",
+              "2026-01-25",
+              "2026-03-02"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 24,
+            "ground_value": 36
+          },
+          {
+            "row_key": [
+              "2",
+              "2026-01-31",
+              "2026-02-28"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 44,
+            "ground_value": 47
+          },
+          {
+            "row_key": [
+              "2",
+              "2026-01-31",
+              "2026-02-28"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 44,
+            "ground_value": 43
+          },
+          {
+            "row_key": [
+              "15",
+              "2026-06-20",
+              "2026-07-16"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 15,
+            "ground_value": 4
+          },
+          {
+            "row_key": [
+              "15",
+              "2026-06-20",
+              "2026-07-16"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 15,
+            "ground_value": 2
+          },
+          {
+            "row_key": [
+              "11",
+              "2026-02-09",
+              "2026-02-27"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 49,
+            "ground_value": 60
+          },
+          {
+            "row_key": [
+              "11",
+              "2026-02-09",
+              "2026-02-27"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 49,
+            "ground_value": 3
+          },
+          {
+            "row_key": [
+              "8",
+              "2026-02-26",
+              "2026-04-09"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 51,
+            "ground_value": 39
+          },
+          {
+            "row_key": [
+              "8",
+              "2026-02-26",
+              "2026-04-09"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 1,
+            "ground_value": 40
+          },
+          {
+            "row_key": [
+              "16",
+              "2026-05-12",
+              "2026-06-14"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 55,
+            "ground_value": 59
+          },
+          {
+            "row_key": [
+              "16",
+              "2026-05-12",
+              "2026-06-14"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 5,
+            "ground_value": 43
+          },
+          {
+            "row_key": [
+              "2",
+              "2026-04-22",
+              "2026-05-05"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 45,
+            "ground_value": 48
+          },
+          {
+            "row_key": [
+              "2",
+              "2026-04-22",
+              "2026-05-05"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 45,
+            "ground_value": 1
+          },
+          {
+            "row_key": [
+              "6",
+              "2026-04-27",
+              "2026-05-29"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 22,
+            "ground_value": 7
+          },
+          {
+            "row_key": [
+              "6",
+              "2026-04-27",
+              "2026-05-29"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 22,
+            "ground_value": 14
+          },
+          {
+            "row_key": [
+              "9",
+              "2026-04-05",
+              "2026-04-24"
+            ],
+            "column": "loan_id",
+            "error_type": "WV",
+            "generated_value": 2,
+            "ground_value": 29
+          },
+          {
+            "row_key": [
+              "9",
+              "2026-04-05",
+              "2026-04-24"
+            ],
+            "column": "book_id",
+            "error_type": "WV",
+            "generated_value": 2,
+            "ground_value": 8
+          }
+        ]
+      },
+      "fines": {
+        "exact": 0,
+        "type_consistent": 0,
+        "null_in_source": 0,
+        "wrong_value": 0,
+        "fk_violations": 0,
+        "type_mismatch": 0,
+        "missing_rows": 24,
+        "extra_rows": 0,
+        "duplicate_generated_keys": 0,
+        "duplicate_ground_keys": 0,
+        "total_cells": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "ci95_precision": [
+          0.0,
+          1.0
+        ],
+        "ci95_recall": [
+          0.0,
+          0.138
+        ],
+        "ci95_f1": [
+          0.0,
+          0.0
+        ],
+        "row_key_columns": [
+          "fine_id"
+        ],
+        "discrepancies": [
+          {
+            "row_key": [
+              "11"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 11,
+              "loan_id": 11,
+              "amount": 11.65,
+              "paid_on": "2026-08-04"
+            }
+          },
+          {
+            "row_key": [
+              "13"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 13,
+              "loan_id": 13,
+              "amount": 2.02,
+              "paid_on": "2026-08-04"
+            }
+          },
+          {
+            "row_key": [
+              "16"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 16,
+              "loan_id": 16,
+              "amount": 13.43,
+              "paid_on": "2026-08-04"
+            }
+          },
+          {
+            "row_key": [
+              "18"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 18,
+              "loan_id": 18,
+              "amount": 9.48,
+              "paid_on": "2026-08-04"
+            }
+          },
+          {
+            "row_key": [
+              "19"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 19,
+              "loan_id": 19,
+              "amount": 11.98,
+              "paid_on": null
+            }
+          },
+          {
+            "row_key": [
+              "20"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 20,
+              "loan_id": 20,
+              "amount": 11.36,
+              "paid_on": null
+            }
+          },
+          {
+            "row_key": [
+              "21"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 21,
+              "loan_id": 21,
+              "amount": 10.67,
+              "paid_on": "2026-08-04"
+            }
+          },
+          {
+            "row_key": [
+              "22"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 22,
+              "loan_id": 22,
+              "amount": 6.65,
+              "paid_on": null
+            }
+          },
+          {
+            "row_key": [
+              "24"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 24,
+              "loan_id": 24,
+              "amount": 8.48,
+              "paid_on": null
+            }
+          },
+          {
+            "row_key": [
+              "26"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 26,
+              "loan_id": 26,
+              "amount": 7.51,
+              "paid_on": null
+            }
+          },
+          {
+            "row_key": [
+              "29"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 29,
+              "loan_id": 29,
+              "amount": 14.47,
+              "paid_on": "2026-08-04"
+            }
+          },
+          {
+            "row_key": [
+              "3"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 3,
+              "loan_id": 3,
+              "amount": 8.27,
+              "paid_on": "2026-08-04"
+            }
+          },
+          {
+            "row_key": [
+              "31"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 31,
+              "loan_id": 31,
+              "amount": 10.5,
+              "paid_on": "2026-08-04"
+            }
+          },
+          {
+            "row_key": [
+              "33"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 33,
+              "loan_id": 33,
+              "amount": 7.55,
+              "paid_on": "2026-08-04"
+            }
+          },
+          {
+            "row_key": [
+              "36"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 36,
+              "loan_id": 36,
+              "amount": 7.81,
+              "paid_on": "2026-08-04"
+            }
+          },
+          {
+            "row_key": [
+              "38"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 38,
+              "loan_id": 38,
+              "amount": 14.01,
+              "paid_on": "2026-08-04"
+            }
+          },
+          {
+            "row_key": [
+              "46"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 46,
+              "loan_id": 46,
+              "amount": 12.81,
+              "paid_on": "2026-08-04"
+            }
+          },
+          {
+            "row_key": [
+              "47"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 47,
+              "loan_id": 47,
+              "amount": 7.25,
+              "paid_on": null
+            }
+          },
+          {
+            "row_key": [
+              "5"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 5,
+              "loan_id": 5,
+              "amount": 3.29,
+              "paid_on": "2026-08-04"
+            }
+          },
+          {
+            "row_key": [
+              "50"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 50,
+              "loan_id": 50,
+              "amount": 3.59,
+              "paid_on": null
+            }
+          },
+          {
+            "row_key": [
+              "59"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 59,
+              "loan_id": 59,
+              "amount": 11.8,
+              "paid_on": null
+            }
+          },
+          {
+            "row_key": [
+              "6"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 6,
+              "loan_id": 6,
+              "amount": 14.75,
+              "paid_on": null
+            }
+          },
+          {
+            "row_key": [
+              "60"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 60,
+              "loan_id": 60,
+              "amount": 8.76,
+              "paid_on": "2026-08-04"
+            }
+          },
+          {
+            "row_key": [
+              "8"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "fine_id": 8,
+              "loan_id": 8,
+              "amount": 4.4,
+              "paid_on": "2026-08-04"
+            }
+          }
+        ]
+      }
+    },
+    "global": {
+      "precision": 0.5813,
+      "recall": 0.7823,
+      "f1": 0.6548,
+      "total_cells": 580,
+      "missing_rows": 38,
+      "extra_rows": 0
+    },
+    "scope": {
+      "mode": "full_gold",
+      "excluded_tables": {}
+    }
+  }
+}

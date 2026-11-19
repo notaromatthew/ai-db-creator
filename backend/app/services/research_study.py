@@ -27,8 +27,8 @@ from app.utils.research import stable_hash
 
 ARMS = ("manual", "ai_only", "ai_interface")
 CONSENT_VERSION = "1.0"
-TARGET_PER_ARM = 20
-STEPS = ("task", "tlx", "sus", "debrief", "done")
+TARGET_PER_ARM = 34
+STEPS = ("task", "debrief", "done")
 
 AGE_BANDS = ("18-24", "25-34", "35-44", "45-54", "55+")
 ROLES = ("studente", "sviluppatore", "analista", "docente", "altro")
@@ -60,6 +60,21 @@ def account_hash(user_id: str) -> str:
     """HMAC con sale dell'id utente: serve solo a impedire iscrizioni doppie, non e' reversibile."""
     salt = (settings.study_account_salt or "aidb-study-account").encode("utf-8")
     return hmac.new(salt, str(user_id).encode("utf-8"), hashlib.sha256).hexdigest()
+
+
+def active_context(participant_id: str, arm: str, expected_account_hash: str) -> dict | None:
+    session = get_session(init_db())
+    try:
+        participant = session.get(StudyParticipant, participant_id)
+        if participant is None or participant.withdrawn_at is not None:
+            return None
+        if participant.arm != arm or not participant.account_hash:
+            return None
+        if not hmac.compare_digest(participant.account_hash, expected_account_hash):
+            return None
+        return {"participant_id": participant.id, "condition": participant.arm, "session_id": participant.id}
+    finally:
+        session.close()
 
 
 def new_code() -> str:
@@ -280,7 +295,7 @@ def complete_task(participant_id: str, code: str | None) -> dict:
     session = get_session(init_db())
     try:
         p = _load(session, participant_id, code)
-        _advance(session, p, "task", "tlx")
+        _advance(session, p, "task", "debrief")
         session.add(StudyEvent(participant_id=p.id, type="task_end", data={}))
         session.commit()
         return {"step": p.step}
@@ -289,8 +304,9 @@ def complete_task(participant_id: str, code: str | None) -> dict:
 
 
 def submit_response(participant_id: str, code: str | None, kind: str, raw) -> dict:
-    cleaners = {"nasa_tlx": (clean_tlx, "tlx", "sus"), "sus": (clean_sus, "sus", "debrief"),
-                "debrief": (lambda r: clean_debrief(r), "debrief", "done")}
+    if kind in {"nasa_tlx", "sus"}:
+        raise StudyError("Questionario non previsto dal protocollo corrente.", 409)
+    cleaners = {"debrief": (lambda r: clean_debrief(r), "debrief", "done")}
     clean, expected, nxt = cleaners[kind]
     data = clean(raw)
     session = get_session(init_db())
@@ -306,8 +322,11 @@ def submit_response(participant_id: str, code: str | None, kind: str, raw) -> di
 
 # ------------------------------------------------------------------ ritiro e cancellazione
 def _erase(session, p: StudyParticipant) -> None:
+    from app.services.interaction_logger import interaction_logger
+
     session.query(StudyEvent).filter_by(participant_id=p.id).delete()
     session.query(StudyResponse).filter_by(participant_id=p.id).delete()
+    interaction_logger.erase_participant(p.id)
     p.demographics = None
     p.account_hash = None  # il collegamento con l'account non serve piu'
     p.withdrawn_at = utcnow_naive()
@@ -382,6 +401,35 @@ def export_csv(kind: str) -> str:
                              "created_at": e.created_at.isoformat() if e.created_at else "",
                              "data": json.dumps(e.data or {}, ensure_ascii=False, sort_keys=True)})
             return _csv(["participant_id", "arm", "type", "created_at", "data"], rows)
+        if kind == "interactions":
+            from app.services.interaction_logger import interaction_logger
+
+            rows = []
+            for event in session.query(StudyEvent).order_by(StudyEvent.created_at, StudyEvent.id).all():
+                participant = arms.get(event.participant_id)
+                if participant:
+                    rows.append({"participant_id": event.participant_id, "arm": participant.arm,
+                                 "type": event.type,
+                                 "created_at": event.created_at.isoformat() if event.created_at else "",
+                                 "data": json.dumps(event.data or {}, ensure_ascii=False, sort_keys=True)})
+            for event in interaction_logger.get_events():
+                data = event.get("data") if isinstance(event.get("data"), dict) else {}
+                manifest = data.get("run_manifest") if isinstance(data.get("run_manifest"), dict) else {}
+                pid = str(data.get("participant_id") or manifest.get("participant_id") or "")
+                participant = arms.get(pid)
+                if not participant:
+                    continue
+                edit_counts = data.get("edit_counts") if isinstance(data.get("edit_counts"), dict) else {}
+                if edit_counts:
+                    for event_type, count in edit_counts.items():
+                        for _ in range(max(0, int(count))):
+                            rows.append({"participant_id": pid, "arm": participant.arm, "type": event_type,
+                                         "created_at": event.get("timestamp", ""), "data": "{}"})
+                else:
+                    rows.append({"participant_id": pid, "arm": participant.arm,
+                                 "type": event.get("event_type", ""), "created_at": event.get("timestamp", ""),
+                                 "data": json.dumps(clean_event_data(data), ensure_ascii=False, sort_keys=True)})
+            return _csv(["participant_id", "arm", "type", "created_at", "data"], rows)
         responses: dict[str, dict[str, dict]] = {}
         for r in session.query(StudyResponse).all():
             responses.setdefault(r.participant_id, {})[r.kind] = r.data
@@ -402,10 +450,9 @@ def export_csv(kind: str) -> str:
                              "withdrawn": p.withdrawn_at is not None, "age_band": demo.get("age_band", ""),
                              "role": demo.get("role", ""), "db_experience": demo.get("db_experience", ""),
                              "ai_experience": demo.get("ai_experience", ""),
-                             "nasa_tlx": got.get("nasa_tlx", {}).get("score", ""), "sus": got.get("sus", {}).get("score", ""),
                              "schema_hash": got.get("schema", {}).get("schema_hash", "")})
             return _csv(["participant_id", "arm", "consent_version", "step", "completed", "withdrawn", "age_band", "role",
-                         "db_experience", "ai_experience", "nasa_tlx", "sus", "schema_hash"], rows)
+                         "db_experience", "ai_experience", "schema_hash"], rows)
         raise StudyError("Tipo di esportazione non valido.")
     finally:
         session.close()

@@ -1,0 +1,21 @@
+{
+  "dataset": "university",
+  "condition": "baseline",
+  "run": 3,
+  "source_format": "combined",
+  "project_id": "b9d0a935-135a-46f3-8eee-82321618ae94",
+  "status": "ok",
+  "temperature": 0.1,
+  "global_precision": 1.0,
+  "global_recall": 0.9885,
+  "global_f1": 0.9942,
+  "total_cells": 154,
+  "missing_rows": 2,
+  "extra_rows": 1,
+  "functional_query_pass_rate": 0.6,
+  "functionally_equivalent": false,
+  "population_mode": "llm",
+  "alignment": null,
+  "adjudication": null,
+  "error": null
+}

@@ -1,0 +1,43 @@
+{
+  "protocol": "rq2_blind_adjudication_v1",
+  "source_sha256": {
+    "reviewer_a": "a0a4a342980b8e4266f9b68df1225e3988f28499fa7a2f03e30e96771c517b53",
+    "reviewer_b": "ee28a514ab00fcd237f52d722c7caef94eb9cc236378bd8f373d2079b6d89788",
+    "private_mapping": "f39dbdbc27b78c60113de65f10d5555d56696aecde8dc13175d6e91856da1aa3"
+  },
+  "status": "awaiting_consensus",
+  "item_count": 1294,
+  "exact_agreement_count": 967,
+  "exact_agreement_rate": 0.7472952086553323,
+  "expected_agreement_rate": 0.7662783169974846,
+  "cohen_kappa_nominal": -0.08122099797624695,
+  "disagreement_count": 327,
+  "reviewer_a_decision_counts": {
+    "errore": 1192,
+    "gold ambiguo": 16,
+    "non determinabile": 60,
+    "rappresentazione equivalente": 26
+  },
+  "reviewer_b_decision_counts": {
+    "errore": 1065,
+    "non determinabile": 225,
+    "rappresentazione equivalente": 4
+  },
+  "decision_pair_counts": {
+    "errore | errore": 967,
+    "errore | non determinabile": 225,
+    "gold ambiguo | errore": 12,
+    "gold ambiguo | rappresentazione equivalente": 4,
+    "non determinabile | errore": 60,
+    "rappresentazione equivalente | errore": 26
+  },
+  "reviewer_a_confidence_counts": {
+    "alta": 667,
+    "media": 627
+  },
+  "reviewer_b_confidence_counts": {
+    "alta": 810,
+    "media": 484
+  },
+  "consensus_required": true
+}

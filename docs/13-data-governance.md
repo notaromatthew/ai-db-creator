@@ -39,7 +39,11 @@ Event types include:
 - `backup`, `restore` — backup filename (timestamp-based, no user-identifiable information)
 - `import_sql` — dialect and table count
 
-### 2.2 Survey Responses
+### 2.2 Optional survey responses outside the current protocol
+
+Raw NASA-TLX and SUS are not collected in the study governed by the 18 November
+2026 amendment. The structures below describe retained platform capability for
+a possible future, separately approved revision only.
 
 Two validated instruments are collected:
 
@@ -232,7 +236,7 @@ If a participant withdraws:
 
 | Requirement | Status | Notes |
 |---|---|---|
-| Ethics approval obtained | Pending | To be submitted in Phase 2 |
+| Institutional requirement checked | User reports that prior ethics approval is not required | Archive the communication if available; retain consent and privacy controls |
 | Data Protection Impact Assessment (DPIA) | Pending | Required if processing personal data |
 | GDPR-compliant consent form | Drafted (this document) | Needs institutional template integration |
 | Data retention schedule documented | Yes | Section 6 |

@@ -52,6 +52,15 @@ _llm_rate_limiter = AsyncRateLimiter(
     max_per_minute=settings.llm_max_requests_per_minute,
 )
 
+SUPPORTED_PROVIDERS = frozenset({"openai", "groq", "openrouter", "google", "vertex"})
+
+
+def _validated_provider(provider: str) -> str:
+    normalised = provider.strip().lower()
+    if normalised not in SUPPORTED_PROVIDERS:
+        raise ValueError(f"Unsupported LLM provider: {provider}")
+    return normalised
+
 
 class _ResponseCache:
     """Cache LRU in memoria per risposte deterministiche (temperatura 0)."""
@@ -100,6 +109,23 @@ def _log_usage(result) -> None:
         )
 
 
+def message_text(content) -> str:
+    """Normalize LangChain string or content-block responses to plain text."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts = []
+        for block in content:
+            if isinstance(block, str):
+                parts.append(block)
+            elif isinstance(block, dict) and isinstance(block.get("text"), str):
+                parts.append(block["text"])
+            elif isinstance(getattr(block, "text", None), str):
+                parts.append(block.text)
+        return "".join(parts)
+    return "" if content is None else str(content)
+
+
 async def _invoke(chain, payload: dict, cacheable: bool = False):
     """Await the shared rate limit, then run a LangChain runnable.
 
@@ -107,6 +133,7 @@ async def _invoke(chain, payload: dict, cacheable: bool = False):
     ``settings.llm_cache_enabled`` is on, identical requests are answered from
     an in-memory cache instead of paying for a second model call.
     """
+    _llm_rate_limiter.max_per_minute = settings.llm_max_requests_per_minute
     use_cache = cacheable and settings.llm_cache_enabled
     key = _cache_key(chain, payload) if use_cache else None
     if key is not None:
@@ -147,8 +174,8 @@ def _vertex_credentials():
     )
 
 
-def _get_llm(temperature: float = 0.1):
-    provider = settings.llm_provider
+def _get_llm(temperature: float = 0.1, structured_json: bool = False):
+    provider = _validated_provider(settings.llm_provider)
 
     if provider == "vertex":
         from app.core.gateway import gateway_enabled, GatewayChatModel
@@ -179,16 +206,32 @@ def _get_llm(temperature: float = 0.1):
         )
 
     if provider == "openrouter":
-        return ChatOpenAI(
-            api_key=settings.openrouter_api_key,
-            model=settings.openrouter_model,
-            temperature=temperature,
-            base_url="https://openrouter.ai/api/v1",
-            default_headers={
+        kwargs = {
+            "api_key": settings.openrouter_api_key,
+            "model": settings.openrouter_model,
+            "temperature": temperature,
+            "max_tokens": settings.llm_max_tokens,
+            "timeout": settings.openrouter_timeout_seconds,
+            "max_retries": settings.openrouter_max_retries,
+            "base_url": "https://openrouter.ai/api/v1",
+            "default_headers": {
                 "HTTP-Referer": "https://github.com/ai-db-creator",
                 "X-Title": "AI DB Creator",
             },
-        )
+            "extra_body": {
+                "reasoning": {"enabled": settings.openrouter_reasoning_enabled},
+            },
+        }
+        if structured_json and settings.openrouter_schema_json_mode:
+            kwargs["model_kwargs"] = {"response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "normalized_schema",
+                    "strict": False,
+                    "schema": NormalizedSchema.model_json_schema(),
+                },
+            }}
+        return ChatOpenAI(**kwargs)
 
     if provider == "google":
         try:
@@ -197,15 +240,18 @@ def _get_llm(temperature: float = 0.1):
                 api_key=settings.google_api_key,
                 model=settings.google_model,
                 temperature=temperature,
+                max_retries=settings.google_max_retries,
             )
-        except ImportError:
-            log.warning("langchain-google-genai not installed. Falling back to OpenAI.")
-            return ChatOpenAI(api_key=settings.openai_api_key, model=settings.openai_model, temperature=temperature)
+        except ImportError as exc:
+            raise RuntimeError(
+                "Google provider requested but langchain-google-genai is not installed"
+            ) from exc
 
     return ChatOpenAI(api_key=settings.openai_api_key, model=settings.openai_model, temperature=temperature)
 
 
 schema_parser = PydanticOutputParser(pydantic_object=NormalizedSchema)
+SCHEMA_OUTPUT_CONTRACT_VERSION = "schema-json-v2"
 
 SCHEMA_PROMPT = ChatPromptTemplate.from_messages([
     ("system", """You are a database normalization expert. Generate a 3NF normalized database schema.
@@ -226,10 +272,44 @@ QUERY_PROMPT = ChatPromptTemplate.from_messages([
 ])
 
 
+def _schema_parse_diagnostics(raw, category: str, repair: str) -> str:
+    metadata = getattr(raw, "response_metadata", None) or {}
+    usage = getattr(raw, "usage_metadata", None) or {}
+    return (
+        f"schema_output_contract={SCHEMA_OUTPUT_CONTRACT_VERSION} "
+        f"parse_category={category} repair={repair} "
+        f"finish_reason={metadata.get('finish_reason')} "
+        f"output_tokens={usage.get('output_tokens')}"
+    )
+
+
+def _repair_schema_output(raw) -> tuple[NormalizedSchema, str]:
+    content = message_text(getattr(raw, "content", raw)).strip()
+    if not content:
+        raise ValueError("empty_output")
+    start = content.find("{")
+    if start < 0:
+        raise ValueError("json_object_missing")
+    try:
+        payload, _end = json.JSONDecoder().raw_decode(content[start:])
+    except json.JSONDecodeError as exc:
+        category = "truncated_json" if exc.pos >= len(content[start:]) - 1 else "invalid_json"
+        raise ValueError(category) from exc
+    if not isinstance(payload, dict) or "tables" not in payload:
+        raise ValueError("schema_object_missing")
+    try:
+        return NormalizedSchema.model_validate(payload), "deterministic_json_extract"
+    except Exception as exc:
+        raise ValueError("schema_validation") from exc
+
+
 async def generate_schema(prompt: str, document_context: str = "",
                           temperature: float | None = None) -> NormalizedSchema:
     try:
-        llm = _get_llm(temperature=0.1 if temperature is None else temperature)
+        llm = _get_llm(
+            temperature=0.1 if temperature is None else temperature,
+            structured_json=True,
+        )
         raw = await _invoke(SCHEMA_PROMPT | llm, {
             "prompt": prompt,
             "document_context": document_context,
@@ -238,11 +318,23 @@ async def generate_schema(prompt: str, document_context: str = "",
         try:
             result = schema_parser.invoke(raw)
         except Exception:
-            meta = getattr(raw, "response_metadata", None) or {}
-            usage = getattr(raw, "usage_metadata", None) or {}
-            log.error("Schema output not parseable: finish_reason=%s output_tokens=%s max_output_tokens=%s" % (
-                meta.get("finish_reason"), usage.get("output_tokens"), settings.vertex_max_output_tokens))
-            raise
+            repair_enabled = (
+                _validated_provider(settings.llm_provider) == "openrouter"
+                and settings.openrouter_schema_json_mode
+            )
+            if not repair_enabled:
+                meta = getattr(raw, "response_metadata", None) or {}
+                usage = getattr(raw, "usage_metadata", None) or {}
+                log.error("Schema output not parseable: finish_reason=%s output_tokens=%s max_output_tokens=%s" % (
+                    meta.get("finish_reason"), usage.get("output_tokens"), settings.vertex_max_output_tokens))
+                raise
+            try:
+                result, repair = _repair_schema_output(raw)
+                log.warning(_schema_parse_diagnostics(raw, "standard_parser_failed", repair))
+            except ValueError as repair_error:
+                category = str(repair_error)
+                log.error(_schema_parse_diagnostics(raw, category, "failed"))
+                raise
         log.info(f"Generated schema with {len(result.tables)} tables")
         return result
     except Exception as e:
@@ -351,7 +443,7 @@ async def generate_query(prompt: str, schema: str, dialect: str = "sqlite") -> Q
             "schema": schema,
             "dialect": dialect,
         })
-        return QueryResponse(sql=result.content.strip())
+        return QueryResponse(sql=message_text(result.content).strip())
     except Exception as e:
         log.error(f"Query generation failed ({type(e).__name__})")
         raise LLMException(detail="Query generation failed") from e
@@ -366,7 +458,7 @@ _PROVIDER_LABELS = {
 
 def get_llm_info():
     """Get current LLM configuration info."""
-    provider = settings.llm_provider
+    provider = _validated_provider(settings.llm_provider)
     label = _PROVIDER_LABELS.get(provider, provider.capitalize())
     models = {
         "openai": settings.openai_model,
@@ -378,6 +470,11 @@ def get_llm_info():
     return {
         "provider": label,
         "model": models.get(provider, settings.openai_model),
+        "schema_output_contract": (
+            SCHEMA_OUTPUT_CONTRACT_VERSION
+            if provider == "openrouter" and settings.openrouter_schema_json_mode
+            else "legacy-pydantic-v1"
+        ),
     }
 
 
@@ -439,7 +536,7 @@ async def generate_sql_for_population(schema: NormalizedSchema, document_content
             "schema_info": schema_info,
             "doc_content": document_content[:40000],
         })
-        sql_text = result.content.strip()
+        sql_text = message_text(result.content).strip()
         sql_text = re.sub(r'```\w*', '', sql_text)
         sql_text = sql_text.replace('```', '').strip()
         return sql_text

@@ -1,0 +1,55 @@
+{
+  "dataset": "university",
+  "condition": "full_llm",
+  "run": 3,
+  "source_format": "combined",
+  "project_id": "fd7cfa2e-9af0-4348-96d9-5eab0b5703b5",
+  "status": "ok",
+  "temperature": 0.1,
+  "global_precision": 0.6667,
+  "global_recall": 0.6667,
+  "global_f1": 0.6667,
+  "total_cells": 68,
+  "missing_rows": 45,
+  "extra_rows": 45,
+  "functional_query_pass_rate": 0.5,
+  "functionally_equivalent": false,
+  "population_mode": "llm",
+  "alignment": {
+    "tables": {
+      "students": "students",
+      "courses": "courses",
+      "enrollments": "enrollments"
+    },
+    "columns": {
+      "students": {
+        "student_id": "student_id",
+        "name": "name",
+        "email": "email"
+      },
+      "courses": {
+        "course_code": "course_code",
+        "title": "title",
+        "credits": "credits"
+      },
+      "enrollments": {
+        "student_id": "student_id",
+        "semester": "semester",
+        "grade": "grade"
+      }
+    },
+    "unmatched_tables": [],
+    "unmatched_columns": {
+      "courses": [
+        "course_id"
+      ],
+      "enrollments": [
+        "course_id"
+      ]
+    },
+    "via_registry": []
+  },
+  "adjudication": null,
+  "error": null,
+  "detail": null
+}

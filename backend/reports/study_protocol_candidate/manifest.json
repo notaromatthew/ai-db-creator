@@ -1,0 +1,28 @@
+{
+  "protocol": "participant_study_protocol_v1",
+  "status": "candidate_pre_pilot_not_final",
+  "questionnaires_collected": false,
+  "arms": [
+    "manual",
+    "ai_only",
+    "ai_interface"
+  ],
+  "analysis_entrypoint": "backend/analyze_user_study.py",
+  "git_revision": "c18ad9b42b63edb9acae375098bd03c460a73136",
+  "working_tree_dirty": true,
+  "files": {
+    "docs/13-data-governance.md": "5a19f539c5c2e47e4a69d9651b17a0f7c4badb45008b916c65592e37cc08eaa5",
+    "docs/14-usability-pilot-protocol.md": "1ef1a5bd74b8e0e68712ae155a646212939838daeae9e60152048785e72da9cf",
+    "docs/16-manual-condition-protocol.md": "a53f22746e63f5728bc3031ced16a76942a49be000befad5cd727532210650a3",
+    "docs/19-user-study-analysis.md": "ae63dd38b183627f8a23a0a30e60db130635ebac53f19cf53b4103d96b9eacb4",
+    "docs/23-study-protocol-amendment-2026-11-18.md": "bb47e14e0555129ad06d4720d91d7f3fc23744e3b0f960e4b320ecfe9b0ef1c3",
+    "docs/24-participant-study-runbook.md": "98a7573c3d5e29a202843b6f673ada85eb939e0b986e6c289e0effa4d8869658",
+    "backend/analyze_user_study.py": "b1968d6e99979daa9fb465fc3d777d731b1e60dbe44d1ec4bb9577fdc139d009",
+    "backend/app/api/study.py": "c0ad149497a62078bde23036c9a761e01237e895ad7bd7fd0ace173195701c09",
+    "backend/app/services/research_study.py": "dd6fcdd264163c19df5d3856bada2ba2fd2aa56923452bdc2ecf6e70de56c56c",
+    "frontend/src/pages/StudyPage.tsx": "668146cc63a365acec58079074837b5b515822a85762375b06aa4c8ea3b32299",
+    "frontend/src/pages/research/studyTexts.ts": "0335756a8b7f124ec13176ea8f5fa2269057b1893c2cf7cf538dbde56012ba7a",
+    "frontend/src/research/studyContext.ts": "17a9242101c40d11cb4f746ff6960bec592b2884eb24458e4db328a2019bf196"
+  },
+  "freeze_rule": "Generate the final manifest only after pilot exit criteria are met; any later material change requires an explicit amendment."
+}

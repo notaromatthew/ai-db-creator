@@ -93,6 +93,23 @@
 | `POST` | `/api/surveys/nasa-tlx` | Submit NASA-TLX | `{project_id, mental_demand, ..., frustration}` | `{status, path}` |
 | `POST` | `/api/surveys/sus` | Submit SUS | `{project_id, scores: [10 ints]}` | `{status, path, total_score}` |
 
+### 1.9.1 Participant study
+
+| Method | Path | Purpose |
+|---|---|---|
+| `POST` | `/api/study/participants` | Consent, pseudonymous enrolment, and balanced arm assignment |
+| `POST` | `/api/study/participants/{id}/events` | Allowlisted task event without personal data |
+| `POST` | `/api/study/participants/{id}/task/complete` | Freeze task completion and advance to questionnaires |
+| `POST` | `/api/study/participants/{id}/nasa-tlx` | Store validated Raw NASA-TLX |
+| `POST` | `/api/study/participants/{id}/sus` | Store validated SUS responses and score |
+| `POST` | `/api/study/participants/{id}/withdraw` | Erase responses, telemetry linkage, and demographics |
+| `GET` | `/api/study/admin/export?kind=interactions` | Export combined task and granular application events for RQ4 |
+
+During an active study session the frontend attaches `X-Study-Participant` and
+`X-Study-Arm` to application calls and includes the same pseudonymous context
+in LLM run bodies. The backend verifies the participant/account association and
+the operations allowed by the assigned arm before persisting research context.
+
 ### 1.10 System
 
 | Method | Path | Description | Response |
@@ -266,4 +283,4 @@ Every box marked "Log:" writes an event to `projects/interactions_store.json` wi
 - `backup` — manual backup with label
 - `restore` — database restored from backup
 - `import_sql` — SQL dump imported
-- `survey_submitted` — NASA-TLX or SUS survey submitted
+- `survey_submitted` — legacy/optional survey event; not produced by the current participant protocol

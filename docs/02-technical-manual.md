@@ -82,8 +82,8 @@ All endpoints are served from `http://localhost:8000/api/` unless noted. All req
 | `GET` | `/api/projects/{id}/interactions` | Get logged interactions for project. |
 | `POST` | `/api/projects/{id}/export-interactions` | Export interactions to JSON file. |
 | `POST` | `/api/experiments/compare` | Compare automatic vs. human-in-the-loop (experiment endpoint). |
-| `POST` | `/api/surveys/nasa-tlx` | Submit NASA-TLX survey. |
-| `POST` | `/api/surveys/sus` | Submit SUS survey. |
+| `POST` | `/api/surveys/nasa-tlx` | Legacy/optional NASA-TLX endpoint; not used by the current study protocol. |
+| `POST` | `/api/surveys/sus` | Legacy/optional SUS endpoint; not used by the current study protocol. |
 
 ### 1.10 System
 
@@ -192,6 +192,25 @@ Schema migrations are handled by `migrate_database()` in `app/core/db_generator.
 
 This is a conservative, additive-only strategy designed to prevent data loss during the research phase.
 
+### 3.6 Participant-study instrumentation
+
+In research mode, `/api/study` manages pseudonymous enrolment, balanced
+three-arm assignment, task state, debrief, withdrawal, and researcher exports.
+Raw NASA-TLX and SUS are disabled for the current protocol. The operational
+target is 34 completed participants per arm.
+
+The study page shares only the random participant ID and assigned arm with the
+application tab. Generation, population, chat, and schema-update logs receive
+this context; no withdrawal code, email, account ID, IP address, or raw chat
+text is added to the research export. Server-side checks block AI operations in
+the Manual arm and schema/chat modification in the AI-Only arm when a study
+context is present.
+
+`GET /api/study/admin/export?kind=interactions` combines task boundary events
+with pseudonymous application telemetry and expands schema diffs into granular
+edit events. Withdrawal removes the participant's responses, study events,
+demographics, account HMAC, and linked global interaction events.
+
 ---
 
 ## 4. LLM Integration
@@ -205,7 +224,7 @@ LLM_PROVIDER=openai|groq|openrouter|google|ollama
 OPENAI_API_KEY=sk-...
 OPENAI_MODEL=gpt-4o-mini
 GOOGLE_API_KEY=...
-GOOGLE_MODEL=gemini-2.0-flash
+GOOGLE_MODEL=gemini-3.5-flash-lite
 GROQ_API_KEY=...
 OPENROUTER_API_KEY=...
 OLLAMA_BASE_URL=http://localhost:11434
@@ -263,7 +282,7 @@ Generate all INSERT SQL statements:
 
 ### 4.3 Response Parsing
 
-- **Schema generation** uses `PydanticOutputParser(pydantic_object=NormalizedSchema)` which automatically validates the LLM output against the Pydantic model. Parse failures raise `LLMException`.
+- **Schema generation** keeps `legacy-pydantic-v1` by default, including its original parser-only failure behavior. Setting `OPENROUTER_SCHEMA_JSON_MODE=true` opts a run into the versioned `schema-json-v2` contract without changing the schema prompt: OpenRouter receives `response_format.type=json_schema` with the complete `NormalizedSchema` JSON Schema only for schema generation; query and population calls retain their existing formats. `strict` is disabled because the current Pydantic schema contains optional/defaulted properties and is not compatible with strict providers that require every property. `PydanticOutputParser(pydantic_object=NormalizedSchema)` remains the primary validator. Only in this opt-in mode, on failure, one conservative local repair decodes the object beginning at the first `{`, requires a `tables` key, and immediately validates it as `NormalizedSchema`; it does not search later objects or make a second LLM call. Unrepairable output raises `LLMException`. Diagnostics persist only parse category, finish reason and output-token count, never the raw output, prompt or document content. New benchmark manifests record the selected contract and resume/retry rejects a mismatch; manifests without this field are interpreted as legacy. The current bundle does not persist whether a successful run used the primary parser or local repair, so that path cannot be audited retrospectively from artifacts alone.
 - **Data generation** uses `JsonOutputParser()` for flexibility (the LLM returns a JSON array of objects with variable keys).
 - **Column mapping** uses `JsonOutputParser()` for the `{table_name: {col_index: schema_col_name}}` format.
 - **Query generation** receives raw text from `ChatModel` (no parser); stripped of markdown code blocks via regex.

@@ -1,0 +1,18 @@
+{
+  "dataset": "library",
+  "condition": "full_llm",
+  "n_runs": 5,
+  "mean_precision": 0.7,
+  "mean_recall": 0.8,
+  "mean_f1": 0.7333,
+  "ci95_f1": [
+    0.3233,
+    0.9406
+  ],
+  "mean_total_cells": 650.0,
+  "mean_missing_rows": 24.0,
+  "mean_extra_rows": 0.0,
+  "mean_adjudicated_schema_equivalence": 95.0,
+  "mean_adjudicated_value_accuracy": 28.0,
+  "mean_adjudicated_completeness": 40.0
+}

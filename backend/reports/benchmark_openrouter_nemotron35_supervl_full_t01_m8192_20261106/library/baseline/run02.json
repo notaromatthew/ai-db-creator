@@ -1,0 +1,22 @@
+{
+  "dataset": "library",
+  "condition": "baseline",
+  "run": 2,
+  "source_format": "combined",
+  "project_id": "9b6035c6-7422-4a87-bb0a-bbae1eeef2a2",
+  "status": "ok",
+  "temperature": 0.1,
+  "global_precision": 1.0,
+  "global_recall": 0.9713,
+  "global_f1": 0.9848,
+  "total_cells": 298,
+  "missing_rows": 14,
+  "extra_rows": 0,
+  "functional_query_pass_rate": 0.7,
+  "functionally_equivalent": false,
+  "population_mode": "llm",
+  "alignment": null,
+  "adjudication": null,
+  "error": null,
+  "detail": null
+}

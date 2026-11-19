@@ -1,0 +1,67 @@
+{
+  "software_revision": "80bd7a7a8f4d5657",
+  "research_mode": false,
+  "dataset": "library",
+  "dataset_hash": "974425f9aedea0a13e8d6076183a9aee439ad937f6ed58442c707d8d74622882",
+  "condition": "full_llm",
+  "provider": "Google Gemini",
+  "model": "gemini-3.5-flash-lite",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 4,
+  "created_at": "2026-11-05T08:34:23.540741+00:00",
+  "source_format": "combined",
+  "source_files": [
+    {
+      "path": "source/books.csv",
+      "sha256": "e9808e8883479ba985010064a41ccce6936987b9fd79bdfd087f654c5de32f47"
+    },
+    {
+      "path": "source/description.pdf",
+      "sha256": "161ccf4d8a56de5b58145d8387df322e2529b2ee0ad57cfd12a7e7596b61b9a1"
+    },
+    {
+      "path": "source/loans_members.csv",
+      "sha256": "e58a0472c7f9c2bd7ca7118ac2f9cbbe829b1469103524416a7fca28a0714710"
+    },
+    {
+      "path": "source/members.csv",
+      "sha256": "4e352910699272abeca6ce966de35b2d966531e505988cd3c732d518b40f69a4"
+    }
+  ],
+  "evaluation_spec_hash": "b919d5b5dc1e4d1e45f3852a598b29036edab09346f5c9d2c2b6ef5c62725537",
+  "project_id": "df3bf6e7-5bde-46ce-bc17-9402652f2b1b",
+  "status": "ok",
+  "artifacts": {
+    "generated_database": {
+      "path": "generated.db",
+      "sha256": "f90167bbe9292f820eb89280efcfb7feefc104d5a46ecd8f59c4ceae07184747"
+    },
+    "generated_schema": {
+      "path": "generated_schema.json",
+      "sha256": "cf854c0913b346fdd146097ddbfc89a3883095f26391551604ade0231c7fa535"
+    },
+    "evaluation": {
+      "path": "evaluation.json",
+      "sha256": "faa40bb40c964fe951ef4a9f3a0ebe653217263887cff51e57124529b79bed48"
+    },
+    "cell_discrepancies": {
+      "path": "cell_discrepancies.csv",
+      "sha256": "b15ec385eefe7a2cce549022b6086c56a23fff3fe4c06ca2a9ddef0642b494a0"
+    },
+    "alignment": {
+      "path": "alignment.json",
+      "sha256": "f93ee95eb56ddaef66dec957bd13e758edc01833137ad80f3ec52fd32479de53"
+    },
+    "functional_query_results": {
+      "path": "functional_query_results.json",
+      "sha256": "06789c4739f68d82bb69fc1fb81bd7eea40dd3e247c64fdb02ecc7ec2ce917f0"
+    },
+    "run_record": {
+      "path": "run.json",
+      "sha256": "3dab9113026cd6f70c2635ebd881297d8f082be3bb147226fb48e047c1d0d316"
+    }
+  }
+}

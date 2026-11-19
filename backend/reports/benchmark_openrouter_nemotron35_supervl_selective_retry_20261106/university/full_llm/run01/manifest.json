@@ -1,0 +1,59 @@
+{
+  "software_revision": "da75a72576baccec",
+  "research_mode": true,
+  "dataset": "university",
+  "dataset_hash": "04eb0dff12a262038dc4de77fc6d1ceca538f485116cdaa7d221f314fdd4bdb5",
+  "condition": "full_llm",
+  "provider": "OpenRouter",
+  "model": "nvidia/nemotron-3.5-super-vl:free",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 1,
+  "created_at": "2026-11-06T11:55:57.374048+00:00",
+  "source_format": "combined",
+  "source_files": [
+    {
+      "path": "source/description.pdf",
+      "sha256": "e7c73c9a481e46b78c02c83b6c91f6f35e56aeb65378dddfc801c44454d69cb9"
+    },
+    {
+      "path": "source/enrollments.csv",
+      "sha256": "8fc7bb39ea180c47616813448083a5028b4989d3fa0ed04de5d87c8f95043f9f"
+    }
+  ],
+  "evaluation_spec_hash": "10ed90b5e56cb76976aacafd98b26d04234af2ee37ff93ce666bc41a96aaa33b",
+  "project_id": "c5c34bce-0675-41ed-8ad9-ee48119a98b8",
+  "status": "ok",
+  "artifacts": {
+    "generated_database": {
+      "path": "generated.db",
+      "sha256": "e363c415975588b5b01de200130b2dc96752bd8e44c9ef1f7b0d44d2ffa0200b"
+    },
+    "generated_schema": {
+      "path": "generated_schema.json",
+      "sha256": "d71d2c36bccb37ff9ce92577aa2cdd5a77bcfc3bf34b2c64efb6cbf846d98928"
+    },
+    "evaluation": {
+      "path": "evaluation.json",
+      "sha256": "40d2432c9ca6bc83b3e0a6e71982c57d9f74e34497ab9d05ba69edd5a6199695"
+    },
+    "cell_discrepancies": {
+      "path": "cell_discrepancies.csv",
+      "sha256": "d969f415da2790b26ef6b1c053382efab7e557a75d4d765b188951f0eb0cdc41"
+    },
+    "alignment": {
+      "path": "alignment.json",
+      "sha256": "cca1fada48b2aed9c322e76165048429923ee552efdc66b656f537da9527e196"
+    },
+    "functional_query_results": {
+      "path": "functional_query_results.json",
+      "sha256": "d0c06080c236a84af36f19505ce07cbff77f356a4be5eefd9f3b3e79f6c18e96"
+    },
+    "run_record": {
+      "path": "run.json",
+      "sha256": "ed2c7b98a1338d87df27261a3a6ec96d468ab0e3ca152f1a11cddb3c4e3b80ff"
+    }
+  }
+}

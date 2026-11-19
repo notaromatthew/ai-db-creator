@@ -1,0 +1,1647 @@
+{
+  "source_app_db_redistributed": false,
+  "projects": [
+    {
+      "project_id": "0b033c90-e77b-4815-b73c-de0a9c04d320",
+      "name": "university|baseline|run1",
+      "database_path": "projects/0b033c90-e77b-4815-b73c-de0a9c04d320/database.sqlite",
+      "schema_sha256": "9b2dcab7d5f6803392a93ff7e8d039508b46e9467fa2b8e4bf0ffe5dea7c02c5",
+      "documents": [
+        {
+          "id": "1ec51e90-a109-47b7-bf1c-e5c1fbc7ded2",
+          "filename": "enrollments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:31:36.544969"
+        },
+        {
+          "id": "ea3f0ebf-4d78-46c8-8ef9-be2522035ee4",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:31:36.504184"
+        }
+      ]
+    },
+    {
+      "project_id": "1c33f9cb-d0fa-4827-b339-19ed343d75d9",
+      "name": "university|baseline|run2",
+      "database_path": "projects/1c33f9cb-d0fa-4827-b339-19ed343d75d9/database.sqlite",
+      "schema_sha256": "9b2dcab7d5f6803392a93ff7e8d039508b46e9467fa2b8e4bf0ffe5dea7c02c5",
+      "documents": [
+        {
+          "id": "2807098b-0f81-4524-b8a8-412a18379b15",
+          "filename": "enrollments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:31:36.806275"
+        },
+        {
+          "id": "931702b6-6614-4481-91c3-7d5f6f80a28d",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:31:36.782979"
+        }
+      ]
+    },
+    {
+      "project_id": "ef2d830e-408a-4ca5-9ec3-ada28fccbff5",
+      "name": "university|baseline|run3",
+      "database_path": "projects/ef2d830e-408a-4ca5-9ec3-ada28fccbff5/database.sqlite",
+      "schema_sha256": "9b2dcab7d5f6803392a93ff7e8d039508b46e9467fa2b8e4bf0ffe5dea7c02c5",
+      "documents": [
+        {
+          "id": "137de6ad-53e6-4c9a-9452-a16c77f01902",
+          "filename": "enrollments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:31:46.940678"
+        },
+        {
+          "id": "481528c3-5c53-4145-8638-ea131f3b9c36",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:31:46.919809"
+        }
+      ]
+    },
+    {
+      "project_id": "6d2e1391-e361-43b4-8094-9b3090aa4df7",
+      "name": "university|baseline|run4",
+      "database_path": "projects/6d2e1391-e361-43b4-8094-9b3090aa4df7/database.sqlite",
+      "schema_sha256": "9b2dcab7d5f6803392a93ff7e8d039508b46e9467fa2b8e4bf0ffe5dea7c02c5",
+      "documents": [
+        {
+          "id": "064eac21-a820-468c-820b-955af95bc113",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:31:47.055744"
+        },
+        {
+          "id": "c514537a-9c7d-47db-8885-ad960fe9004b",
+          "filename": "enrollments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:31:47.072314"
+        }
+      ]
+    },
+    {
+      "project_id": "b91cdf79-4969-49db-9fbb-947eca541449",
+      "name": "university|baseline|run5",
+      "database_path": "projects/b91cdf79-4969-49db-9fbb-947eca541449/database.sqlite",
+      "schema_sha256": "9b2dcab7d5f6803392a93ff7e8d039508b46e9467fa2b8e4bf0ffe5dea7c02c5",
+      "documents": [
+        {
+          "id": "a82375e9-3c95-4d6a-8359-c09292707917",
+          "filename": "enrollments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:32:25.763057"
+        },
+        {
+          "id": "e6a8fd08-a1bd-4e9f-9897-19ebd1d0dd62",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:32:25.739393"
+        }
+      ]
+    },
+    {
+      "project_id": "b762df6d-29dc-4852-b3be-146582b247f4",
+      "name": "university|full_llm|run1",
+      "database_path": "projects/b762df6d-29dc-4852-b3be-146582b247f4/database.sqlite",
+      "schema_sha256": "c0b60645712987eb6de03a6ac05246cdca6a97b7e8eb5d45d39bd3333cb94781",
+      "documents": [
+        {
+          "id": "61cdf8a3-8922-453a-b1b4-122fdd6c3a35",
+          "filename": "enrollments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:31:19.478418"
+        },
+        {
+          "id": "7ff1d8da-055c-4419-a7ab-ce2c51225779",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:31:19.458077"
+        }
+      ]
+    },
+    {
+      "project_id": "1b51b2bf-5787-4242-8f20-f82320f2db4a",
+      "name": "university|full_llm|run2",
+      "database_path": "projects/1b51b2bf-5787-4242-8f20-f82320f2db4a/database.sqlite",
+      "schema_sha256": "fb2243cd57421c42c93d4bfd74d4173b115e4faa8d1bbd98083c27a3a52ca61e",
+      "documents": [
+        {
+          "id": "1c8f8efc-26fb-4ab3-a231-376e9f2da64b",
+          "filename": "enrollments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:31:20.023561"
+        },
+        {
+          "id": "2ae1433c-2519-4474-b5f1-9cc6294875a2",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:31:20.008277"
+        }
+      ]
+    },
+    {
+      "project_id": "453ff521-a8a2-4142-8cc5-a33ac6f59b69",
+      "name": "university|full_llm|run3",
+      "database_path": "projects/453ff521-a8a2-4142-8cc5-a33ac6f59b69/database.sqlite",
+      "schema_sha256": "0dc395c121d69b05e4b56ba80ab0b5a1d6753bab2d13819ca48904cc32b85b40",
+      "documents": [
+        {
+          "id": "25fcea64-522a-4c79-9fd3-efdd658ca7f5",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:31:20.050508"
+        },
+        {
+          "id": "3ec5a8c1-4e06-4e70-a184-a7ec3cae9188",
+          "filename": "enrollments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:31:20.061134"
+        }
+      ]
+    },
+    {
+      "project_id": "46ebe3af-2583-4a57-b308-e3b1f788c748",
+      "name": "university|full_llm|run4",
+      "database_path": "projects/46ebe3af-2583-4a57-b308-e3b1f788c748/database.sqlite",
+      "schema_sha256": "303bb8ea70f5573cf772ed63f03164773137b2ad03b81c6266ca696f32eee31d",
+      "documents": [
+        {
+          "id": "94bd0476-91db-45c0-a913-72da5a3f0d53",
+          "filename": "enrollments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:31:20.099326"
+        },
+        {
+          "id": "b8dc91b7-d815-4285-9e73-f49586068c93",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:31:20.087921"
+        }
+      ]
+    },
+    {
+      "project_id": "03de37d7-c36b-4403-89a3-0f0460bf356b",
+      "name": "university|full_llm|run5",
+      "database_path": "projects/03de37d7-c36b-4403-89a3-0f0460bf356b/database.sqlite",
+      "schema_sha256": "0a638ed3b1e31a9f9e0bb4cbd297b97b0a051764bd73350a0c7cf1382764b88b",
+      "documents": [
+        {
+          "id": "9ba9bc23-c53d-4fab-9b2d-d3b13f850c0a",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:31:20.124975"
+        },
+        {
+          "id": "be41fac9-1203-4051-836c-2369c86e5e7e",
+          "filename": "enrollments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:31:20.136757"
+        }
+      ]
+    },
+    {
+      "project_id": "56431694-9ffe-4d81-ba15-b09101de0449",
+      "name": "library|baseline|run1",
+      "database_path": "projects/56431694-9ffe-4d81-ba15-b09101de0449/database.sqlite",
+      "schema_sha256": "c03d39a53091398546017157a542794fe37e401d497953c552b9a20d067753cf",
+      "documents": [
+        {
+          "id": "637ddab5-7629-4da5-bdd3-b84a7b464a98",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:33:26.150427"
+        },
+        {
+          "id": "cb11b2ba-ff77-419d-b6ba-3cab3d9fc139",
+          "filename": "loans_members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:33:26.173119"
+        },
+        {
+          "id": "e0fd9e08-ce09-412b-87a1-bafe03a1bae6",
+          "filename": "books.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:33:26.135295"
+        },
+        {
+          "id": "f5ad2aad-b6a7-4be6-bd4e-acf8da91ef1c",
+          "filename": "members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:33:26.190117"
+        }
+      ]
+    },
+    {
+      "project_id": "637474aa-65a6-4a7c-bf4f-ad6541238cf2",
+      "name": "library|baseline|run2",
+      "database_path": "projects/637474aa-65a6-4a7c-bf4f-ad6541238cf2/database.sqlite",
+      "schema_sha256": "c03d39a53091398546017157a542794fe37e401d497953c552b9a20d067753cf",
+      "documents": [
+        {
+          "id": "1f4bb791-eb1b-4af5-ae6e-ddc4c31a2bac",
+          "filename": "books.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:33:43.133510"
+        },
+        {
+          "id": "4a35f196-fd0d-4a7a-93bf-f6108858d8c5",
+          "filename": "loans_members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:33:43.179519"
+        },
+        {
+          "id": "91b19afd-9b31-446f-ae23-81e6cd92790c",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:33:43.153694"
+        },
+        {
+          "id": "ea8fe4c5-74c4-4bc3-96b1-c5e45337e406",
+          "filename": "members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:33:43.197257"
+        }
+      ]
+    },
+    {
+      "project_id": "3586fe02-b65d-4f4e-8c7a-dbd2591a9f89",
+      "name": "library|baseline|run3",
+      "database_path": "projects/3586fe02-b65d-4f4e-8c7a-dbd2591a9f89/database.sqlite",
+      "schema_sha256": "c03d39a53091398546017157a542794fe37e401d497953c552b9a20d067753cf",
+      "documents": [
+        {
+          "id": "03dd89bf-5001-4d13-b914-29740266982f",
+          "filename": "members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:33:52.454312"
+        },
+        {
+          "id": "1b75250a-2c9d-405c-b70f-ad7649b74e14",
+          "filename": "loans_members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:33:52.444751"
+        },
+        {
+          "id": "2e715b3e-8743-4832-bd2f-967cee652db3",
+          "filename": "books.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:33:52.412103"
+        },
+        {
+          "id": "c313f752-1953-4da3-b803-a6842b3adfff",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:33:52.430237"
+        }
+      ]
+    },
+    {
+      "project_id": "04a0e216-e32a-40c3-9831-544ce2c98040",
+      "name": "library|baseline|run4",
+      "database_path": "projects/04a0e216-e32a-40c3-9831-544ce2c98040/database.sqlite",
+      "schema_sha256": "c03d39a53091398546017157a542794fe37e401d497953c552b9a20d067753cf",
+      "documents": [
+        {
+          "id": "14e6e69e-e0a5-4f99-8cc7-09476ba5b8d6",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:33:52.587044"
+        },
+        {
+          "id": "16007dd1-8c25-41c5-905b-80620931672d",
+          "filename": "loans_members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:33:52.599160"
+        },
+        {
+          "id": "256dd7f4-4ef5-47d9-87d3-7d5d99be732c",
+          "filename": "books.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:33:52.577674"
+        },
+        {
+          "id": "686c690f-2046-4478-a5d6-f309d06e7709",
+          "filename": "members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:33:52.607532"
+        }
+      ]
+    },
+    {
+      "project_id": "0ae43f86-51d7-4789-8f5b-0689c0b57b83",
+      "name": "library|baseline|run5",
+      "database_path": "projects/0ae43f86-51d7-4789-8f5b-0689c0b57b83/database.sqlite",
+      "schema_sha256": "c03d39a53091398546017157a542794fe37e401d497953c552b9a20d067753cf",
+      "documents": [
+        {
+          "id": "268da447-92ed-4159-bf3a-ad3a8c93489f",
+          "filename": "loans_members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:33:58.700018"
+        },
+        {
+          "id": "3bf94ff6-3d3e-4af1-992c-f6a180ff6f45",
+          "filename": "books.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:33:58.665205"
+        },
+        {
+          "id": "c1090885-efd2-42e7-a45e-71a0e48df7f4",
+          "filename": "members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:33:58.713660"
+        },
+        {
+          "id": "d9366faa-7d25-4d4a-918b-375951079950",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:33:58.681011"
+        }
+      ]
+    },
+    {
+      "project_id": "0fd5926c-ca50-48b2-879f-1358a2ea9aa1",
+      "name": "library|full_llm|run1",
+      "database_path": "projects/0fd5926c-ca50-48b2-879f-1358a2ea9aa1/database.sqlite",
+      "schema_sha256": "b16e6cfadd2676b6725b9f82147c810ba4a3fa98a51cf1d01b22da65ae7be219",
+      "documents": [
+        {
+          "id": "284f957c-79c9-4086-848f-b3ccd00e5a1e",
+          "filename": "loans_members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:32:30.432497"
+        },
+        {
+          "id": "33464c65-86e0-4a92-8c35-d3bf6dba7423",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:32:30.419111"
+        },
+        {
+          "id": "87dd9cb4-5c65-4ac9-acb9-fc2ece9c3ac9",
+          "filename": "books.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:32:30.406878"
+        },
+        {
+          "id": "a1d808eb-b2e6-4766-bcf5-2cdf07d79798",
+          "filename": "members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:32:30.443122"
+        }
+      ]
+    },
+    {
+      "project_id": "aa2bd72a-dede-43d1-90be-60d05ae2673d",
+      "name": "library|full_llm|run2",
+      "database_path": "projects/aa2bd72a-dede-43d1-90be-60d05ae2673d/database.sqlite",
+      "schema_sha256": "5a535be176b04de7a17966bebff7dd0c73e41df980eacc323986a12653fa5b3b",
+      "documents": [
+        {
+          "id": "0a6c942f-51f9-499b-95ef-8f8d6818659c",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:32:36.442693"
+        },
+        {
+          "id": "1ec7f762-4742-4952-8dd0-1e36a7646d13",
+          "filename": "members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:32:36.476869"
+        },
+        {
+          "id": "3d4a9a8e-45ab-4ff0-8887-507106752d35",
+          "filename": "loans_members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:32:36.464715"
+        },
+        {
+          "id": "9d78956f-6de4-4b00-80b7-17bb1c8f57a0",
+          "filename": "books.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:32:36.423459"
+        }
+      ]
+    },
+    {
+      "project_id": "9627ba0e-9807-47d6-8a49-90ba3bcc43e1",
+      "name": "library|full_llm|run3",
+      "database_path": "projects/9627ba0e-9807-47d6-8a49-90ba3bcc43e1/database.sqlite",
+      "schema_sha256": "3b573814842c4ddbbb1a32513af7e1f164b47ca146045013b6f2eea47550ca8a",
+      "documents": [
+        {
+          "id": "297eec7e-1be7-41bd-bdc9-ad0a6f9cdbe9",
+          "filename": "members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:32:46.143902"
+        },
+        {
+          "id": "4d10b75d-099b-4869-80fb-f9947f97e8ad",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:32:46.114609"
+        },
+        {
+          "id": "8156c031-e971-430e-a2b4-3dc681b43d1f",
+          "filename": "loans_members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:32:46.132722"
+        },
+        {
+          "id": "ae41ff47-f4ad-442c-b9bc-8b1cde765567",
+          "filename": "books.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:32:46.098960"
+        }
+      ]
+    },
+    {
+      "project_id": "63f58ef9-1685-41e0-9820-da46024ba418",
+      "name": "library|full_llm|run4",
+      "database_path": "projects/63f58ef9-1685-41e0-9820-da46024ba418/database.sqlite",
+      "schema_sha256": "f7693038c8625908882b05dc6a3944ab620897bfb1ca5c4349644af83f3355aa",
+      "documents": [
+        {
+          "id": "30212f04-1fe2-4088-bcdc-1bddefd44f7c",
+          "filename": "loans_members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:32:46.218883"
+        },
+        {
+          "id": "58a92210-8031-4d48-a217-e6419187d429",
+          "filename": "members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:32:46.351663"
+        },
+        {
+          "id": "aa84a2eb-b607-47bf-aa5f-4903a9261032",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:32:46.204461"
+        },
+        {
+          "id": "fea98a47-21a9-4c07-9852-ce2fa89d7a03",
+          "filename": "books.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:32:46.193012"
+        }
+      ]
+    },
+    {
+      "project_id": "e994b5a6-8cbf-438c-848a-30f626dca507",
+      "name": "library|full_llm|run5",
+      "database_path": "projects/e994b5a6-8cbf-438c-848a-30f626dca507/database.sqlite",
+      "schema_sha256": "97eea70ce050084e3a0a71b4f17e5aaeba18b91a93f7686bc2128b244a5a7a7b",
+      "documents": [
+        {
+          "id": "2ef47dba-35ea-4e81-906d-80250f8c0afd",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:32:52.050209"
+        },
+        {
+          "id": "4678abe0-3896-4ccd-8fcd-fb40f044198f",
+          "filename": "members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:32:52.096857"
+        },
+        {
+          "id": "d5c7260a-b494-47c2-b4e4-c93700fb91e4",
+          "filename": "loans_members.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:32:52.075260"
+        },
+        {
+          "id": "f00ace9f-3296-44f7-a05b-d3e7cdbb9883",
+          "filename": "books.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:32:52.032318"
+        }
+      ]
+    },
+    {
+      "project_id": "2527b0c7-e909-48c6-90e5-9aacec23f0b7",
+      "name": "hospital|baseline|run1",
+      "database_path": "projects/2527b0c7-e909-48c6-90e5-9aacec23f0b7/database.sqlite",
+      "schema_sha256": "316097758b0ff45e19c925a76a210bb56ed26a6e881eeaa95a955c51ed3a5967",
+      "documents": [
+        {
+          "id": "24f0a35d-1422-42ed-90c7-18ac0eab66dd",
+          "filename": "operational_notes.txt",
+          "file_type": "txt",
+          "created_at": "2026-08-04 20:35:32.490247"
+        },
+        {
+          "id": "36f9dbd4-bcc3-4c4b-afdf-d6a37281d62b",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:35:32.482320"
+        },
+        {
+          "id": "af9d6c45-6b65-4be4-afc6-220f5d01c36c",
+          "filename": "appointments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:35:32.466452"
+        },
+        {
+          "id": "d4a3eda4-2152-49a4-a5cd-28cb4e90024f",
+          "filename": "patients.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:35:32.511652"
+        }
+      ]
+    },
+    {
+      "project_id": "9adbc5cf-ffe2-4af9-8ed5-a5263ee60382",
+      "name": "hospital|baseline|run2",
+      "database_path": "projects/9adbc5cf-ffe2-4af9-8ed5-a5263ee60382/database.sqlite",
+      "schema_sha256": "316097758b0ff45e19c925a76a210bb56ed26a6e881eeaa95a955c51ed3a5967",
+      "documents": [
+        {
+          "id": "8698a0ba-1345-48c4-8db6-6734051bb840",
+          "filename": "operational_notes.txt",
+          "file_type": "txt",
+          "created_at": "2026-08-04 20:35:41.511290"
+        },
+        {
+          "id": "a7711d3f-46d7-47e7-ac86-eee0d613ab51",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:35:41.503839"
+        },
+        {
+          "id": "e7d4fbfb-921a-4967-8391-7b21f41f9e7e",
+          "filename": "patients.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:35:41.521239"
+        },
+        {
+          "id": "f267c612-5663-447a-8722-dad309bce306",
+          "filename": "appointments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:35:41.490450"
+        }
+      ]
+    },
+    {
+      "project_id": "598da589-5ac7-4bc2-ad1f-044463ddc24f",
+      "name": "hospital|baseline|run3",
+      "database_path": "projects/598da589-5ac7-4bc2-ad1f-044463ddc24f/database.sqlite",
+      "schema_sha256": "316097758b0ff45e19c925a76a210bb56ed26a6e881eeaa95a955c51ed3a5967",
+      "documents": [
+        {
+          "id": "108bdc25-45fa-4e37-a582-3bb20c4f9a65",
+          "filename": "patients.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:35:50.440559"
+        },
+        {
+          "id": "4de046d8-1edb-4e52-babe-d2f4ba3ae64a",
+          "filename": "appointments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:35:50.407976"
+        },
+        {
+          "id": "76792d8a-a00d-4cf8-b85e-96d0e6f8a825",
+          "filename": "operational_notes.txt",
+          "file_type": "txt",
+          "created_at": "2026-08-04 20:35:50.425785"
+        },
+        {
+          "id": "d993cadb-02e7-4182-9695-d68d2cb68ce5",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:35:50.418680"
+        }
+      ]
+    },
+    {
+      "project_id": "0ba84ef0-c0a3-407f-8aef-2befb89f877f",
+      "name": "hospital|baseline|run4",
+      "database_path": "projects/0ba84ef0-c0a3-407f-8aef-2befb89f877f/database.sqlite",
+      "schema_sha256": "316097758b0ff45e19c925a76a210bb56ed26a6e881eeaa95a955c51ed3a5967",
+      "documents": [
+        {
+          "id": "2eb62056-d5cd-4cdf-a4e0-746d2ca76898",
+          "filename": "appointments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:36:17.344691"
+        },
+        {
+          "id": "a1b12b9c-aec5-4055-9465-b8d872f30ac4",
+          "filename": "operational_notes.txt",
+          "file_type": "txt",
+          "created_at": "2026-08-04 20:36:17.367016"
+        },
+        {
+          "id": "ad93cca8-94e3-4f3d-ab79-982ffd08caab",
+          "filename": "patients.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:36:17.382282"
+        },
+        {
+          "id": "ca73e80c-e824-4323-a5b0-10062ee571ac",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:36:17.360240"
+        }
+      ]
+    },
+    {
+      "project_id": "a4aae816-c710-4edd-8669-1462127b91f7",
+      "name": "hospital|baseline|run5",
+      "database_path": "projects/a4aae816-c710-4edd-8669-1462127b91f7/database.sqlite",
+      "schema_sha256": "316097758b0ff45e19c925a76a210bb56ed26a6e881eeaa95a955c51ed3a5967",
+      "documents": [
+        {
+          "id": "1e943ccc-04db-408a-8bec-264a4e134273",
+          "filename": "patients.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:36:23.621887"
+        },
+        {
+          "id": "4852afa3-7272-4733-83f4-f1e79e1d8910",
+          "filename": "operational_notes.txt",
+          "file_type": "txt",
+          "created_at": "2026-08-04 20:36:23.610891"
+        },
+        {
+          "id": "824d92a4-f102-43d9-8d25-b0b2cab1e0f5",
+          "filename": "appointments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:36:23.590929"
+        },
+        {
+          "id": "fa4850c7-3145-4e45-9cd7-2d24393952af",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:36:23.603243"
+        }
+      ]
+    },
+    {
+      "project_id": "cc875e72-77c7-4b30-a7cf-6eede34ca506",
+      "name": "hospital|full_llm|run1",
+      "database_path": "projects/cc875e72-77c7-4b30-a7cf-6eede34ca506/database.sqlite",
+      "schema_sha256": "8844f276184bfa4abff0ee87db8c5aa47842ca46493951c2b9425dfdc963a470",
+      "documents": [
+        {
+          "id": "2b768510-5f01-4893-81c7-edb32a799502",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:34:03.421244"
+        },
+        {
+          "id": "39180a0b-81a5-4822-b91c-b85d6dd5c248",
+          "filename": "patients.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:34:03.455261"
+        },
+        {
+          "id": "408ba137-5cbf-4ba3-a282-9028c9a3e3a2",
+          "filename": "operational_notes.txt",
+          "file_type": "txt",
+          "created_at": "2026-08-04 20:34:03.432713"
+        },
+        {
+          "id": "879531a8-baef-4703-abf0-06cf6e7c3df7",
+          "filename": "appointments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:34:03.405976"
+        }
+      ]
+    },
+    {
+      "project_id": "8bfbaad5-5562-442d-93ca-1e2e48930cd4",
+      "name": "hospital|full_llm|run2",
+      "database_path": "projects/8bfbaad5-5562-442d-93ca-1e2e48930cd4/database.sqlite",
+      "schema_sha256": "dec3ed7bd632b38111e0a4ea93babd56f5477e57ddc40102f51f10d3228990d8",
+      "documents": [
+        {
+          "id": "5d3e5a2c-595d-4563-b1fe-726836c464e5",
+          "filename": "operational_notes.txt",
+          "file_type": "txt",
+          "created_at": "2026-08-04 20:34:25.833401"
+        },
+        {
+          "id": "6111347b-ea80-44f7-aa25-a93e16b6c037",
+          "filename": "patients.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:34:25.851544"
+        },
+        {
+          "id": "a200aad6-19bf-4cfb-a746-0c4fae09a0b9",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:34:25.822311"
+        },
+        {
+          "id": "f38c219a-9e0a-4cf8-b657-ee9793f5aac3",
+          "filename": "appointments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:34:25.800928"
+        }
+      ]
+    },
+    {
+      "project_id": "37956a12-ceec-436f-8f38-2ddd29f9f1b9",
+      "name": "hospital|full_llm|run3",
+      "database_path": "projects/37956a12-ceec-436f-8f38-2ddd29f9f1b9/database.sqlite",
+      "schema_sha256": "338e1892c8d696599ab05028e1660618913320bddd4bc78d8a778e52c6cdef27",
+      "documents": [
+        {
+          "id": "518eacb1-6c91-4c2d-9aea-d8991fb2111a",
+          "filename": "operational_notes.txt",
+          "file_type": "txt",
+          "created_at": "2026-08-04 20:34:35.107606"
+        },
+        {
+          "id": "7a19d7ad-53ad-4cdf-909a-500223c4d626",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:34:35.100413"
+        },
+        {
+          "id": "bb71cd76-da60-41d1-bcd0-7d61a09beef5",
+          "filename": "appointments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:34:35.082766"
+        },
+        {
+          "id": "d22a4f1c-0ad6-4f08-9568-d26f1da767cb",
+          "filename": "patients.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:34:35.122306"
+        }
+      ]
+    },
+    {
+      "project_id": "7561eaa1-8032-4d54-91bd-4d2dbcfdc17b",
+      "name": "hospital|full_llm|run4",
+      "database_path": "projects/7561eaa1-8032-4d54-91bd-4d2dbcfdc17b/database.sqlite",
+      "schema_sha256": "9356c363b6c99fe5dbcc1b3df427961b6d824ae27124d907bb00b728896c59c4",
+      "documents": [
+        {
+          "id": "220fd685-fab5-4d05-8898-b1da9c8a47a3",
+          "filename": "appointments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:34:35.167258"
+        },
+        {
+          "id": "4c27dc4e-56df-4bbd-b0cf-51f6df79ac21",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:34:35.181123"
+        },
+        {
+          "id": "6057080d-92ac-4bae-b626-d8b71632e13c",
+          "filename": "operational_notes.txt",
+          "file_type": "txt",
+          "created_at": "2026-08-04 20:34:35.188251"
+        },
+        {
+          "id": "a47bb5ce-3e5c-4dfe-b4ae-8bff95168198",
+          "filename": "patients.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:34:35.201721"
+        }
+      ]
+    },
+    {
+      "project_id": "80b5ab95-d87c-46e6-8c34-e9adf56bf426",
+      "name": "hospital|full_llm|run5",
+      "database_path": "projects/80b5ab95-d87c-46e6-8c34-e9adf56bf426/database.sqlite",
+      "schema_sha256": "50ab8758eb2530b8d7a3744dd63eded259ea838c4b2151d33d7365bc405f8173",
+      "documents": [
+        {
+          "id": "14e26e65-cfb2-4a6a-8f13-7a224fb7d332",
+          "filename": "patients.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:34:43.168486"
+        },
+        {
+          "id": "a60edd40-eee9-41b0-8553-352e444286fe",
+          "filename": "description.pdf",
+          "file_type": "pdf",
+          "created_at": "2026-08-04 20:34:43.140011"
+        },
+        {
+          "id": "b0a660df-51df-4d02-8239-3f543c0dd737",
+          "filename": "operational_notes.txt",
+          "file_type": "txt",
+          "created_at": "2026-08-04 20:34:43.150678"
+        },
+        {
+          "id": "ee09252f-6fd8-459c-be20-6e92e424f235",
+          "filename": "appointments.csv",
+          "file_type": "csv",
+          "created_at": "2026-08-04 20:34:43.117024"
+        }
+      ]
+    }
+  ],
+  "document_source_linkage": [
+    {
+      "project_id": "0b033c90-e77b-4815-b73c-de0a9c04d320",
+      "dataset": "university",
+      "filename": "enrollments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "08ab314bea0962bb2a1877e507b74c396ad64d37f76ea13800e6ad83cfc2a51d",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "0b033c90-e77b-4815-b73c-de0a9c04d320",
+      "dataset": "university",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "e7c73c9a481e46b78c02c83b6c91f6f35e56aeb65378dddfc801c44454d69cb9",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "1c33f9cb-d0fa-4827-b339-19ed343d75d9",
+      "dataset": "university",
+      "filename": "enrollments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "08ab314bea0962bb2a1877e507b74c396ad64d37f76ea13800e6ad83cfc2a51d",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "1c33f9cb-d0fa-4827-b339-19ed343d75d9",
+      "dataset": "university",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "e7c73c9a481e46b78c02c83b6c91f6f35e56aeb65378dddfc801c44454d69cb9",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "ef2d830e-408a-4ca5-9ec3-ada28fccbff5",
+      "dataset": "university",
+      "filename": "enrollments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "08ab314bea0962bb2a1877e507b74c396ad64d37f76ea13800e6ad83cfc2a51d",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "ef2d830e-408a-4ca5-9ec3-ada28fccbff5",
+      "dataset": "university",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "e7c73c9a481e46b78c02c83b6c91f6f35e56aeb65378dddfc801c44454d69cb9",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "6d2e1391-e361-43b4-8094-9b3090aa4df7",
+      "dataset": "university",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "e7c73c9a481e46b78c02c83b6c91f6f35e56aeb65378dddfc801c44454d69cb9",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "6d2e1391-e361-43b4-8094-9b3090aa4df7",
+      "dataset": "university",
+      "filename": "enrollments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "08ab314bea0962bb2a1877e507b74c396ad64d37f76ea13800e6ad83cfc2a51d",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "b91cdf79-4969-49db-9fbb-947eca541449",
+      "dataset": "university",
+      "filename": "enrollments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "08ab314bea0962bb2a1877e507b74c396ad64d37f76ea13800e6ad83cfc2a51d",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "b91cdf79-4969-49db-9fbb-947eca541449",
+      "dataset": "university",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "e7c73c9a481e46b78c02c83b6c91f6f35e56aeb65378dddfc801c44454d69cb9",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "b762df6d-29dc-4852-b3be-146582b247f4",
+      "dataset": "university",
+      "filename": "enrollments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "08ab314bea0962bb2a1877e507b74c396ad64d37f76ea13800e6ad83cfc2a51d",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "b762df6d-29dc-4852-b3be-146582b247f4",
+      "dataset": "university",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "e7c73c9a481e46b78c02c83b6c91f6f35e56aeb65378dddfc801c44454d69cb9",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "1b51b2bf-5787-4242-8f20-f82320f2db4a",
+      "dataset": "university",
+      "filename": "enrollments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "08ab314bea0962bb2a1877e507b74c396ad64d37f76ea13800e6ad83cfc2a51d",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "1b51b2bf-5787-4242-8f20-f82320f2db4a",
+      "dataset": "university",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "e7c73c9a481e46b78c02c83b6c91f6f35e56aeb65378dddfc801c44454d69cb9",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "453ff521-a8a2-4142-8cc5-a33ac6f59b69",
+      "dataset": "university",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "e7c73c9a481e46b78c02c83b6c91f6f35e56aeb65378dddfc801c44454d69cb9",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "453ff521-a8a2-4142-8cc5-a33ac6f59b69",
+      "dataset": "university",
+      "filename": "enrollments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "08ab314bea0962bb2a1877e507b74c396ad64d37f76ea13800e6ad83cfc2a51d",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "46ebe3af-2583-4a57-b308-e3b1f788c748",
+      "dataset": "university",
+      "filename": "enrollments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "08ab314bea0962bb2a1877e507b74c396ad64d37f76ea13800e6ad83cfc2a51d",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "46ebe3af-2583-4a57-b308-e3b1f788c748",
+      "dataset": "university",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "e7c73c9a481e46b78c02c83b6c91f6f35e56aeb65378dddfc801c44454d69cb9",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "03de37d7-c36b-4403-89a3-0f0460bf356b",
+      "dataset": "university",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "e7c73c9a481e46b78c02c83b6c91f6f35e56aeb65378dddfc801c44454d69cb9",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "03de37d7-c36b-4403-89a3-0f0460bf356b",
+      "dataset": "university",
+      "filename": "enrollments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "08ab314bea0962bb2a1877e507b74c396ad64d37f76ea13800e6ad83cfc2a51d",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "56431694-9ffe-4d81-ba15-b09101de0449",
+      "dataset": "library",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "161ccf4d8a56de5b58145d8387df322e2529b2ee0ad57cfd12a7e7596b61b9a1",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "56431694-9ffe-4d81-ba15-b09101de0449",
+      "dataset": "library",
+      "filename": "loans_members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "c5e33622158a9d7a8af86231416878ed3cd0dc9cacd7353574f31d12e6b5b3b0",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "56431694-9ffe-4d81-ba15-b09101de0449",
+      "dataset": "library",
+      "filename": "books.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "52ee4e97e0177f9984823321823530ebfb0da446dc7eb7215821f675970e093c",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "56431694-9ffe-4d81-ba15-b09101de0449",
+      "dataset": "library",
+      "filename": "members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "12634df10d79f235f24465fb4edcee6c7b14c4fc80f775033f8066b1ed7541d2",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "637474aa-65a6-4a7c-bf4f-ad6541238cf2",
+      "dataset": "library",
+      "filename": "books.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "52ee4e97e0177f9984823321823530ebfb0da446dc7eb7215821f675970e093c",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "637474aa-65a6-4a7c-bf4f-ad6541238cf2",
+      "dataset": "library",
+      "filename": "loans_members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "c5e33622158a9d7a8af86231416878ed3cd0dc9cacd7353574f31d12e6b5b3b0",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "637474aa-65a6-4a7c-bf4f-ad6541238cf2",
+      "dataset": "library",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "161ccf4d8a56de5b58145d8387df322e2529b2ee0ad57cfd12a7e7596b61b9a1",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "637474aa-65a6-4a7c-bf4f-ad6541238cf2",
+      "dataset": "library",
+      "filename": "members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "12634df10d79f235f24465fb4edcee6c7b14c4fc80f775033f8066b1ed7541d2",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "3586fe02-b65d-4f4e-8c7a-dbd2591a9f89",
+      "dataset": "library",
+      "filename": "members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "12634df10d79f235f24465fb4edcee6c7b14c4fc80f775033f8066b1ed7541d2",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "3586fe02-b65d-4f4e-8c7a-dbd2591a9f89",
+      "dataset": "library",
+      "filename": "loans_members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "c5e33622158a9d7a8af86231416878ed3cd0dc9cacd7353574f31d12e6b5b3b0",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "3586fe02-b65d-4f4e-8c7a-dbd2591a9f89",
+      "dataset": "library",
+      "filename": "books.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "52ee4e97e0177f9984823321823530ebfb0da446dc7eb7215821f675970e093c",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "3586fe02-b65d-4f4e-8c7a-dbd2591a9f89",
+      "dataset": "library",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "161ccf4d8a56de5b58145d8387df322e2529b2ee0ad57cfd12a7e7596b61b9a1",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "04a0e216-e32a-40c3-9831-544ce2c98040",
+      "dataset": "library",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "161ccf4d8a56de5b58145d8387df322e2529b2ee0ad57cfd12a7e7596b61b9a1",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "04a0e216-e32a-40c3-9831-544ce2c98040",
+      "dataset": "library",
+      "filename": "loans_members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "c5e33622158a9d7a8af86231416878ed3cd0dc9cacd7353574f31d12e6b5b3b0",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "04a0e216-e32a-40c3-9831-544ce2c98040",
+      "dataset": "library",
+      "filename": "books.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "52ee4e97e0177f9984823321823530ebfb0da446dc7eb7215821f675970e093c",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "04a0e216-e32a-40c3-9831-544ce2c98040",
+      "dataset": "library",
+      "filename": "members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "12634df10d79f235f24465fb4edcee6c7b14c4fc80f775033f8066b1ed7541d2",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "0ae43f86-51d7-4789-8f5b-0689c0b57b83",
+      "dataset": "library",
+      "filename": "loans_members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "c5e33622158a9d7a8af86231416878ed3cd0dc9cacd7353574f31d12e6b5b3b0",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "0ae43f86-51d7-4789-8f5b-0689c0b57b83",
+      "dataset": "library",
+      "filename": "books.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "52ee4e97e0177f9984823321823530ebfb0da446dc7eb7215821f675970e093c",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "0ae43f86-51d7-4789-8f5b-0689c0b57b83",
+      "dataset": "library",
+      "filename": "members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "12634df10d79f235f24465fb4edcee6c7b14c4fc80f775033f8066b1ed7541d2",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "0ae43f86-51d7-4789-8f5b-0689c0b57b83",
+      "dataset": "library",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "161ccf4d8a56de5b58145d8387df322e2529b2ee0ad57cfd12a7e7596b61b9a1",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "0fd5926c-ca50-48b2-879f-1358a2ea9aa1",
+      "dataset": "library",
+      "filename": "loans_members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "c5e33622158a9d7a8af86231416878ed3cd0dc9cacd7353574f31d12e6b5b3b0",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "0fd5926c-ca50-48b2-879f-1358a2ea9aa1",
+      "dataset": "library",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "161ccf4d8a56de5b58145d8387df322e2529b2ee0ad57cfd12a7e7596b61b9a1",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "0fd5926c-ca50-48b2-879f-1358a2ea9aa1",
+      "dataset": "library",
+      "filename": "books.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "52ee4e97e0177f9984823321823530ebfb0da446dc7eb7215821f675970e093c",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "0fd5926c-ca50-48b2-879f-1358a2ea9aa1",
+      "dataset": "library",
+      "filename": "members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "12634df10d79f235f24465fb4edcee6c7b14c4fc80f775033f8066b1ed7541d2",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "aa2bd72a-dede-43d1-90be-60d05ae2673d",
+      "dataset": "library",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "161ccf4d8a56de5b58145d8387df322e2529b2ee0ad57cfd12a7e7596b61b9a1",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "aa2bd72a-dede-43d1-90be-60d05ae2673d",
+      "dataset": "library",
+      "filename": "members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "12634df10d79f235f24465fb4edcee6c7b14c4fc80f775033f8066b1ed7541d2",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "aa2bd72a-dede-43d1-90be-60d05ae2673d",
+      "dataset": "library",
+      "filename": "loans_members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "c5e33622158a9d7a8af86231416878ed3cd0dc9cacd7353574f31d12e6b5b3b0",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "aa2bd72a-dede-43d1-90be-60d05ae2673d",
+      "dataset": "library",
+      "filename": "books.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "52ee4e97e0177f9984823321823530ebfb0da446dc7eb7215821f675970e093c",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "9627ba0e-9807-47d6-8a49-90ba3bcc43e1",
+      "dataset": "library",
+      "filename": "members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "12634df10d79f235f24465fb4edcee6c7b14c4fc80f775033f8066b1ed7541d2",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "9627ba0e-9807-47d6-8a49-90ba3bcc43e1",
+      "dataset": "library",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "161ccf4d8a56de5b58145d8387df322e2529b2ee0ad57cfd12a7e7596b61b9a1",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "9627ba0e-9807-47d6-8a49-90ba3bcc43e1",
+      "dataset": "library",
+      "filename": "loans_members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "c5e33622158a9d7a8af86231416878ed3cd0dc9cacd7353574f31d12e6b5b3b0",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "9627ba0e-9807-47d6-8a49-90ba3bcc43e1",
+      "dataset": "library",
+      "filename": "books.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "52ee4e97e0177f9984823321823530ebfb0da446dc7eb7215821f675970e093c",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "63f58ef9-1685-41e0-9820-da46024ba418",
+      "dataset": "library",
+      "filename": "loans_members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "c5e33622158a9d7a8af86231416878ed3cd0dc9cacd7353574f31d12e6b5b3b0",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "63f58ef9-1685-41e0-9820-da46024ba418",
+      "dataset": "library",
+      "filename": "members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "12634df10d79f235f24465fb4edcee6c7b14c4fc80f775033f8066b1ed7541d2",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "63f58ef9-1685-41e0-9820-da46024ba418",
+      "dataset": "library",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "161ccf4d8a56de5b58145d8387df322e2529b2ee0ad57cfd12a7e7596b61b9a1",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "63f58ef9-1685-41e0-9820-da46024ba418",
+      "dataset": "library",
+      "filename": "books.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "52ee4e97e0177f9984823321823530ebfb0da446dc7eb7215821f675970e093c",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "e994b5a6-8cbf-438c-848a-30f626dca507",
+      "dataset": "library",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "161ccf4d8a56de5b58145d8387df322e2529b2ee0ad57cfd12a7e7596b61b9a1",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "e994b5a6-8cbf-438c-848a-30f626dca507",
+      "dataset": "library",
+      "filename": "members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "12634df10d79f235f24465fb4edcee6c7b14c4fc80f775033f8066b1ed7541d2",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "e994b5a6-8cbf-438c-848a-30f626dca507",
+      "dataset": "library",
+      "filename": "loans_members.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "c5e33622158a9d7a8af86231416878ed3cd0dc9cacd7353574f31d12e6b5b3b0",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "e994b5a6-8cbf-438c-848a-30f626dca507",
+      "dataset": "library",
+      "filename": "books.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "52ee4e97e0177f9984823321823530ebfb0da446dc7eb7215821f675970e093c",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "2527b0c7-e909-48c6-90e5-9aacec23f0b7",
+      "dataset": "hospital",
+      "filename": "operational_notes.txt",
+      "file_type": "txt",
+      "sha256_computed_at_recovery": "c5cfa67d457c7099a18574d4237d939a32894a4a5ec30571682c70bacf904aad",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "2527b0c7-e909-48c6-90e5-9aacec23f0b7",
+      "dataset": "hospital",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "0d6175bffefcbc796cea119bf97420c0a60671db5be59829169b72eeb8a99235",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "2527b0c7-e909-48c6-90e5-9aacec23f0b7",
+      "dataset": "hospital",
+      "filename": "appointments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "4aeae8444aeb87721c2832b1df7095437bdbe46dbbeaa5482e6f891c820cd3a3",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "2527b0c7-e909-48c6-90e5-9aacec23f0b7",
+      "dataset": "hospital",
+      "filename": "patients.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "eee7287f111848350704d21d7ab9dedebb19b3d249d1807d49debf8bff5deaef",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "9adbc5cf-ffe2-4af9-8ed5-a5263ee60382",
+      "dataset": "hospital",
+      "filename": "operational_notes.txt",
+      "file_type": "txt",
+      "sha256_computed_at_recovery": "c5cfa67d457c7099a18574d4237d939a32894a4a5ec30571682c70bacf904aad",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "9adbc5cf-ffe2-4af9-8ed5-a5263ee60382",
+      "dataset": "hospital",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "0d6175bffefcbc796cea119bf97420c0a60671db5be59829169b72eeb8a99235",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "9adbc5cf-ffe2-4af9-8ed5-a5263ee60382",
+      "dataset": "hospital",
+      "filename": "patients.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "eee7287f111848350704d21d7ab9dedebb19b3d249d1807d49debf8bff5deaef",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "9adbc5cf-ffe2-4af9-8ed5-a5263ee60382",
+      "dataset": "hospital",
+      "filename": "appointments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "4aeae8444aeb87721c2832b1df7095437bdbe46dbbeaa5482e6f891c820cd3a3",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "598da589-5ac7-4bc2-ad1f-044463ddc24f",
+      "dataset": "hospital",
+      "filename": "patients.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "eee7287f111848350704d21d7ab9dedebb19b3d249d1807d49debf8bff5deaef",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "598da589-5ac7-4bc2-ad1f-044463ddc24f",
+      "dataset": "hospital",
+      "filename": "appointments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "4aeae8444aeb87721c2832b1df7095437bdbe46dbbeaa5482e6f891c820cd3a3",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "598da589-5ac7-4bc2-ad1f-044463ddc24f",
+      "dataset": "hospital",
+      "filename": "operational_notes.txt",
+      "file_type": "txt",
+      "sha256_computed_at_recovery": "c5cfa67d457c7099a18574d4237d939a32894a4a5ec30571682c70bacf904aad",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "598da589-5ac7-4bc2-ad1f-044463ddc24f",
+      "dataset": "hospital",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "0d6175bffefcbc796cea119bf97420c0a60671db5be59829169b72eeb8a99235",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "0ba84ef0-c0a3-407f-8aef-2befb89f877f",
+      "dataset": "hospital",
+      "filename": "appointments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "4aeae8444aeb87721c2832b1df7095437bdbe46dbbeaa5482e6f891c820cd3a3",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "0ba84ef0-c0a3-407f-8aef-2befb89f877f",
+      "dataset": "hospital",
+      "filename": "operational_notes.txt",
+      "file_type": "txt",
+      "sha256_computed_at_recovery": "c5cfa67d457c7099a18574d4237d939a32894a4a5ec30571682c70bacf904aad",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "0ba84ef0-c0a3-407f-8aef-2befb89f877f",
+      "dataset": "hospital",
+      "filename": "patients.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "eee7287f111848350704d21d7ab9dedebb19b3d249d1807d49debf8bff5deaef",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "0ba84ef0-c0a3-407f-8aef-2befb89f877f",
+      "dataset": "hospital",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "0d6175bffefcbc796cea119bf97420c0a60671db5be59829169b72eeb8a99235",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "a4aae816-c710-4edd-8669-1462127b91f7",
+      "dataset": "hospital",
+      "filename": "patients.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "eee7287f111848350704d21d7ab9dedebb19b3d249d1807d49debf8bff5deaef",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "a4aae816-c710-4edd-8669-1462127b91f7",
+      "dataset": "hospital",
+      "filename": "operational_notes.txt",
+      "file_type": "txt",
+      "sha256_computed_at_recovery": "c5cfa67d457c7099a18574d4237d939a32894a4a5ec30571682c70bacf904aad",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "a4aae816-c710-4edd-8669-1462127b91f7",
+      "dataset": "hospital",
+      "filename": "appointments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "4aeae8444aeb87721c2832b1df7095437bdbe46dbbeaa5482e6f891c820cd3a3",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "a4aae816-c710-4edd-8669-1462127b91f7",
+      "dataset": "hospital",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "0d6175bffefcbc796cea119bf97420c0a60671db5be59829169b72eeb8a99235",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "cc875e72-77c7-4b30-a7cf-6eede34ca506",
+      "dataset": "hospital",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "0d6175bffefcbc796cea119bf97420c0a60671db5be59829169b72eeb8a99235",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "cc875e72-77c7-4b30-a7cf-6eede34ca506",
+      "dataset": "hospital",
+      "filename": "patients.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "eee7287f111848350704d21d7ab9dedebb19b3d249d1807d49debf8bff5deaef",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "cc875e72-77c7-4b30-a7cf-6eede34ca506",
+      "dataset": "hospital",
+      "filename": "operational_notes.txt",
+      "file_type": "txt",
+      "sha256_computed_at_recovery": "c5cfa67d457c7099a18574d4237d939a32894a4a5ec30571682c70bacf904aad",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "cc875e72-77c7-4b30-a7cf-6eede34ca506",
+      "dataset": "hospital",
+      "filename": "appointments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "4aeae8444aeb87721c2832b1df7095437bdbe46dbbeaa5482e6f891c820cd3a3",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "8bfbaad5-5562-442d-93ca-1e2e48930cd4",
+      "dataset": "hospital",
+      "filename": "operational_notes.txt",
+      "file_type": "txt",
+      "sha256_computed_at_recovery": "c5cfa67d457c7099a18574d4237d939a32894a4a5ec30571682c70bacf904aad",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "8bfbaad5-5562-442d-93ca-1e2e48930cd4",
+      "dataset": "hospital",
+      "filename": "patients.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "eee7287f111848350704d21d7ab9dedebb19b3d249d1807d49debf8bff5deaef",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "8bfbaad5-5562-442d-93ca-1e2e48930cd4",
+      "dataset": "hospital",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "0d6175bffefcbc796cea119bf97420c0a60671db5be59829169b72eeb8a99235",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "8bfbaad5-5562-442d-93ca-1e2e48930cd4",
+      "dataset": "hospital",
+      "filename": "appointments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "4aeae8444aeb87721c2832b1df7095437bdbe46dbbeaa5482e6f891c820cd3a3",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "37956a12-ceec-436f-8f38-2ddd29f9f1b9",
+      "dataset": "hospital",
+      "filename": "operational_notes.txt",
+      "file_type": "txt",
+      "sha256_computed_at_recovery": "c5cfa67d457c7099a18574d4237d939a32894a4a5ec30571682c70bacf904aad",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "37956a12-ceec-436f-8f38-2ddd29f9f1b9",
+      "dataset": "hospital",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "0d6175bffefcbc796cea119bf97420c0a60671db5be59829169b72eeb8a99235",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "37956a12-ceec-436f-8f38-2ddd29f9f1b9",
+      "dataset": "hospital",
+      "filename": "appointments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "4aeae8444aeb87721c2832b1df7095437bdbe46dbbeaa5482e6f891c820cd3a3",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "37956a12-ceec-436f-8f38-2ddd29f9f1b9",
+      "dataset": "hospital",
+      "filename": "patients.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "eee7287f111848350704d21d7ab9dedebb19b3d249d1807d49debf8bff5deaef",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "7561eaa1-8032-4d54-91bd-4d2dbcfdc17b",
+      "dataset": "hospital",
+      "filename": "appointments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "4aeae8444aeb87721c2832b1df7095437bdbe46dbbeaa5482e6f891c820cd3a3",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "7561eaa1-8032-4d54-91bd-4d2dbcfdc17b",
+      "dataset": "hospital",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "0d6175bffefcbc796cea119bf97420c0a60671db5be59829169b72eeb8a99235",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "7561eaa1-8032-4d54-91bd-4d2dbcfdc17b",
+      "dataset": "hospital",
+      "filename": "operational_notes.txt",
+      "file_type": "txt",
+      "sha256_computed_at_recovery": "c5cfa67d457c7099a18574d4237d939a32894a4a5ec30571682c70bacf904aad",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "7561eaa1-8032-4d54-91bd-4d2dbcfdc17b",
+      "dataset": "hospital",
+      "filename": "patients.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "eee7287f111848350704d21d7ab9dedebb19b3d249d1807d49debf8bff5deaef",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "80b5ab95-d87c-46e6-8c34-e9adf56bf426",
+      "dataset": "hospital",
+      "filename": "patients.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "eee7287f111848350704d21d7ab9dedebb19b3d249d1807d49debf8bff5deaef",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "80b5ab95-d87c-46e6-8c34-e9adf56bf426",
+      "dataset": "hospital",
+      "filename": "description.pdf",
+      "file_type": "pdf",
+      "sha256_computed_at_recovery": "0d6175bffefcbc796cea119bf97420c0a60671db5be59829169b72eeb8a99235",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "80b5ab95-d87c-46e6-8c34-e9adf56bf426",
+      "dataset": "hospital",
+      "filename": "operational_notes.txt",
+      "file_type": "txt",
+      "sha256_computed_at_recovery": "c5cfa67d457c7099a18574d4237d939a32894a4a5ec30571682c70bacf904aad",
+      "canonical_source_match": true
+    },
+    {
+      "project_id": "80b5ab95-d87c-46e6-8c34-e9adf56bf426",
+      "dataset": "hospital",
+      "filename": "appointments.csv",
+      "file_type": "csv",
+      "sha256_computed_at_recovery": "4aeae8444aeb87721c2832b1df7095437bdbe46dbbeaa5482e6f891c820cd3a3",
+      "canonical_source_match": true
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "software_revision": "84bf74b33c54bbcb",
+  "research_mode": true,
+  "dataset": "university",
+  "dataset_hash": "04eb0dff12a262038dc4de77fc6d1ceca538f485116cdaa7d221f314fdd4bdb5",
+  "condition": "full_llm",
+  "provider": "OpenRouter",
+  "model": "nvidia/nemotron-3.5-super-vl:free",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 5,
+  "created_at": "2026-11-08T20:33:45.241813+00:00",
+  "source_format": "combined",
+  "source_files": [
+    {
+      "path": "source/description.pdf",
+      "sha256": "e7c73c9a481e46b78c02c83b6c91f6f35e56aeb65378dddfc801c44454d69cb9"
+    },
+    {
+      "path": "source/enrollments.csv",
+      "sha256": "8fc7bb39ea180c47616813448083a5028b4989d3fa0ed04de5d87c8f95043f9f"
+    }
+  ],
+  "evaluation_spec_hash": "10ed90b5e56cb76976aacafd98b26d04234af2ee37ff93ce666bc41a96aaa33b",
+  "project_id": "6927a29f-9f0f-4273-b01f-d1a9c5b16677",
+  "schema_output_contract": "schema-json-v2",
+  "status": "ok",
+  "artifacts": {
+    "generated_database": {
+      "path": "generated.db",
+      "sha256": "37f98347930ef94d6b5a31e1e8acffd6ecb00319ba2b8612cf201f086aca5508"
+    },
+    "generated_schema": {
+      "path": "generated_schema.json",
+      "sha256": "981899c200ea44fd8610f738ccb91a4a0251697130bd6a839029936b20a3540f"
+    },
+    "evaluation": {
+      "path": "evaluation.json",
+      "sha256": "812bbb6c77a928a8aa2fb59938e2b3071baaaf468fa4137b4819a11ca48694d4"
+    },
+    "cell_discrepancies": {
+      "path": "cell_discrepancies.csv",
+      "sha256": "d8fd6c2ab556ecae7a1399ca83d2f078ec4e9a0bdaf269f52c71638413e293fd"
+    },
+    "alignment": {
+      "path": "alignment.json",
+      "sha256": "4cafec35cc80e289902947a121e3b282ddd042e29a6aeff2308d8a916e04397d"
+    },
+    "functional_query_results": {
+      "path": "functional_query_results.json",
+      "sha256": "1e278919d8e576af522f69ae23726e8d88dde883e6f7c53fa13a55b21e8bb491"
+    },
+    "run_record": {
+      "path": "run.json",
+      "sha256": "72454e142156e55e5afde67cd06fddd540a15b41ae88d6b2d207282ecdcdbbd7"
+    }
+  }
+}

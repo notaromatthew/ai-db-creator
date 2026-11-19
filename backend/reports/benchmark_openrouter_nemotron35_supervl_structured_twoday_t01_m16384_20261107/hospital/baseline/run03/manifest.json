@@ -1,0 +1,64 @@
+{
+  "software_revision": "84bf74b33c54bbcb",
+  "research_mode": true,
+  "dataset": "hospital",
+  "dataset_hash": "183590dae802ea4d47b09ba1936df11fd203509b8439b89c92c3a63883ddb633",
+  "condition": "baseline",
+  "provider": "OpenRouter",
+  "model": "nvidia/nemotron-3.5-super-vl:free",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 3,
+  "created_at": "2026-11-07T01:11:00.995853+00:00",
+  "source_format": "combined",
+  "source_files": [
+    {
+      "path": "source/appointments.csv",
+      "sha256": "79c7f5ad7b36b057bf6413d6c968a0cc9b478f5a5c68e2415b39702bbb4d3a08"
+    },
+    {
+      "path": "source/description.pdf",
+      "sha256": "0d6175bffefcbc796cea119bf97420c0a60671db5be59829169b72eeb8a99235"
+    },
+    {
+      "path": "source/operational_notes.txt",
+      "sha256": "c5cfa67d457c7099a18574d4237d939a32894a4a5ec30571682c70bacf904aad"
+    },
+    {
+      "path": "source/patients.csv",
+      "sha256": "d8a3d93841a4e8e09bffe6c299d8e900faa38712dcb5b420327287f0f1fda5b0"
+    }
+  ],
+  "evaluation_spec_hash": "7558bdbd80a1f130e47fdd5220c888000c2ab0e31d68923dec6c14a516437e4e",
+  "project_id": "2ce8993e-db1a-403b-97fb-c159ff84669f",
+  "schema_output_contract": "schema-json-v2",
+  "status": "ok",
+  "artifacts": {
+    "generated_database": {
+      "path": "generated.db",
+      "sha256": "376d638c401831fc2384503b02893f4d7142d9c70e111f62c340cfd054fa728d"
+    },
+    "generated_schema": {
+      "path": "generated_schema.json",
+      "sha256": "87ead9ab6b94ff2b08afdbf274e52b1abdf9e31579a44e92be1dfc8252a4cb2c"
+    },
+    "evaluation": {
+      "path": "evaluation.json",
+      "sha256": "fd064182737e73f69005a81273906fd0f7723e033fa04ba5bba02fb54499a29d"
+    },
+    "cell_discrepancies": {
+      "path": "cell_discrepancies.csv",
+      "sha256": "6137d3daa06556decef6eed8439c93f3163444403227821237be0331f007ae69"
+    },
+    "functional_query_results": {
+      "path": "functional_query_results.json",
+      "sha256": "53da75ccd5bef40fc0477fe3154115b2739bd2c3a3cc2b1948fcc447852da3ce"
+    },
+    "run_record": {
+      "path": "run.json",
+      "sha256": "680f8551623d48589491bf2181f59bbbdaf66728fdc917716e6ec853a6031559"
+    }
+  }
+}

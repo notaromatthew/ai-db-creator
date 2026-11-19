@@ -1,0 +1,18 @@
+{
+  "dataset": "university",
+  "condition": "baseline",
+  "n_runs": 5,
+  "mean_precision": 0.6784,
+  "mean_recall": 0.7676,
+  "mean_f1": 0.6932,
+  "ci95_f1": [
+    0.2939,
+    0.9246
+  ],
+  "mean_total_cells": 139.6,
+  "mean_missing_rows": 42.6,
+  "mean_extra_rows": 25.6,
+  "mean_adjudicated_schema_equivalence": 100.0,
+  "mean_adjudicated_value_accuracy": 68.0,
+  "mean_adjudicated_completeness": 58.4
+}

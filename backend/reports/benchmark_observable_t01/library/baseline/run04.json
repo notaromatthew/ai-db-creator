@@ -1,0 +1,21 @@
+{
+  "dataset": "library",
+  "condition": "baseline",
+  "run": 4,
+  "source_format": "combined",
+  "project_id": null,
+  "status": "error",
+  "temperature": 0.1,
+  "global_precision": null,
+  "global_recall": null,
+  "global_f1": null,
+  "total_cells": null,
+  "missing_rows": null,
+  "extra_rows": null,
+  "functional_query_pass_rate": null,
+  "functionally_equivalent": null,
+  "alignment": null,
+  "adjudication": null,
+  "error": "IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: projects.owner_id\n[SQL: INSERT INTO projects (id, owner_id, name, prompt, db_path, schema_finalized_at, schema_version, target_dialect, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: ('db813cc6-9a31-4a11-a7c8-af94792c5ec1', None, 'library|combined|baseline|run4', 'Design a fully normalized relational schema (3NF) for a library management system.\\n\\nSource documents describe: book categories, members, books (wit ... (165 characters truncated) ... , column names, types, nullability and\\nuniqueness constraints from the attached documents. Produce a clean relational\\nschema ready to be populated.', None, None, 0, None, '2026-11-04 10:47:43.913192', '2026-11-04 10:47:43.913192')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)",
+  "detail": null
+}

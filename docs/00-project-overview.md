@@ -54,7 +54,7 @@ Users can describe the data they want in plain language (e.g., "Show me all stud
 The system computes schema quality metrics (3NF compliance score, relationship precision/recall/F1), data quality metrics (duplicate counts, record counts), and logs all user interactions for research analysis.
 
 ### 4.8 Survey Integration
-Built-in NASA-TLX (cognitive load) and SUS (System Usability Scale) survey forms for collecting participant feedback during controlled experiments.
+The platform retains optional NASA-TLX and SUS components for possible future studies. They are disabled and are not part of the current RQ0/RQ3/RQ4 protocol.
 
 ## 5. Technology Stack
 
@@ -88,7 +88,7 @@ Built-in NASA-TLX (cognitive load) and SUS (System Usability Scale) survey forms
 | Provider | Model | Use Case |
 |---|---|---|
 | OpenAI (default) | gpt-4o-mini | Schema generation, population, query |
-| Google Gemini | gemini-2.0-flash | Same, via langchain-google-genai |
+| Google Gemini | gemini-3.5-flash-lite | Same, via langchain-google-genai |
 | Groq | llama3-70b-8192 | Same, via OpenAI-compatible endpoint |
 | OpenRouter | configurable | Same, via OpenAI-compatible endpoint |
 | Ollama (local) | llama3 (auto-detected) | Offline/private operation |
@@ -167,14 +167,16 @@ The data flow through the system proceeds as:
 
 [2] P. A. Bernstein and S. Melnik. "The Case for a Spreadsheet-Database Integration." *Communications of the ACM*, 54(7):80–88, 2011. (Documents the spreadsheet-vs-relational gap that motivates the target user population.)
 
-[3] S. Chaudhuri, N. Chhetri, and A. Neupane. "NL2Schema: Generating Database Schemas from Natural Language Descriptions." arXiv:2310.05978, 2023.
+[3] Q. Wang et al. "SchemaAgent: A Multi-Agents Framework for Generating Relational Database Schema." arXiv:2503.23886, 2025.
 
 [4] Y. Zhang et al. "Schema Matching using Large Language Models." arXiv:2310.11779, 2023.
 
-[5] E. Rahm and P. A. Bernstein. "A Survey of Approaches to Automatic Schema Matching." *The VLDB Journal*, 10(4):334–350, 2001.
+[5] M. Sadia, Z. Yang, Y. Xiao, A. Chen, and A. Roy Chowdhury. "SQUiD: Synthesizing Relational Databases from Unstructured Text." *EMNLP 2025*, pages 31987–32012. DOI: 10.18653/v1/2025.emnlp-main.1629.
 
-[6] S. G. Hart and L. E. Staveland. "Development of NASA-TLX (Task Load Index)." *Human Mental Workload*, pages 139–183, 1988.
+[6] E. Rahm and P. A. Bernstein. "A Survey of Approaches to Automatic Schema Matching." *The VLDB Journal*, 10(4):334–350, 2001.
 
-[7] J. Brooke. "SUS: A Quick and Dirty Usability Scale." *Usability Evaluation in Industry*, pages 189–194, 1996.
+[7] S. G. Hart and L. E. Staveland. "Development of NASA-TLX (Task Load Index)." *Human Mental Workload*, pages 139–183, 1988.
+
+[8] J. Brooke. "SUS: A Quick and Dirty Usability Scale." *Usability Evaluation in Industry*, pages 189–194, 1996.
 
 *See also `08-research-notes.md` and `11-benchmark-protocol.md` for the full reference list and how each citation maps to the research design.*

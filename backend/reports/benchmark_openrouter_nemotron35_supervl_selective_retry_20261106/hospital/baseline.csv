@@ -1,0 +1,3 @@
+dataset,source_format,condition,run,project_id,status,error,population_mode,global_precision,global_recall,global_f1,total_cells,missing_rows,extra_rows,functional_query_pass_rate,functionally_equivalent
+hospital,combined,baseline,4,56c599c7-cee8-490c-a958-fa594944f8f0,ok,,llm,0.25,0.225,0.2369,225,243,0,0.0,False
+hospital,combined,baseline,5,64fdc198-df53-4d04-8b31-c71c3f3b8f12,ok,,llm,0.25,0.225,0.2369,225,243,0,0.0,False

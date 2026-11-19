@@ -1,0 +1,6 @@
+dataset,source_format,condition,run,project_id,status,error,population_mode,global_precision,global_recall,global_f1,total_cells,missing_rows,extra_rows,functional_query_pass_rate,functionally_equivalent
+library,combined,full_llm,1,eb045cc6-f70f-41e9-af76-0e8e2128e7af,ok,,llm,1.0,1.0,1.0,340,0,0,0.5,False
+library,combined,full_llm,2,e1d850f5-79cd-4780-8b90-82e2ae377b4c,ok,,llm,1.0,1.0,1.0,340,0,0,0.5,False
+library,combined,full_llm,3,,error,LLMException: Schema generation failed,,,,,,,,,
+library,combined,full_llm,4,df3bf6e7-5bde-46ce-bc17-9402652f2b1b,ok,,llm,1.0,1.0,1.0,340,0,0,0.5,False
+library,combined,full_llm,5,,error,LLMException: Schema generation failed,,,,,,,,,

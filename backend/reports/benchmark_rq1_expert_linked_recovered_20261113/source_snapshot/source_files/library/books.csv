@@ -1,0 +1,51 @@
+book_id,isbn,title,author,category_name
+1,978-0536-660-9539,Radici Fuochi,Umberto Eco,Saggistica
+2,978-0622-401-8832,Il giardino La corrente,Alessandro Manzoni,Scienza
+3,978-0172-591-4353,Nebbia Silenzi,Carlo Emilio Gadda,Fiction
+4,978-0358-177-6870,La soglia Il porto,Dino Buzzati,Biografia
+5,978-0780-255-2798,Ombre La promessa,Andrea Camilleri,Scienza
+6,978-0653-207-4670,Echi Orizzonte,Carlo Emilio Gadda,Scienza
+7,978-0632-640-2390,Vento Il porto,Grazia Deledda,Giallo
+8,978-0673-708-9382,Le stelle Il porto,Leonardo Sciascia,Biografia
+9,978-0263-297-4947,Il grembo Radici,Umberto Eco,Avventura
+10,978-0353-447-9476,Vento Tracce,Carlo Emilio Gadda,Fiction
+11,978-0955-709-1593,La soglia Specchi,Italo Calvino,Fiction
+12,978-0468-187-9230,Il giardino La soglia,Umberto Eco,Storia
+13,978-0811-592-8049,Vento Orizzonte,Italo Calvino,Tecnologia
+14,978-0351-217-8965,Nebbia Sabbia,Italo Calvino,Fantascienza
+15,978-0475-875-3366,Il labirinto Nebbia,Cesare Pavese,Storia
+16,978-0698-226-5110,Le stelle Il porto,Italo Calvino,Avventura
+17,978-0988-331-5894,Il faro La corrente,Oriana Fallaci,Avventura
+18,978-0927-310-3695,Memorie Il grembo,Alessandro Manzoni,Saggistica
+19,978-0890-352-8956,Tracce Il confine,Carlo Emilio Gadda,Saggistica
+20,978-0813-205-6167,La valle Echi,Carlo Emilio Gadda,Giallo
+21,978-0963-626-2979,La città Il custode,Cesare Pavese,Scienza
+22,978-0194-479-2288,Il ritorno Il confine,Alessandro Manzoni,Poesia
+23,978-0325-207-1406,Fuochi Sabbia,Italo Calvino,Fantascienza
+24,978-0205-598-4727,La valle Sabbia,Natalia Ginzburg,Scienza
+25,978-0962-520-7674,Le stelle Il custode,Alessandro Manzoni,Saggistica
+26,978-0993-113-2062,Il viaggio La promessa,Dino Buzzati,Poesia
+27,978-0534-980-3129,Specchi Nebbia,Umberto Eco,Poesia
+28,978-0445-604-6522,Il custode Il confine,Alberto Moravia,Tecnologia
+29,978-0668-513-5116,Il porto La valle,Umberto Eco,Giallo
+30,978-0735-286-2542,Tracce Nebbia,Natalia Ginzburg,Fiction
+31,978-0256-971-1276,Ombre La città,Elsa Morante,Saggistica
+32,978-0106-194-4032,La valle Le stelle,Natalia Ginzburg,Fantascienza
+33,978-0357-640-1407,La soglia Ombre,Oriana Fallaci,Fiction
+34,978-0865-356-7564,La valle Il grembo,Dino Buzzati,Tecnologia
+35,978-0523-287-6067,La città Echi,Elsa Morante,Avventura
+36,978-0778-751-7546,Il labirinto La soglia,Primo Levi,Saggistica
+37,978-0599-227-5643,L'inverno Il giardino,Andrea Camilleri,Poesia
+38,978-0167-367-6631,Il giardino La soglia,Leonardo Sciascia,Giallo
+39,978-0627-774-8958,Il custode Il giardino,Umberto Eco,Saggistica
+40,978-0389-601-1448,Il ritorno Specchi,Natalia Ginzburg,Tecnologia
+41,978-0629-235-4312,Il porto Radici,Alessandro Manzoni,Biografia
+42,978-0977-478-5016,Radici Nebbia,Andrea Camilleri,Fiction
+43,978-0528-447-3542,L'inverno Il confine,Dino Buzzati,Poesia
+44,978-0141-352-5056,L'inverno La valle,Cesare Pavese,Avventura
+45,978-0375-967-7500,Silenzi La corrente,Andrea Camilleri,Fiction
+46,978-0609-371-4505,La valle La valle,Leonardo Sciascia,Scienza
+47,978-0999-780-1177,Il ritorno Radici,Alberto Moravia,Storia
+48,978-0968-525-7554,Cronache Memorie,Luigi Pirandello,Tecnologia
+49,978-0428-471-8276,La valle Ombre,Cesare Pavese,Biografia
+50,978-0467-994-6073,Sabbia L'inverno,Cesare Pavese,Storia

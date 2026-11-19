@@ -14,7 +14,7 @@ Each participant submits:
 - populated database or SQL export;
 - completion status and exported artifact hash;
 - task start/end timestamps;
-- Raw NASA-TLX and SUS responses.
+- No NASA-TLX or SUS responses are collected in the current protocol; the same objective outcomes and debrief rules apply in all arms.
 
 The same automated RQ1/RQ2 evaluators and blind expert rubric are applied to all three conditions. Evaluators receive pseudonymous artifacts without condition labels.
 

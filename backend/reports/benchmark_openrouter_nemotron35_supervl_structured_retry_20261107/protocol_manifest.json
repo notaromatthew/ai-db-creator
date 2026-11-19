@@ -1,0 +1,25 @@
+{
+  "label": "exploratory_structured_output_retry",
+  "date": "2026-11-07",
+  "status": "preregistered_before_outcome",
+  "source_recovery": "benchmark_openrouter_nemotron35_supervl_selective_retry_20261106",
+  "selection_rule": "Hospital full_llm runs 2 and 4, which remained schema-parse errors after the post-quota retry",
+  "selected_runs": {
+    "hospital/full_llm": [2, 4]
+  },
+  "provider": "OpenRouter",
+  "model": "nvidia/nemotron-3.5-super-vl:free",
+  "parameters": {
+    "temperature": 0.1,
+    "reasoning_enabled": false,
+    "schema_output_contract": "schema-json-v2",
+    "response_format": "json_schema",
+    "deterministic_local_repair": "at_most_once_after_primary_parse_failure",
+    "max_output_tokens": 4096,
+    "timeout_seconds": 120,
+    "max_retries": 0,
+    "parallel": 1,
+    "max_requests_per_minute": 10
+  },
+  "interpretation_plan": "Exploratory robustness sensitivity. Do not pool with legacy-pydantic-v1 runs; compare parse success descriptively."
+}

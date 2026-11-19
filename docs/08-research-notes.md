@@ -30,7 +30,7 @@
 *Type:* Between-subjects controlled experiment.
 *Hypothesis:* Participants using the AI + Interface condition will produce schemas with higher expert quality ratings than participants using the AI-Only condition.
 *Independent variable:* Assistance mode (Manual vs. AI-Only vs. AI + Interface). The preregistered RQ3 contrast is AI-Only vs. AI + Interface; the RQ0 contrast is Manual vs. AI + Interface.
-*Dependent variables:* Schema quality (expert-rated), cognitive load (NASA-TLX), usability (SUS), task completion time.
+*Dependent variables:* Schema quality (expert-rated), residual error rate, task success, and task completion time. Perceived cognitive load and usability questionnaires are outside the current protocol.
 
 **RQ4 (Interaction Patterns):** What interaction patterns emerge when non-expert users design databases via an LLM-powered visual interface?
 
@@ -80,10 +80,10 @@ Each dataset includes:
 
 ### Procedure
 
-1. **Pre-questionnaire:** Demographics, self-rated computer literacy, prior database experience
+1. **Pre-session form:** Demographics, self-rated computer literacy, prior database experience
 2. **Training (10 min):** Brief video tutorial showing the interface and basic operations
 3. **Task (45 min):** Create a database from the provided documents using the assigned condition
-4. **Post-questionnaires:** Raw NASA-TLX (six 0–100 ratings, aggregate = arithmetic mean) [7], SUS (10 standard items, 1–5; score 0–100) [8], free-text feedback
+4. **Post-task debrief:** Optional privacy-filtered free-text feedback; no Raw NASA-TLX or SUS in the current study
 5. **Debrief:** Explanation of research goals, opportunity to withdraw data
 
 ### Power Analysis
@@ -110,7 +110,7 @@ LLMs, by contrast, bring broad world knowledge and have been trained on millions
 - Map colloquial domain vocabulary to database conventions (e.g., "ID number" → `INTEGER PRIMARY KEY`, "price" → `REAL NOT NULL`).
 - Reason about functional dependencies from context even when no tabular data is present.
 
-Recent work confirms that LLMs can perform schema matching and structured-data wrangling that classical matchers cannot [3,4], directly supporting the feasibility of an LLM-first schema-generation approach (see also [5,6]).
+Recent work confirms that LLMs can perform schema matching and structured-data wrangling that classical matchers cannot [3,4]. SchemaAgent evaluates direct logical-schema generation, while SQUiD covers schema generation and population from unstructured text [5,6].
 
 LLMs, by contrast, bring broad world knowledge and have been trained on millions of database schemas, SQL queries, and documentation examples. They can:
 
@@ -174,7 +174,7 @@ The human-in-the-loop design allows domain experts to correct these errors using
 
 - **Method:** Three-arm controlled lab or remote study with at least 102 completed participants, preceded by a separate 5–8 participant formative pilot.
 - **Procedure:** As described in Section 2.
-- **Analysis:** Independent-samples t-test (or Mann-Whitney U if assumptions violated) for schema quality scores, NASA-TLX, SUS.
+- **Analysis:** Preregistered contrasts for schema quality and residual error rate; completion time and task success are secondary.
 
 ### Experiment 4: Interaction Log Analysis (RQ4)
 
@@ -202,12 +202,10 @@ The human-in-the-loop design allows domain experts to correct these errors using
 
 [4] A. Narayan, A. Floratou, F. Psallidas, et al. "Can Foundation Models Wrangle Your Data?" *Proceedings of the VLDB Endowment*, 16(4):782–795, 2022.
 
-[5] S. Chaudhuri, N. Chhetri, and A. Neupane. "NL2Schema: Generating Database Schemas from Natural Language Descriptions." arXiv:2310.05978, 2023.
+[5] Q. Wang et al. "SchemaAgent: A Multi-Agents Framework for Generating Relational Database Schema." arXiv:2503.23886, 2025.
 
-[6] E. Rahm and P. A. Bernstein. "A Survey of Approaches to Automatic Schema Matching." *The VLDB Journal*, 10(4):334–350, 2001.
+[6] M. Sadia, Z. Yang, Y. Xiao, A. Chen, and A. Roy Chowdhury. "SQUiD: Synthesizing Relational Databases from Unstructured Text." *EMNLP 2025*, pages 31987–32012. DOI: 10.18653/v1/2025.emnlp-main.1629.
 
-[7] S. G. Hart and L. E. Staveland. "Development of NASA-TLX (Task Load Index)." *Human Mental Workload*, pages 139–183, 1988.
+[7] E. Rahm and P. A. Bernstein. "A Survey of Approaches to Automatic Schema Matching." *The VLDB Journal*, 10(4):334–350, 2001.
 
-[8] J. Brooke. "SUS: A Quick and Dirty Usability Scale." *Usability Evaluation in Industry*, pages 189–194, 1996.
-
-*(References [7–8] support the workload and usability measures used in RQ3 and the pilot.)*
+Raw NASA-TLX and SUS were considered during planning but excluded from the current study by the pre-collection amendment in `docs/23-study-protocol-amendment-2026-11-18.md`.

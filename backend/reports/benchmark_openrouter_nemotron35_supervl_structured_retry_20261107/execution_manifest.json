@@ -1,0 +1,19 @@
+{
+  "label": "exploratory_structured_output_retry_results",
+  "date": "2026-11-07",
+  "protocol_manifest": "protocol_manifest.json",
+  "selected": 2,
+  "ok": 2,
+  "error": 0,
+  "not_evaluable": 0,
+  "successful_runs": [2, 4],
+  "schema_output_contract": "schema-json-v2",
+  "schema_parse_success_rate": 1.0,
+  "deterministic_local_repair_observed": null,
+  "repair_path_persisted_in_run_artifacts": false,
+  "mean_f1_among_ok": 0.4802,
+  "mean_functional_query_pass_rate_among_ok": 0.0,
+  "artifact_hashes_checked": 14,
+  "artifact_hash_failures": 0,
+  "interpretation": "Both legacy parse failures completed with provider-enforced JSON Schema. The run artifacts do not persist the primary-parser versus local-repair path, so repair use cannot be audited retrospectively from the bundle. This is an exploratory selected-case robustness result and must not be pooled with the legacy contract runs."
+}

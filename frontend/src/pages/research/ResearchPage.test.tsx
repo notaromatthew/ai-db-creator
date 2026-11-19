@@ -42,7 +42,7 @@ beforeEach(() => {
       per_table: [{ table: 'corsi', f1_best: 0.9, f1_worst: 0.3, delta: 0.6, schema_loss_worst: 0.5, population_loss_worst: 0.2 }],
       attribution: { schema_share: 0.7, population_share: 0.3, verdict: 'schema', note: 'Approssimazione.' } })
     if (path.startsWith('/research/export')) return Promise.resolve({ filename: 'run-ricerca.csv', mime: 'text/csv', content: 'a,b\n' })
-    if (path === '/study/admin/status') return Promise.resolve({ arms: [{ arm: 'manual', enrolled: 3, active: 2, completed: 1, withdrawn: 1, target: 20 }], total: 3, balanced: true, consent_version: '1.0' })
+    if (path === '/study/admin/status') return Promise.resolve({ arms: [{ arm: 'manual', enrolled: 3, active: 2, completed: 1, withdrawn: 1, target: 34 }], total: 3, balanced: true, consent_version: '1.0' })
     return Promise.resolve({})
   })
   api.post.mockImplementation((path: string) => {

@@ -312,7 +312,7 @@ class StudyEvent(Base):
 
 
 class StudyResponse(Base):
-    """Risposte del partecipante: nasa_tlx, sus, debrief e lo schema dell'editor manuale."""
+    """Risposte del partecipante; il protocollo corrente usa debrief e schema manuale."""
     __tablename__ = "study_responses"
     __table_args__ = (UniqueConstraint("participant_id", "kind", name="uq_study_response"),)
 

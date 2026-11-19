@@ -1,0 +1,56 @@
+{
+  "software_revision": "84bf74b33c54bbcb",
+  "research_mode": true,
+  "dataset": "university",
+  "dataset_hash": "04eb0dff12a262038dc4de77fc6d1ceca538f485116cdaa7d221f314fdd4bdb5",
+  "condition": "baseline",
+  "provider": "OpenRouter",
+  "model": "nvidia/nemotron-3.5-super-vl:free",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 1,
+  "created_at": "2026-11-07T00:57:30.753838+00:00",
+  "source_format": "combined",
+  "source_files": [
+    {
+      "path": "source/description.pdf",
+      "sha256": "e7c73c9a481e46b78c02c83b6c91f6f35e56aeb65378dddfc801c44454d69cb9"
+    },
+    {
+      "path": "source/enrollments.csv",
+      "sha256": "8fc7bb39ea180c47616813448083a5028b4989d3fa0ed04de5d87c8f95043f9f"
+    }
+  ],
+  "evaluation_spec_hash": "10ed90b5e56cb76976aacafd98b26d04234af2ee37ff93ce666bc41a96aaa33b",
+  "project_id": "fa791631-9d62-445e-90fa-0da68dabbd09",
+  "schema_output_contract": "schema-json-v2",
+  "status": "ok",
+  "artifacts": {
+    "generated_database": {
+      "path": "generated.db",
+      "sha256": "3277962e2b6ba70a3f8d91f102aad1725d797fecbdd48a6d141edbbdb8371489"
+    },
+    "generated_schema": {
+      "path": "generated_schema.json",
+      "sha256": "6639ed1c92da1d45db27f161184a3a03419178221ebf0bc4cb53aed34649439c"
+    },
+    "evaluation": {
+      "path": "evaluation.json",
+      "sha256": "53e4d46dc28b27db8d5ad1d9be6cd9131501b5ec48964f801357e8e791daff55"
+    },
+    "cell_discrepancies": {
+      "path": "cell_discrepancies.csv",
+      "sha256": "20beb80d7c824994d9e0a09d02f737037b7d730a421cc5eeba5ac32716663388"
+    },
+    "functional_query_results": {
+      "path": "functional_query_results.json",
+      "sha256": "4a82ec95c451143da024674dfc3253e2d0a19f8b760deda2c6f7691c29f48813"
+    },
+    "run_record": {
+      "path": "run.json",
+      "sha256": "bcc61a76603da6fb8e1d6cfb82719a145f2ec71bde81e73ecb3bb5829a3d8aad"
+    }
+  }
+}

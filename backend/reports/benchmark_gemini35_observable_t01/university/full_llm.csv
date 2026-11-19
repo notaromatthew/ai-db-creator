@@ -1,0 +1,6 @@
+dataset,source_format,condition,run,project_id,status,error,population_mode,global_precision,global_recall,global_f1,total_cells,missing_rows,extra_rows,functional_query_pass_rate,functionally_equivalent
+university,combined,full_llm,1,cc482f79-c8a2-4646-bc8f-eadb4f3ea3fe,ok,,llm,0.6667,0.6667,0.6667,68,45,45,0.5,False
+university,combined,full_llm,2,,error,LLMException: Schema generation failed,,,,,,,,,
+university,combined,full_llm,3,,error,LLMException: Schema generation failed,,,,,,,,,
+university,combined,full_llm,4,5778a30d-a7bb-4bde-9272-e54e30354bbc,error,RuntimeError: LLM population produced no usable SQL; deterministic fallback was used,fallback,,,,,,,,
+university,combined,full_llm,5,56d63125-363b-4581-9799-3ebd3f89ed28,error,RuntimeError: LLM population produced no usable SQL; deterministic fallback was used,fallback,,,,,,,,

@@ -26,7 +26,7 @@ Requisiti funzionali:
 - export multi-dialetto (SQLite, PostgreSQL, MySQL, SQL Server)
 - backup e ripristino
 - metriche di qualità dello schema e dei dati
-- integrazione survey NASA-TLX e SUS
+- componenti survey opzionali conservati per studi futuri; esclusi dal protocollo corrente
 
 Vincoli di design:
 

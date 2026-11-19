@@ -1,0 +1,32 @@
+{
+  "dataset": "hospital",
+  "condition": "baseline",
+  "source_format": "combined",
+  "n_runs": 5,
+  "n_evaluable": 1,
+  "n_not_evaluable": 0,
+  "n_error": 4,
+  "n_successful": 1,
+  "n_failed": 4,
+  "errors": [
+    "RuntimeError: LLM population produced no usable SQL; deterministic fallback was used",
+    "RuntimeError: LLM population produced no usable SQL; deterministic fallback was used",
+    "RuntimeError: LLM population produced no usable SQL; deterministic fallback was used",
+    "RuntimeError: LLM population produced no usable SQL; deterministic fallback was used"
+  ],
+  "temperature": 0.1,
+  "mean_precision": 0.9983,
+  "mean_recall": 0.828,
+  "mean_f1": 0.8681,
+  "f1_observed_range": [
+    0.8681,
+    0.8681
+  ],
+  "mean_total_cells": 404.0,
+  "mean_missing_rows": 163.0,
+  "mean_extra_rows": 0.0,
+  "mean_functional_query_pass_rate": 0.2,
+  "mean_adjudicated_schema_equivalence": null,
+  "mean_adjudicated_value_accuracy": null,
+  "mean_adjudicated_completeness": null
+}

@@ -106,6 +106,42 @@ Reported metrics:
 - Percentage of adjacent agreement (maximum rating difference at most 1)
 - Pairwise weighted Cohen's kappa as a labelled sensitivity analysis
 
+### 3.4 Observed evaluator panel and terminology
+
+The preregistered panel consisted of three database experts (PhD-level or an
+industry DBA with at least five years of experience). The observed export was
+instead completed by 45 computer-science students aged 17--18 who were studying
+relational databases. They are therefore reported as **trained student raters**,
+not silently relabelled as database experts. Their database curriculum supports
+task relevance, but does not establish professional or research expertise.
+
+Independence is a separate criterion and requires evidence that ratings were
+completed individually, without discussion or access to condition labels,
+other ratings, expected outcomes, or system development. The protocol also
+requires institutional review of assent/consent and data-protection arrangements
+for raters who were minors. No missing procedural evidence is inferred from the
+ratings file. A qualified expert replication may be reported separately.
+
+### 3.5 Separate observed expert panel
+
+The separate panel contains 90 ratings from the three planned sector experts,
+each covering the same 30 schemas on all five dimensions. It is not pooled with
+the 45 trained student raters. On 14 November 2026 the user attested that the
+first two experts worked individually, without discussion or access to one
+another's scores, and were blind to the `baseline` / `full_llm` labels. On 18
+November the user supplied the third expert's completed ratings and identified
+the rater as an expert; the third rater's independence was subsequently
+attested by the user, while condition blindness
+remains to be attested explicitly. These are procedural statements, not
+properties inferred from the scores.
+
+Ordinal Krippendorff's alpha remains the primary agreement statistic,
+accompanied by exact and adjacent agreement. The condition comparison aggregates
+the three ratings within each schema before comparing the 15 schemas per
+condition. Low agreement is reported as a limitation rather than removed or
+resolved by pooling. The reproducible input and outputs are in
+`backend/reports/rq1_expert_replication/`.
+
 ---
 
 ## 4. Cell-Level Comparison Methodology (RQ2)
@@ -195,6 +231,21 @@ Before computing key or relationship F1, generated and gold entities are aligned
 
 The alignment table is versioned and reused for every run. A relationship match requires aligned source table, source column, target table, target column, and cardinality. Reversing an equivalent one-to-many edge is normalised before scoring; partial table-only matches are not true positives.
 
+### 6.5 Source observability and functional equivalence
+
+Primary population metrics include only facts present in the documents supplied
+to the system. A gold value created only by the dataset builder is labelled
+`not-observable` and excluded from primary precision/recall denominators. The
+full gold remains a sensitivity analysis.
+
+Functional equivalence is measured by the frozen query suites and natural keys
+in `data/datasets/<dataset>/evaluation_spec.json`. The binary rule requires all
+critical queries, at least 90% of all queries, no critical integrity violation,
+and no missing or extraneous observable critical entity. Continuous query-pass
+rates and individual outcomes are always reported. The full rationale and
+adjudication procedure are defined in
+`docs/20-rq2-functional-equivalence-protocol.md`.
+
 ---
 
 ## 7. Statistical Methods
@@ -223,9 +274,12 @@ The alignment table is versioned and reused for every run. A relationship match 
 
 ### 7.4 Multiple Comparison Correction
 
-For the 5-dimension expert evaluation (RQ1), Bonferroni correction is applied:
-- Adjusted α = 0.05 / 5 = 0.01 for each dimension
-- Both unadjusted and adjusted results are reported
+For the five-dimension expert evaluation (RQ1), the executable analysis applies
+Holm's step-down correction across the five primary tests. Both unadjusted and
+Holm-adjusted results are exported. This paragraph records the implemented
+analysis choice and corrects the earlier documentation mismatch that named
+Bonferroni; it does not change the frozen ratings or previously computed results
+and must not be presented as a retrospective preregistration.
 
 ---
 
@@ -363,6 +417,16 @@ incompleteness that F1 alone may hide. It is subject to same-model
 self-evaluation bias, so it is reported as a complementary signal with explicit
 provenance and is not part of the primary RQ2 statistics.
 
+### 9.5 Format-isolated evaluation
+
+The current source bundles mix document types and contain different facts; they
+cannot identify a format effect. No current dataset contains an XLSX variant.
+Before a CSV/XLSX/PDF/TXT comparison, one canonical observable fact set must be
+rendered into four semantically equivalent variants, with a single variant
+loaded per run. Multi-document runs are retained as a separate heterogeneous
+scenario. Variant hashes, fact counts and the exact uploaded file list are part
+of every run manifest.
+
 ---
 
 ## 10. References
@@ -373,9 +437,7 @@ provenance and is not part of the primary RQ2 statistics.
 
 [3] Y. Huhtala, J. Kärkkäinen, P. Porkka, and H. Toivonen. "TANE: An Efficient Algorithm for Discovering Functional and Approximate Dependencies." *The Computer Journal*, 42(2):100–111, 1999. DOI: 10.1093/comjnl/42.2.100.
 
-[4] S. G. Hart and L. E. Staveland. "Development of NASA-TLX (Task Load Index)." *Human Mental Workload*, pages 139–183, 1988.
-
-[5] J. Brooke. "SUS: A Quick and Dirty Usability Scale." *Usability Evaluation in Industry*, pages 189–194, 1996.
+[4–5] Raw NASA-TLX and SUS were considered in the initial design but are excluded from the current study by `docs/23-study-protocol-amendment-2026-11-18.md`.
 
 [6] K. Krippendorff. *Content Analysis: An Introduction to Its Methodology*, 4th ed. SAGE, 2018. (Ordinal inter-rater agreement, Section 7.1.)
 

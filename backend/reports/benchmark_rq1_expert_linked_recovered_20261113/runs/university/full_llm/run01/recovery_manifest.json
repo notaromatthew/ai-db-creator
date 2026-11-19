@@ -1,0 +1,89 @@
+{
+  "manifest_version": "recovered-expert-linked-run-v1",
+  "classification": {
+    "rq1": "primary_expert_linked",
+    "rq2": "recovered_historical_secondary"
+  },
+  "original_observed": {
+    "dataset": "university",
+    "condition": "full_llm",
+    "run": 1,
+    "project_id": "b762df6d-29dc-4852-b3be-146582b247f4",
+    "status": "ok",
+    "reported_metrics": {
+      "global_precision": 0.3333,
+      "global_recall": 0.2973,
+      "global_f1": 0.3143,
+      "total_cells": 66,
+      "missing_rows": 61,
+      "extra_rows": 23
+    },
+    "unavailable_provenance": [
+      "generation_provider_and_model",
+      "software_revision",
+      "research_mode",
+      "population_mode",
+      "source_file_hashes_before_generation",
+      "per_run_protocol_manifest"
+    ]
+  },
+  "recovery_computed": {
+    "source_run_record_sha256": "e8f5fca35ab3e3b644ae0286d401ff6dacf8a262c79b27471ccfa2ec4da4ffc5",
+    "source_generated_database_sha256": "92bf5696110b2d8be834c22e22019b4f6fd3d9a19150ffaa6b149e0928dfd410",
+    "current_evaluation_spec_sha256": "10ed90b5e56cb76976aacafd98b26d04234af2ee37ff93ce666bc41a96aaa33b",
+    "current_evaluator_sha256": {
+      "app/evaluation/population_evaluation.py": "fe7289737310b02055913b1c04a24ec3076c400dcefd6d9b72bc9c3c27e8346f",
+      "app/evaluation/functional_equivalence.py": "686c53fd5059870b797286ab0b1f231f134b8e2216efdff5e4f75777bce4dd08",
+      "app/evaluation/rq2_artifacts.py": "e4f4d74400ea4964003fcefdcc151bd1cac316116109c8f258811d4a71e8b812",
+      "recover_expert_linked_matrix.py": "e91c34b7b5b0843b36db243af904c8bd913014a1a7c693d15087e0abbf51a71d"
+    },
+    "database_integrity": {
+      "integrity_check": "ok",
+      "foreign_key_violation_count": 0,
+      "table_count": 3,
+      "row_count": 75,
+      "rows_by_table": {
+        "courses": 8,
+        "enrollments": 45,
+        "students": 22
+      }
+    }
+  },
+  "artifacts": [
+    {
+      "path": "current_cell_discrepancies.csv",
+      "size": 40725,
+      "sha256": "44a51346327c6ac6543dac8e75b947614ab6876f9d244f75e40b64fc11880b20"
+    },
+    {
+      "path": "current_evaluation.json",
+      "size": 108507,
+      "sha256": "6a46c0fb319de76eef6552872e8da5003f5601e74f0ef533444e7374eeab9fb2"
+    },
+    {
+      "path": "current_functional_query_results.json",
+      "size": 11568,
+      "sha256": "5e1b7e634c2734bd457cd0f00900b934b89a806be961d0a2a32bc6102bed8f99"
+    },
+    {
+      "path": "generated.db",
+      "size": 24576,
+      "sha256": "92bf5696110b2d8be834c22e22019b4f6fd3d9a19150ffaa6b149e0928dfd410"
+    },
+    {
+      "path": "generated_schema.json",
+      "size": 5564,
+      "sha256": "46a50ba393655ac43f9a035ea40e52e2c515313665ef9ff5383edace9109ee17"
+    },
+    {
+      "path": "original_alignment.json",
+      "size": 678,
+      "sha256": "89aa8edec881e12812f5d4d2a173a0aeed6606c0374fc66d646a64bddb5ad9ca"
+    },
+    {
+      "path": "original_run.json",
+      "size": 1994,
+      "sha256": "e8f5fca35ab3e3b644ae0286d401ff6dacf8a262c79b27471ccfa2ec4da4ffc5"
+    }
+  ]
+}

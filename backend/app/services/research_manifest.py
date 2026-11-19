@@ -11,7 +11,10 @@ from app.utils.research import stable_hash, utc_now
 
 DATASETS_DIR = REPO_ROOT / "data" / "datasets"
 PROMPT_HASHES_FILE = REPO_ROOT / "docs" / "prompt-hashes.json"
-DATASET_FILES = ("prompt.txt", "gold_schema.json", "ground_truth.db", "column_alias.json")
+DATASET_FILES = (
+    "prompt.txt", "gold_schema.json", "ground_truth.db", "column_alias.json",
+    "evaluation_spec.json",
+)
 
 
 def list_datasets(root: Path | None = None) -> list[str]:

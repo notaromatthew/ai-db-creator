@@ -1,0 +1,2 @@
+dataset,source_format,condition,run,project_id,status,error,global_precision,global_recall,global_f1,total_cells,missing_rows,extra_rows,functional_query_pass_rate,functionally_equivalent
+university,combined,baseline,1,c6ef6781-7571-4c04-b964-00413d978b16,ok,,0.6667,0.6667,0.6667,68,45,0,0.1,False

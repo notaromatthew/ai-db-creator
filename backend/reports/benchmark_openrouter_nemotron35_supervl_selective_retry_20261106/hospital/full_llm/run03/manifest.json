@@ -1,0 +1,67 @@
+{
+  "software_revision": "da75a72576baccec",
+  "research_mode": true,
+  "dataset": "hospital",
+  "dataset_hash": "183590dae802ea4d47b09ba1936df11fd203509b8439b89c92c3a63883ddb633",
+  "condition": "full_llm",
+  "provider": "OpenRouter",
+  "model": "nvidia/nemotron-3.5-super-vl:free",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 3,
+  "created_at": "2026-11-07T00:06:15.342530+00:00",
+  "source_format": "combined",
+  "source_files": [
+    {
+      "path": "source/appointments.csv",
+      "sha256": "79c7f5ad7b36b057bf6413d6c968a0cc9b478f5a5c68e2415b39702bbb4d3a08"
+    },
+    {
+      "path": "source/description.pdf",
+      "sha256": "0d6175bffefcbc796cea119bf97420c0a60671db5be59829169b72eeb8a99235"
+    },
+    {
+      "path": "source/operational_notes.txt",
+      "sha256": "c5cfa67d457c7099a18574d4237d939a32894a4a5ec30571682c70bacf904aad"
+    },
+    {
+      "path": "source/patients.csv",
+      "sha256": "d8a3d93841a4e8e09bffe6c299d8e900faa38712dcb5b420327287f0f1fda5b0"
+    }
+  ],
+  "evaluation_spec_hash": "7558bdbd80a1f130e47fdd5220c888000c2ab0e31d68923dec6c14a516437e4e",
+  "project_id": "514a50d3-2e74-41d4-b3c4-37d908dda343",
+  "status": "ok",
+  "artifacts": {
+    "generated_database": {
+      "path": "generated.db",
+      "sha256": "a6ef7bdc52eaf3583c6aec9e267a8131c9c39058d7d6a1b47f4f2e7223f2a7ce"
+    },
+    "generated_schema": {
+      "path": "generated_schema.json",
+      "sha256": "554edf5a6d982180db6767a5351805d0de10e5e2a6e8fbba3c8380efac43f092"
+    },
+    "evaluation": {
+      "path": "evaluation.json",
+      "sha256": "850aa826b278016c7385b004c1804a7cfde0d98d68f466dbfd78dac818826b66"
+    },
+    "cell_discrepancies": {
+      "path": "cell_discrepancies.csv",
+      "sha256": "5a9e916fb0100bec9e98b26a868c2ac0e9147d33f918e68d5d9856774f1ac428"
+    },
+    "alignment": {
+      "path": "alignment.json",
+      "sha256": "47a79685da4b8d5e3bc119dc116f03e0ee898b887d97b6655a889ff4f3c61063"
+    },
+    "functional_query_results": {
+      "path": "functional_query_results.json",
+      "sha256": "04143792359fee774e90a0e0fd48005c8f950df145284fc455036df0952b0644"
+    },
+    "run_record": {
+      "path": "run.json",
+      "sha256": "2fe085812ae88a3855d73e997bfab3bac255dca31444c82b87ddfa36e9dff4d1"
+    }
+  }
+}

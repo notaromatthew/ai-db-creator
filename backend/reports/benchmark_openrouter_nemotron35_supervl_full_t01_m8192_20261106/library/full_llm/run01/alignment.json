@@ -1,0 +1,47 @@
+{
+  "tables": {
+    "categories": "book_categories",
+    "members": "members",
+    "books": "books",
+    "loans": "loans",
+    "fines": "fines"
+  },
+  "columns": {
+    "categories": {
+      "category_id": "category_id",
+      "name": "category_name"
+    },
+    "members": {
+      "member_id": "member_id",
+      "full_name": "full_name",
+      "email": "email",
+      "joined_on": "joined_on"
+    },
+    "books": {
+      "book_id": "book_id",
+      "isbn": "isbn",
+      "title": "title",
+      "author": "author",
+      "category_id": "category_id"
+    },
+    "loans": {
+      "loan_id": "loan_id",
+      "book_id": "book_id",
+      "member_id": "member_id",
+      "loan_date": "loan_date",
+      "due_date": "due_date"
+    },
+    "fines": {
+      "fine_id": "fine_id",
+      "loan_id": "loan_id",
+      "amount": "amount"
+    }
+  },
+  "unmatched_tables": [],
+  "unmatched_columns": {
+    "fines": [
+      "paid_on"
+    ]
+  },
+  "via_registry": []
+}

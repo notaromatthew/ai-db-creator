@@ -207,9 +207,13 @@ Each entry is timestamped and shows the event type. This history is primarily de
 
 ## Survey Forms (Experiment Participants Only)
 
+The current study does not administer NASA-TLX or SUS. The forms described below
+are retained platform capability for a possible future protocol and are not
+shown in the current participant workflow.
+
 If you are participating in a controlled experiment, you may be asked to complete:
 
 1. **Raw NASA-TLX** — six 0–100 ratings in steps of 5; the aggregate workload score is their arithmetic mean.
 2. **SUS** (System Usability Scale) — 10 standard statements rated 1–5 and converted to a single 0–100 score.
 
-These appear at the bottom of the project page and are submitted automatically to the research data store. No personally identifying information is collected.
+When enabled by a future protocol, these forms can be submitted to the research data store without personally identifying information.

@@ -1,0 +1,36 @@
+{
+  "dataset": "hospital",
+  "condition": "baseline",
+  "run": 1,
+  "project_id": "2527b0c7-e909-48c6-90e5-9aacec23f0b7",
+  "status": "ok",
+  "global_precision": 0.7214,
+  "global_recall": 0.6075,
+  "global_f1": 0.5428,
+  "total_cells": 1583,
+  "missing_rows": 690,
+  "extra_rows": 0,
+  "alignment": null,
+  "adjudication": {
+    "status": "ok",
+    "scores": {
+      "schema_equivalence": 100,
+      "value_accuracy": 35,
+      "completeness": 30
+    },
+    "notes": "The schema structure is identical, but the generated data values (treatments, medications, prescriptions, invoices, and foreign key references in doctors/wards/appointments) completely diverge from the ground truth both in content and row counts.",
+    "metadata": {
+      "provider": "Google Gemini",
+      "model": "gemini-3.5-flash-lite",
+      "parameters": {
+        "temperature": 0.0
+      },
+      "prompt_hash": "199f5180a35000a70cdfa1e20c94718a9ba062f7079c0d8a027ce3366d02f1e8",
+      "document_hashes": []
+    },
+    "rubric_version": "adjudication_rubric_v1",
+    "rubric_hash": "3caa6a73b7f9405a7721c26feab0e115673cd4c09d7b009e368b5fe3f7162783"
+  },
+  "error": null,
+  "detail": null
+}

@@ -1,0 +1,57 @@
+{
+  "label": "exploratory_two_day_complete_matrix",
+  "status": "preregistered_before_outcome",
+  "preregistered_at_local_date": "2026-11-07",
+  "design": {
+    "datasets": ["university", "library", "hospital"],
+    "conditions": ["baseline", "full_llm"],
+    "runs_per_cell": 5,
+    "total_runs": 30,
+    "source_format": "combined",
+    "research_mode": true,
+    "schedule_within_batches": "interleaved"
+  },
+  "provider": "OpenRouter",
+  "model": "nvidia/nemotron-3.5-super-vl:free",
+  "parameters": {
+    "temperature": 0.1,
+    "reasoning_enabled": false,
+    "schema_output_contract": "schema-json-v2",
+    "response_format": "json_schema",
+    "max_output_tokens": 16384,
+    "timeout_seconds": 120,
+    "max_retries": 0,
+    "parallel": 1,
+    "application_limit_requests_per_minute": 10
+  },
+  "day_blocks": {
+    "2026-11-07": {
+      "common_run_indices_for_all_six_cells": [1, 3],
+      "additional_cells": {
+        "university/baseline": [5],
+        "library/full_llm": [5],
+        "hospital/baseline": [5]
+      },
+      "planned_runs": 15,
+      "condition_totals": {"baseline": 8, "full_llm": 7},
+      "dataset_totals": {"university": 5, "library": 5, "hospital": 5}
+    },
+    "2026-11-08": {
+      "common_run_indices_for_all_six_cells": [2, 4],
+      "additional_cells": {
+        "university/full_llm": [5],
+        "library/baseline": [5],
+        "hospital/full_llm": [5]
+      },
+      "planned_runs": 15,
+      "condition_totals": {"baseline": 7, "full_llm": 8},
+      "dataset_totals": {"university": 5, "library": 5, "hospital": 5}
+    }
+  },
+  "analysis_plan": {
+    "primary_reporting": "success rate plus metrics conditional on successful runs",
+    "day_effect": "report outcomes by day and inspect day-by-condition imbalance descriptively",
+    "pooling": "pool the two planned day blocks only if configuration and software revision remain unchanged; always retain day as provenance",
+    "legacy_runs": "do not pool with legacy-pydantic-v1, selective retries, or prior pilots"
+  }
+}

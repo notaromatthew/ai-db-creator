@@ -1,0 +1,2 @@
+dataset,source_format,condition,run,table,natural_key,row_key_columns,column,source_value,generated_value,gold_value,error_type,source_document,source_location,alignment_method
+hospital,combined,baseline,2,doctors,"[""Dr. Francesca Rizzo"", ""Dermatologia""]","[""full_name"", ""specialty""]",,,null,"{""doctor_id"": 5, ""full_name"": ""Dr. Francesca Rizzo"", ""specialty"": ""Dermatologia"", ""department"": ""Dermatologia""}",MR,,,declared_row_key

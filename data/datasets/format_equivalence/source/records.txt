@@ -1,0 +1,48 @@
+FORMAT-EQUIVALENT UNIVERSITY ENROLLMENT FACTS
+Each record contains one observable enrollment fact.
+
+RECORD 001: student_name=Anna Costa; student_email=student23@university.example; course_code=CS-101; course_title=Introduction to Programming; credits=6; semester=2026-02; grade=26
+RECORD 002: student_name=Elena Ricci; student_email=student27@university.example; course_code=CS-101; course_title=Introduction to Programming; credits=6; semester=2026-01; grade=28
+RECORD 003: student_name=Francesca Colombo; student_email=student3@university.example; course_code=EN-101; course_title=Academic Writing; credits=3; semester=2026-01; grade=22
+RECORD 004: student_name=Federico Costa; student_email=student9@university.example; course_code=CS-202; course_title=Databases; credits=9; semester=2026-01; grade=27
+RECORD 005: student_name=Luca Ferrari; student_email=student11@university.example; course_code=EC-201; course_title=Microeconomics; credits=6; semester=2026-02; grade=26
+RECORD 006: student_name=Martina Bianchi; student_email=student25@university.example; course_code=EN-101; course_title=Academic Writing; credits=3; semester=2026-01; grade=18
+RECORD 007: student_name=Federico Rossi; student_email=student16@university.example; course_code=MA-101; course_title=Calculus I; credits=9; semester=2026-01; grade=22
+RECORD 008: student_name=Luca Gallo; student_email=student24@university.example; course_code=EC-201; course_title=Microeconomics; credits=6; semester=2026-02; grade=18
+RECORD 009: student_name=Federico Rossi; student_email=student16@university.example; course_code=EN-101; course_title=Academic Writing; credits=3; semester=2026-01; grade=NS
+RECORD 010: student_name=Andrea Conti; student_email=student18@university.example; course_code=MA-101; course_title=Calculus I; credits=9; semester=2026-01; grade=26
+RECORD 011: student_name=Andrea Conti; student_email=student18@university.example; course_code=CS-101; course_title=Introduction to Programming; credits=6; semester=2026-01; grade=30
+RECORD 012: student_name=Andrea Rizzo; student_email=student15@university.example; course_code=EC-201; course_title=Microeconomics; credits=6; semester=2026-01; grade=18
+RECORD 013: student_name=Matteo Greco; student_email=student21@university.example; course_code=CS-301; course_title=Operating Systems; credits=9; semester=2026-02; grade=27
+RECORD 014: student_name=Marco Rizzo; student_email=student22@university.example; course_code=MA-101; course_title=Calculus I; credits=9; semester=2026-01; grade=18
+RECORD 015: student_name=Matteo Greco; student_email=student21@university.example; course_code=PH-101; course_title=Physics I; credits=9; semester=2026-01; grade=22
+RECORD 016: student_name=Anna Costa; student_email=student23@university.example; course_code=CS-301; course_title=Operating Systems; credits=9; semester=2026-02; grade=21
+RECORD 017: student_name=Luca Costa; student_email=student4@university.example; course_code=CS-202; course_title=Databases; credits=9; semester=2026-02; grade=23
+RECORD 018: student_name=Francesca Colombo; student_email=student3@university.example; course_code=CS-301; course_title=Operating Systems; credits=9; semester=2026-01; grade=30
+RECORD 019: student_name=Martina Greco; student_email=student17@university.example; course_code=CS-202; course_title=Databases; credits=9; semester=2026-01; grade=30
+RECORD 020: student_name=Luca Costa; student_email=student4@university.example; course_code=EC-201; course_title=Microeconomics; credits=6; semester=2026-02; grade=21
+RECORD 021: student_name=Martina Greco; student_email=student17@university.example; course_code=MA-202; course_title=Linear Algebra; credits=6; semester=2026-01; grade=30L
+RECORD 022: student_name=Simone Rizzo; student_email=student8@university.example; course_code=CS-202; course_title=Databases; credits=9; semester=2026-02; grade=30L
+RECORD 023: student_name=Francesca Rossi; student_email=student26@university.example; course_code=CS-101; course_title=Introduction to Programming; credits=6; semester=2026-02; grade=28
+RECORD 024: student_name=Francesca Rossi; student_email=student26@university.example; course_code=MA-101; course_title=Calculus I; credits=9; semester=2026-01; grade=30L
+RECORD 025: student_name=Federico Rossi; student_email=student16@university.example; course_code=CS-301; course_title=Operating Systems; credits=9; semester=2026-01; grade=27
+RECORD 026: student_name=Francesca Colombo; student_email=student6@university.example; course_code=MA-101; course_title=Calculus I; credits=9; semester=2026-01; grade=24
+RECORD 027: student_name=Federico Rossi; student_email=student16@university.example; course_code=PH-101; course_title=Physics I; credits=9; semester=2026-01; grade=21
+RECORD 028: student_name=Marco Giordano; student_email=student12@university.example; course_code=CS-202; course_title=Databases; credits=9; semester=2026-02; grade=18
+RECORD 029: student_name=Anna Costa; student_email=student23@university.example; course_code=CS-202; course_title=Databases; credits=9; semester=2026-01; grade=25
+RECORD 030: student_name=Davide Bruno; student_email=student14@university.example; course_code=CS-202; course_title=Databases; credits=9; semester=2026-02; grade=27
+RECORD 031: student_name=Marco Rizzo; student_email=student22@university.example; course_code=CS-301; course_title=Operating Systems; credits=9; semester=2026-01; grade=30
+RECORD 032: student_name=Luca Costa; student_email=student4@university.example; course_code=CS-101; course_title=Introduction to Programming; credits=6; semester=2026-01; grade=30
+RECORD 033: student_name=Marco Giordano; student_email=student12@university.example; course_code=EC-201; course_title=Microeconomics; credits=6; semester=2026-02; grade=18
+RECORD 034: student_name=Anna Costa; student_email=student23@university.example; course_code=EC-201; course_title=Microeconomics; credits=6; semester=2026-02; grade=25
+RECORD 035: student_name=Luca Costa; student_email=student4@university.example; course_code=MA-101; course_title=Calculus I; credits=9; semester=2026-01; grade=28
+RECORD 036: student_name=Martina Greco; student_email=student17@university.example; course_code=EN-101; course_title=Academic Writing; credits=3; semester=2026-02; grade=26
+RECORD 037: student_name=Giulia Greco; student_email=student30@university.example; course_code=MA-101; course_title=Calculus I; credits=9; semester=2026-02; grade=26
+RECORD 038: student_name=Simone Rizzo; student_email=student8@university.example; course_code=MA-101; course_title=Calculus I; credits=9; semester=2026-02; grade=26
+RECORD 039: student_name=Chiara Gallo; student_email=student28@university.example; course_code=EN-101; course_title=Academic Writing; credits=3; semester=2026-02; grade=27
+RECORD 040: student_name=Federico Costa; student_email=student9@university.example; course_code=PH-101; course_title=Physics I; credits=9; semester=2026-02; grade=21
+RECORD 041: student_name=Andrea Rizzo; student_email=student15@university.example; course_code=PH-101; course_title=Physics I; credits=9; semester=2026-02; grade=22
+RECORD 042: student_name=Andrea Conti; student_email=student18@university.example; course_code=CS-202; course_title=Databases; credits=9; semester=2026-01; grade=30
+RECORD 043: student_name=Francesca Marino; student_email=student29@university.example; course_code=CS-202; course_title=Databases; credits=9; semester=2026-02; grade=30L
+RECORD 044: student_name=Andrea Rizzo; student_email=student15@university.example; course_code=CS-301; course_title=Operating Systems; credits=9; semester=2026-01; grade=30L
+RECORD 045: student_name=Andrea Conti; student_email=student18@university.example; course_code=MA-202; course_title=Linear Algebra; credits=6; semester=2026-01; grade=30

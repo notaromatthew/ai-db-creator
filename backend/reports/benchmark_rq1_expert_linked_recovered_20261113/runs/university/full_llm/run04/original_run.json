@@ -1,0 +1,54 @@
+{
+  "dataset": "university",
+  "condition": "full_llm",
+  "run": 4,
+  "project_id": "46ebe3af-2583-4a57-b308-e3b1f788c748",
+  "status": "error",
+  "global_precision": 0.3434,
+  "global_recall": 0.347,
+  "global_f1": 0.2983,
+  "total_cells": 90,
+  "missing_rows": 55,
+  "extra_rows": 40,
+  "alignment": {
+    "tables": {
+      "students": "students",
+      "courses": "courses",
+      "enrollments": "enrollments"
+    },
+    "columns": {
+      "students": {
+        "student_id": "id",
+        "name": "name",
+        "email": "email"
+      },
+      "courses": {
+        "course_code": "code",
+        "title": "title",
+        "credits": "credits"
+      },
+      "enrollments": {
+        "student_id": "student_id",
+        "course_id": "course_id",
+        "semester": "semester",
+        "grade": "grade"
+      }
+    },
+    "unmatched_tables": [],
+    "unmatched_columns": {
+      "courses": [
+        "course_id"
+      ]
+    },
+    "via_registry": [
+      {
+        "table": "students",
+        "gold_column": "student_id",
+        "generated_column": "id"
+      }
+    ]
+  },
+  "adjudication": null,
+  "error": "AttributeError: 'NoneType' object has no attribute 'get'",
+  "detail": null
+}

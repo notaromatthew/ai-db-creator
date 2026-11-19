@@ -1,0 +1,54 @@
+{
+  "label": "retry_after_daily_quota_reset",
+  "date": "2026-11-07",
+  "parent_manifest": "recovery_manifest.json",
+  "preflight": {
+    "model": "nvidia/nemotron-3.5-super-vl:free",
+    "result": "ok",
+    "content": "OK"
+  },
+  "selection_rule": "Retry Hospital full_llm runs 2, 3, and 4 one at a time after a successful provider probe",
+  "selected_runs": {
+    "hospital/full_llm": [2, 3, 4]
+  },
+  "provider": "OpenRouter",
+  "model": "nvidia/nemotron-3.5-super-vl:free",
+  "parameters": {
+    "temperature": 0.1,
+    "reasoning_enabled": false,
+    "max_output_tokens": 4096,
+    "timeout_seconds": 120,
+    "max_retries": 0,
+    "parallel": 1,
+    "max_requests_per_minute": 10
+  },
+  "outcomes": {
+    "selected": 3,
+    "ok": 1,
+    "error": 2,
+    "not_evaluable": 0,
+    "successful_runs": [3],
+    "failed_runs": [2, 4],
+    "public_error": "LLMException: Schema generation failed"
+  },
+  "diagnosis": {
+    "provider_reachable": true,
+    "quota_error_observed_in_these_three_attempts": false,
+    "run_2_schema_input_tokens": 6331,
+    "run_2_schema_output_tokens": 2754,
+    "run_3_schema_input_tokens": 6331,
+    "run_3_schema_output_tokens": 2747,
+    "run_3_population_input_tokens": 20237,
+    "run_3_population_output_tokens": 4096,
+    "run_4_schema_input_tokens": 6331,
+    "run_4_schema_output_tokens": 2689,
+    "interpretation": "Runs 2 and 4 reached the model but returned schema output that the parser rejected. Run 3 succeeded with the same configuration, indicating stochastic output-format validity rather than a persistent quota failure."
+  },
+  "current_cell_outcome": {
+    "attempted_runs": 5,
+    "ok": 3,
+    "error": 2,
+    "mean_f1_among_ok": 0.4792,
+    "mean_functional_query_pass_rate_among_ok": 0.0
+  }
+}

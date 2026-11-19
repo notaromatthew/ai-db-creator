@@ -1,0 +1,545 @@
+{
+  "spec_version": "rq2_functional_v1",
+  "queries": [
+    {
+      "id": "L01",
+      "critical": true,
+      "passed": true,
+      "gold_sql": "SELECT COUNT(*) AS member_count FROM members",
+      "generated_sql": "SELECT COUNT(*) AS member_count FROM [members]",
+      "error": null,
+      "gold_rows": [
+        [
+          {
+            "number": "20"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          {
+            "number": "20"
+          }
+        ]
+      ],
+      "gold_result_hash": "439f2d38da001c05c3349b7ca6d2d7be3874f7b152d62820da8fcd875f3abbf0",
+      "generated_result_hash": "439f2d38da001c05c3349b7ca6d2d7be3874f7b152d62820da8fcd875f3abbf0",
+      "gold_row_count": 1,
+      "generated_row_count": 1,
+      "missing_rows": [],
+      "extra_rows": []
+    },
+    {
+      "id": "L02",
+      "critical": true,
+      "passed": true,
+      "gold_sql": "SELECT email, full_name, joined_on FROM members",
+      "generated_sql": "SELECT [email], [full_name], [joined_on] FROM [members]",
+      "error": null,
+      "gold_rows": [
+        [
+          "member10@example.com",
+          "Francesca Ricci",
+          {
+            "date": "2025-03-27"
+          }
+        ],
+        [
+          "member11@example.com",
+          "Chiara Esposito",
+          {
+            "date": "2020-09-04"
+          }
+        ],
+        [
+          "member12@example.com",
+          "Valentina Bianchi",
+          {
+            "date": "2020-10-25"
+          }
+        ],
+        [
+          "member13@example.com",
+          "Francesca Rossi",
+          {
+            "date": "2024-11-08"
+          }
+        ],
+        [
+          "member14@example.com",
+          "Elena Greco",
+          {
+            "date": "2025-07-07"
+          }
+        ],
+        [
+          "member15@example.com",
+          "Giulia Greco",
+          {
+            "date": "2020-09-08"
+          }
+        ],
+        [
+          "member16@example.com",
+          "Valentina Bruno",
+          {
+            "date": "2022-03-23"
+          }
+        ],
+        [
+          "member17@example.com",
+          "Martina Bianchi",
+          {
+            "date": "2022-10-22"
+          }
+        ],
+        [
+          "member18@example.com",
+          "Federico Bianchi",
+          {
+            "date": "2020-10-17"
+          }
+        ],
+        [
+          "member19@example.com",
+          "Giulia Conti",
+          {
+            "date": "2025-07-16"
+          }
+        ],
+        [
+          "member1@example.com",
+          "Federico Ferrari",
+          {
+            "date": "2022-09-14"
+          }
+        ],
+        [
+          "member20@example.com",
+          "Luca Ricci",
+          {
+            "date": "2024-05-01"
+          }
+        ],
+        [
+          "member2@example.com",
+          "Chiara Gallo",
+          {
+            "date": "2024-01-11"
+          }
+        ],
+        [
+          "member3@example.com",
+          "Luca Costa",
+          {
+            "date": "2023-05-20"
+          }
+        ],
+        [
+          "member4@example.com",
+          "Valentina Gallo",
+          {
+            "date": "2024-03-11"
+          }
+        ],
+        [
+          "member5@example.com",
+          "Francesca Colombo",
+          {
+            "date": "2023-02-14"
+          }
+        ],
+        [
+          "member6@example.com",
+          "Giulia Bianchi",
+          {
+            "date": "2021-08-11"
+          }
+        ],
+        [
+          "member7@example.com",
+          "Marco Giordano",
+          {
+            "date": "2024-03-04"
+          }
+        ],
+        [
+          "member8@example.com",
+          "Andrea Bruno",
+          {
+            "date": "2020-03-15"
+          }
+        ],
+        [
+          "member9@example.com",
+          "Martina Greco",
+          {
+            "date": "2021-03-21"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          "member10@example.com",
+          "Francesca Ricci",
+          {
+            "date": "2025-03-27"
+          }
+        ],
+        [
+          "member11@example.com",
+          "Chiara Esposito",
+          {
+            "date": "2020-09-04"
+          }
+        ],
+        [
+          "member12@example.com",
+          "Valentina Bianchi",
+          {
+            "date": "2020-10-25"
+          }
+        ],
+        [
+          "member13@example.com",
+          "Francesca Rossi",
+          {
+            "date": "2024-11-08"
+          }
+        ],
+        [
+          "member14@example.com",
+          "Elena Greco",
+          {
+            "date": "2025-07-07"
+          }
+        ],
+        [
+          "member15@example.com",
+          "Giulia Greco",
+          {
+            "date": "2020-09-08"
+          }
+        ],
+        [
+          "member16@example.com",
+          "Valentina Bruno",
+          {
+            "date": "2022-03-23"
+          }
+        ],
+        [
+          "member17@example.com",
+          "Martina Bianchi",
+          {
+            "date": "2022-10-22"
+          }
+        ],
+        [
+          "member18@example.com",
+          "Federico Bianchi",
+          {
+            "date": "2020-10-17"
+          }
+        ],
+        [
+          "member19@example.com",
+          "Giulia Conti",
+          {
+            "date": "2025-07-16"
+          }
+        ],
+        [
+          "member1@example.com",
+          "Federico Ferrari",
+          {
+            "date": "2022-09-14"
+          }
+        ],
+        [
+          "member20@example.com",
+          "Luca Ricci",
+          {
+            "date": "2024-05-01"
+          }
+        ],
+        [
+          "member2@example.com",
+          "Chiara Gallo",
+          {
+            "date": "2024-01-11"
+          }
+        ],
+        [
+          "member3@example.com",
+          "Luca Costa",
+          {
+            "date": "2023-05-20"
+          }
+        ],
+        [
+          "member4@example.com",
+          "Valentina Gallo",
+          {
+            "date": "2024-03-11"
+          }
+        ],
+        [
+          "member5@example.com",
+          "Francesca Colombo",
+          {
+            "date": "2023-02-14"
+          }
+        ],
+        [
+          "member6@example.com",
+          "Giulia Bianchi",
+          {
+            "date": "2021-08-11"
+          }
+        ],
+        [
+          "member7@example.com",
+          "Marco Giordano",
+          {
+            "date": "2024-03-04"
+          }
+        ],
+        [
+          "member8@example.com",
+          "Andrea Bruno",
+          {
+            "date": "2020-03-15"
+          }
+        ],
+        [
+          "member9@example.com",
+          "Martina Greco",
+          {
+            "date": "2021-03-21"
+          }
+        ]
+      ],
+      "gold_result_hash": "30bf8e4a40656891c9624ef2d1a686571ab5bfaa2b32d9f659c8f54490d3087b",
+      "generated_result_hash": "30bf8e4a40656891c9624ef2d1a686571ab5bfaa2b32d9f659c8f54490d3087b",
+      "gold_row_count": 20,
+      "generated_row_count": 20,
+      "missing_rows": [],
+      "extra_rows": []
+    },
+    {
+      "id": "L03",
+      "critical": true,
+      "passed": false,
+      "gold_sql": "SELECT b.isbn, b.title, b.author, c.name AS category_name FROM books b JOIN categories c ON c.category_id = b.category_id",
+      "generated_sql": "SELECT [b].[[isbn]], [b].[[title]], [b].[[author]], [c].[category_name] AS category_name FROM [books] b JOIN [book_categories] c ON [c].[[category_id]] = [b].[[category_id]]",
+      "error": "OperationalError: unrecognized token: \"]\""
+    },
+    {
+      "id": "L04",
+      "critical": true,
+      "passed": false,
+      "gold_sql": "SELECT m.email, l.loan_date, l.due_date FROM loans l JOIN members m ON m.member_id = l.member_id",
+      "generated_sql": "SELECT [m].[[email]], [l].[[loan_date]], [l].[[due_date]] FROM [loans] l JOIN [members] m ON [m].[[member_id]] = [l].[[member_id]]",
+      "error": "OperationalError: unrecognized token: \"]\""
+    },
+    {
+      "id": "L05",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT c.name AS category_name, COUNT(*) AS book_count FROM books b JOIN categories c ON c.category_id = b.category_id GROUP BY c.name",
+      "generated_sql": "SELECT [c].[category_name] AS category_name, COUNT(*) AS book_count FROM [books] b JOIN [book_categories] c ON [c].[[category_id]] = [b].[[category_id]] GROUP BY [c].[category_name]",
+      "error": "OperationalError: unrecognized token: \"]\""
+    },
+    {
+      "id": "L06",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT m.email, COUNT(*) AS loan_count FROM loans l JOIN members m ON m.member_id = l.member_id GROUP BY m.email",
+      "generated_sql": "SELECT [m].[[email]], COUNT(*) AS loan_count FROM [loans] l JOIN [members] m ON [m].[[member_id]] = [l].[[member_id]] GROUP BY [m].[[email]]",
+      "error": "OperationalError: unrecognized token: \"]\""
+    },
+    {
+      "id": "L07",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT m.email, l.loan_date, l.due_date, CAST(julianday(l.due_date) - julianday(l.loan_date) AS INTEGER) AS duration_days FROM loans l JOIN members m ON m.member_id = l.member_id",
+      "generated_sql": "SELECT [m].[[email]], [l].[[loan_date]], [l].[[due_date]], CAST(julianday([l].[[due_date]]) - julianday([l].[[loan_date]]) AS INTEGER) AS duration_days FROM [loans] l JOIN [members] m ON [m].[[member_id]] = [l].[[member_id]]",
+      "error": "OperationalError: unrecognized token: \"]\""
+    },
+    {
+      "id": "L08",
+      "critical": false,
+      "passed": true,
+      "gold_sql": "SELECT name AS category_name FROM categories",
+      "generated_sql": "SELECT [category_name] AS category_name FROM [book_categories]",
+      "error": null,
+      "gold_rows": [
+        [
+          "Avventura"
+        ],
+        [
+          "Biografia"
+        ],
+        [
+          "Fantascienza"
+        ],
+        [
+          "Fiction"
+        ],
+        [
+          "Giallo"
+        ],
+        [
+          "Poesia"
+        ],
+        [
+          "Saggistica"
+        ],
+        [
+          "Scienza"
+        ],
+        [
+          "Storia"
+        ],
+        [
+          "Tecnologia"
+        ]
+      ],
+      "generated_rows": [
+        [
+          "Avventura"
+        ],
+        [
+          "Biografia"
+        ],
+        [
+          "Fantascienza"
+        ],
+        [
+          "Fiction"
+        ],
+        [
+          "Giallo"
+        ],
+        [
+          "Poesia"
+        ],
+        [
+          "Saggistica"
+        ],
+        [
+          "Scienza"
+        ],
+        [
+          "Storia"
+        ],
+        [
+          "Tecnologia"
+        ]
+      ],
+      "gold_result_hash": "5dc449c56b3285b79b60f9b83d49d0d9df5d280fc83d8eb3f4a107f145cf7ed6",
+      "generated_result_hash": "5dc449c56b3285b79b60f9b83d49d0d9df5d280fc83d8eb3f4a107f145cf7ed6",
+      "gold_row_count": 10,
+      "generated_row_count": 10,
+      "missing_rows": [],
+      "extra_rows": []
+    },
+    {
+      "id": "L09",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT COUNT(*) AS loan_count FROM loans",
+      "generated_sql": "SELECT COUNT(*) AS loan_count FROM [loans]",
+      "error": null,
+      "gold_rows": [
+        [
+          {
+            "number": "60"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          {
+            "number": "0"
+          }
+        ]
+      ],
+      "gold_result_hash": "c12d247621a313c087bb7d883bf834943f87aa6bd681511568518baf4f561a37",
+      "generated_result_hash": "4385554a7b4060e4d0514b0d84985a11bf325e0203871285c9820f106bb28acd",
+      "gold_row_count": 1,
+      "generated_row_count": 1,
+      "missing_rows": [
+        [
+          {
+            "number": "60"
+          }
+        ]
+      ],
+      "extra_rows": [
+        [
+          {
+            "number": "0"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "L10",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT COUNT(*) AS book_count FROM books",
+      "generated_sql": "SELECT COUNT(*) AS book_count FROM [books]",
+      "error": null,
+      "gold_rows": [
+        [
+          {
+            "number": "50"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          {
+            "number": "36"
+          }
+        ]
+      ],
+      "gold_result_hash": "629e40c4238d29ffc55d30c4b1a7fc7f6171b7d06af7a983b354660023900397",
+      "generated_result_hash": "fd67d172d40dbe81a28d5647dbe067bcb6ac03bb978033e94d75fd0dc57d2131",
+      "gold_row_count": 1,
+      "generated_row_count": 1,
+      "missing_rows": [
+        [
+          {
+            "number": "50"
+          }
+        ]
+      ],
+      "extra_rows": [
+        [
+          {
+            "number": "36"
+          }
+        ]
+      ]
+    }
+  ],
+  "total_queries": 10,
+  "passed_queries": 3,
+  "overall_query_pass_rate": 0.3,
+  "critical_query_pass_rate": 0.5,
+  "thresholds": {
+    "min_overall_query_pass_rate": 0.9,
+    "min_critical_query_pass_rate": 1.0,
+    "max_critical_integrity_violations": 0
+  },
+  "integrity": {
+    "foreign_key_violations": [],
+    "natural_key_duplicate_groups": [],
+    "errors": [],
+    "violation_count": 0
+  },
+  "functionally_equivalent": false
+}

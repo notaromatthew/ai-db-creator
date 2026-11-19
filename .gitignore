@@ -4,6 +4,7 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+backend/.pytest-tmp*/
 node_modules/
 dist/
 coverage/
@@ -15,6 +16,10 @@ logs/
 *.db
 *.sqlite
 !data/datasets/**/ground_truth.db
+!backend/reports/benchmark_rq1_expert_linked_recovered_20261113/**/*.db
+!backend/reports/benchmark_rq1_expert_linked_recovered_20261113/**/*.sqlite
+!backend/reports/benchmark_rq1_expert_linked_recovered_20261113/source_snapshot/projects/
+!backend/reports/benchmark_rq1_expert_linked_recovered_20261113/source_snapshot/projects/**
 .venv/
 backend/.venv/
 
@@ -44,3 +49,10 @@ backend/.coverage
 
 # credenziali locali
 .secrets/
+
+# mapping privati dei pacchetti ciechi (conservare solo localmente fino allo sblinding)
+backend/reports/rq2_blind_adjudication/private_mapping.json
+backend/reports/rq2_blind_adjudication/coordinator_private_mapping.xlsx
+
+# lock temporanei di LibreOffice/OpenOffice
+.~lock.*#

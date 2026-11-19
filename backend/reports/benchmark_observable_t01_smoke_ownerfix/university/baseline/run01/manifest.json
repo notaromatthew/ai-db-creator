@@ -1,0 +1,55 @@
+{
+  "software_revision": "e4ccc9151c08ad91",
+  "research_mode": false,
+  "dataset": "university",
+  "dataset_hash": "04eb0dff12a262038dc4de77fc6d1ceca538f485116cdaa7d221f314fdd4bdb5",
+  "condition": "baseline",
+  "provider": "Google Vertex AI",
+  "model": "gemini-2.5-flash-lite",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 1,
+  "created_at": "2026-11-04T10:50:44.288319+00:00",
+  "source_format": "combined",
+  "source_files": [
+    {
+      "path": "source/description.pdf",
+      "sha256": "e7c73c9a481e46b78c02c83b6c91f6f35e56aeb65378dddfc801c44454d69cb9"
+    },
+    {
+      "path": "source/enrollments.csv",
+      "sha256": "8fc7bb39ea180c47616813448083a5028b4989d3fa0ed04de5d87c8f95043f9f"
+    }
+  ],
+  "evaluation_spec_hash": "10ed90b5e56cb76976aacafd98b26d04234af2ee37ff93ce666bc41a96aaa33b",
+  "project_id": "c6ef6781-7571-4c04-b964-00413d978b16",
+  "status": "ok",
+  "artifacts": {
+    "generated_database": {
+      "path": "generated.db",
+      "sha256": "43d7d8b3cd554fa115fe1b6cee25b600839f65c1adb1b909b8e9acebf205d8e7"
+    },
+    "generated_schema": {
+      "path": "generated_schema.json",
+      "sha256": "6639ed1c92da1d45db27f161184a3a03419178221ebf0bc4cb53aed34649439c"
+    },
+    "evaluation": {
+      "path": "evaluation.json",
+      "sha256": "c03bf5f4c2c2c465914260c0bc1434a79673e4287cfd767c1feb8069dbb45a36"
+    },
+    "cell_discrepancies": {
+      "path": "cell_discrepancies.csv",
+      "sha256": "3e51a39bde7175e7a9456113877eb71d69025310dcd7a45cdc4aababe126c825"
+    },
+    "functional_query_results": {
+      "path": "functional_query_results.json",
+      "sha256": "572b444fe83946a885d45da5b16120bfa38c5ee8accf2640491278557e1243b3"
+    },
+    "run_record": {
+      "path": "run.json",
+      "sha256": "034017e3854e599ce1bdba63bc2b87077a454176d6c4503b31576f92ba56e1be"
+    }
+  }
+}

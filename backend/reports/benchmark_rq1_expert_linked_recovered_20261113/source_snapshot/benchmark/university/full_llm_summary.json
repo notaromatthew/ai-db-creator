@@ -1,0 +1,18 @@
+{
+  "dataset": "university",
+  "condition": "full_llm",
+  "n_runs": 5,
+  "mean_precision": 0.3414,
+  "mean_recall": 0.3371,
+  "mean_f1": 0.3015,
+  "ci95_f1": [
+    0.0732,
+    0.7023
+  ],
+  "mean_total_cells": 85.2,
+  "mean_missing_rows": 56.2,
+  "mean_extra_rows": 36.6,
+  "mean_adjudicated_schema_equivalence": 93.75,
+  "mean_adjudicated_value_accuracy": 53.75,
+  "mean_adjudicated_completeness": 73.0
+}

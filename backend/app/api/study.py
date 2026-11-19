@@ -32,7 +32,7 @@ def _run(fn, *args):
 @router.get("/info", dependencies=PARTICIPANT)
 def info():
     return {"consent_version": study.CONSENT_VERSION, "age_bands": study.AGE_BANDS, "roles": study.ROLES,
-            "tlx_keys": study.TLX_KEYS}
+            "questionnaires_enabled": False}
 
 
 @router.post("/participants", status_code=201, dependencies=PARTICIPANT)
@@ -99,7 +99,7 @@ def status():
 
 
 @router.get("/admin/export", dependencies=RESEARCHER)
-def export(kind: str = Query("events", pattern="^(events|responses|participants)$"), wrap: bool = False):
+def export(kind: str = Query("events", pattern="^(events|interactions|responses|participants)$"), wrap: bool = False):
     content = _run(study.export_csv, kind)
     name = f"studio-{kind}.csv"
     if wrap:

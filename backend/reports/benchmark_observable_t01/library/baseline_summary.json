@@ -1,0 +1,27 @@
+{
+  "dataset": "library",
+  "condition": "baseline",
+  "source_format": "combined",
+  "n_runs": 5,
+  "n_successful": 0,
+  "n_failed": 5,
+  "errors": [
+    "IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: projects.owner_id\n[SQL: INSERT INTO projects (id, owner_id, name, prompt, db_path, schema_finalized_at, schema_version, target_dialect, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: ('ac13637d-77af-4206-bc06-8b99c7b723ce', None, 'library|combined|baseline|run1', 'Design a fully normalized relational schema (3NF) for a library management system.\\n\\nSource documents describe: book categories, members, books (wit ... (165 characters truncated) ... , column names, types, nullability and\\nuniqueness constraints from the attached documents. Produce a clean relational\\nschema ready to be populated.', None, None, 0, None, '2026-11-04 10:47:43.812688', '2026-11-04 10:47:43.812688')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)",
+    "IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: projects.owner_id\n[SQL: INSERT INTO projects (id, owner_id, name, prompt, db_path, schema_finalized_at, schema_version, target_dialect, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: ('6e66e6dd-d074-4dfc-827a-df9d8958da80', None, 'library|combined|baseline|run2', 'Design a fully normalized relational schema (3NF) for a library management system.\\n\\nSource documents describe: book categories, members, books (wit ... (165 characters truncated) ... , column names, types, nullability and\\nuniqueness constraints from the attached documents. Produce a clean relational\\nschema ready to be populated.', None, None, 0, None, '2026-11-04 10:47:43.872857', '2026-11-04 10:47:43.872857')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)",
+    "IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: projects.owner_id\n[SQL: INSERT INTO projects (id, owner_id, name, prompt, db_path, schema_finalized_at, schema_version, target_dialect, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: ('1d9a90e1-2631-479d-887d-c8c5d0b9ebbd', None, 'library|combined|baseline|run3', 'Design a fully normalized relational schema (3NF) for a library management system.\\n\\nSource documents describe: book categories, members, books (wit ... (165 characters truncated) ... , column names, types, nullability and\\nuniqueness constraints from the attached documents. Produce a clean relational\\nschema ready to be populated.', None, None, 0, None, '2026-11-04 10:47:43.894575', '2026-11-04 10:47:43.894575')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)",
+    "IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: projects.owner_id\n[SQL: INSERT INTO projects (id, owner_id, name, prompt, db_path, schema_finalized_at, schema_version, target_dialect, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: ('db813cc6-9a31-4a11-a7c8-af94792c5ec1', None, 'library|combined|baseline|run4', 'Design a fully normalized relational schema (3NF) for a library management system.\\n\\nSource documents describe: book categories, members, books (wit ... (165 characters truncated) ... , column names, types, nullability and\\nuniqueness constraints from the attached documents. Produce a clean relational\\nschema ready to be populated.', None, None, 0, None, '2026-11-04 10:47:43.913192', '2026-11-04 10:47:43.913192')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)",
+    "IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: projects.owner_id\n[SQL: INSERT INTO projects (id, owner_id, name, prompt, db_path, schema_finalized_at, schema_version, target_dialect, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: ('0fe2bb07-8fa5-4f09-b450-7ceb041c384f', None, 'library|combined|baseline|run5', 'Design a fully normalized relational schema (3NF) for a library management system.\\n\\nSource documents describe: book categories, members, books (wit ... (165 characters truncated) ... , column names, types, nullability and\\nuniqueness constraints from the attached documents. Produce a clean relational\\nschema ready to be populated.', None, None, 0, None, '2026-11-04 10:47:43.934070', '2026-11-04 10:47:43.934070')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)"
+  ],
+  "temperature": 0.1,
+  "mean_precision": null,
+  "mean_recall": null,
+  "mean_f1": null,
+  "ci95_f1": null,
+  "mean_total_cells": null,
+  "mean_missing_rows": null,
+  "mean_extra_rows": null,
+  "mean_functional_query_pass_rate": null,
+  "mean_adjudicated_schema_equivalence": null,
+  "mean_adjudicated_value_accuracy": null,
+  "mean_adjudicated_completeness": null
+}

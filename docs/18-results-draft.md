@@ -1,21 +1,155 @@
 # Risultati — Bozza RQ1 / RQ2 (DRAFT)
 
-> **Stato:** bozza analitica costruita dai report reali del benchmark a due
+> **Stato:** bozza analitica originariamente costruita dai report del benchmark a due
 > temperature di campionamento — **0.1** e **0.5** — 5 run per (dataset,
 > condizione), 3 dataset (university / library / hospital). La stima di questo
 > documento separa esplicitamente **osservazioni** (dati), **interpretazioni**
 > (lettura) e **ipotesi** (da confermare), secondo le regole di governance del
 > progetto.
 >
-> Fonte dei numeri: `backend/reports/benchmark/` (t=0.1) e
+> La matrice storicamente descritta come `backend/reports/benchmark/` a
+> temperatura 0.1 è stata recuperata dalla
+> copia storica e congelata in
+> `backend/reports/benchmark_rq1_expert_linked_recovered_20261113/`; il
+> collegamento ai 30 schemi RQ1 è verificato direttamente contro gli
+> `schema_json` dei progetti e la mappatura seed 42. La serie t=0.5 resta
+> riferita a
 > `backend/reports/benchmark_t05_full/` (t=0.5), aggregati da
 > `backend/aggregate_benchmark.py` → `benchmark_aggregates_01.json` /
 > `benchmark_aggregates_05.json`. Gli schemi per RQ1 esperti sono estratti in
 > `backend/reports/rq1_expert_package/` da `backend/consolidate_rq1_schemas.py`.
+> I risultati RQ1 osservati sono generati da `backend/analyze_rq1_ratings.py`;
+> hash, seed e parametri di bootstrap sono congelati in
+> `backend/reports/rq1_analysis/manifest.json`.
+> La matrice recuperata è primaria per il collegamento RQ1, ma per RQ2 è una
+> rivalutazione storica secondaria: non possiede i manifesti originari di
+> provider, revisione, `research_mode` e `population_mode`. La matrice RQ2
+> strutturata resta documentata con artefatti e limitazioni in
+> `docs/21-rq2-primary-results.md`. Non mescolare le due serie; vedere
+> `docs/22-rq1-expert-linked-matrix-recovery.md`.
+> Il valore 0.1 non è presente nei record originali per-run: deriva dalla
+> documentazione e dai default storici e resta quindi un parametro inferito,
+> non provenance osservata.
 
 ---
 
-## 1. Osservazioni consolidate (RQ2 — accuratezza di popolamento a livello di cella)
+## 1. Risultati osservati RQ1 — qualità degli schemi
+
+Il dataset completo contiene 1.350 valutazioni: 45 valutatori × 30 schemi,
+senza coppie mancanti o duplicate. Ogni schema appartiene a uno dei tre dataset,
+a una delle condizioni `baseline` / `full_llm` e a uno dei cinque run. La scala
+effettiva è Likert 1–5. Il piano descriveva tre esperti; il campione osservato è
+invece costituito da 45 studenti di informatica di 17–18 anni che stavano
+studiando database. Sono pertanto descritti come **trained student raters**, non
+come esperti professionali o accademici. La pertinenza della loro formazione non
+dimostra da sola indipendenza: modalità individuale, cecità alle condizioni e
+assenza di discussione devono risultare dalla documentazione di somministrazione.
+Per i minorenni restano da verificare istituzionalmente assenso/consenso e
+informativa. La deviazione è documentata, non corretta retrospettivamente.
+
+### Accordo fra valutatori
+
+| Dimensione | Alpha ordinale | IC bootstrap 95% | Interpretazione rispetto alle soglie pianificate |
+|---|---:|---:|---|
+| D1 — 3NF | 0.812 | 0.742–0.855 | confermativo |
+| D2 — naming | -0.018 | -0.021–-0.014 | non interpretabile confermativamente; forte effetto soffitto |
+| D3 — vincoli | 0.794 | 0.550–0.855 | stima puntuale tentatively alta, IC ampio |
+| D4 — relazioni | 0.803 | 0.564–0.867 | stima puntuale confermativa, IC ampio |
+| D5 — dominio | 0.775 | 0.536–0.841 | stima puntuale tentatively alta, IC ampio |
+| Complessivo | 0.791 | 0.653–0.846 | tentativo; l'IC scende sotto 0.67 |
+
+D2 ha media 4.956 in entrambe le condizioni e quasi nessuna variabilità. Il suo
+alpha vicino a zero è compatibile con il paradosso di prevalenza provocato
+dall'effetto soffitto: non dimostra che i dati siano mancanti o incoerenti.
+
+### Confronto fra condizioni
+
+L'unità del confronto primario è lo schema. I 45 giudizi sono aggregati per
+ciascuno dei 30 schemi prima dei test, evitando di trattare le 1.350 misure
+ripetute come osservazioni indipendenti. I p-value sono corretti con Holm sulle
+cinque dimensioni.
+
+| Dimensione | Baseline | Full LLM | Differenza | IC bootstrap 95% | p Holm | Cohen d |
+|---|---:|---:|---:|---:|---:|---:|
+| D1 — 3NF | 4.364 | 4.871 | +0.507 | 0.221–0.776 | 0.0135 | 1.233 |
+| D2 — naming | 4.956 | 4.956 | 0.000 | -0.021–0.022 | 1.0000 | 0.000 |
+| D3 — vincoli | 4.622 | 4.944 | +0.321 | 0.116–0.572 | 0.0726 | 0.960 |
+| D4 — relazioni | 4.330 | 4.944 | +0.613 | 0.221–1.080 | 0.0726 | 0.959 |
+| D5 — dominio | 4.618 | 4.938 | +0.320 | 0.117–0.564 | 0.0726 | 0.975 |
+
+Solo D1 supera la soglia 0.05 dopo correzione Holm. D3–D5 mostrano differenze
+descrittive ed effetti standardizzati grandi, ma non sono dichiarate
+significative nel confronto molteplice primario. L'analisi appaiata per
+dataset/run è conservata come sensibilità separata.
+
+### Pannello separato con tre esperti del settore
+
+La seconda raccolta, mantenuta separata e non pooled con i 45 studenti,
+comprende 90 righe: tre esperti del settore × 30 schemi × cinque dimensioni. La
+numerosità pianificata è quindi raggiunta. Per i primi due esperti, compilazione
+individuale senza confronto o accesso ai punteggi reciproci e cecità alle
+etichette di condizione sono state attestate dall'utente il 14 novembre 2026.
+Il terzo valutatore è stato identificato dall'utente come esperto il 18 novembre;
+la sua indipendenza e cecità alle condizioni devono ancora essere confermate.
+
+L'accordo esatto è 20/150 celle e 0/30 vettori-schema; quello adiacente
+complessivo è 63,3%. L'alpha ordinale complessivo è 0,054 (IC bootstrap 95%
+-0,241–0,300): il pannello non mostra un consenso forte. Per dimensione, alpha
+è 0,242 per D1, -0,463 per D2 e 0,103 per D3–D5. La forte divergenza del terzo
+profilo rispetto ai primi due viene conservata come risultato osservato e non
+corretta o esclusa retrospettivamente.
+
+| Dimensione | Baseline | Full LLM | Differenza | IC bootstrap 95% | p Holm | Cohen d |
+|---|---:|---:|---:|---:|---:|---:|
+| D1 — 3NF | 3,644 | 4,444 | +0,800 | 0,422–1,156 | 0,0021 | 1,515 |
+| D2 — naming | 4,444 | 4,533 | +0,089 | -0,044–0,200 | 0,2073 | 0,472 |
+| D3 — vincoli | 4,000 | 4,533 | +0,533 | 0,178–0,911 | 0,0670 | 0,974 |
+| D4 — relazioni | 4,000 | 4,533 | +0,533 | 0,178–0,911 | 0,0670 | 0,974 |
+| D5 — dominio | 4,000 | 4,533 | +0,533 | 0,178–0,912 | 0,0670 | 0,974 |
+
+L'unità analitica è lo schema (15 per condizione). Input pseudonimizzato, hash
+della sorgente originale e canonica, descrittive e risultati completi sono in
+`backend/reports/rq1_expert_replication/` e sono rigenerati da
+`backend/analyze_rq1_expert_replication.py`.
+
+---
+
+## 2. Osservazioni consolidate (RQ2 — accuratezza di popolamento a livello di cella)
+
+La matrice collegata agli schemi RQ1 è stata recuperata e rivalutata offline,
+ma resta una sensibilità storica secondaria per RQ2. La classificazione non è
+una scelta prestazionale: deriva dall'assenza dei manifesti originari per-run.
+Risultati, hash e limitazioni sono in
+`docs/22-rq1-expert-linked-matrix-recovery.md`.
+
+### Matrice verificata `schema-json-v2` — 7–8 novembre 2026
+
+La nuova matrice completa contiene 30/30 run riusciti, cinque per ciascuna
+coppia dataset/condizione, zero fallback e una sola revisione software. È stata
+eseguita in due blocchi preregistrati di 15 run con OpenRouter,
+`nvidia/nemotron-3.5-super-vl:free`, temperatura `0.1`, sorgenti `combined` e
+contratto `schema-json-v2`. Tutti i 195 hash artefatto, 100 hash sorgente e 30
+hash delle specifiche di valutazione sono stati ricalcolati senza discrepanze.
+
+| Dataset | Condizione | n | Precision | Recall | F1 | Query funzionali |
+|---|---|---:|---:|---:|---:|---:|
+| University | baseline | 5 | 0.9983 | 0.9402 | 0.9638 | 0.4400 |
+| University | full_llm | 5 | 0.6667 | 0.6636 | 0.6651 | 0.3600 |
+| Library | baseline | 5 | 0.9500 | 0.9213 | 0.9348 | 0.6200 |
+| Library | full_llm | 5 | 1.0000 | 0.9713 | 0.9848 | 0.4000 |
+| Hospital | baseline | 5 | 0.9996 | 0.9312 | 0.9496 | 0.4200 |
+| Hospital | full_llm | 5 | 0.6496 | 0.6364 | 0.6427 | 0.2000 |
+
+Il successo tecnico è completo, ma l'equivalenza funzionale resta parziale.
+Inoltre il giorno 2 presenta F1 inferiore in quattro celle su sei; con 2–3 run
+per giorno/cella è un segnale descrittivo di possibile deriva del provider, non
+una stima causale. La matrice usa sorgenti congiunte e non consente ancora il
+confronto causale fra formati. La fixture equivalente CSV/XLSX/TXT/PDF è stata
+ora congelata e validata, ma la matrice separata da 40 run non è stata ancora
+eseguita. Il pacchetto cieco per tutte le 1.294 discrepanze è pronto;
+l'adjudication resta pendente finché due revisori reali non lo compilano.
+
+### Serie storica non verificata — non usare per le conclusioni
 
 Condizioni: **baseline** = schema gold applicato deterministicamente + popolamento
 LLM; **full_llm** = schema generato dall'LLM + popolamento LLM. Metrica: F1
@@ -75,7 +209,7 @@ rispetto al 0.1 riflette schemi/popolamenti realmente diversi, non il giudice.
 
 ---
 
-## 2. Success criteria (protocollo § / roadmap Fase 4) — confronto
+## 3. Success criteria (protocollo § / roadmap Fase 4) — confronto
 
 | Criterio | Target | Risultato osservato | Esito |
 |---|---|---|---|
@@ -99,7 +233,7 @@ PK (es. righe identiche su tutte le colonne non-PK), non prevista dal protocollo
 
 ---
 
-## 3. Interpretazioni (lettura non confermata)
+## 4. Interpretazioni (lettura non confermata)
 
 1. **Varianza reale a t=0.5, piatta a t=0.1.** I range per-run a 0.5 (es.
    university full_llm 0.233–0.446; hospital baseline 0.415–0.787) mostrano che
@@ -126,7 +260,7 @@ PK (es. righe identiche su tutte le colonne non-PK), non prevista dal protocollo
 
 ---
 
-## 4. Ipotesi da confermare prima di scrivere i risultati finali
+## 5. Ipotesi da confermare prima di scrivere i risultati finali
 
 - [x] **Varianza**: rieseguito il set completo a t=0.5 → varianza reale per-run
       dove conta (university/hospital full_llm); CI ancora larghi (n=5) ma
@@ -152,25 +286,39 @@ PK (es. righe identiche su tutte le colonne non-PK), non prevista dal protocollo
 
 ---
 
-## 5. Struttura suggerita per lo studio (mappa al paper/tesi)
+## 6. Struttura suggerita per lo studio (mappa al paper/tesi)
 
-1. **RQ1** usa il pacchetto `rq1_expert_package/` (30 schemi anonimizzati) →
-   valutazione 3 esperti → alpha di Krippendorff + confronto per arma. Finora
-   non è ancora eseguita (serve recruiting + scoring umano).
-2. **RQ2** è già automatizzata (numeri sopra). Resta da chiudere: soglia,
-   sorgenti separate, scelta temperatura di riferimento.
+1. **RQ1** dispone di 1.350 valutazioni complete su 30 schemi. Analisi,
+   pseudonimizzazione, accordo, descrittive e confronti sono riproducibili in
+   `backend/reports/rq1_analysis/`. Resta umana la verifica documentale dei
+   criteri di idoneità dei 45 valutatori.
+2. **RQ2** dispone della matrice strutturata completa descritta in `docs/21` e
+   della rivalutazione storica secondaria collegata a RQ1 descritta in
+   `docs/22`. I 30 database, i record grezzi recuperati, i ledger e gli hash
+   della rivalutazione sono ora presenti. Sono pronti anche i due fogli ciechi
+   per l'adjudication e la fixture semanticamente equivalente in quattro
+   formati. Restano da ottenere le due revisioni umane, eseguire la matrice
+   separata da 40 run con provider/modello congelati e classificare i risultati
+   finali nel testo scientifico.
 3. I numeri RQ2 vanno messi in relazione CRITICA con l'adjudication: F1 e giudice
    non sempre concordano → nel paper va dichiarato che l'F1 deterministico è un
    limite quando i PK differiscono.
 
 ---
 
-## 6. Artefatti generati in questa sessione
+## 7. Artefatti generati in questa sessione
 
 | File | Ruolo |
 |---|---|
 | `backend/consolidate_rq1_schemas.py` | Estrarre 30 schemi da `app.db`, render come printout anonimizzati, pacchetto §8 |
 | `backend/reports/rq1_expert_package/` | `schemas/S*.md`, `mapping.csv`, `ratings_template.csv`, `README.md` |
+| `backend/analyze_rq1_ratings.py` | Validazione, pseudonimizzazione e analisi riproducibile delle valutazioni RQ1 |
+| `backend/analyze_rq1_expert_replication.py` | Pannello RQ1 separato: canonicalizzazione pseudonima, accordo a tre esperti e confronto schema-level |
+| `backend/reports/rq1_expert_replication/` | Input canonico pseudonimizzato, manifesti/hash e risultati del pannello a tre esperti |
+| `backend/reports/rq1_analysis/` | Manifesto, matrice pseudonimizzata, descrittive, accordo, confronti e report |
 | `backend/aggregate_benchmark.py` | Aggregazione numeri RQ2 (F1/CI/adjudication/duplicate rate) da report → JSON |
-| `backend/reports/benchmark_aggregates_01.json` / `_05.json` | Numeri consolidati per t=0.1 e t=0.5 |
-| `backend/reports/benchmark_t05_full/` | Report del benchmark completo a t=0.5 (30 run, --adjudicate) |
+| `backend/reports/benchmark_rq1_expert_linked_recovered_20261113/` | Matrice storica RQ1 recuperata, 30 database, rivalutazione RQ2 secondaria e manifesti |
+| `backend/recover_expert_linked_matrix.py` | Recupero riproducibile, verifica linkage seed 42, sanitizzazione e rivalutazione offline |
+| `backend/reports/benchmark_aggregates_01.json` / `_05.json` | Aggregati storici originali non recuperati; non necessari per la rivalutazione corrente |
+| `backend/reports/benchmark_t05_full/` | Serie t=0.5 ancora assente; non mescolare con la matrice recuperata |
+| `backend/analyze_user_study.py` | Pipeline predisposta per RQ0/RQ3/RQ4; resta inattiva finché non esistono export osservati completi |

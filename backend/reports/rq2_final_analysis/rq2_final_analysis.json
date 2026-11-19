@@ -1,0 +1,517 @@
+{
+  "analysis": "rq2_final_matrix_exploratory_v1",
+  "status": "complete_exploratory",
+  "matrix": "benchmark_openrouter_nemotron35_supervl_structured_twoday_t01_m16384_20261107",
+  "run_count": 30,
+  "limitations": [
+    "Five runs per dataset-condition cell; inference is exploratory.",
+    "Sources were loaded jointly, so results cannot identify a causal document-format effect.",
+    "Execution spans two provider days with two or three runs per cell per day.",
+    "Adjudication classifies flagged discrepancy records and does not replace cell-level metrics."
+  ],
+  "cells": {
+    "hospital | baseline": {
+      "global_precision": {
+        "n": 5,
+        "mean": 0.99962,
+        "median": 1.0,
+        "sd": 0.0008497058314499258,
+        "min": 0.9981,
+        "max": 1.0
+      },
+      "global_recall": {
+        "n": 5,
+        "mean": 0.9312400000000001,
+        "median": 0.9726,
+        "sd": 0.0860059474687652,
+        "min": 0.7792,
+        "max": 0.9839
+      },
+      "global_f1": {
+        "n": 5,
+        "mean": 0.94956,
+        "median": 0.9855,
+        "sd": 0.07558794877492049,
+        "min": 0.815,
+        "max": 0.9909
+      },
+      "functional_query_pass_rate": {
+        "n": 5,
+        "mean": 0.42000000000000004,
+        "median": 0.4,
+        "sd": 0.17888543819998315,
+        "min": 0.2,
+        "max": 0.6
+      },
+      "functionally_equivalent_count": 0,
+      "execution_day_counts": {
+        "2026-11-07": 3,
+        "2026-11-08": 2
+      }
+    },
+    "hospital | full_llm": {
+      "global_precision": {
+        "n": 5,
+        "mean": 0.6495599999999999,
+        "median": 0.75,
+        "sd": 0.2233628617295185,
+        "min": 0.25,
+        "max": 0.75
+      },
+      "global_recall": {
+        "n": 5,
+        "mean": 0.6363800000000001,
+        "median": 0.7354,
+        "sd": 0.21606249558866067,
+        "min": 0.25,
+        "max": 0.7375
+      },
+      "global_f1": {
+        "n": 5,
+        "mean": 0.64272,
+        "median": 0.7425,
+        "sd": 0.2195640384944675,
+        "min": 0.25,
+        "max": 0.7436
+      },
+      "functional_query_pass_rate": {
+        "n": 5,
+        "mean": 0.2,
+        "median": 0.2,
+        "sd": 0.0,
+        "min": 0.2,
+        "max": 0.2
+      },
+      "functionally_equivalent_count": 0,
+      "execution_day_counts": {
+        "2026-11-07": 2,
+        "2026-11-08": 3
+      }
+    },
+    "library | baseline": {
+      "global_precision": {
+        "n": 5,
+        "mean": 0.95,
+        "median": 1.0,
+        "sd": 0.11180339887498948,
+        "min": 0.75,
+        "max": 1.0
+      },
+      "global_recall": {
+        "n": 5,
+        "mean": 0.9213000000000001,
+        "median": 0.9713,
+        "sd": 0.11180339887498948,
+        "min": 0.7213,
+        "max": 0.9713
+      },
+      "global_f1": {
+        "n": 5,
+        "mean": 0.9348000000000001,
+        "median": 0.9848,
+        "sd": 0.11180339887498948,
+        "min": 0.7348,
+        "max": 0.9848
+      },
+      "functional_query_pass_rate": {
+        "n": 5,
+        "mean": 0.6199999999999999,
+        "median": 0.7,
+        "sd": 0.17888543819998315,
+        "min": 0.3,
+        "max": 0.7
+      },
+      "functionally_equivalent_count": 0,
+      "execution_day_counts": {
+        "2026-11-07": 2,
+        "2026-11-08": 3
+      }
+    },
+    "library | full_llm": {
+      "global_precision": {
+        "n": 5,
+        "mean": 1.0,
+        "median": 1.0,
+        "sd": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "global_recall": {
+        "n": 5,
+        "mean": 0.9713,
+        "median": 0.9713,
+        "sd": 0.0,
+        "min": 0.9713,
+        "max": 0.9713
+      },
+      "global_f1": {
+        "n": 5,
+        "mean": 0.9848000000000001,
+        "median": 0.9848,
+        "sd": 0.0,
+        "min": 0.9848,
+        "max": 0.9848
+      },
+      "functional_query_pass_rate": {
+        "n": 5,
+        "mean": 0.4,
+        "median": 0.4,
+        "sd": 0.0,
+        "min": 0.4,
+        "max": 0.4
+      },
+      "functionally_equivalent_count": 0,
+      "execution_day_counts": {
+        "2026-11-07": 3,
+        "2026-11-08": 2
+      }
+    },
+    "university | baseline": {
+      "global_precision": {
+        "n": 5,
+        "mean": 0.99834,
+        "median": 1.0,
+        "sd": 0.0037118728426496395,
+        "min": 0.9917,
+        "max": 1.0
+      },
+      "global_recall": {
+        "n": 5,
+        "mean": 0.9402000000000001,
+        "median": 0.9885,
+        "sd": 0.10589060392688296,
+        "min": 0.7508,
+        "max": 0.9885
+      },
+      "global_f1": {
+        "n": 5,
+        "mean": 0.9638,
+        "median": 0.9942,
+        "sd": 0.06686404115815915,
+        "min": 0.8442,
+        "max": 0.9942
+      },
+      "functional_query_pass_rate": {
+        "n": 5,
+        "mean": 0.44000000000000006,
+        "median": 0.6,
+        "sd": 0.21908902300206642,
+        "min": 0.2,
+        "max": 0.6
+      },
+      "functionally_equivalent_count": 0,
+      "execution_day_counts": {
+        "2026-11-07": 3,
+        "2026-11-08": 2
+      }
+    },
+    "university | full_llm": {
+      "global_precision": {
+        "n": 5,
+        "mean": 0.6667,
+        "median": 0.6667,
+        "sd": 0.0,
+        "min": 0.6667,
+        "max": 0.6667
+      },
+      "global_recall": {
+        "n": 5,
+        "mean": 0.66358,
+        "median": 0.6667,
+        "sd": 0.004272235948540251,
+        "min": 0.6589,
+        "max": 0.6667
+      },
+      "global_f1": {
+        "n": 5,
+        "mean": 0.6651,
+        "median": 0.6667,
+        "sd": 0.0021908902300206666,
+        "min": 0.6627,
+        "max": 0.6667
+      },
+      "functional_query_pass_rate": {
+        "n": 5,
+        "mean": 0.36,
+        "median": 0.4,
+        "sd": 0.05477225575051663,
+        "min": 0.3,
+        "max": 0.4
+      },
+      "functionally_equivalent_count": 0,
+      "execution_day_counts": {
+        "2026-11-07": 2,
+        "2026-11-08": 3
+      }
+    }
+  },
+  "condition_comparisons": [
+    {
+      "dataset": "hospital",
+      "metric": "global_f1",
+      "baseline_mean": 0.94956,
+      "full_llm_mean": 0.64272,
+      "mean_difference_full_llm_minus_baseline": -0.30684,
+      "bootstrap_95_ci_mean_difference": [
+        -0.50914,
+        -0.17032000000000003
+      ],
+      "hedges_g": -1.687876613983409,
+      "exact_permutation_p": 0.007936507936507936,
+      "holm_adjusted_p_across_six_exploratory_tests": 0.047619047619047616
+    },
+    {
+      "dataset": "hospital",
+      "metric": "functional_query_pass_rate",
+      "baseline_mean": 0.42000000000000004,
+      "full_llm_mean": 0.2,
+      "mean_difference_full_llm_minus_baseline": -0.22000000000000003,
+      "bootstrap_95_ci_mean_difference": [
+        -0.35999999999999993,
+        -0.07999999999999996
+      ],
+      "hedges_g": -1.5709379344062275,
+      "exact_permutation_p": 0.047619047619047616,
+      "holm_adjusted_p_across_six_exploratory_tests": 0.19047619047619047
+    },
+    {
+      "dataset": "library",
+      "metric": "global_f1",
+      "baseline_mean": 0.9348000000000001,
+      "full_llm_mean": 0.9848000000000001,
+      "mean_difference_full_llm_minus_baseline": 0.050000000000000044,
+      "bootstrap_95_ci_mean_difference": [
+        0.0,
+        0.15000000000000002
+      ],
+      "hedges_g": 0.5712501579659013,
+      "exact_permutation_p": 1.0,
+      "holm_adjusted_p_across_six_exploratory_tests": 1.0
+    },
+    {
+      "dataset": "library",
+      "metric": "functional_query_pass_rate",
+      "baseline_mean": 0.6199999999999999,
+      "full_llm_mean": 0.4,
+      "mean_difference_full_llm_minus_baseline": -0.21999999999999986,
+      "bootstrap_95_ci_mean_difference": [
+        -0.29999999999999993,
+        -0.05999999999999994
+      ],
+      "hedges_g": -1.5709379344062262,
+      "exact_permutation_p": 0.047619047619047616,
+      "holm_adjusted_p_across_six_exploratory_tests": 0.19047619047619047
+    },
+    {
+      "dataset": "university",
+      "metric": "global_f1",
+      "baseline_mean": 0.9638,
+      "full_llm_mean": 0.6651,
+      "mean_difference_full_llm_minus_baseline": -0.29869999999999997,
+      "bootstrap_95_ci_mean_difference": [
+        -0.32989999999999997,
+        -0.23830000000000007
+      ],
+      "hedges_g": -5.7032305145058935,
+      "exact_permutation_p": 0.007936507936507936,
+      "holm_adjusted_p_across_six_exploratory_tests": 0.047619047619047616
+    },
+    {
+      "dataset": "university",
+      "metric": "functional_query_pass_rate",
+      "baseline_mean": 0.44000000000000006,
+      "full_llm_mean": 0.36,
+      "mean_difference_full_llm_minus_baseline": -0.08000000000000007,
+      "bootstrap_95_ci_mean_difference": [
+        -0.24,
+        0.10000000000000003
+      ],
+      "hedges_g": -0.45249755226797933,
+      "exact_permutation_p": 0.5476190476190477,
+      "holm_adjusted_p_across_six_exploratory_tests": 1.0
+    }
+  ],
+  "f1_functional_query_correlations": {
+    "all_runs": {
+      "n": 30,
+      "spearman_rho": 0.48988543997285783,
+      "two_sided_p": 0.0059978497935403935
+    },
+    "hospital": {
+      "n": 10,
+      "spearman_rho": 0.6137639120420125,
+      "two_sided_p": 0.05909778321024599
+    },
+    "library": {
+      "n": 10,
+      "spearman_rho": 0.5773502691896257,
+      "two_sided_p": 0.08051623795726268
+    },
+    "university": {
+      "n": 10,
+      "spearman_rho": 0.5466266200103025,
+      "two_sided_p": 0.10204592782550215
+    }
+  },
+  "execution_day_sensitivity": {
+    "hospital | baseline": {
+      "days": {
+        "2026-11-07": {
+          "n": 3,
+          "mean": 0.9806333333333334,
+          "median": 0.9855,
+          "sd": 0.00842931393016857,
+          "min": 0.9709,
+          "max": 0.9855
+        },
+        "2026-11-08": {
+          "n": 2,
+          "mean": 0.9029499999999999,
+          "median": 0.9029499999999999,
+          "sd": 0.12438008281071375,
+          "min": 0.815,
+          "max": 0.9909
+        }
+      },
+      "second_minus_first_mean_f1": -0.07768333333333344
+    },
+    "hospital | full_llm": {
+      "days": {
+        "2026-11-07": {
+          "n": 2,
+          "mean": 0.74305,
+          "median": 0.74305,
+          "sd": 0.0007778174593051951,
+          "min": 0.7425,
+          "max": 0.7436
+        },
+        "2026-11-08": {
+          "n": 3,
+          "mean": 0.5758333333333333,
+          "median": 0.735,
+          "sd": 0.2822048605770874,
+          "min": 0.25,
+          "max": 0.7425
+        }
+      },
+      "second_minus_first_mean_f1": -0.16721666666666668
+    },
+    "library | baseline": {
+      "days": {
+        "2026-11-07": {
+          "n": 2,
+          "mean": 0.9848,
+          "median": 0.9848,
+          "sd": 0.0,
+          "min": 0.9848,
+          "max": 0.9848
+        },
+        "2026-11-08": {
+          "n": 3,
+          "mean": 0.9014666666666667,
+          "median": 0.9848,
+          "sd": 0.14433756729740643,
+          "min": 0.7348,
+          "max": 0.9848
+        }
+      },
+      "second_minus_first_mean_f1": -0.08333333333333326
+    },
+    "library | full_llm": {
+      "days": {
+        "2026-11-07": {
+          "n": 3,
+          "mean": 0.9848,
+          "median": 0.9848,
+          "sd": 0.0,
+          "min": 0.9848,
+          "max": 0.9848
+        },
+        "2026-11-08": {
+          "n": 2,
+          "mean": 0.9848,
+          "median": 0.9848,
+          "sd": 0.0,
+          "min": 0.9848,
+          "max": 0.9848
+        }
+      },
+      "second_minus_first_mean_f1": 0.0
+    },
+    "university | baseline": {
+      "days": {
+        "2026-11-07": {
+          "n": 3,
+          "mean": 0.9935333333333333,
+          "median": 0.9942,
+          "sd": 0.0011547005383792525,
+          "min": 0.9922,
+          "max": 0.9942
+        },
+        "2026-11-08": {
+          "n": 2,
+          "mean": 0.9192,
+          "median": 0.9192,
+          "sd": 0.10606601717798214,
+          "min": 0.8442,
+          "max": 0.9942
+        }
+      },
+      "second_minus_first_mean_f1": -0.07433333333333325
+    },
+    "university | full_llm": {
+      "days": {
+        "2026-11-07": {
+          "n": 2,
+          "mean": 0.6627,
+          "median": 0.6627,
+          "sd": 0.0,
+          "min": 0.6627,
+          "max": 0.6627
+        },
+        "2026-11-08": {
+          "n": 3,
+          "mean": 0.6667,
+          "median": 0.6667,
+          "sd": 0.0,
+          "min": 0.6667,
+          "max": 0.6667
+        }
+      },
+      "second_minus_first_mean_f1": 0.0040000000000000036
+    }
+  },
+  "adjudication": {
+    "status": "consensus_complete",
+    "item_count": 1294,
+    "final_decision_counts": {
+      "errore": 967,
+      "gold ambiguo": 12,
+      "non determinabile": 311,
+      "rappresentazione equivalente": 4
+    },
+    "by_condition": {
+      "baseline": {
+        "item_count": 366,
+        "decision_counts": {
+          "errore": 362,
+          "rappresentazione equivalente": 4
+        },
+        "confirmed_error_proportion_all": 0.9890710382513661,
+        "evaluable_item_count": 366,
+        "confirmed_error_rate_evaluable": 0.9890710382513661
+      },
+      "full_llm": {
+        "item_count": 928,
+        "decision_counts": {
+          "errore": 605,
+          "gold ambiguo": 12,
+          "non determinabile": 311
+        },
+        "confirmed_error_proportion_all": 0.6519396551724138,
+        "evaluable_item_count": 605,
+        "confirmed_error_rate_evaluable": 1.0
+      }
+    }
+  }
+}

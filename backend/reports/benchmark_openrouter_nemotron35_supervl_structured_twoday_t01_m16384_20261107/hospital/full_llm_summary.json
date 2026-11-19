@@ -1,0 +1,27 @@
+{
+  "dataset": "hospital",
+  "condition": "full_llm",
+  "source_format": "combined",
+  "n_runs": 5,
+  "n_evaluable": 5,
+  "n_not_evaluable": 0,
+  "n_error": 0,
+  "n_successful": 5,
+  "n_failed": 0,
+  "errors": [],
+  "temperature": 0.1,
+  "mean_precision": 0.6496,
+  "mean_recall": 0.6364,
+  "mean_f1": 0.6427,
+  "f1_observed_range": [
+    0.25,
+    0.7436
+  ],
+  "mean_total_cells": 584.0,
+  "mean_missing_rows": 71.0,
+  "mean_extra_rows": 9.8,
+  "mean_functional_query_pass_rate": 0.2,
+  "mean_adjudicated_schema_equivalence": null,
+  "mean_adjudicated_value_accuracy": null,
+  "mean_adjudicated_completeness": null
+}

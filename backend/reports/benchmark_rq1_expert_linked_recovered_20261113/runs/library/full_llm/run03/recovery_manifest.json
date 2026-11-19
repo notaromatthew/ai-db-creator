@@ -1,0 +1,91 @@
+{
+  "manifest_version": "recovered-expert-linked-run-v1",
+  "classification": {
+    "rq1": "primary_expert_linked",
+    "rq2": "recovered_historical_secondary"
+  },
+  "original_observed": {
+    "dataset": "library",
+    "condition": "full_llm",
+    "run": 3,
+    "project_id": "9627ba0e-9807-47d6-8a49-90ba3bcc43e1",
+    "status": "ok",
+    "reported_metrics": {
+      "global_precision": 0.7,
+      "global_recall": 0.8,
+      "global_f1": 0.7333,
+      "total_cells": 650,
+      "missing_rows": 24,
+      "extra_rows": 0
+    },
+    "unavailable_provenance": [
+      "generation_provider_and_model",
+      "software_revision",
+      "research_mode",
+      "population_mode",
+      "source_file_hashes_before_generation",
+      "per_run_protocol_manifest"
+    ]
+  },
+  "recovery_computed": {
+    "source_run_record_sha256": "217f145ba569cbe8e9707d20d391c137d3ec8cf4ac3500051317a3d9c1febd20",
+    "source_generated_database_sha256": "a3dcb7fec95102a3d67705d16ed5e932ef9830a1a3f36d05493fae19759ad7fb",
+    "current_evaluation_spec_sha256": "b919d5b5dc1e4d1e45f3852a598b29036edab09346f5c9d2c2b6ef5c62725537",
+    "current_evaluator_sha256": {
+      "app/evaluation/population_evaluation.py": "fe7289737310b02055913b1c04a24ec3076c400dcefd6d9b72bc9c3c27e8346f",
+      "app/evaluation/functional_equivalence.py": "686c53fd5059870b797286ab0b1f231f134b8e2216efdff5e4f75777bce4dd08",
+      "app/evaluation/rq2_artifacts.py": "e4f4d74400ea4964003fcefdcc151bd1cac316116109c8f258811d4a71e8b812",
+      "recover_expert_linked_matrix.py": "e91c34b7b5b0843b36db243af904c8bd913014a1a7c693d15087e0abbf51a71d"
+    },
+    "database_integrity": {
+      "integrity_check": "ok",
+      "foreign_key_violation_count": 0,
+      "table_count": 5,
+      "row_count": 140,
+      "rows_by_table": {
+        "books": 50,
+        "categories": 10,
+        "fines": 0,
+        "loans": 60,
+        "members": 20
+      }
+    }
+  },
+  "artifacts": [
+    {
+      "path": "current_cell_discrepancies.csv",
+      "size": 178,
+      "sha256": "b15ec385eefe7a2cce549022b6086c56a23fff3fe4c06ca2a9ddef0642b494a0"
+    },
+    {
+      "path": "current_evaluation.json",
+      "size": 63867,
+      "sha256": "62fbf4658af05321b093a92b428e90168dda3f8b9dc834e699f4f2a0837980f3"
+    },
+    {
+      "path": "current_functional_query_results.json",
+      "size": 13318,
+      "sha256": "06789c4739f68d82bb69fc1fb81bd7eea40dd3e247c64fdb02ecc7ec2ce917f0"
+    },
+    {
+      "path": "generated.db",
+      "size": 40960,
+      "sha256": "a3dcb7fec95102a3d67705d16ed5e932ef9830a1a3f36d05493fae19759ad7fb"
+    },
+    {
+      "path": "generated_schema.json",
+      "size": 9181,
+      "sha256": "10be916b276fb64a0c304b4774892e0478bd0921ad37367933507726e1b8ca10"
+    },
+    {
+      "path": "original_alignment.json",
+      "size": 991,
+      "sha256": "f93ee95eb56ddaef66dec957bd13e758edc01833137ad80f3ec52fd32479de53"
+    },
+    {
+      "path": "original_run.json",
+      "size": 2346,
+      "sha256": "217f145ba569cbe8e9707d20d391c137d3ec8cf4ac3500051317a3d9c1febd20"
+    }
+  ]
+}

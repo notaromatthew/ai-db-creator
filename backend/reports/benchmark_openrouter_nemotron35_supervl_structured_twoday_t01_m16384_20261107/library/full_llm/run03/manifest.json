@@ -1,0 +1,68 @@
+{
+  "software_revision": "84bf74b33c54bbcb",
+  "research_mode": true,
+  "dataset": "library",
+  "dataset_hash": "974425f9aedea0a13e8d6076183a9aee439ad937f6ed58442c707d8d74622882",
+  "condition": "full_llm",
+  "provider": "OpenRouter",
+  "model": "nvidia/nemotron-3.5-super-vl:free",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 3,
+  "created_at": "2026-11-07T01:09:46.259561+00:00",
+  "source_format": "combined",
+  "source_files": [
+    {
+      "path": "source/books.csv",
+      "sha256": "e9808e8883479ba985010064a41ccce6936987b9fd79bdfd087f654c5de32f47"
+    },
+    {
+      "path": "source/description.pdf",
+      "sha256": "161ccf4d8a56de5b58145d8387df322e2529b2ee0ad57cfd12a7e7596b61b9a1"
+    },
+    {
+      "path": "source/loans_members.csv",
+      "sha256": "e58a0472c7f9c2bd7ca7118ac2f9cbbe829b1469103524416a7fca28a0714710"
+    },
+    {
+      "path": "source/members.csv",
+      "sha256": "4e352910699272abeca6ce966de35b2d966531e505988cd3c732d518b40f69a4"
+    }
+  ],
+  "evaluation_spec_hash": "b919d5b5dc1e4d1e45f3852a598b29036edab09346f5c9d2c2b6ef5c62725537",
+  "project_id": "357eb554-a1a5-4238-8d08-eac727d91e68",
+  "schema_output_contract": "schema-json-v2",
+  "status": "ok",
+  "artifacts": {
+    "generated_database": {
+      "path": "generated.db",
+      "sha256": "970caeee61278b098b8f3f681870cb4b6127b0835a0c3338c4f77cd90ec2639b"
+    },
+    "generated_schema": {
+      "path": "generated_schema.json",
+      "sha256": "f7b141e990c988629d7ea3e427fe6a6e9a8f3659b5fbb28178af1bc807d8787e"
+    },
+    "evaluation": {
+      "path": "evaluation.json",
+      "sha256": "bcfa490d10ace0448070e85751de537d1ef8c4ca3c63123ebaa0b80a8f8541c4"
+    },
+    "cell_discrepancies": {
+      "path": "cell_discrepancies.csv",
+      "sha256": "8c31bca1c10fc5cd843190386752fb6befeca931538e24d805817c2fb6f5b299"
+    },
+    "alignment": {
+      "path": "alignment.json",
+      "sha256": "bcdc74de475fcc9498c5818d4b5c1c120f5b136a9068b4b938f09d17e2466852"
+    },
+    "functional_query_results": {
+      "path": "functional_query_results.json",
+      "sha256": "89aafc931f0dbe402eb7e6b48d767f6bccb69d5b41f19549e0d8a02d031e14a1"
+    },
+    "run_record": {
+      "path": "run.json",
+      "sha256": "debe771a5abffe06d456f67a2ceb38d83e52457c25e6aa22f98a4dfc33a82181"
+    }
+  }
+}

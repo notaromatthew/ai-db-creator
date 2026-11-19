@@ -6,15 +6,16 @@
 
 ## 1. Usability Pilot Study Protocol
 
-To evaluate user cognitive load and platform usability (RQ0/RQ3), controlled user trials are conducted with participants from non-technical disciplines (humanities, biology, business administration).
+The current RQ0/RQ3 pilot evaluates objective task outcomes and workflow failures with participants from non-technical disciplines. It does not collect perceived cognitive-load or usability questionnaires.
 
-### Evaluation Instruments:
-1. **NASA-TLX (Task Load Index)**:
-   - Measures 6 sub-scales: Mental Demand, Physical Demand, Temporal Demand, Performance, Effort, and Frustration.
-   - Submitted via `POST /api/surveys/nasa-tlx`.
-2. **SUS (System Usability Scale)**:
-   - 10-item questionnaire yielding a composite usability score (0 to 100).
-   - Submitted via `POST /api/surveys/sus`. Target benchmark score: **> 75.0** (Above Average usability).
+### Current evaluation instruments
+
+- schema quality and residual error rate;
+- task success and completion time;
+- pseudonymous interaction events;
+- optional privacy-filtered debrief.
+
+NASA-TLX and SUS are reserved for a possible future revision and must not be mixed with the current study.
 
 ---
 
@@ -35,5 +36,5 @@ Evaluation results across models and complexity tiers demonstrate clear performa
 
 1. **Phase 1: Architecture & Auth Hardening** (Completed): PostgreSQL live database integration, Keycloak OIDC authentication, Remote Ollama model selection.
 2. **Phase 2: Full-LLM Ingestion & Data Provenance** (Completed): Ingestion of CSV/PDF files, SHA-256 manifest generation.
-3. **Phase 3: Controlled Usability Pilot & Expert Panel** (Current): Expert Likert evaluation, NASA-TLX & SUS survey collection.
+3. **Phase 3: Controlled Pilot & Expert Panel** (Current): expert evaluation and objective participant outcomes without NASA-TLX or SUS.
 4. **Phase 4: Thesis Writing & LaTeX Publication** (Next): Automated LaTeX export (`GET /api/benchmark/export-latex`), paper submission.

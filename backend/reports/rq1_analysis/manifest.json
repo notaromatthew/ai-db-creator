@@ -1,0 +1,27 @@
+{
+  "artifact_status": "observed_analysis",
+  "generated_at_utc": "2026-11-03T09:21:01.041166+00:00",
+  "source_file": "expert_ratings_export.csv",
+  "source_sha256": "0c73f534513d9330d1fffa951286edd2b00f153341df07f4a6a0fa537d2c7164",
+  "mapping_sha256": "27d356dc35d7db6d2cd1fc91f940ab79972bf738f4b74a1d13cf27c39f639067",
+  "software_revision": "c18ad9b42b63edb9acae375098bd03c460a73136",
+  "analysis_script_sha256": "521138b15574e6f6fbae3536cc12fa512d2db9ed87ab7e4d41e7fbff6db1d659",
+  "seed": 20261103,
+  "bootstrap_resamples": 5000,
+  "score_scale": "1-5",
+  "n_ratings": 1350,
+  "n_evaluators": 45,
+  "n_schemas": 30,
+  "conditions": [
+    "baseline",
+    "full_llm"
+  ],
+  "datasets": [
+    "hospital",
+    "library",
+    "university"
+  ],
+  "blank_updated_at": 5,
+  "comments_included": false,
+  "responses_marked_as_imputed": false
+}

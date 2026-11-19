@@ -1,0 +1,43 @@
+{
+  "software_revision": "da75a72576baccec",
+  "research_mode": true,
+  "dataset": "library",
+  "dataset_hash": "974425f9aedea0a13e8d6076183a9aee439ad937f6ed58442c707d8d74622882",
+  "condition": "full_llm",
+  "provider": "OpenRouter",
+  "model": "nvidia/nemotron-3.5-super-vl:free",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 5,
+  "created_at": "2026-11-06T13:14:14.209939+00:00",
+  "source_format": "combined",
+  "source_files": [
+    {
+      "path": "source/books.csv",
+      "sha256": "e9808e8883479ba985010064a41ccce6936987b9fd79bdfd087f654c5de32f47"
+    },
+    {
+      "path": "source/description.pdf",
+      "sha256": "161ccf4d8a56de5b58145d8387df322e2529b2ee0ad57cfd12a7e7596b61b9a1"
+    },
+    {
+      "path": "source/loans_members.csv",
+      "sha256": "e58a0472c7f9c2bd7ca7118ac2f9cbbe829b1469103524416a7fca28a0714710"
+    },
+    {
+      "path": "source/members.csv",
+      "sha256": "4e352910699272abeca6ce966de35b2d966531e505988cd3c732d518b40f69a4"
+    }
+  ],
+  "evaluation_spec_hash": "b919d5b5dc1e4d1e45f3852a598b29036edab09346f5c9d2c2b6ef5c62725537",
+  "project_id": null,
+  "status": "error",
+  "artifacts": {
+    "run_record": {
+      "path": "run.json",
+      "sha256": "b3898fd0bf41781898f06a1b518c4a27a89a0ed0105789f4450a6a70252e8c81"
+    }
+  }
+}

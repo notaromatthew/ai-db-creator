@@ -1,0 +1,573 @@
+{
+  "spec_version": "rq2_functional_v1",
+  "queries": [
+    {
+      "id": "U01",
+      "critical": true,
+      "passed": true,
+      "gold_sql": "SELECT COUNT(*) AS enrollment_count FROM enrollments",
+      "generated_sql": "SELECT COUNT(*) AS enrollment_count FROM [enrollments]",
+      "error": null,
+      "gold_rows": [
+        [
+          {
+            "number": "45"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          {
+            "number": "45"
+          }
+        ]
+      ],
+      "gold_result_hash": "5d583c5a8261a40ac5f15db3d087ecd685f4be2933cbdd4ab9a0d464906a9d7a",
+      "generated_result_hash": "5d583c5a8261a40ac5f15db3d087ecd685f4be2933cbdd4ab9a0d464906a9d7a",
+      "gold_row_count": 1,
+      "generated_row_count": 1,
+      "missing_rows": [],
+      "extra_rows": []
+    },
+    {
+      "id": "U02",
+      "critical": true,
+      "passed": false,
+      "gold_sql": "SELECT DISTINCT s.email, s.name FROM students s JOIN enrollments e ON e.student_id = s.student_id",
+      "generated_sql": "SELECT DISTINCT [s].[[email]], [s].[[name]] FROM [students] s JOIN [enrollments] e ON [e].[student_id] = [s].[id]",
+      "error": "OperationalError: unrecognized token: \"]\""
+    },
+    {
+      "id": "U03",
+      "critical": true,
+      "passed": false,
+      "gold_sql": "SELECT DISTINCT c.course_code, c.title, c.credits FROM courses c JOIN enrollments e ON e.course_id = c.course_id",
+      "generated_sql": "SELECT DISTINCT [c].[code], [c].[[title]], [c].[[credits]] FROM [courses] c JOIN [enrollments] e ON [e].[id] = c.course_id",
+      "error": "OperationalError: unrecognized token: \"]\""
+    },
+    {
+      "id": "U04",
+      "critical": true,
+      "passed": false,
+      "gold_sql": "SELECT s.email, c.course_code, e.semester, e.grade FROM enrollments e JOIN students s ON s.student_id = e.student_id JOIN courses c ON c.course_id = e.course_id",
+      "generated_sql": "SELECT [s].[[email]], [c].[code], [e].[[semester]], [e].[[grade]] FROM [enrollments] e JOIN [students] s ON [s].[id] = [e].[student_id] JOIN [courses] c ON c.course_id = [e].[id]",
+      "error": "OperationalError: unrecognized token: \"]\""
+    },
+    {
+      "id": "U05",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT c.course_code, COUNT(*) AS enrollment_count FROM enrollments e JOIN courses c ON c.course_id = e.course_id GROUP BY c.course_code",
+      "generated_sql": "SELECT [c].[code], COUNT(*) AS enrollment_count FROM [enrollments] e JOIN [courses] c ON c.course_id = [e].[id] GROUP BY [c].[code]",
+      "error": "OperationalError: no such column: c.course_id"
+    },
+    {
+      "id": "U06",
+      "critical": false,
+      "passed": true,
+      "gold_sql": "SELECT semester, COUNT(*) AS enrollment_count FROM enrollments GROUP BY semester",
+      "generated_sql": "SELECT [semester], COUNT(*) AS enrollment_count FROM [enrollments] GROUP BY [semester]",
+      "error": null,
+      "gold_rows": [
+        [
+          "2026-01",
+          {
+            "number": "25"
+          }
+        ],
+        [
+          "2026-02",
+          {
+            "number": "20"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          "2026-01",
+          {
+            "number": "25"
+          }
+        ],
+        [
+          "2026-02",
+          {
+            "number": "20"
+          }
+        ]
+      ],
+      "gold_result_hash": "d772a6be2b0ccb31d795b402d422245d9052a3a58f0180b2de47aafb03ccfcc1",
+      "generated_result_hash": "d772a6be2b0ccb31d795b402d422245d9052a3a58f0180b2de47aafb03ccfcc1",
+      "gold_row_count": 2,
+      "generated_row_count": 2,
+      "missing_rows": [],
+      "extra_rows": []
+    },
+    {
+      "id": "U07",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT s.email, COUNT(*) AS course_count FROM enrollments e JOIN students s ON s.student_id = e.student_id GROUP BY s.email",
+      "generated_sql": "SELECT [s].[[email]], COUNT(*) AS course_count FROM [enrollments] e JOIN [students] s ON [s].[id] = [e].[student_id] GROUP BY [s].[[email]]",
+      "error": "OperationalError: unrecognized token: \"]\""
+    },
+    {
+      "id": "U08",
+      "critical": false,
+      "passed": true,
+      "gold_sql": "SELECT grade, COUNT(*) AS grade_count FROM enrollments GROUP BY grade",
+      "generated_sql": "SELECT [grade], COUNT(*) AS grade_count FROM [enrollments] GROUP BY [grade]",
+      "error": null,
+      "gold_rows": [
+        [
+          "30L",
+          {
+            "number": "5"
+          }
+        ],
+        [
+          "NS",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          {
+            "number": "18"
+          },
+          {
+            "number": "6"
+          }
+        ],
+        [
+          {
+            "number": "21"
+          },
+          {
+            "number": "4"
+          }
+        ],
+        [
+          {
+            "number": "22"
+          },
+          {
+            "number": "4"
+          }
+        ],
+        [
+          {
+            "number": "23"
+          },
+          {
+            "number": "1"
+          }
+        ],
+        [
+          {
+            "number": "24"
+          },
+          {
+            "number": "1"
+          }
+        ],
+        [
+          {
+            "number": "25"
+          },
+          {
+            "number": "2"
+          }
+        ],
+        [
+          {
+            "number": "26"
+          },
+          {
+            "number": "6"
+          }
+        ],
+        [
+          {
+            "number": "27"
+          },
+          {
+            "number": "5"
+          }
+        ],
+        [
+          {
+            "number": "28"
+          },
+          {
+            "number": "3"
+          }
+        ],
+        [
+          {
+            "number": "30"
+          },
+          {
+            "number": "7"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          "30L",
+          {
+            "number": "5"
+          }
+        ],
+        [
+          "NS",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          {
+            "number": "18"
+          },
+          {
+            "number": "6"
+          }
+        ],
+        [
+          {
+            "number": "21"
+          },
+          {
+            "number": "4"
+          }
+        ],
+        [
+          {
+            "number": "22"
+          },
+          {
+            "number": "4"
+          }
+        ],
+        [
+          {
+            "number": "23"
+          },
+          {
+            "number": "1"
+          }
+        ],
+        [
+          {
+            "number": "24"
+          },
+          {
+            "number": "1"
+          }
+        ],
+        [
+          {
+            "number": "25"
+          },
+          {
+            "number": "2"
+          }
+        ],
+        [
+          {
+            "number": "26"
+          },
+          {
+            "number": "6"
+          }
+        ],
+        [
+          {
+            "number": "27"
+          },
+          {
+            "number": "5"
+          }
+        ],
+        [
+          {
+            "number": "28"
+          },
+          {
+            "number": "3"
+          }
+        ],
+        [
+          {
+            "number": "30"
+          },
+          {
+            "number": "7"
+          }
+        ]
+      ],
+      "gold_result_hash": "e1344367f29b4db68f9f21ae00d881e846edf034aa5846281f20a894e17109c2",
+      "generated_result_hash": "e1344367f29b4db68f9f21ae00d881e846edf034aa5846281f20a894e17109c2",
+      "gold_row_count": 12,
+      "generated_row_count": 12,
+      "missing_rows": [],
+      "extra_rows": []
+    },
+    {
+      "id": "U09",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT course_code, credits FROM courses",
+      "generated_sql": "SELECT [code], [credits] FROM [courses]",
+      "error": null,
+      "gold_rows": [
+        [
+          "cs-101",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "cs-202",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "cs-301",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "ec-201",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "en-101",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "ma-101",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "ma-202",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "ph-101",
+          {
+            "number": "9"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          "CS-101",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "CS-202",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "CS-301",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "EC-201",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "EN-101",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "MA-101",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "MA-202",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "PH-101",
+          {
+            "number": "9"
+          }
+        ]
+      ],
+      "gold_result_hash": "ff12dd1b529a190493d8c23054c267cf80f11c8ac75ab9566c19255796269343",
+      "generated_result_hash": "639ab69bf1cb1b276907ddb92962f5bbee4bd39408f259365710e7cf8b7c936f",
+      "gold_row_count": 8,
+      "generated_row_count": 8,
+      "missing_rows": [
+        [
+          "cs-101",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "cs-202",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "cs-301",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "ec-201",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "en-101",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "ma-101",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "ma-202",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "ph-101",
+          {
+            "number": "9"
+          }
+        ]
+      ],
+      "extra_rows": [
+        [
+          "CS-101",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "CS-202",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "CS-301",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "EC-201",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "EN-101",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "MA-101",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "MA-202",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "PH-101",
+          {
+            "number": "9"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "U10",
+      "critical": false,
+      "passed": true,
+      "gold_sql": "SELECT COUNT(DISTINCT student_id) AS observed_student_count FROM enrollments",
+      "generated_sql": "SELECT COUNT(DISTINCT student_id) AS observed_student_count FROM [enrollments]",
+      "error": null,
+      "gold_rows": [
+        [
+          {
+            "number": "22"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          {
+            "number": "22"
+          }
+        ]
+      ],
+      "gold_result_hash": "2a3e2ad8d83e3d0fd8afd09bc07da1ddb370f4cd738ecd2b42d1b19e51eb095e",
+      "generated_result_hash": "2a3e2ad8d83e3d0fd8afd09bc07da1ddb370f4cd738ecd2b42d1b19e51eb095e",
+      "gold_row_count": 1,
+      "generated_row_count": 1,
+      "missing_rows": [],
+      "extra_rows": []
+    }
+  ],
+  "total_queries": 10,
+  "passed_queries": 4,
+  "overall_query_pass_rate": 0.4,
+  "critical_query_pass_rate": 0.25,
+  "thresholds": {
+    "min_overall_query_pass_rate": 0.9,
+    "min_critical_query_pass_rate": 1.0,
+    "max_critical_integrity_violations": 0
+  },
+  "integrity": {
+    "foreign_key_violations": [],
+    "natural_key_duplicate_groups": [],
+    "errors": [],
+    "violation_count": 0
+  },
+  "functionally_equivalent": false
+}

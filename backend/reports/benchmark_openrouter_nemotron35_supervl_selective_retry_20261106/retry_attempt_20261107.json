@@ -1,0 +1,37 @@
+{
+  "label": "second_retry_of_failed_selective_runs",
+  "date": "2026-11-07",
+  "parent_manifest": "recovery_manifest.json",
+  "selection_rule": "Retry only Hospital full_llm runs 2, 3, and 4 whose status was error",
+  "selected_runs": {
+    "hospital/full_llm": [2, 3, 4]
+  },
+  "execution": {
+    "resume": true,
+    "retry_failed": true,
+    "schedule": "interleaved",
+    "parallel": 1
+  },
+  "provider": "OpenRouter",
+  "model": "nvidia/nemotron-3.5-super-vl:free",
+  "parameters": {
+    "temperature": 0.1,
+    "reasoning_enabled": false,
+    "max_output_tokens": 4096,
+    "timeout_seconds": 120,
+    "max_retries": 0,
+    "max_requests_per_minute": 10
+  },
+  "outcomes": {
+    "selected": 3,
+    "ok": 0,
+    "error": 3,
+    "not_evaluable": 0,
+    "public_error": "LLMException: Schema generation failed"
+  },
+  "preservation": {
+    "previous_ok_runs_reexecuted": false,
+    "previous_ok_runs_overwritten": false
+  },
+  "interpretation": "All three selected runs failed again before evaluation. This retry adds no new performance observations and must not be treated as three zero scores."
+}

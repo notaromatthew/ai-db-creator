@@ -1,0 +1,7218 @@
+{
+  "spec_version": "rq2_functional_v1",
+  "queries": [
+    {
+      "id": "H01",
+      "critical": true,
+      "passed": false,
+      "gold_sql": "SELECT COUNT(*) AS patient_count FROM patients",
+      "generated_sql": "SELECT COUNT(*) AS patient_count FROM patients",
+      "error": null,
+      "gold_rows": [
+        [
+          {
+            "number": "100"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          {
+            "number": "75"
+          }
+        ]
+      ],
+      "gold_result_hash": "7652be061c000616cf5a0bbf81997bab91a42cbaf6565f2fe511e2348c6c9237",
+      "generated_result_hash": "8a2fef4ce4eaf8cdc163746512b18ca1db400e57db886c2c5cf3efc84537ec23",
+      "gold_row_count": 1,
+      "generated_row_count": 1,
+      "missing_rows": [
+        [
+          {
+            "number": "100"
+          }
+        ]
+      ],
+      "extra_rows": [
+        [
+          {
+            "number": "75"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "H02",
+      "critical": true,
+      "passed": false,
+      "gold_sql": "SELECT fiscal_code, full_name, birth_date FROM patients",
+      "generated_sql": "SELECT fiscal_code, full_name, birth_date FROM patients",
+      "error": null,
+      "gold_rows": [
+        [
+          "aa10041a7930",
+          "Valentina Ferrari",
+          {
+            "date": "1974-02-06"
+          }
+        ],
+        [
+          "aa2569a3613",
+          "Marco Esposito",
+          {
+            "date": "2008-06-27"
+          }
+        ],
+        [
+          "aa5086a8550",
+          "Simone Ricci",
+          {
+            "date": "1978-01-09"
+          }
+        ],
+        [
+          "aa7546a8999",
+          "Martina Ricci",
+          {
+            "date": "1943-08-22"
+          }
+        ],
+        [
+          "bh0128d4951",
+          "Chiara Gallo",
+          {
+            "date": "1972-03-27"
+          }
+        ],
+        [
+          "bh2675d5051",
+          "Davide Greco",
+          {
+            "date": "1980-02-04"
+          }
+        ],
+        [
+          "bh5126d4926",
+          "Simone Conti",
+          {
+            "date": "1976-12-17"
+          }
+        ],
+        [
+          "bh7641d5056",
+          "Anna Gallo",
+          {
+            "date": "2001-04-12"
+          }
+        ],
+        [
+          "cp0218g5943",
+          "Valentina Gallo",
+          {
+            "date": "1973-07-14"
+          }
+        ],
+        [
+          "cp2780g1086",
+          "Federico Bruno",
+          {
+            "date": "1999-03-09"
+          }
+        ],
+        [
+          "cp5253g9072",
+          "Martina Colombo",
+          {
+            "date": "1988-12-01"
+          }
+        ],
+        [
+          "cp7776g5402",
+          "Federico Ricci",
+          {
+            "date": "1953-12-22"
+          }
+        ],
+        [
+          "dw0396k6410",
+          "Simone Rizzo",
+          {
+            "date": "2010-01-12"
+          }
+        ],
+        [
+          "dw2814k8836",
+          "Marco Bianchi",
+          {
+            "date": "1998-03-09"
+          }
+        ],
+        [
+          "dw5349k6806",
+          "Andrea Greco",
+          {
+            "date": "1976-03-24"
+          }
+        ],
+        [
+          "dw7816k9148",
+          "Sara Gallo",
+          {
+            "date": "1959-03-13"
+          }
+        ],
+        [
+          "ed0445n4012",
+          "Luca Ferrari",
+          {
+            "date": "1958-03-01"
+          }
+        ],
+        [
+          "ed2915n6901",
+          "Luca Greco",
+          {
+            "date": "1979-03-09"
+          }
+        ],
+        [
+          "ed5442n6756",
+          "Francesca Conti",
+          {
+            "date": "1999-04-16"
+          }
+        ],
+        [
+          "ed7996n4674",
+          "Martina Gallo",
+          {
+            "date": "1995-04-20"
+          }
+        ],
+        [
+          "fl0585q7098",
+          "Andrea Bruno",
+          {
+            "date": "1941-08-17"
+          }
+        ],
+        [
+          "fl3073q3164",
+          "Simone Marino",
+          {
+            "date": "1978-08-07"
+          }
+        ],
+        [
+          "fl5554q3991",
+          "Luca Giordano",
+          {
+            "date": "2002-07-18"
+          }
+        ],
+        [
+          "fl8096q1177",
+          "Anna Costa",
+          {
+            "date": "1971-07-09"
+          }
+        ],
+        [
+          "gs0681t2781",
+          "Francesca Ricci",
+          {
+            "date": "1981-11-24"
+          }
+        ],
+        [
+          "gs3167t3932",
+          "Luca Conti",
+          {
+            "date": "2000-12-17"
+          }
+        ],
+        [
+          "gs5658t1736",
+          "Giulia Giordano",
+          {
+            "date": "1941-07-06"
+          }
+        ],
+        [
+          "gs8130t7802",
+          "Elena Ricci",
+          {
+            "date": "1968-02-12"
+          }
+        ],
+        [
+          "hz0778w4784",
+          "Martina Rossi",
+          {
+            "date": "2008-03-12"
+          }
+        ],
+        [
+          "hz3289w5029",
+          "Luca Bruno",
+          {
+            "date": "1994-08-06"
+          }
+        ],
+        [
+          "hz5718w2744",
+          "Marco Rizzo",
+          {
+            "date": "1946-09-27"
+          }
+        ],
+        [
+          "hz8285w6248",
+          "Davide Marino",
+          {
+            "date": "2000-06-19"
+          }
+        ],
+        [
+          "jg0825z2195",
+          "Francesca Rossi",
+          {
+            "date": "1978-11-03"
+          }
+        ],
+        [
+          "jg3372z2498",
+          "Sara Colombo",
+          {
+            "date": "2007-12-17"
+          }
+        ],
+        [
+          "jg5810z2517",
+          "Giulia Gallo",
+          {
+            "date": "1963-04-09"
+          }
+        ],
+        [
+          "jg8319z9090",
+          "Davide Giordano",
+          {
+            "date": "1967-10-12"
+          }
+        ],
+        [
+          "ko0960c9816",
+          "Francesca Gallo",
+          {
+            "date": "1984-02-14"
+          }
+        ],
+        [
+          "ko3428c4387",
+          "Simone Gallo",
+          {
+            "date": "1953-03-15"
+          }
+        ],
+        [
+          "ko5958c5172",
+          "Sara Greco",
+          {
+            "date": "1942-03-26"
+          }
+        ],
+        [
+          "ko8482c1476",
+          "Francesca Conti",
+          {
+            "date": "1951-11-10"
+          }
+        ],
+        [
+          "lv1030f9609",
+          "Simone Rizzo",
+          {
+            "date": "1992-11-25"
+          }
+        ],
+        [
+          "lv3584f3022",
+          "Sara Romano",
+          {
+            "date": "1971-01-17"
+          }
+        ],
+        [
+          "lv6070f2160",
+          "Federico Rossi",
+          {
+            "date": "2007-02-04"
+          }
+        ],
+        [
+          "lv8540f5238",
+          "Anna Bianchi",
+          {
+            "date": "1980-03-07"
+          }
+        ],
+        [
+          "mc1117j4250",
+          "Martina Bianchi",
+          {
+            "date": "1962-06-15"
+          }
+        ],
+        [
+          "mc3624j9598",
+          "Federico Esposito",
+          {
+            "date": "1993-11-15"
+          }
+        ],
+        [
+          "mc6142j7564",
+          "Francesca Giordano",
+          {
+            "date": "1981-11-06"
+          }
+        ],
+        [
+          "mc8694j4297",
+          "Sara Colombo",
+          {
+            "date": "1997-06-19"
+          }
+        ],
+        [
+          "nk1219m2160",
+          "Giulia Conti",
+          {
+            "date": "1984-04-26"
+          }
+        ],
+        [
+          "nk3748m4360",
+          "Valentina Ferrari",
+          {
+            "date": "1969-10-02"
+          }
+        ],
+        [
+          "nk6299m7771",
+          "Giulia Romano",
+          {
+            "date": "1950-08-29"
+          }
+        ],
+        [
+          "nk8757m7826",
+          "Anna Marino",
+          {
+            "date": "1999-09-17"
+          }
+        ],
+        [
+          "or1320p7639",
+          "Valentina Costa",
+          {
+            "date": "1992-12-06"
+          }
+        ],
+        [
+          "or3814p2061",
+          "Valentina Esposito",
+          {
+            "date": "2004-09-02"
+          }
+        ],
+        [
+          "or6390p5040",
+          "Chiara Gallo",
+          {
+            "date": "1997-02-03"
+          }
+        ],
+        [
+          "or8849p1560",
+          "Anna Gallo",
+          {
+            "date": "1997-10-10"
+          }
+        ],
+        [
+          "py1459s7976",
+          "Chiara Costa",
+          {
+            "date": "1986-10-04"
+          }
+        ],
+        [
+          "py3991s8956",
+          "Federico Romano",
+          {
+            "date": "1989-04-17"
+          }
+        ],
+        [
+          "py6461s4204",
+          "Matteo Ferrari",
+          {
+            "date": "2009-02-16"
+          }
+        ],
+        [
+          "py8984s7001",
+          "Francesca Marino",
+          {
+            "date": "1946-10-13"
+          }
+        ],
+        [
+          "qf1576v2248",
+          "Chiara Romano",
+          {
+            "date": "1982-11-20"
+          }
+        ],
+        [
+          "qf4018v2683",
+          "Andrea Colombo",
+          {
+            "date": "1999-12-18"
+          }
+        ],
+        [
+          "qf6525v8993",
+          "Luca Romano",
+          {
+            "date": "1941-11-17"
+          }
+        ],
+        [
+          "qf9047v4579",
+          "Federico Rizzo",
+          {
+            "date": "1956-02-22"
+          }
+        ],
+        [
+          "rn1663y1189",
+          "Marco Bianchi",
+          {
+            "date": "1983-01-20"
+          }
+        ],
+        [
+          "rn4190y9872",
+          "Martina Colombo",
+          {
+            "date": "1986-02-13"
+          }
+        ],
+        [
+          "rn6665y7397",
+          "Luca Romano",
+          {
+            "date": "1970-11-01"
+          }
+        ],
+        [
+          "rn9168y7501",
+          "Davide Gallo",
+          {
+            "date": "1979-06-29"
+          }
+        ],
+        [
+          "su1736b3166",
+          "Chiara Giordano",
+          {
+            "date": "1944-12-25"
+          }
+        ],
+        [
+          "su4225b2590",
+          "Chiara Gallo",
+          {
+            "date": "1959-08-22"
+          }
+        ],
+        [
+          "su6764b8829",
+          "Andrea Rizzo",
+          {
+            "date": "1973-05-21"
+          }
+        ],
+        [
+          "su9279b6017",
+          "Chiara Conti",
+          {
+            "date": "1993-12-23"
+          }
+        ],
+        [
+          "tb1842e2235",
+          "Francesca Colombo",
+          {
+            "date": "1982-09-21"
+          }
+        ],
+        [
+          "tb4321e7065",
+          "Francesca Conti",
+          {
+            "date": "1993-12-06"
+          }
+        ],
+        [
+          "tb6875e8958",
+          "Chiara Ricci",
+          {
+            "date": "2002-07-20"
+          }
+        ],
+        [
+          "tb9322e8625",
+          "Sara Ricci",
+          {
+            "date": "1961-08-17"
+          }
+        ],
+        [
+          "uj1957h8180",
+          "Martina Giordano",
+          {
+            "date": "2002-08-03"
+          }
+        ],
+        [
+          "uj4492h2288",
+          "Anna Romano",
+          {
+            "date": "1943-01-19"
+          }
+        ],
+        [
+          "uj6918h5638",
+          "Matteo Bruno",
+          {
+            "date": "2010-11-06"
+          }
+        ],
+        [
+          "uj9437h6380",
+          "Andrea Esposito",
+          {
+            "date": "1964-03-18"
+          }
+        ],
+        [
+          "vq2072l3481",
+          "Luca Bianchi",
+          {
+            "date": "1961-05-22"
+          }
+        ],
+        [
+          "vq4563l4601",
+          "Luca Giordano",
+          {
+            "date": "1942-03-23"
+          }
+        ],
+        [
+          "vq7013l1798",
+          "Marco Ricci",
+          {
+            "date": "2002-05-15"
+          }
+        ],
+        [
+          "vq9535l7083",
+          "Francesca Rizzo",
+          {
+            "date": "2010-10-28"
+          }
+        ],
+        [
+          "wx2179o2714",
+          "Francesca Giordano",
+          {
+            "date": "1960-02-05"
+          }
+        ],
+        [
+          "wx4676o2823",
+          "Sara Bianchi",
+          {
+            "date": "1983-09-01"
+          }
+        ],
+        [
+          "wx7185o9479",
+          "Martina Ferrari",
+          {
+            "date": "1958-02-20"
+          }
+        ],
+        [
+          "wx9641o7247",
+          "Giulia Esposito",
+          {
+            "date": "2007-05-10"
+          }
+        ],
+        [
+          "xe2293r3933",
+          "Chiara Esposito",
+          {
+            "date": "1986-08-21"
+          }
+        ],
+        [
+          "xe4798r4727",
+          "Francesca Bruno",
+          {
+            "date": "1977-12-17"
+          }
+        ],
+        [
+          "xe7256r1861",
+          "Matteo Giordano",
+          {
+            "date": "1973-03-13"
+          }
+        ],
+        [
+          "xe9720r1340",
+          "Andrea Ricci",
+          {
+            "date": "1958-09-30"
+          }
+        ],
+        [
+          "ym2377u2390",
+          "Matteo Colombo",
+          {
+            "date": "1962-11-09"
+          }
+        ],
+        [
+          "ym4838u7720",
+          "Elena Romano",
+          {
+            "date": "1990-04-12"
+          }
+        ],
+        [
+          "ym7394u5016",
+          "Valentina Conti",
+          {
+            "date": "2008-01-20"
+          }
+        ],
+        [
+          "ym9864u3980",
+          "Simone Costa",
+          {
+            "date": "1943-09-20"
+          }
+        ],
+        [
+          "zt2452x9382",
+          "Sara Colombo",
+          {
+            "date": "1991-09-16"
+          }
+        ],
+        [
+          "zt4910x2236",
+          "Federico Rossi",
+          {
+            "date": "1945-10-26"
+          }
+        ],
+        [
+          "zt7410x7863",
+          "Davide Ferrari",
+          {
+            "date": "1942-08-17"
+          }
+        ],
+        [
+          "zt9991x1199",
+          "Matteo Rizzo",
+          {
+            "date": "1949-07-17"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          "aa2569a3613",
+          "Marco Esposito",
+          {
+            "date": "2008-06-27"
+          }
+        ],
+        [
+          "aa5086a8550",
+          "Simone Ricci",
+          {
+            "date": "1978-01-09"
+          }
+        ],
+        [
+          "aa7546a8999",
+          "Martina Ricci",
+          {
+            "date": "1943-08-22"
+          }
+        ],
+        [
+          "bh0128d4951",
+          "Chiara Gallo",
+          {
+            "date": "1972-03-27"
+          }
+        ],
+        [
+          "bh2675d5051",
+          "Davide Greco",
+          {
+            "date": "1980-02-04"
+          }
+        ],
+        [
+          "bh5126d4926",
+          "Simone Conti",
+          {
+            "date": "1976-12-17"
+          }
+        ],
+        [
+          "cp0218g5943",
+          "Valentina Gallo",
+          {
+            "date": "1973-07-14"
+          }
+        ],
+        [
+          "cp2780g1086",
+          "Federico Bruno",
+          {
+            "date": "1999-03-09"
+          }
+        ],
+        [
+          "cp5253g9072",
+          "Martina Colombo",
+          {
+            "date": "1988-12-01"
+          }
+        ],
+        [
+          "dw0396k6410",
+          "Simone Rizzo",
+          {
+            "date": "2010-01-12"
+          }
+        ],
+        [
+          "dw2814k8836",
+          "Marco Bianchi",
+          {
+            "date": "1998-03-09"
+          }
+        ],
+        [
+          "dw5349k6806",
+          "Andrea Greco",
+          {
+            "date": "1976-03-24"
+          }
+        ],
+        [
+          "ed0445n4012",
+          "Luca Ferrari",
+          {
+            "date": "1958-03-01"
+          }
+        ],
+        [
+          "ed2915n6901",
+          "Luca Greco",
+          {
+            "date": "1979-03-09"
+          }
+        ],
+        [
+          "ed5442n6756",
+          "Francesca Conti",
+          {
+            "date": "1999-04-16"
+          }
+        ],
+        [
+          "fl0585q7098",
+          "Andrea Bruno",
+          {
+            "date": "1941-08-17"
+          }
+        ],
+        [
+          "fl3073q3164",
+          "Simone Marino",
+          {
+            "date": "1978-08-07"
+          }
+        ],
+        [
+          "fl5554q3991",
+          "Luca Giordano",
+          {
+            "date": "2002-07-18"
+          }
+        ],
+        [
+          "gs0681t2781",
+          "Francesca Ricci",
+          {
+            "date": "1981-11-24"
+          }
+        ],
+        [
+          "gs3167t3932",
+          "Luca Conti",
+          {
+            "date": "2000-12-17"
+          }
+        ],
+        [
+          "gs5658t1736",
+          "Giulia Giordano",
+          {
+            "date": "1941-07-06"
+          }
+        ],
+        [
+          "hz0778w4784",
+          "Martina Rossi",
+          {
+            "date": "2008-03-12"
+          }
+        ],
+        [
+          "hz3289w5029",
+          "Luca Bruno",
+          {
+            "date": "1994-08-06"
+          }
+        ],
+        [
+          "hz5718w2744",
+          "Marco Rizzo",
+          {
+            "date": "1946-09-27"
+          }
+        ],
+        [
+          "jg0825z2195",
+          "Francesca Rossi",
+          {
+            "date": "1978-11-03"
+          }
+        ],
+        [
+          "jg3372z2498",
+          "Sara Colombo",
+          {
+            "date": "2007-12-17"
+          }
+        ],
+        [
+          "jg5810z2517",
+          "Giulia Gallo",
+          {
+            "date": "1963-04-09"
+          }
+        ],
+        [
+          "ko0960c9816",
+          "Francesca Gallo",
+          {
+            "date": "1984-02-14"
+          }
+        ],
+        [
+          "ko3428c4387",
+          "Simone Gallo",
+          {
+            "date": "1953-03-15"
+          }
+        ],
+        [
+          "ko5958c5172",
+          "Sara Greco",
+          {
+            "date": "1942-03-26"
+          }
+        ],
+        [
+          "lv1030f9609",
+          "Simone Rizzo",
+          {
+            "date": "1992-11-25"
+          }
+        ],
+        [
+          "lv3584f3022",
+          "Sara Romano",
+          {
+            "date": "1971-01-17"
+          }
+        ],
+        [
+          "lv6070f2160",
+          "Federico Rossi",
+          {
+            "date": "2007-02-04"
+          }
+        ],
+        [
+          "mc1117j4250",
+          "Martina Bianchi",
+          {
+            "date": "1962-06-15"
+          }
+        ],
+        [
+          "mc3624j9598",
+          "Federico Esposito",
+          {
+            "date": "1993-11-15"
+          }
+        ],
+        [
+          "mc6142j7564",
+          "Francesca Giordano",
+          {
+            "date": "1981-11-06"
+          }
+        ],
+        [
+          "nk1219m2160",
+          "Giulia Conti",
+          {
+            "date": "1984-04-26"
+          }
+        ],
+        [
+          "nk3748m4360",
+          "Valentina Ferrari",
+          {
+            "date": "1969-10-02"
+          }
+        ],
+        [
+          "nk6299m7771",
+          "Giulia Romano",
+          {
+            "date": "1950-08-29"
+          }
+        ],
+        [
+          "or1320p7639",
+          "Valentina Costa",
+          {
+            "date": "1992-12-06"
+          }
+        ],
+        [
+          "or3814p2061",
+          "Valentina Esposito",
+          {
+            "date": "2004-09-02"
+          }
+        ],
+        [
+          "or6390p5040",
+          "Chiara Gallo",
+          {
+            "date": "1997-02-03"
+          }
+        ],
+        [
+          "py1459s7976",
+          "Chiara Costa",
+          {
+            "date": "1986-10-04"
+          }
+        ],
+        [
+          "py3991s8956",
+          "Federico Romano",
+          {
+            "date": "1989-04-17"
+          }
+        ],
+        [
+          "py6461s4204",
+          "Matteo Ferrari",
+          {
+            "date": "2009-02-16"
+          }
+        ],
+        [
+          "qf1576v2248",
+          "Chiara Romano",
+          {
+            "date": "1982-11-20"
+          }
+        ],
+        [
+          "qf4018v2683",
+          "Andrea Colombo",
+          {
+            "date": "1999-12-18"
+          }
+        ],
+        [
+          "qf6525v8993",
+          "Luca Romano",
+          {
+            "date": "1941-11-17"
+          }
+        ],
+        [
+          "rn1663y1189",
+          "Marco Bianchi",
+          {
+            "date": "1983-01-20"
+          }
+        ],
+        [
+          "rn4190y9872",
+          "Martina Colombo",
+          {
+            "date": "1986-02-13"
+          }
+        ],
+        [
+          "rn6665y7397",
+          "Luca Romano",
+          {
+            "date": "1970-11-01"
+          }
+        ],
+        [
+          "su1736b3166",
+          "Chiara Giordano",
+          {
+            "date": "1944-12-25"
+          }
+        ],
+        [
+          "su4225b2590",
+          "Chiara Gallo",
+          {
+            "date": "1959-08-22"
+          }
+        ],
+        [
+          "su6764b8829",
+          "Andrea Rizzo",
+          {
+            "date": "1973-05-21"
+          }
+        ],
+        [
+          "tb1842e2235",
+          "Francesca Colombo",
+          {
+            "date": "1982-09-21"
+          }
+        ],
+        [
+          "tb4321e7065",
+          "Francesca Conti",
+          {
+            "date": "1993-12-06"
+          }
+        ],
+        [
+          "tb6875e8958",
+          "Chiara Ricci",
+          {
+            "date": "2002-07-20"
+          }
+        ],
+        [
+          "uj1957h8180",
+          "Martina Giordano",
+          {
+            "date": "2002-08-03"
+          }
+        ],
+        [
+          "uj4492h2288",
+          "Anna Romano",
+          {
+            "date": "1943-01-19"
+          }
+        ],
+        [
+          "uj6918h5638",
+          "Matteo Bruno",
+          {
+            "date": "2010-11-06"
+          }
+        ],
+        [
+          "vq2072l3481",
+          "Luca Bianchi",
+          {
+            "date": "1961-05-22"
+          }
+        ],
+        [
+          "vq4563l4601",
+          "Luca Giordano",
+          {
+            "date": "1942-03-23"
+          }
+        ],
+        [
+          "vq7013l1798",
+          "Marco Ricci",
+          {
+            "date": "2002-05-15"
+          }
+        ],
+        [
+          "wx2179o2714",
+          "Francesca Giordano",
+          {
+            "date": "1960-02-05"
+          }
+        ],
+        [
+          "wx4676o2823",
+          "Sara Bianchi",
+          {
+            "date": "1983-09-01"
+          }
+        ],
+        [
+          "wx7185o9479",
+          "Martina Ferrari",
+          {
+            "date": "1958-02-20"
+          }
+        ],
+        [
+          "xe2293r3933",
+          "Chiara Esposito",
+          {
+            "date": "1986-08-21"
+          }
+        ],
+        [
+          "xe4798r4727",
+          "Francesca Bruno",
+          {
+            "date": "1977-12-17"
+          }
+        ],
+        [
+          "xe7256r1861",
+          "Matteo Giordano",
+          {
+            "date": "1973-03-13"
+          }
+        ],
+        [
+          "ym2377u2390",
+          "Matteo Colombo",
+          {
+            "date": "1962-11-09"
+          }
+        ],
+        [
+          "ym4838u7720",
+          "Elena Romano",
+          {
+            "date": "1990-04-12"
+          }
+        ],
+        [
+          "ym7394u5016",
+          "Valentina Conti",
+          {
+            "date": "2008-01-20"
+          }
+        ],
+        [
+          "zt2452x9382",
+          "Sara Colombo",
+          {
+            "date": "1991-09-16"
+          }
+        ],
+        [
+          "zt4910x2236",
+          "Federico Rossi",
+          {
+            "date": "1945-10-26"
+          }
+        ],
+        [
+          "zt7410x7863",
+          "Davide Ferrari",
+          {
+            "date": "1942-08-17"
+          }
+        ]
+      ],
+      "gold_result_hash": "fd759766d621edccbd9efde6ce9776bb61543bb4d1a3e4ffd46dc4bc84fa91cb",
+      "generated_result_hash": "8adf6ad43dfe05e7f2589f70f99db47b4ef8861596163589da7b2bc099b4aef5",
+      "gold_row_count": 100,
+      "generated_row_count": 75,
+      "missing_rows": [
+        [
+          "aa10041a7930",
+          "Valentina Ferrari",
+          {
+            "date": "1974-02-06"
+          }
+        ],
+        [
+          "bh7641d5056",
+          "Anna Gallo",
+          {
+            "date": "2001-04-12"
+          }
+        ],
+        [
+          "cp7776g5402",
+          "Federico Ricci",
+          {
+            "date": "1953-12-22"
+          }
+        ],
+        [
+          "dw7816k9148",
+          "Sara Gallo",
+          {
+            "date": "1959-03-13"
+          }
+        ],
+        [
+          "ed7996n4674",
+          "Martina Gallo",
+          {
+            "date": "1995-04-20"
+          }
+        ],
+        [
+          "fl8096q1177",
+          "Anna Costa",
+          {
+            "date": "1971-07-09"
+          }
+        ],
+        [
+          "gs8130t7802",
+          "Elena Ricci",
+          {
+            "date": "1968-02-12"
+          }
+        ],
+        [
+          "hz8285w6248",
+          "Davide Marino",
+          {
+            "date": "2000-06-19"
+          }
+        ],
+        [
+          "jg8319z9090",
+          "Davide Giordano",
+          {
+            "date": "1967-10-12"
+          }
+        ],
+        [
+          "ko8482c1476",
+          "Francesca Conti",
+          {
+            "date": "1951-11-10"
+          }
+        ],
+        [
+          "lv8540f5238",
+          "Anna Bianchi",
+          {
+            "date": "1980-03-07"
+          }
+        ],
+        [
+          "mc8694j4297",
+          "Sara Colombo",
+          {
+            "date": "1997-06-19"
+          }
+        ],
+        [
+          "nk8757m7826",
+          "Anna Marino",
+          {
+            "date": "1999-09-17"
+          }
+        ],
+        [
+          "or8849p1560",
+          "Anna Gallo",
+          {
+            "date": "1997-10-10"
+          }
+        ],
+        [
+          "py8984s7001",
+          "Francesca Marino",
+          {
+            "date": "1946-10-13"
+          }
+        ],
+        [
+          "qf9047v4579",
+          "Federico Rizzo",
+          {
+            "date": "1956-02-22"
+          }
+        ],
+        [
+          "rn9168y7501",
+          "Davide Gallo",
+          {
+            "date": "1979-06-29"
+          }
+        ],
+        [
+          "su9279b6017",
+          "Chiara Conti",
+          {
+            "date": "1993-12-23"
+          }
+        ],
+        [
+          "tb9322e8625",
+          "Sara Ricci",
+          {
+            "date": "1961-08-17"
+          }
+        ],
+        [
+          "uj9437h6380",
+          "Andrea Esposito",
+          {
+            "date": "1964-03-18"
+          }
+        ],
+        [
+          "vq9535l7083",
+          "Francesca Rizzo",
+          {
+            "date": "2010-10-28"
+          }
+        ],
+        [
+          "wx9641o7247",
+          "Giulia Esposito",
+          {
+            "date": "2007-05-10"
+          }
+        ],
+        [
+          "xe9720r1340",
+          "Andrea Ricci",
+          {
+            "date": "1958-09-30"
+          }
+        ],
+        [
+          "ym9864u3980",
+          "Simone Costa",
+          {
+            "date": "1943-09-20"
+          }
+        ],
+        [
+          "zt9991x1199",
+          "Matteo Rizzo",
+          {
+            "date": "1949-07-17"
+          }
+        ]
+      ],
+      "extra_rows": []
+    },
+    {
+      "id": "H03",
+      "critical": true,
+      "passed": false,
+      "gold_sql": "SELECT COUNT(*) AS appointment_count FROM appointments",
+      "generated_sql": "SELECT COUNT(*) AS appointment_count FROM appointments",
+      "error": null,
+      "gold_rows": [
+        [
+          {
+            "number": "200"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          {
+            "number": "0"
+          }
+        ]
+      ],
+      "gold_result_hash": "6ac8877bb4246f106d3125d052bba9cb3afee0f768b855a9eb521c15b21cea5d",
+      "generated_result_hash": "4385554a7b4060e4d0514b0d84985a11bf325e0203871285c9820f106bb28acd",
+      "gold_row_count": 1,
+      "generated_row_count": 1,
+      "missing_rows": [
+        [
+          {
+            "number": "200"
+          }
+        ]
+      ],
+      "extra_rows": [
+        [
+          {
+            "number": "0"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "H04",
+      "critical": true,
+      "passed": false,
+      "gold_sql": "SELECT a.appointment_id, p.fiscal_code, d.full_name AS doctor_name, d.specialty, w.name AS ward_name, a.scheduled_on FROM appointments a JOIN patients p ON p.patient_id = a.patient_id JOIN doctors d ON d.doctor_id = a.doctor_id JOIN wards w ON w.ward_id = a.ward_id",
+      "generated_sql": "SELECT a.appointment_id, p.fiscal_code, d.full_name AS doctor_name, d.specialty, w.name AS ward_name, a.scheduled_on FROM appointments a JOIN patients p ON p.patient_id = a.patient_id JOIN doctors d ON d.doctor_id = a.doctor_id JOIN wards w ON w.ward_id = a.ward_id",
+      "error": null,
+      "gold_rows": [
+        [
+          {
+            "number": "1"
+          },
+          "ed7996n4674",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto E",
+          "2026-01-07 07:54"
+        ],
+        [
+          {
+            "number": "10"
+          },
+          "qf1576v2248",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto C",
+          "2026-05-20 09:51"
+        ],
+        [
+          {
+            "number": "100"
+          },
+          "cp5253g9072",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto C",
+          "2026-05-30 04:17"
+        ],
+        [
+          {
+            "number": "101"
+          },
+          "xe4798r4727",
+          "Dr. Valentina Bruno",
+          "Cardiologia",
+          "Reparto E",
+          "2026-11-18 03:23"
+        ],
+        [
+          {
+            "number": "102"
+          },
+          "hz5718w2744",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto E",
+          "2026-07-06 20:58"
+        ],
+        [
+          {
+            "number": "103"
+          },
+          "lv3584f3022",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto D",
+          "2026-08-16 15:18"
+        ],
+        [
+          {
+            "number": "104"
+          },
+          "dw7816k9148",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto A",
+          "2026-11-21 02:07"
+        ],
+        [
+          {
+            "number": "105"
+          },
+          "rn6665y7397",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto A",
+          "2026-01-05 13:45"
+        ],
+        [
+          {
+            "number": "106"
+          },
+          "hz5718w2744",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto E",
+          "2026-05-18 23:36"
+        ],
+        [
+          {
+            "number": "107"
+          },
+          "zt4910x2236",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto E",
+          "2027-02-06 02:25"
+        ],
+        [
+          {
+            "number": "108"
+          },
+          "mc8694j4297",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto D",
+          "2026-05-03 10:06"
+        ],
+        [
+          {
+            "number": "109"
+          },
+          "lv6070f2160",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto A",
+          "2026-09-05 19:44"
+        ],
+        [
+          {
+            "number": "11"
+          },
+          "uj1957h8180",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto B",
+          "2026-10-16 09:00"
+        ],
+        [
+          {
+            "number": "110"
+          },
+          "dw5349k6806",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto E",
+          "2026-06-22 09:34"
+        ],
+        [
+          {
+            "number": "111"
+          },
+          "or6390p5040",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto B",
+          "2026-04-17 05:40"
+        ],
+        [
+          {
+            "number": "112"
+          },
+          "dw5349k6806",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto D",
+          "2026-03-20 16:39"
+        ],
+        [
+          {
+            "number": "113"
+          },
+          "aa5086a8550",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto C",
+          "2026-06-23 16:46"
+        ],
+        [
+          {
+            "number": "114"
+          },
+          "zt9991x1199",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto C",
+          "2026-09-30 18:01"
+        ],
+        [
+          {
+            "number": "115"
+          },
+          "gs0681t2781",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto B",
+          "2026-11-11 07:05"
+        ],
+        [
+          {
+            "number": "116"
+          },
+          "bh5126d4926",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto B",
+          "2027-01-16 16:44"
+        ],
+        [
+          {
+            "number": "117"
+          },
+          "qf9047v4579",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto D",
+          "2026-04-29 01:38"
+        ],
+        [
+          {
+            "number": "118"
+          },
+          "fl3073q3164",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto B",
+          "2026-12-08 00:46"
+        ],
+        [
+          {
+            "number": "119"
+          },
+          "rn6665y7397",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto F",
+          "2026-03-20 01:29"
+        ],
+        [
+          {
+            "number": "12"
+          },
+          "rn9168y7501",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto A",
+          "2026-03-12 07:12"
+        ],
+        [
+          {
+            "number": "120"
+          },
+          "su6764b8829",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto B",
+          "2026-08-07 18:54"
+        ],
+        [
+          {
+            "number": "121"
+          },
+          "py1459s7976",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto D",
+          "2026-12-10 02:48"
+        ],
+        [
+          {
+            "number": "122"
+          },
+          "wx7185o9479",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto C",
+          "2026-03-10 12:52"
+        ],
+        [
+          {
+            "number": "123"
+          },
+          "aa5086a8550",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto C",
+          "2026-10-28 01:41"
+        ],
+        [
+          {
+            "number": "124"
+          },
+          "xe2293r3933",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto E",
+          "2027-01-14 01:52"
+        ],
+        [
+          {
+            "number": "125"
+          },
+          "ym9864u3980",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto C",
+          "2026-01-27 06:43"
+        ],
+        [
+          {
+            "number": "126"
+          },
+          "su4225b2590",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto F",
+          "2026-06-11 03:23"
+        ],
+        [
+          {
+            "number": "127"
+          },
+          "zt7410x7863",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto C",
+          "2026-08-21 04:15"
+        ],
+        [
+          {
+            "number": "128"
+          },
+          "qf6525v8993",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto C",
+          "2026-07-13 19:41"
+        ],
+        [
+          {
+            "number": "129"
+          },
+          "ym9864u3980",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto A",
+          "2026-08-28 23:18"
+        ],
+        [
+          {
+            "number": "13"
+          },
+          "ym2377u2390",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto E",
+          "2026-02-24 11:12"
+        ],
+        [
+          {
+            "number": "130"
+          },
+          "or1320p7639",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto B",
+          "2027-02-19 14:39"
+        ],
+        [
+          {
+            "number": "131"
+          },
+          "vq4563l4601",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto E",
+          "2026-12-14 14:29"
+        ],
+        [
+          {
+            "number": "132"
+          },
+          "hz5718w2744",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto B",
+          "2026-11-10 11:04"
+        ],
+        [
+          {
+            "number": "133"
+          },
+          "gs8130t7802",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto B",
+          "2026-08-23 19:34"
+        ],
+        [
+          {
+            "number": "134"
+          },
+          "ed5442n6756",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto C",
+          "2026-12-29 01:23"
+        ],
+        [
+          {
+            "number": "135"
+          },
+          "lv3584f3022",
+          "Dr. Valentina Bruno",
+          "Cardiologia",
+          "Reparto C",
+          "2027-01-20 11:33"
+        ],
+        [
+          {
+            "number": "136"
+          },
+          "jg3372z2498",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto E",
+          "2026-12-23 10:21"
+        ],
+        [
+          {
+            "number": "137"
+          },
+          "gs5658t1736",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto B",
+          "2026-02-27 17:28"
+        ],
+        [
+          {
+            "number": "138"
+          },
+          "hz5718w2744",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto A",
+          "2026-07-30 19:14"
+        ],
+        [
+          {
+            "number": "139"
+          },
+          "cp2780g1086",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto E",
+          "2026-02-01 11:18"
+        ],
+        [
+          {
+            "number": "14"
+          },
+          "gs5658t1736",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto F",
+          "2026-12-06 06:21"
+        ],
+        [
+          {
+            "number": "140"
+          },
+          "dw5349k6806",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto A",
+          "2026-12-10 10:23"
+        ],
+        [
+          {
+            "number": "141"
+          },
+          "xe4798r4727",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto C",
+          "2026-09-11 11:38"
+        ],
+        [
+          {
+            "number": "142"
+          },
+          "bh7641d5056",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto D",
+          "2026-11-24 03:16"
+        ],
+        [
+          {
+            "number": "143"
+          },
+          "jg0825z2195",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto A",
+          "2026-05-11 05:04"
+        ],
+        [
+          {
+            "number": "144"
+          },
+          "dw7816k9148",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto E",
+          "2026-02-27 00:59"
+        ],
+        [
+          {
+            "number": "145"
+          },
+          "lv8540f5238",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto C",
+          "2026-08-24 11:20"
+        ],
+        [
+          {
+            "number": "146"
+          },
+          "xe4798r4727",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto A",
+          "2026-09-19 17:17"
+        ],
+        [
+          {
+            "number": "147"
+          },
+          "vq2072l3481",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto F",
+          "2026-12-23 15:55"
+        ],
+        [
+          {
+            "number": "148"
+          },
+          "bh2675d5051",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto E",
+          "2026-03-20 02:40"
+        ],
+        [
+          {
+            "number": "149"
+          },
+          "or6390p5040",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto D",
+          "2026-11-28 05:10"
+        ],
+        [
+          {
+            "number": "15"
+          },
+          "vq7013l1798",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto D",
+          "2026-09-18 15:25"
+        ],
+        [
+          {
+            "number": "150"
+          },
+          "vq9535l7083",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto F",
+          "2026-08-24 20:43"
+        ],
+        [
+          {
+            "number": "151"
+          },
+          "gs3167t3932",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto A",
+          "2026-08-29 03:17"
+        ],
+        [
+          {
+            "number": "152"
+          },
+          "ym4838u7720",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto E",
+          "2027-01-17 17:40"
+        ],
+        [
+          {
+            "number": "153"
+          },
+          "lv8540f5238",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto F",
+          "2027-01-17 23:58"
+        ],
+        [
+          {
+            "number": "154"
+          },
+          "dw5349k6806",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto E",
+          "2026-06-04 20:10"
+        ],
+        [
+          {
+            "number": "155"
+          },
+          "zt7410x7863",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto C",
+          "2026-07-25 00:40"
+        ],
+        [
+          {
+            "number": "156"
+          },
+          "nk3748m4360",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto F",
+          "2026-11-05 11:02"
+        ],
+        [
+          {
+            "number": "157"
+          },
+          "wx2179o2714",
+          "Dr. Valentina Bruno",
+          "Cardiologia",
+          "Reparto D",
+          "2026-06-02 20:15"
+        ],
+        [
+          {
+            "number": "158"
+          },
+          "jg8319z9090",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto B",
+          "2026-05-23 22:56"
+        ],
+        [
+          {
+            "number": "159"
+          },
+          "zt2452x9382",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto E",
+          "2026-07-09 03:08"
+        ],
+        [
+          {
+            "number": "16"
+          },
+          "hz8285w6248",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto C",
+          "2026-10-12 05:24"
+        ],
+        [
+          {
+            "number": "160"
+          },
+          "hz0778w4784",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto E",
+          "2026-05-17 14:01"
+        ],
+        [
+          {
+            "number": "161"
+          },
+          "ym9864u3980",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto E",
+          "2026-10-17 03:38"
+        ],
+        [
+          {
+            "number": "162"
+          },
+          "zt4910x2236",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto C",
+          "2026-05-17 20:53"
+        ],
+        [
+          {
+            "number": "163"
+          },
+          "gs5658t1736",
+          "Dr. Valentina Bruno",
+          "Cardiologia",
+          "Reparto B",
+          "2026-06-06 09:44"
+        ],
+        [
+          {
+            "number": "164"
+          },
+          "gs5658t1736",
+          "Dr. Valentina Bruno",
+          "Cardiologia",
+          "Reparto F",
+          "2026-09-30 12:17"
+        ],
+        [
+          {
+            "number": "165"
+          },
+          "zt2452x9382",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto F",
+          "2026-09-29 10:41"
+        ],
+        [
+          {
+            "number": "166"
+          },
+          "tb6875e8958",
+          "Dr. Valentina Bruno",
+          "Cardiologia",
+          "Reparto B",
+          "2026-10-01 09:02"
+        ],
+        [
+          {
+            "number": "167"
+          },
+          "fl8096q1177",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto C",
+          "2026-10-05 12:50"
+        ],
+        [
+          {
+            "number": "168"
+          },
+          "or8849p1560",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto D",
+          "2026-02-15 00:14"
+        ],
+        [
+          {
+            "number": "169"
+          },
+          "uj9437h6380",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto B",
+          "2026-07-20 01:35"
+        ],
+        [
+          {
+            "number": "17"
+          },
+          "uj6918h5638",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto A",
+          "2026-10-08 07:51"
+        ],
+        [
+          {
+            "number": "170"
+          },
+          "jg0825z2195",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto C",
+          "2026-09-20 09:30"
+        ],
+        [
+          {
+            "number": "171"
+          },
+          "xe2293r3933",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto F",
+          "2026-07-03 05:50"
+        ],
+        [
+          {
+            "number": "172"
+          },
+          "cp2780g1086",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto E",
+          "2026-09-07 10:59"
+        ],
+        [
+          {
+            "number": "173"
+          },
+          "cp7776g5402",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto F",
+          "2027-02-13 05:40"
+        ],
+        [
+          {
+            "number": "174"
+          },
+          "gs5658t1736",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto C",
+          "2026-03-29 09:19"
+        ],
+        [
+          {
+            "number": "175"
+          },
+          "or1320p7639",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto A",
+          "2027-01-11 03:24"
+        ],
+        [
+          {
+            "number": "176"
+          },
+          "uj6918h5638",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto F",
+          "2026-11-02 16:16"
+        ],
+        [
+          {
+            "number": "177"
+          },
+          "lv3584f3022",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto D",
+          "2026-11-02 02:11"
+        ],
+        [
+          {
+            "number": "178"
+          },
+          "cp7776g5402",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto B",
+          "2026-12-27 19:08"
+        ],
+        [
+          {
+            "number": "179"
+          },
+          "mc3624j9598",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto F",
+          "2026-01-12 02:12"
+        ],
+        [
+          {
+            "number": "18"
+          },
+          "ed7996n4674",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto C",
+          "2027-01-20 22:42"
+        ],
+        [
+          {
+            "number": "180"
+          },
+          "rn6665y7397",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto C",
+          "2026-10-12 23:04"
+        ],
+        [
+          {
+            "number": "181"
+          },
+          "gs5658t1736",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto C",
+          "2027-02-22 23:51"
+        ],
+        [
+          {
+            "number": "182"
+          },
+          "jg3372z2498",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto A",
+          "2026-02-08 19:07"
+        ],
+        [
+          {
+            "number": "183"
+          },
+          "py6461s4204",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto E",
+          "2026-01-08 20:43"
+        ],
+        [
+          {
+            "number": "184"
+          },
+          "rn4190y9872",
+          "Dr. Valentina Bruno",
+          "Cardiologia",
+          "Reparto E",
+          "2026-05-08 02:22"
+        ],
+        [
+          {
+            "number": "185"
+          },
+          "xe2293r3933",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto A",
+          "2026-02-09 11:13"
+        ],
+        [
+          {
+            "number": "186"
+          },
+          "vq7013l1798",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto A",
+          "2026-04-22 20:32"
+        ],
+        [
+          {
+            "number": "187"
+          },
+          "fl0585q7098",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto F",
+          "2026-08-24 11:53"
+        ],
+        [
+          {
+            "number": "188"
+          },
+          "cp5253g9072",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto D",
+          "2026-05-29 14:33"
+        ],
+        [
+          {
+            "number": "189"
+          },
+          "nk6299m7771",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto A",
+          "2026-07-25 08:43"
+        ],
+        [
+          {
+            "number": "19"
+          },
+          "mc1117j4250",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto B",
+          "2026-10-05 19:43"
+        ],
+        [
+          {
+            "number": "190"
+          },
+          "uj6918h5638",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto C",
+          "2027-01-24 23:16"
+        ],
+        [
+          {
+            "number": "191"
+          },
+          "vq2072l3481",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto D",
+          "2026-07-15 14:15"
+        ],
+        [
+          {
+            "number": "192"
+          },
+          "mc8694j4297",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto C",
+          "2026-05-05 23:52"
+        ],
+        [
+          {
+            "number": "193"
+          },
+          "or6390p5040",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto A",
+          "2026-03-24 03:55"
+        ],
+        [
+          {
+            "number": "194"
+          },
+          "gs0681t2781",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto A",
+          "2026-06-07 14:57"
+        ],
+        [
+          {
+            "number": "195"
+          },
+          "gs8130t7802",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto C",
+          "2027-02-14 02:52"
+        ],
+        [
+          {
+            "number": "196"
+          },
+          "su9279b6017",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto E",
+          "2026-10-17 15:04"
+        ],
+        [
+          {
+            "number": "197"
+          },
+          "lv8540f5238",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto C",
+          "2026-05-24 06:06"
+        ],
+        [
+          {
+            "number": "198"
+          },
+          "tb6875e8958",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto C",
+          "2026-05-11 03:54"
+        ],
+        [
+          {
+            "number": "199"
+          },
+          "gs8130t7802",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto A",
+          "2026-09-22 19:41"
+        ],
+        [
+          {
+            "number": "2"
+          },
+          "su6764b8829",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto B",
+          "2026-03-31 03:40"
+        ],
+        [
+          {
+            "number": "20"
+          },
+          "tb6875e8958",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto F",
+          "2026-09-11 14:38"
+        ],
+        [
+          {
+            "number": "200"
+          },
+          "su9279b6017",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto E",
+          "2026-01-20 08:56"
+        ],
+        [
+          {
+            "number": "21"
+          },
+          "fl8096q1177",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto B",
+          "2027-02-11 02:06"
+        ],
+        [
+          {
+            "number": "22"
+          },
+          "gs3167t3932",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto D",
+          "2026-02-13 05:48"
+        ],
+        [
+          {
+            "number": "23"
+          },
+          "xe4798r4727",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto F",
+          "2026-05-25 06:41"
+        ],
+        [
+          {
+            "number": "24"
+          },
+          "ko3428c4387",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto C",
+          "2026-04-18 15:51"
+        ],
+        [
+          {
+            "number": "25"
+          },
+          "dw7816k9148",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto B",
+          "2026-12-01 14:54"
+        ],
+        [
+          {
+            "number": "26"
+          },
+          "fl3073q3164",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto A",
+          "2026-07-06 22:18"
+        ],
+        [
+          {
+            "number": "27"
+          },
+          "wx9641o7247",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto C",
+          "2026-07-30 23:39"
+        ],
+        [
+          {
+            "number": "28"
+          },
+          "py3991s8956",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto E",
+          "2027-02-02 04:31"
+        ],
+        [
+          {
+            "number": "29"
+          },
+          "mc8694j4297",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto A",
+          "2026-08-28 23:20"
+        ],
+        [
+          {
+            "number": "3"
+          },
+          "uj9437h6380",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto B",
+          "2026-11-20 11:22"
+        ],
+        [
+          {
+            "number": "30"
+          },
+          "cp0218g5943",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto D",
+          "2026-03-19 18:03"
+        ],
+        [
+          {
+            "number": "31"
+          },
+          "su9279b6017",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto E",
+          "2026-11-09 23:50"
+        ],
+        [
+          {
+            "number": "32"
+          },
+          "nk1219m2160",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto F",
+          "2026-11-08 18:42"
+        ],
+        [
+          {
+            "number": "33"
+          },
+          "or8849p1560",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto B",
+          "2026-06-02 06:08"
+        ],
+        [
+          {
+            "number": "34"
+          },
+          "or3814p2061",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto C",
+          "2026-09-13 23:30"
+        ],
+        [
+          {
+            "number": "35"
+          },
+          "rn9168y7501",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto C",
+          "2027-01-20 15:08"
+        ],
+        [
+          {
+            "number": "36"
+          },
+          "lv8540f5238",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto E",
+          "2026-09-22 11:55"
+        ],
+        [
+          {
+            "number": "37"
+          },
+          "su4225b2590",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto F",
+          "2026-04-11 02:46"
+        ],
+        [
+          {
+            "number": "38"
+          },
+          "qf6525v8993",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto C",
+          "2026-06-02 18:51"
+        ],
+        [
+          {
+            "number": "39"
+          },
+          "ko0960c9816",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto D",
+          "2026-01-22 04:42"
+        ],
+        [
+          {
+            "number": "4"
+          },
+          "hz5718w2744",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto C",
+          "2026-07-30 07:49"
+        ],
+        [
+          {
+            "number": "40"
+          },
+          "nk8757m7826",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto A",
+          "2026-08-15 21:29"
+        ],
+        [
+          {
+            "number": "41"
+          },
+          "lv8540f5238",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto D",
+          "2027-01-09 03:07"
+        ],
+        [
+          {
+            "number": "42"
+          },
+          "ed5442n6756",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto C",
+          "2026-04-23 18:08"
+        ],
+        [
+          {
+            "number": "43"
+          },
+          "zt2452x9382",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto A",
+          "2027-02-20 04:19"
+        ],
+        [
+          {
+            "number": "44"
+          },
+          "vq2072l3481",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto E",
+          "2026-08-14 21:36"
+        ],
+        [
+          {
+            "number": "45"
+          },
+          "nk8757m7826",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto A",
+          "2026-04-30 14:18"
+        ],
+        [
+          {
+            "number": "46"
+          },
+          "mc1117j4250",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto F",
+          "2026-01-20 09:34"
+        ],
+        [
+          {
+            "number": "47"
+          },
+          "mc1117j4250",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto B",
+          "2026-09-12 09:20"
+        ],
+        [
+          {
+            "number": "48"
+          },
+          "hz3289w5029",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto D",
+          "2027-02-04 01:24"
+        ],
+        [
+          {
+            "number": "49"
+          },
+          "xe9720r1340",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto E",
+          "2026-01-11 13:05"
+        ],
+        [
+          {
+            "number": "5"
+          },
+          "zt9991x1199",
+          "Dr. Valentina Bruno",
+          "Cardiologia",
+          "Reparto B",
+          "2026-07-09 19:12"
+        ],
+        [
+          {
+            "number": "50"
+          },
+          "or8849p1560",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto C",
+          "2026-03-06 09:02"
+        ],
+        [
+          {
+            "number": "51"
+          },
+          "lv1030f9609",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto E",
+          "2027-01-07 01:33"
+        ],
+        [
+          {
+            "number": "52"
+          },
+          "ym2377u2390",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto C",
+          "2027-02-16 22:29"
+        ],
+        [
+          {
+            "number": "53"
+          },
+          "lv3584f3022",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto C",
+          "2026-03-18 07:07"
+        ],
+        [
+          {
+            "number": "54"
+          },
+          "dw7816k9148",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto A",
+          "2027-01-07 17:46"
+        ],
+        [
+          {
+            "number": "55"
+          },
+          "ko0960c9816",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto D",
+          "2026-04-24 15:18"
+        ],
+        [
+          {
+            "number": "56"
+          },
+          "rn1663y1189",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto C",
+          "2026-11-08 17:32"
+        ],
+        [
+          {
+            "number": "57"
+          },
+          "jg0825z2195",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto D",
+          "2026-12-19 10:58"
+        ],
+        [
+          {
+            "number": "58"
+          },
+          "or1320p7639",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto E",
+          "2026-03-17 18:00"
+        ],
+        [
+          {
+            "number": "59"
+          },
+          "uj6918h5638",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto B",
+          "2026-05-22 15:35"
+        ],
+        [
+          {
+            "number": "6"
+          },
+          "dw0396k6410",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto A",
+          "2026-01-30 00:00"
+        ],
+        [
+          {
+            "number": "60"
+          },
+          "fl8096q1177",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto D",
+          "2026-12-05 18:55"
+        ],
+        [
+          {
+            "number": "61"
+          },
+          "jg5810z2517",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto D",
+          "2026-11-22 06:46"
+        ],
+        [
+          {
+            "number": "62"
+          },
+          "rn9168y7501",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto A",
+          "2026-09-04 19:38"
+        ],
+        [
+          {
+            "number": "63"
+          },
+          "su9279b6017",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto F",
+          "2026-07-22 09:29"
+        ],
+        [
+          {
+            "number": "64"
+          },
+          "nk8757m7826",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto E",
+          "2026-01-26 06:21"
+        ],
+        [
+          {
+            "number": "65"
+          },
+          "jg5810z2517",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto C",
+          "2026-12-08 04:55"
+        ],
+        [
+          {
+            "number": "66"
+          },
+          "rn4190y9872",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto F",
+          "2026-12-13 03:04"
+        ],
+        [
+          {
+            "number": "67"
+          },
+          "aa10041a7930",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto B",
+          "2026-12-21 07:20"
+        ],
+        [
+          {
+            "number": "68"
+          },
+          "py1459s7976",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto F",
+          "2026-05-27 20:42"
+        ],
+        [
+          {
+            "number": "69"
+          },
+          "or3814p2061",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto D",
+          "2026-03-05 01:46"
+        ],
+        [
+          {
+            "number": "7"
+          },
+          "gs3167t3932",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto A",
+          "2026-11-14 01:55"
+        ],
+        [
+          {
+            "number": "70"
+          },
+          "cp5253g9072",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto B",
+          "2026-11-01 08:02"
+        ],
+        [
+          {
+            "number": "71"
+          },
+          "su6764b8829",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto A",
+          "2026-12-09 08:27"
+        ],
+        [
+          {
+            "number": "72"
+          },
+          "rn6665y7397",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto D",
+          "2026-09-21 03:59"
+        ],
+        [
+          {
+            "number": "73"
+          },
+          "su1736b3166",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto A",
+          "2026-01-26 14:55"
+        ],
+        [
+          {
+            "number": "74"
+          },
+          "zt2452x9382",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto B",
+          "2026-03-30 03:11"
+        ],
+        [
+          {
+            "number": "75"
+          },
+          "zt4910x2236",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto F",
+          "2026-03-23 21:08"
+        ],
+        [
+          {
+            "number": "76"
+          },
+          "rn6665y7397",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto F",
+          "2026-01-19 17:32"
+        ],
+        [
+          {
+            "number": "77"
+          },
+          "su4225b2590",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto B",
+          "2026-08-19 02:07"
+        ],
+        [
+          {
+            "number": "78"
+          },
+          "wx2179o2714",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto E",
+          "2027-02-08 22:53"
+        ],
+        [
+          {
+            "number": "79"
+          },
+          "cp5253g9072",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto C",
+          "2026-04-17 15:52"
+        ],
+        [
+          {
+            "number": "8"
+          },
+          "jg0825z2195",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto E",
+          "2027-01-27 05:52"
+        ],
+        [
+          {
+            "number": "80"
+          },
+          "fl8096q1177",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto E",
+          "2027-01-05 08:03"
+        ],
+        [
+          {
+            "number": "81"
+          },
+          "cp5253g9072",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto F",
+          "2026-04-06 08:39"
+        ],
+        [
+          {
+            "number": "82"
+          },
+          "nk3748m4360",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto E",
+          "2027-02-15 14:02"
+        ],
+        [
+          {
+            "number": "83"
+          },
+          "jg8319z9090",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto D",
+          "2026-05-21 02:43"
+        ],
+        [
+          {
+            "number": "84"
+          },
+          "lv6070f2160",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto D",
+          "2027-01-19 00:08"
+        ],
+        [
+          {
+            "number": "85"
+          },
+          "ym4838u7720",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto F",
+          "2026-12-19 10:22"
+        ],
+        [
+          {
+            "number": "86"
+          },
+          "or8849p1560",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto B",
+          "2026-01-23 18:15"
+        ],
+        [
+          {
+            "number": "87"
+          },
+          "uj4492h2288",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto F",
+          "2026-03-16 20:14"
+        ],
+        [
+          {
+            "number": "88"
+          },
+          "ed0445n4012",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto F",
+          "2026-01-27 10:19"
+        ],
+        [
+          {
+            "number": "89"
+          },
+          "wx7185o9479",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto F",
+          "2026-07-16 12:34"
+        ],
+        [
+          {
+            "number": "9"
+          },
+          "wx7185o9479",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto E",
+          "2026-01-02 09:23"
+        ],
+        [
+          {
+            "number": "90"
+          },
+          "xe7256r1861",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto D",
+          "2026-03-31 19:46"
+        ],
+        [
+          {
+            "number": "91"
+          },
+          "py6461s4204",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto E",
+          "2026-09-25 02:08"
+        ],
+        [
+          {
+            "number": "92"
+          },
+          "gs8130t7802",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto A",
+          "2026-02-13 02:01"
+        ],
+        [
+          {
+            "number": "93"
+          },
+          "uj1957h8180",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto F",
+          "2026-04-01 03:19"
+        ],
+        [
+          {
+            "number": "94"
+          },
+          "ym9864u3980",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto C",
+          "2026-07-09 13:44"
+        ],
+        [
+          {
+            "number": "95"
+          },
+          "uj6918h5638",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto C",
+          "2026-09-09 20:05"
+        ],
+        [
+          {
+            "number": "96"
+          },
+          "py3991s8956",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto D",
+          "2026-04-01 05:17"
+        ],
+        [
+          {
+            "number": "97"
+          },
+          "jg5810z2517",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto D",
+          "2026-07-18 16:29"
+        ],
+        [
+          {
+            "number": "98"
+          },
+          "bh0128d4951",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto D",
+          "2026-05-31 21:50"
+        ],
+        [
+          {
+            "number": "99"
+          },
+          "ed2915n6901",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto D",
+          "2026-06-08 13:58"
+        ]
+      ],
+      "generated_rows": [],
+      "gold_result_hash": "94efab05c5ec36f6e0216a9f4b46a0b3c669cde435fe36c50feb124ff26127b0",
+      "generated_result_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "gold_row_count": 200,
+      "generated_row_count": 0,
+      "missing_rows": [
+        [
+          {
+            "number": "1"
+          },
+          "ed7996n4674",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto E",
+          "2026-01-07 07:54"
+        ],
+        [
+          {
+            "number": "10"
+          },
+          "qf1576v2248",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto C",
+          "2026-05-20 09:51"
+        ],
+        [
+          {
+            "number": "100"
+          },
+          "cp5253g9072",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto C",
+          "2026-05-30 04:17"
+        ],
+        [
+          {
+            "number": "101"
+          },
+          "xe4798r4727",
+          "Dr. Valentina Bruno",
+          "Cardiologia",
+          "Reparto E",
+          "2026-11-18 03:23"
+        ],
+        [
+          {
+            "number": "102"
+          },
+          "hz5718w2744",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto E",
+          "2026-07-06 20:58"
+        ],
+        [
+          {
+            "number": "103"
+          },
+          "lv3584f3022",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto D",
+          "2026-08-16 15:18"
+        ],
+        [
+          {
+            "number": "104"
+          },
+          "dw7816k9148",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto A",
+          "2026-11-21 02:07"
+        ],
+        [
+          {
+            "number": "105"
+          },
+          "rn6665y7397",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto A",
+          "2026-01-05 13:45"
+        ],
+        [
+          {
+            "number": "106"
+          },
+          "hz5718w2744",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto E",
+          "2026-05-18 23:36"
+        ],
+        [
+          {
+            "number": "107"
+          },
+          "zt4910x2236",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto E",
+          "2027-02-06 02:25"
+        ],
+        [
+          {
+            "number": "108"
+          },
+          "mc8694j4297",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto D",
+          "2026-05-03 10:06"
+        ],
+        [
+          {
+            "number": "109"
+          },
+          "lv6070f2160",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto A",
+          "2026-09-05 19:44"
+        ],
+        [
+          {
+            "number": "11"
+          },
+          "uj1957h8180",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto B",
+          "2026-10-16 09:00"
+        ],
+        [
+          {
+            "number": "110"
+          },
+          "dw5349k6806",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto E",
+          "2026-06-22 09:34"
+        ],
+        [
+          {
+            "number": "111"
+          },
+          "or6390p5040",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto B",
+          "2026-04-17 05:40"
+        ],
+        [
+          {
+            "number": "112"
+          },
+          "dw5349k6806",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto D",
+          "2026-03-20 16:39"
+        ],
+        [
+          {
+            "number": "113"
+          },
+          "aa5086a8550",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto C",
+          "2026-06-23 16:46"
+        ],
+        [
+          {
+            "number": "114"
+          },
+          "zt9991x1199",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto C",
+          "2026-09-30 18:01"
+        ],
+        [
+          {
+            "number": "115"
+          },
+          "gs0681t2781",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto B",
+          "2026-11-11 07:05"
+        ],
+        [
+          {
+            "number": "116"
+          },
+          "bh5126d4926",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto B",
+          "2027-01-16 16:44"
+        ],
+        [
+          {
+            "number": "117"
+          },
+          "qf9047v4579",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto D",
+          "2026-04-29 01:38"
+        ],
+        [
+          {
+            "number": "118"
+          },
+          "fl3073q3164",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto B",
+          "2026-12-08 00:46"
+        ],
+        [
+          {
+            "number": "119"
+          },
+          "rn6665y7397",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto F",
+          "2026-03-20 01:29"
+        ],
+        [
+          {
+            "number": "12"
+          },
+          "rn9168y7501",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto A",
+          "2026-03-12 07:12"
+        ],
+        [
+          {
+            "number": "120"
+          },
+          "su6764b8829",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto B",
+          "2026-08-07 18:54"
+        ],
+        [
+          {
+            "number": "121"
+          },
+          "py1459s7976",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto D",
+          "2026-12-10 02:48"
+        ],
+        [
+          {
+            "number": "122"
+          },
+          "wx7185o9479",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto C",
+          "2026-03-10 12:52"
+        ],
+        [
+          {
+            "number": "123"
+          },
+          "aa5086a8550",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto C",
+          "2026-10-28 01:41"
+        ],
+        [
+          {
+            "number": "124"
+          },
+          "xe2293r3933",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto E",
+          "2027-01-14 01:52"
+        ],
+        [
+          {
+            "number": "125"
+          },
+          "ym9864u3980",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto C",
+          "2026-01-27 06:43"
+        ],
+        [
+          {
+            "number": "126"
+          },
+          "su4225b2590",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto F",
+          "2026-06-11 03:23"
+        ],
+        [
+          {
+            "number": "127"
+          },
+          "zt7410x7863",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto C",
+          "2026-08-21 04:15"
+        ],
+        [
+          {
+            "number": "128"
+          },
+          "qf6525v8993",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto C",
+          "2026-07-13 19:41"
+        ],
+        [
+          {
+            "number": "129"
+          },
+          "ym9864u3980",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto A",
+          "2026-08-28 23:18"
+        ],
+        [
+          {
+            "number": "13"
+          },
+          "ym2377u2390",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto E",
+          "2026-02-24 11:12"
+        ],
+        [
+          {
+            "number": "130"
+          },
+          "or1320p7639",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto B",
+          "2027-02-19 14:39"
+        ],
+        [
+          {
+            "number": "131"
+          },
+          "vq4563l4601",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto E",
+          "2026-12-14 14:29"
+        ],
+        [
+          {
+            "number": "132"
+          },
+          "hz5718w2744",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto B",
+          "2026-11-10 11:04"
+        ],
+        [
+          {
+            "number": "133"
+          },
+          "gs8130t7802",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto B",
+          "2026-08-23 19:34"
+        ],
+        [
+          {
+            "number": "134"
+          },
+          "ed5442n6756",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto C",
+          "2026-12-29 01:23"
+        ],
+        [
+          {
+            "number": "135"
+          },
+          "lv3584f3022",
+          "Dr. Valentina Bruno",
+          "Cardiologia",
+          "Reparto C",
+          "2027-01-20 11:33"
+        ],
+        [
+          {
+            "number": "136"
+          },
+          "jg3372z2498",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto E",
+          "2026-12-23 10:21"
+        ],
+        [
+          {
+            "number": "137"
+          },
+          "gs5658t1736",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto B",
+          "2026-02-27 17:28"
+        ],
+        [
+          {
+            "number": "138"
+          },
+          "hz5718w2744",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto A",
+          "2026-07-30 19:14"
+        ],
+        [
+          {
+            "number": "139"
+          },
+          "cp2780g1086",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto E",
+          "2026-02-01 11:18"
+        ],
+        [
+          {
+            "number": "14"
+          },
+          "gs5658t1736",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto F",
+          "2026-12-06 06:21"
+        ],
+        [
+          {
+            "number": "140"
+          },
+          "dw5349k6806",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto A",
+          "2026-12-10 10:23"
+        ],
+        [
+          {
+            "number": "141"
+          },
+          "xe4798r4727",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto C",
+          "2026-09-11 11:38"
+        ],
+        [
+          {
+            "number": "142"
+          },
+          "bh7641d5056",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto D",
+          "2026-11-24 03:16"
+        ],
+        [
+          {
+            "number": "143"
+          },
+          "jg0825z2195",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto A",
+          "2026-05-11 05:04"
+        ],
+        [
+          {
+            "number": "144"
+          },
+          "dw7816k9148",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto E",
+          "2026-02-27 00:59"
+        ],
+        [
+          {
+            "number": "145"
+          },
+          "lv8540f5238",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto C",
+          "2026-08-24 11:20"
+        ],
+        [
+          {
+            "number": "146"
+          },
+          "xe4798r4727",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto A",
+          "2026-09-19 17:17"
+        ],
+        [
+          {
+            "number": "147"
+          },
+          "vq2072l3481",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto F",
+          "2026-12-23 15:55"
+        ],
+        [
+          {
+            "number": "148"
+          },
+          "bh2675d5051",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto E",
+          "2026-03-20 02:40"
+        ],
+        [
+          {
+            "number": "149"
+          },
+          "or6390p5040",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto D",
+          "2026-11-28 05:10"
+        ],
+        [
+          {
+            "number": "15"
+          },
+          "vq7013l1798",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto D",
+          "2026-09-18 15:25"
+        ],
+        [
+          {
+            "number": "150"
+          },
+          "vq9535l7083",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto F",
+          "2026-08-24 20:43"
+        ],
+        [
+          {
+            "number": "151"
+          },
+          "gs3167t3932",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto A",
+          "2026-08-29 03:17"
+        ],
+        [
+          {
+            "number": "152"
+          },
+          "ym4838u7720",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto E",
+          "2027-01-17 17:40"
+        ],
+        [
+          {
+            "number": "153"
+          },
+          "lv8540f5238",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto F",
+          "2027-01-17 23:58"
+        ],
+        [
+          {
+            "number": "154"
+          },
+          "dw5349k6806",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto E",
+          "2026-06-04 20:10"
+        ],
+        [
+          {
+            "number": "155"
+          },
+          "zt7410x7863",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto C",
+          "2026-07-25 00:40"
+        ],
+        [
+          {
+            "number": "156"
+          },
+          "nk3748m4360",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto F",
+          "2026-11-05 11:02"
+        ],
+        [
+          {
+            "number": "157"
+          },
+          "wx2179o2714",
+          "Dr. Valentina Bruno",
+          "Cardiologia",
+          "Reparto D",
+          "2026-06-02 20:15"
+        ],
+        [
+          {
+            "number": "158"
+          },
+          "jg8319z9090",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto B",
+          "2026-05-23 22:56"
+        ],
+        [
+          {
+            "number": "159"
+          },
+          "zt2452x9382",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto E",
+          "2026-07-09 03:08"
+        ],
+        [
+          {
+            "number": "16"
+          },
+          "hz8285w6248",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto C",
+          "2026-10-12 05:24"
+        ],
+        [
+          {
+            "number": "160"
+          },
+          "hz0778w4784",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto E",
+          "2026-05-17 14:01"
+        ],
+        [
+          {
+            "number": "161"
+          },
+          "ym9864u3980",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto E",
+          "2026-10-17 03:38"
+        ],
+        [
+          {
+            "number": "162"
+          },
+          "zt4910x2236",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto C",
+          "2026-05-17 20:53"
+        ],
+        [
+          {
+            "number": "163"
+          },
+          "gs5658t1736",
+          "Dr. Valentina Bruno",
+          "Cardiologia",
+          "Reparto B",
+          "2026-06-06 09:44"
+        ],
+        [
+          {
+            "number": "164"
+          },
+          "gs5658t1736",
+          "Dr. Valentina Bruno",
+          "Cardiologia",
+          "Reparto F",
+          "2026-09-30 12:17"
+        ],
+        [
+          {
+            "number": "165"
+          },
+          "zt2452x9382",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto F",
+          "2026-09-29 10:41"
+        ],
+        [
+          {
+            "number": "166"
+          },
+          "tb6875e8958",
+          "Dr. Valentina Bruno",
+          "Cardiologia",
+          "Reparto B",
+          "2026-10-01 09:02"
+        ],
+        [
+          {
+            "number": "167"
+          },
+          "fl8096q1177",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto C",
+          "2026-10-05 12:50"
+        ],
+        [
+          {
+            "number": "168"
+          },
+          "or8849p1560",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto D",
+          "2026-02-15 00:14"
+        ],
+        [
+          {
+            "number": "169"
+          },
+          "uj9437h6380",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto B",
+          "2026-07-20 01:35"
+        ],
+        [
+          {
+            "number": "17"
+          },
+          "uj6918h5638",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto A",
+          "2026-10-08 07:51"
+        ],
+        [
+          {
+            "number": "170"
+          },
+          "jg0825z2195",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto C",
+          "2026-09-20 09:30"
+        ],
+        [
+          {
+            "number": "171"
+          },
+          "xe2293r3933",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto F",
+          "2026-07-03 05:50"
+        ],
+        [
+          {
+            "number": "172"
+          },
+          "cp2780g1086",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto E",
+          "2026-09-07 10:59"
+        ],
+        [
+          {
+            "number": "173"
+          },
+          "cp7776g5402",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto F",
+          "2027-02-13 05:40"
+        ],
+        [
+          {
+            "number": "174"
+          },
+          "gs5658t1736",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto C",
+          "2026-03-29 09:19"
+        ],
+        [
+          {
+            "number": "175"
+          },
+          "or1320p7639",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto A",
+          "2027-01-11 03:24"
+        ],
+        [
+          {
+            "number": "176"
+          },
+          "uj6918h5638",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto F",
+          "2026-11-02 16:16"
+        ],
+        [
+          {
+            "number": "177"
+          },
+          "lv3584f3022",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto D",
+          "2026-11-02 02:11"
+        ],
+        [
+          {
+            "number": "178"
+          },
+          "cp7776g5402",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto B",
+          "2026-12-27 19:08"
+        ],
+        [
+          {
+            "number": "179"
+          },
+          "mc3624j9598",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto F",
+          "2026-01-12 02:12"
+        ],
+        [
+          {
+            "number": "18"
+          },
+          "ed7996n4674",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto C",
+          "2027-01-20 22:42"
+        ],
+        [
+          {
+            "number": "180"
+          },
+          "rn6665y7397",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto C",
+          "2026-10-12 23:04"
+        ],
+        [
+          {
+            "number": "181"
+          },
+          "gs5658t1736",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto C",
+          "2027-02-22 23:51"
+        ],
+        [
+          {
+            "number": "182"
+          },
+          "jg3372z2498",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto A",
+          "2026-02-08 19:07"
+        ],
+        [
+          {
+            "number": "183"
+          },
+          "py6461s4204",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto E",
+          "2026-01-08 20:43"
+        ],
+        [
+          {
+            "number": "184"
+          },
+          "rn4190y9872",
+          "Dr. Valentina Bruno",
+          "Cardiologia",
+          "Reparto E",
+          "2026-05-08 02:22"
+        ],
+        [
+          {
+            "number": "185"
+          },
+          "xe2293r3933",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto A",
+          "2026-02-09 11:13"
+        ],
+        [
+          {
+            "number": "186"
+          },
+          "vq7013l1798",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto A",
+          "2026-04-22 20:32"
+        ],
+        [
+          {
+            "number": "187"
+          },
+          "fl0585q7098",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto F",
+          "2026-08-24 11:53"
+        ],
+        [
+          {
+            "number": "188"
+          },
+          "cp5253g9072",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto D",
+          "2026-05-29 14:33"
+        ],
+        [
+          {
+            "number": "189"
+          },
+          "nk6299m7771",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto A",
+          "2026-07-25 08:43"
+        ],
+        [
+          {
+            "number": "19"
+          },
+          "mc1117j4250",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto B",
+          "2026-10-05 19:43"
+        ],
+        [
+          {
+            "number": "190"
+          },
+          "uj6918h5638",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto C",
+          "2027-01-24 23:16"
+        ],
+        [
+          {
+            "number": "191"
+          },
+          "vq2072l3481",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto D",
+          "2026-07-15 14:15"
+        ],
+        [
+          {
+            "number": "192"
+          },
+          "mc8694j4297",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto C",
+          "2026-05-05 23:52"
+        ],
+        [
+          {
+            "number": "193"
+          },
+          "or6390p5040",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto A",
+          "2026-03-24 03:55"
+        ],
+        [
+          {
+            "number": "194"
+          },
+          "gs0681t2781",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto A",
+          "2026-06-07 14:57"
+        ],
+        [
+          {
+            "number": "195"
+          },
+          "gs8130t7802",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto C",
+          "2027-02-14 02:52"
+        ],
+        [
+          {
+            "number": "196"
+          },
+          "su9279b6017",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto E",
+          "2026-10-17 15:04"
+        ],
+        [
+          {
+            "number": "197"
+          },
+          "lv8540f5238",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto C",
+          "2026-05-24 06:06"
+        ],
+        [
+          {
+            "number": "198"
+          },
+          "tb6875e8958",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto C",
+          "2026-05-11 03:54"
+        ],
+        [
+          {
+            "number": "199"
+          },
+          "gs8130t7802",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto A",
+          "2026-09-22 19:41"
+        ],
+        [
+          {
+            "number": "2"
+          },
+          "su6764b8829",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto B",
+          "2026-03-31 03:40"
+        ],
+        [
+          {
+            "number": "20"
+          },
+          "tb6875e8958",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto F",
+          "2026-09-11 14:38"
+        ],
+        [
+          {
+            "number": "200"
+          },
+          "su9279b6017",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto E",
+          "2026-01-20 08:56"
+        ],
+        [
+          {
+            "number": "21"
+          },
+          "fl8096q1177",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto B",
+          "2027-02-11 02:06"
+        ],
+        [
+          {
+            "number": "22"
+          },
+          "gs3167t3932",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto D",
+          "2026-02-13 05:48"
+        ],
+        [
+          {
+            "number": "23"
+          },
+          "xe4798r4727",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto F",
+          "2026-05-25 06:41"
+        ],
+        [
+          {
+            "number": "24"
+          },
+          "ko3428c4387",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto C",
+          "2026-04-18 15:51"
+        ],
+        [
+          {
+            "number": "25"
+          },
+          "dw7816k9148",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto B",
+          "2026-12-01 14:54"
+        ],
+        [
+          {
+            "number": "26"
+          },
+          "fl3073q3164",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto A",
+          "2026-07-06 22:18"
+        ],
+        [
+          {
+            "number": "27"
+          },
+          "wx9641o7247",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto C",
+          "2026-07-30 23:39"
+        ],
+        [
+          {
+            "number": "28"
+          },
+          "py3991s8956",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto E",
+          "2027-02-02 04:31"
+        ],
+        [
+          {
+            "number": "29"
+          },
+          "mc8694j4297",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto A",
+          "2026-08-28 23:20"
+        ],
+        [
+          {
+            "number": "3"
+          },
+          "uj9437h6380",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto B",
+          "2026-11-20 11:22"
+        ],
+        [
+          {
+            "number": "30"
+          },
+          "cp0218g5943",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto D",
+          "2026-03-19 18:03"
+        ],
+        [
+          {
+            "number": "31"
+          },
+          "su9279b6017",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto E",
+          "2026-11-09 23:50"
+        ],
+        [
+          {
+            "number": "32"
+          },
+          "nk1219m2160",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto F",
+          "2026-11-08 18:42"
+        ],
+        [
+          {
+            "number": "33"
+          },
+          "or8849p1560",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto B",
+          "2026-06-02 06:08"
+        ],
+        [
+          {
+            "number": "34"
+          },
+          "or3814p2061",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto C",
+          "2026-09-13 23:30"
+        ],
+        [
+          {
+            "number": "35"
+          },
+          "rn9168y7501",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto C",
+          "2027-01-20 15:08"
+        ],
+        [
+          {
+            "number": "36"
+          },
+          "lv8540f5238",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto E",
+          "2026-09-22 11:55"
+        ],
+        [
+          {
+            "number": "37"
+          },
+          "su4225b2590",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto F",
+          "2026-04-11 02:46"
+        ],
+        [
+          {
+            "number": "38"
+          },
+          "qf6525v8993",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto C",
+          "2026-06-02 18:51"
+        ],
+        [
+          {
+            "number": "39"
+          },
+          "ko0960c9816",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto D",
+          "2026-01-22 04:42"
+        ],
+        [
+          {
+            "number": "4"
+          },
+          "hz5718w2744",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto C",
+          "2026-07-30 07:49"
+        ],
+        [
+          {
+            "number": "40"
+          },
+          "nk8757m7826",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto A",
+          "2026-08-15 21:29"
+        ],
+        [
+          {
+            "number": "41"
+          },
+          "lv8540f5238",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto D",
+          "2027-01-09 03:07"
+        ],
+        [
+          {
+            "number": "42"
+          },
+          "ed5442n6756",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto C",
+          "2026-04-23 18:08"
+        ],
+        [
+          {
+            "number": "43"
+          },
+          "zt2452x9382",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto A",
+          "2027-02-20 04:19"
+        ],
+        [
+          {
+            "number": "44"
+          },
+          "vq2072l3481",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto E",
+          "2026-08-14 21:36"
+        ],
+        [
+          {
+            "number": "45"
+          },
+          "nk8757m7826",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto A",
+          "2026-04-30 14:18"
+        ],
+        [
+          {
+            "number": "46"
+          },
+          "mc1117j4250",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto F",
+          "2026-01-20 09:34"
+        ],
+        [
+          {
+            "number": "47"
+          },
+          "mc1117j4250",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto B",
+          "2026-09-12 09:20"
+        ],
+        [
+          {
+            "number": "48"
+          },
+          "hz3289w5029",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto D",
+          "2027-02-04 01:24"
+        ],
+        [
+          {
+            "number": "49"
+          },
+          "xe9720r1340",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto E",
+          "2026-01-11 13:05"
+        ],
+        [
+          {
+            "number": "5"
+          },
+          "zt9991x1199",
+          "Dr. Valentina Bruno",
+          "Cardiologia",
+          "Reparto B",
+          "2026-07-09 19:12"
+        ],
+        [
+          {
+            "number": "50"
+          },
+          "or8849p1560",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto C",
+          "2026-03-06 09:02"
+        ],
+        [
+          {
+            "number": "51"
+          },
+          "lv1030f9609",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto E",
+          "2027-01-07 01:33"
+        ],
+        [
+          {
+            "number": "52"
+          },
+          "ym2377u2390",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto C",
+          "2027-02-16 22:29"
+        ],
+        [
+          {
+            "number": "53"
+          },
+          "lv3584f3022",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto C",
+          "2026-03-18 07:07"
+        ],
+        [
+          {
+            "number": "54"
+          },
+          "dw7816k9148",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto A",
+          "2027-01-07 17:46"
+        ],
+        [
+          {
+            "number": "55"
+          },
+          "ko0960c9816",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto D",
+          "2026-04-24 15:18"
+        ],
+        [
+          {
+            "number": "56"
+          },
+          "rn1663y1189",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto C",
+          "2026-11-08 17:32"
+        ],
+        [
+          {
+            "number": "57"
+          },
+          "jg0825z2195",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto D",
+          "2026-12-19 10:58"
+        ],
+        [
+          {
+            "number": "58"
+          },
+          "or1320p7639",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto E",
+          "2026-03-17 18:00"
+        ],
+        [
+          {
+            "number": "59"
+          },
+          "uj6918h5638",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto B",
+          "2026-05-22 15:35"
+        ],
+        [
+          {
+            "number": "6"
+          },
+          "dw0396k6410",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto A",
+          "2026-01-30 00:00"
+        ],
+        [
+          {
+            "number": "60"
+          },
+          "fl8096q1177",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto D",
+          "2026-12-05 18:55"
+        ],
+        [
+          {
+            "number": "61"
+          },
+          "jg5810z2517",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto D",
+          "2026-11-22 06:46"
+        ],
+        [
+          {
+            "number": "62"
+          },
+          "rn9168y7501",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto A",
+          "2026-09-04 19:38"
+        ],
+        [
+          {
+            "number": "63"
+          },
+          "su9279b6017",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto F",
+          "2026-07-22 09:29"
+        ],
+        [
+          {
+            "number": "64"
+          },
+          "nk8757m7826",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto E",
+          "2026-01-26 06:21"
+        ],
+        [
+          {
+            "number": "65"
+          },
+          "jg5810z2517",
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          "Reparto C",
+          "2026-12-08 04:55"
+        ],
+        [
+          {
+            "number": "66"
+          },
+          "rn4190y9872",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto F",
+          "2026-12-13 03:04"
+        ],
+        [
+          {
+            "number": "67"
+          },
+          "aa10041a7930",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto B",
+          "2026-12-21 07:20"
+        ],
+        [
+          {
+            "number": "68"
+          },
+          "py1459s7976",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto F",
+          "2026-05-27 20:42"
+        ],
+        [
+          {
+            "number": "69"
+          },
+          "or3814p2061",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto D",
+          "2026-03-05 01:46"
+        ],
+        [
+          {
+            "number": "7"
+          },
+          "gs3167t3932",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto A",
+          "2026-11-14 01:55"
+        ],
+        [
+          {
+            "number": "70"
+          },
+          "cp5253g9072",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto B",
+          "2026-11-01 08:02"
+        ],
+        [
+          {
+            "number": "71"
+          },
+          "su6764b8829",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto A",
+          "2026-12-09 08:27"
+        ],
+        [
+          {
+            "number": "72"
+          },
+          "rn6665y7397",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto D",
+          "2026-09-21 03:59"
+        ],
+        [
+          {
+            "number": "73"
+          },
+          "su1736b3166",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto A",
+          "2026-01-26 14:55"
+        ],
+        [
+          {
+            "number": "74"
+          },
+          "zt2452x9382",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto B",
+          "2026-03-30 03:11"
+        ],
+        [
+          {
+            "number": "75"
+          },
+          "zt4910x2236",
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          "Reparto F",
+          "2026-03-23 21:08"
+        ],
+        [
+          {
+            "number": "76"
+          },
+          "rn6665y7397",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto F",
+          "2026-01-19 17:32"
+        ],
+        [
+          {
+            "number": "77"
+          },
+          "su4225b2590",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto B",
+          "2026-08-19 02:07"
+        ],
+        [
+          {
+            "number": "78"
+          },
+          "wx2179o2714",
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          "Reparto E",
+          "2027-02-08 22:53"
+        ],
+        [
+          {
+            "number": "79"
+          },
+          "cp5253g9072",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto C",
+          "2026-04-17 15:52"
+        ],
+        [
+          {
+            "number": "8"
+          },
+          "jg0825z2195",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto E",
+          "2027-01-27 05:52"
+        ],
+        [
+          {
+            "number": "80"
+          },
+          "fl8096q1177",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto E",
+          "2027-01-05 08:03"
+        ],
+        [
+          {
+            "number": "81"
+          },
+          "cp5253g9072",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto F",
+          "2026-04-06 08:39"
+        ],
+        [
+          {
+            "number": "82"
+          },
+          "nk3748m4360",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto E",
+          "2027-02-15 14:02"
+        ],
+        [
+          {
+            "number": "83"
+          },
+          "jg8319z9090",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto D",
+          "2026-05-21 02:43"
+        ],
+        [
+          {
+            "number": "84"
+          },
+          "lv6070f2160",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto D",
+          "2027-01-19 00:08"
+        ],
+        [
+          {
+            "number": "85"
+          },
+          "ym4838u7720",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto F",
+          "2026-12-19 10:22"
+        ],
+        [
+          {
+            "number": "86"
+          },
+          "or8849p1560",
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          "Reparto B",
+          "2026-01-23 18:15"
+        ],
+        [
+          {
+            "number": "87"
+          },
+          "uj4492h2288",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto F",
+          "2026-03-16 20:14"
+        ],
+        [
+          {
+            "number": "88"
+          },
+          "ed0445n4012",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto F",
+          "2026-01-27 10:19"
+        ],
+        [
+          {
+            "number": "89"
+          },
+          "wx7185o9479",
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          "Reparto F",
+          "2026-07-16 12:34"
+        ],
+        [
+          {
+            "number": "9"
+          },
+          "wx7185o9479",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto E",
+          "2026-01-02 09:23"
+        ],
+        [
+          {
+            "number": "90"
+          },
+          "xe7256r1861",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto D",
+          "2026-03-31 19:46"
+        ],
+        [
+          {
+            "number": "91"
+          },
+          "py6461s4204",
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          "Reparto E",
+          "2026-09-25 02:08"
+        ],
+        [
+          {
+            "number": "92"
+          },
+          "gs8130t7802",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto A",
+          "2026-02-13 02:01"
+        ],
+        [
+          {
+            "number": "93"
+          },
+          "uj1957h8180",
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          "Reparto F",
+          "2026-04-01 03:19"
+        ],
+        [
+          {
+            "number": "94"
+          },
+          "ym9864u3980",
+          "Dr. Valentina Conti",
+          "Pediatria",
+          "Reparto C",
+          "2026-07-09 13:44"
+        ],
+        [
+          {
+            "number": "95"
+          },
+          "uj6918h5638",
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          "Reparto C",
+          "2026-09-09 20:05"
+        ],
+        [
+          {
+            "number": "96"
+          },
+          "py3991s8956",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto D",
+          "2026-04-01 05:17"
+        ],
+        [
+          {
+            "number": "97"
+          },
+          "jg5810z2517",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto D",
+          "2026-07-18 16:29"
+        ],
+        [
+          {
+            "number": "98"
+          },
+          "bh0128d4951",
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          "Reparto D",
+          "2026-05-31 21:50"
+        ],
+        [
+          {
+            "number": "99"
+          },
+          "ed2915n6901",
+          "Dr. Martina Marino",
+          "Ginecologia",
+          "Reparto D",
+          "2026-06-08 13:58"
+        ]
+      ],
+      "extra_rows": []
+    },
+    {
+      "id": "H05",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT DISTINCT d.full_name AS doctor_name, d.specialty FROM doctors d JOIN appointments a ON a.doctor_id = d.doctor_id",
+      "generated_sql": "SELECT DISTINCT d.full_name AS doctor_name, d.specialty FROM doctors d JOIN appointments a ON a.doctor_id = d.doctor_id",
+      "error": null,
+      "gold_rows": [
+        [
+          "Dr. Andrea Costa",
+          "Cardiologia"
+        ],
+        [
+          "Dr. Chiara Rizzo",
+          "Dermatologia"
+        ],
+        [
+          "Dr. Francesca Rizzo",
+          "Dermatologia"
+        ],
+        [
+          "Dr. Marco Bianchi",
+          "Ortopedia"
+        ],
+        [
+          "Dr. Martina Bruno",
+          "Ortopedia"
+        ],
+        [
+          "Dr. Martina Marino",
+          "Ginecologia"
+        ],
+        [
+          "Dr. Matteo Ferrari",
+          "Neurologia"
+        ],
+        [
+          "Dr. Valentina Bruno",
+          "Cardiologia"
+        ],
+        [
+          "Dr. Valentina Colombo",
+          "Pediatria"
+        ],
+        [
+          "Dr. Valentina Conti",
+          "Pediatria"
+        ],
+        [
+          "Dr. Valentina Ferrari",
+          "Neurologia"
+        ],
+        [
+          "Dr. Valentina Greco",
+          "Ginecologia"
+        ]
+      ],
+      "generated_rows": [],
+      "gold_result_hash": "19143a4c8bdd3ba33950fb6ed462707277693b30d11066afaddb0fb1856e2f45",
+      "generated_result_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "gold_row_count": 12,
+      "generated_row_count": 0,
+      "missing_rows": [
+        [
+          "Dr. Andrea Costa",
+          "Cardiologia"
+        ],
+        [
+          "Dr. Chiara Rizzo",
+          "Dermatologia"
+        ],
+        [
+          "Dr. Francesca Rizzo",
+          "Dermatologia"
+        ],
+        [
+          "Dr. Marco Bianchi",
+          "Ortopedia"
+        ],
+        [
+          "Dr. Martina Bruno",
+          "Ortopedia"
+        ],
+        [
+          "Dr. Martina Marino",
+          "Ginecologia"
+        ],
+        [
+          "Dr. Matteo Ferrari",
+          "Neurologia"
+        ],
+        [
+          "Dr. Valentina Bruno",
+          "Cardiologia"
+        ],
+        [
+          "Dr. Valentina Colombo",
+          "Pediatria"
+        ],
+        [
+          "Dr. Valentina Conti",
+          "Pediatria"
+        ],
+        [
+          "Dr. Valentina Ferrari",
+          "Neurologia"
+        ],
+        [
+          "Dr. Valentina Greco",
+          "Ginecologia"
+        ]
+      ],
+      "extra_rows": []
+    },
+    {
+      "id": "H06",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT DISTINCT w.name AS ward_name FROM wards w JOIN appointments a ON a.ward_id = w.ward_id",
+      "generated_sql": "SELECT DISTINCT w.name AS ward_name FROM wards w JOIN appointments a ON a.ward_id = w.ward_id",
+      "error": null,
+      "gold_rows": [
+        [
+          "Reparto A"
+        ],
+        [
+          "Reparto B"
+        ],
+        [
+          "Reparto C"
+        ],
+        [
+          "Reparto D"
+        ],
+        [
+          "Reparto E"
+        ],
+        [
+          "Reparto F"
+        ]
+      ],
+      "generated_rows": [],
+      "gold_result_hash": "d519b1df280b4a41e272a2021e97da3102f769e140f5430cd6dff5cbcb011bb5",
+      "generated_result_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "gold_row_count": 6,
+      "generated_row_count": 0,
+      "missing_rows": [
+        [
+          "Reparto A"
+        ],
+        [
+          "Reparto B"
+        ],
+        [
+          "Reparto C"
+        ],
+        [
+          "Reparto D"
+        ],
+        [
+          "Reparto E"
+        ],
+        [
+          "Reparto F"
+        ]
+      ],
+      "extra_rows": []
+    },
+    {
+      "id": "H07",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT d.full_name AS doctor_name, d.specialty, COUNT(*) AS appointment_count FROM appointments a JOIN doctors d ON d.doctor_id = a.doctor_id GROUP BY d.full_name, d.specialty",
+      "generated_sql": "SELECT d.full_name AS doctor_name, d.specialty, COUNT(*) AS appointment_count FROM appointments a JOIN doctors d ON d.doctor_id = a.doctor_id GROUP BY d.full_name, d.specialty",
+      "error": null,
+      "gold_rows": [
+        [
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          {
+            "number": "22"
+          }
+        ],
+        [
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          {
+            "number": "12"
+          }
+        ],
+        [
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          {
+            "number": "25"
+          }
+        ],
+        [
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          {
+            "number": "13"
+          }
+        ],
+        [
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          {
+            "number": "14"
+          }
+        ],
+        [
+          "Dr. Martina Marino",
+          "Ginecologia",
+          {
+            "number": "19"
+          }
+        ],
+        [
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          {
+            "number": "11"
+          }
+        ],
+        [
+          "Dr. Valentina Bruno",
+          "Cardiologia",
+          {
+            "number": "8"
+          }
+        ],
+        [
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          {
+            "number": "25"
+          }
+        ],
+        [
+          "Dr. Valentina Conti",
+          "Pediatria",
+          {
+            "number": "19"
+          }
+        ],
+        [
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          {
+            "number": "11"
+          }
+        ],
+        [
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          {
+            "number": "21"
+          }
+        ]
+      ],
+      "generated_rows": [],
+      "gold_result_hash": "38d293847b793f431b6f91260b44bd2707b1449eb8e0a63190312881d20d90aa",
+      "generated_result_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "gold_row_count": 12,
+      "generated_row_count": 0,
+      "missing_rows": [
+        [
+          "Dr. Andrea Costa",
+          "Cardiologia",
+          {
+            "number": "22"
+          }
+        ],
+        [
+          "Dr. Chiara Rizzo",
+          "Dermatologia",
+          {
+            "number": "12"
+          }
+        ],
+        [
+          "Dr. Francesca Rizzo",
+          "Dermatologia",
+          {
+            "number": "25"
+          }
+        ],
+        [
+          "Dr. Marco Bianchi",
+          "Ortopedia",
+          {
+            "number": "13"
+          }
+        ],
+        [
+          "Dr. Martina Bruno",
+          "Ortopedia",
+          {
+            "number": "14"
+          }
+        ],
+        [
+          "Dr. Martina Marino",
+          "Ginecologia",
+          {
+            "number": "19"
+          }
+        ],
+        [
+          "Dr. Matteo Ferrari",
+          "Neurologia",
+          {
+            "number": "11"
+          }
+        ],
+        [
+          "Dr. Valentina Bruno",
+          "Cardiologia",
+          {
+            "number": "8"
+          }
+        ],
+        [
+          "Dr. Valentina Colombo",
+          "Pediatria",
+          {
+            "number": "25"
+          }
+        ],
+        [
+          "Dr. Valentina Conti",
+          "Pediatria",
+          {
+            "number": "19"
+          }
+        ],
+        [
+          "Dr. Valentina Ferrari",
+          "Neurologia",
+          {
+            "number": "11"
+          }
+        ],
+        [
+          "Dr. Valentina Greco",
+          "Ginecologia",
+          {
+            "number": "21"
+          }
+        ]
+      ],
+      "extra_rows": []
+    },
+    {
+      "id": "H08",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT w.name AS ward_name, COUNT(*) AS appointment_count FROM appointments a JOIN wards w ON w.ward_id = a.ward_id GROUP BY w.name",
+      "generated_sql": "SELECT w.name AS ward_name, COUNT(*) AS appointment_count FROM appointments a JOIN wards w ON w.ward_id = a.ward_id GROUP BY w.name",
+      "error": null,
+      "gold_rows": [
+        [
+          "Reparto A",
+          {
+            "number": "31"
+          }
+        ],
+        [
+          "Reparto B",
+          {
+            "number": "29"
+          }
+        ],
+        [
+          "Reparto C",
+          {
+            "number": "42"
+          }
+        ],
+        [
+          "Reparto D",
+          {
+            "number": "31"
+          }
+        ],
+        [
+          "Reparto E",
+          {
+            "number": "37"
+          }
+        ],
+        [
+          "Reparto F",
+          {
+            "number": "30"
+          }
+        ]
+      ],
+      "generated_rows": [],
+      "gold_result_hash": "541de0272c4cdf89340dca70015fa719bdf2293eab1114d271d2ba984c7d61fd",
+      "generated_result_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "gold_row_count": 6,
+      "generated_row_count": 0,
+      "missing_rows": [
+        [
+          "Reparto A",
+          {
+            "number": "31"
+          }
+        ],
+        [
+          "Reparto B",
+          {
+            "number": "29"
+          }
+        ],
+        [
+          "Reparto C",
+          {
+            "number": "42"
+          }
+        ],
+        [
+          "Reparto D",
+          {
+            "number": "31"
+          }
+        ],
+        [
+          "Reparto E",
+          {
+            "number": "37"
+          }
+        ],
+        [
+          "Reparto F",
+          {
+            "number": "30"
+          }
+        ]
+      ],
+      "extra_rows": []
+    },
+    {
+      "id": "H09",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT p.fiscal_code, COUNT(*) AS appointment_count FROM appointments a JOIN patients p ON p.patient_id = a.patient_id GROUP BY p.fiscal_code",
+      "generated_sql": "SELECT p.fiscal_code, COUNT(*) AS appointment_count FROM appointments a JOIN patients p ON p.patient_id = a.patient_id GROUP BY p.fiscal_code",
+      "error": null,
+      "gold_rows": [
+        [
+          "aa10041a7930",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "aa5086a8550",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "bh0128d4951",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "bh2675d5051",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "bh5126d4926",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "bh7641d5056",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "cp0218g5943",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "cp2780g1086",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "cp5253g9072",
+          {
+            "number": "5"
+          }
+        ],
+        [
+          "cp7776g5402",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "dw0396k6410",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "dw5349k6806",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "dw7816k9148",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "ed0445n4012",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "ed2915n6901",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "ed5442n6756",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "ed7996n4674",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "fl0585q7098",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "fl3073q3164",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "fl8096q1177",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "gs0681t2781",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "gs3167t3932",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "gs5658t1736",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "gs8130t7802",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "hz0778w4784",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "hz3289w5029",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "hz5718w2744",
+          {
+            "number": "5"
+          }
+        ],
+        [
+          "hz8285w6248",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "jg0825z2195",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "jg3372z2498",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "jg5810z2517",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "jg8319z9090",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "ko0960c9816",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "ko3428c4387",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "lv1030f9609",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "lv3584f3022",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "lv6070f2160",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "lv8540f5238",
+          {
+            "number": "5"
+          }
+        ],
+        [
+          "mc1117j4250",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "mc3624j9598",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "mc8694j4297",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "nk1219m2160",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "nk3748m4360",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "nk6299m7771",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "nk8757m7826",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "or1320p7639",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "or3814p2061",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "or6390p5040",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "or8849p1560",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "py1459s7976",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "py3991s8956",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "py6461s4204",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "qf1576v2248",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "qf6525v8993",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "qf9047v4579",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "rn1663y1189",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "rn4190y9872",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "rn6665y7397",
+          {
+            "number": "5"
+          }
+        ],
+        [
+          "rn9168y7501",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "su1736b3166",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "su4225b2590",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "su6764b8829",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "su9279b6017",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "tb6875e8958",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "uj1957h8180",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "uj4492h2288",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "uj6918h5638",
+          {
+            "number": "5"
+          }
+        ],
+        [
+          "uj9437h6380",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "vq2072l3481",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "vq4563l4601",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "vq7013l1798",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "vq9535l7083",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "wx2179o2714",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "wx7185o9479",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "wx9641o7247",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "xe2293r3933",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "xe4798r4727",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "xe7256r1861",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "xe9720r1340",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "ym2377u2390",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "ym4838u7720",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "ym9864u3980",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "zt2452x9382",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "zt4910x2236",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "zt7410x7863",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "zt9991x1199",
+          {
+            "number": "2"
+          }
+        ]
+      ],
+      "generated_rows": [],
+      "gold_result_hash": "70858f99d7ddf0cb3d4112749c90cdde8ddfaac361a00499377c3bd0c51e3721",
+      "generated_result_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "gold_row_count": 86,
+      "generated_row_count": 0,
+      "missing_rows": [
+        [
+          "aa10041a7930",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "aa5086a8550",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "bh0128d4951",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "bh2675d5051",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "bh5126d4926",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "bh7641d5056",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "cp0218g5943",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "cp2780g1086",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "cp5253g9072",
+          {
+            "number": "5"
+          }
+        ],
+        [
+          "cp7776g5402",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "dw0396k6410",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "dw5349k6806",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "dw7816k9148",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "ed0445n4012",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "ed2915n6901",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "ed5442n6756",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "ed7996n4674",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "fl0585q7098",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "fl3073q3164",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "fl8096q1177",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "gs0681t2781",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "gs3167t3932",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "gs5658t1736",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "gs8130t7802",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "hz0778w4784",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "hz3289w5029",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "hz5718w2744",
+          {
+            "number": "5"
+          }
+        ],
+        [
+          "hz8285w6248",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "jg0825z2195",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "jg3372z2498",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "jg5810z2517",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "jg8319z9090",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "ko0960c9816",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "ko3428c4387",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "lv1030f9609",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "lv3584f3022",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "lv6070f2160",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "lv8540f5238",
+          {
+            "number": "5"
+          }
+        ],
+        [
+          "mc1117j4250",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "mc3624j9598",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "mc8694j4297",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "nk1219m2160",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "nk3748m4360",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "nk6299m7771",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "nk8757m7826",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "or1320p7639",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "or3814p2061",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "or6390p5040",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "or8849p1560",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "py1459s7976",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "py3991s8956",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "py6461s4204",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "qf1576v2248",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "qf6525v8993",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "qf9047v4579",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "rn1663y1189",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "rn4190y9872",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "rn6665y7397",
+          {
+            "number": "5"
+          }
+        ],
+        [
+          "rn9168y7501",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "su1736b3166",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "su4225b2590",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "su6764b8829",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "su9279b6017",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "tb6875e8958",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "uj1957h8180",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "uj4492h2288",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "uj6918h5638",
+          {
+            "number": "5"
+          }
+        ],
+        [
+          "uj9437h6380",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "vq2072l3481",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "vq4563l4601",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "vq7013l1798",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "vq9535l7083",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "wx2179o2714",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "wx7185o9479",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "wx9641o7247",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "xe2293r3933",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "xe4798r4727",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "xe7256r1861",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "xe9720r1340",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "ym2377u2390",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "ym4838u7720",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "ym9864u3980",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "zt2452x9382",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "zt4910x2236",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "zt7410x7863",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "zt9991x1199",
+          {
+            "number": "2"
+          }
+        ]
+      ],
+      "extra_rows": []
+    },
+    {
+      "id": "H10",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT substr(scheduled_on, 1, 7) AS month, COUNT(*) AS appointment_count FROM appointments GROUP BY substr(scheduled_on, 1, 7)",
+      "generated_sql": "SELECT substr(scheduled_on, 1, 7) AS month, COUNT(*) AS appointment_count FROM appointments GROUP BY substr(scheduled_on, 1, 7)",
+      "error": null,
+      "gold_rows": [
+        [
+          "2026-01",
+          {
+            "number": "16"
+          }
+        ],
+        [
+          "2026-02",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "2026-03",
+          {
+            "number": "17"
+          }
+        ],
+        [
+          "2026-04",
+          {
+            "number": "12"
+          }
+        ],
+        [
+          "2026-05",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "2026-06",
+          {
+            "number": "10"
+          }
+        ],
+        [
+          "2026-07",
+          {
+            "number": "17"
+          }
+        ],
+        [
+          "2026-08",
+          {
+            "number": "13"
+          }
+        ],
+        [
+          "2026-09",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "2026-10",
+          {
+            "number": "10"
+          }
+        ],
+        [
+          "2026-11",
+          {
+            "number": "16"
+          }
+        ],
+        [
+          "2026-12",
+          {
+            "number": "17"
+          }
+        ],
+        [
+          "2027-01",
+          {
+            "number": "15"
+          }
+        ],
+        [
+          "2027-02",
+          {
+            "number": "12"
+          }
+        ]
+      ],
+      "generated_rows": [],
+      "gold_result_hash": "58fdc7ef00bcce7740cb9afca476b8e2a936189e845400c1576d521d4d76f035",
+      "generated_result_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "gold_row_count": 14,
+      "generated_row_count": 0,
+      "missing_rows": [
+        [
+          "2026-01",
+          {
+            "number": "16"
+          }
+        ],
+        [
+          "2026-02",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "2026-03",
+          {
+            "number": "17"
+          }
+        ],
+        [
+          "2026-04",
+          {
+            "number": "12"
+          }
+        ],
+        [
+          "2026-05",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "2026-06",
+          {
+            "number": "10"
+          }
+        ],
+        [
+          "2026-07",
+          {
+            "number": "17"
+          }
+        ],
+        [
+          "2026-08",
+          {
+            "number": "13"
+          }
+        ],
+        [
+          "2026-09",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "2026-10",
+          {
+            "number": "10"
+          }
+        ],
+        [
+          "2026-11",
+          {
+            "number": "16"
+          }
+        ],
+        [
+          "2026-12",
+          {
+            "number": "17"
+          }
+        ],
+        [
+          "2027-01",
+          {
+            "number": "15"
+          }
+        ],
+        [
+          "2027-02",
+          {
+            "number": "12"
+          }
+        ]
+      ],
+      "extra_rows": []
+    }
+  ],
+  "total_queries": 10,
+  "passed_queries": 0,
+  "overall_query_pass_rate": 0.0,
+  "critical_query_pass_rate": 0.0,
+  "thresholds": {
+    "min_overall_query_pass_rate": 0.9,
+    "min_critical_query_pass_rate": 1.0,
+    "max_critical_integrity_violations": 0
+  },
+  "integrity": {
+    "foreign_key_violations": [],
+    "natural_key_duplicate_groups": [],
+    "errors": [],
+    "violation_count": 0
+  },
+  "functionally_equivalent": false
+}

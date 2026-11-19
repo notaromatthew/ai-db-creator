@@ -1,0 +1,2 @@
+dataset,source_format,condition,run,project_id,status,error,population_mode,global_precision,global_recall,global_f1,total_cells,missing_rows,extra_rows,functional_query_pass_rate,functionally_equivalent
+university,combined,baseline,1,d6915a05-7578-4f57-80a7-717e114d3849,error,RuntimeError: LLM population produced no usable SQL; deterministic fallback was used,fallback,,,,,,,,

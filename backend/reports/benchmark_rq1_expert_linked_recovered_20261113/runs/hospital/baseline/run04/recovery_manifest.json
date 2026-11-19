@@ -1,0 +1,89 @@
+{
+  "manifest_version": "recovered-expert-linked-run-v1",
+  "classification": {
+    "rq1": "primary_expert_linked",
+    "rq2": "recovered_historical_secondary"
+  },
+  "original_observed": {
+    "dataset": "hospital",
+    "condition": "baseline",
+    "run": 4,
+    "project_id": "0ba84ef0-c0a3-407f-8aef-2befb89f877f",
+    "status": "ok",
+    "reported_metrics": {
+      "global_precision": 0.7708,
+      "global_recall": 0.7797,
+      "global_f1": 0.7196,
+      "total_cells": 2747,
+      "missing_rows": 352,
+      "extra_rows": 37
+    },
+    "unavailable_provenance": [
+      "generation_provider_and_model",
+      "software_revision",
+      "research_mode",
+      "population_mode",
+      "source_file_hashes_before_generation",
+      "per_run_protocol_manifest"
+    ]
+  },
+  "recovery_computed": {
+    "source_run_record_sha256": "411e282e75c8d5ebc71d67103e5ec181b09f8fca278a52c518f7101ce3294a75",
+    "source_generated_database_sha256": "d7e6bf6ccbbaac48bcc630ea95d9e65c3b98eeba1c226b098d0d432e5514f978",
+    "current_evaluation_spec_sha256": "7558bdbd80a1f130e47fdd5220c888000c2ab0e31d68923dec6c14a516437e4e",
+    "current_evaluator_sha256": {
+      "app/evaluation/population_evaluation.py": "fe7289737310b02055913b1c04a24ec3076c400dcefd6d9b72bc9c3c27e8346f",
+      "app/evaluation/functional_equivalence.py": "686c53fd5059870b797286ab0b1f231f134b8e2216efdff5e4f75777bce4dd08",
+      "app/evaluation/rq2_artifacts.py": "e4f4d74400ea4964003fcefdcc151bd1cac316116109c8f258811d4a71e8b812",
+      "recover_expert_linked_matrix.py": "e91c34b7b5b0843b36db243af904c8bd913014a1a7c693d15087e0abbf51a71d"
+    },
+    "database_integrity": {
+      "integrity_check": "ok",
+      "foreign_key_violation_count": 0,
+      "table_count": 8,
+      "row_count": 726,
+      "rows_by_table": {
+        "appointments": 200,
+        "doctors": 12,
+        "invoices": 200,
+        "medications": 3,
+        "patients": 100,
+        "prescriptions": 5,
+        "treatments": 200,
+        "wards": 6
+      }
+    }
+  },
+  "artifacts": [
+    {
+      "path": "current_cell_discrepancies.csv",
+      "size": 178,
+      "sha256": "b15ec385eefe7a2cce549022b6086c56a23fff3fe4c06ca2a9ddef0642b494a0"
+    },
+    {
+      "path": "current_evaluation.json",
+      "size": 377941,
+      "sha256": "58584b48678b2726aee799d998bdbb2fc2b1005cdf592988849d5dabfbd8c712"
+    },
+    {
+      "path": "current_functional_query_results.json",
+      "size": 150179,
+      "sha256": "67adabc62e2b4cc596f21f0cd434ec211bea80ac0085b392cf8ce9a6106467d0"
+    },
+    {
+      "path": "generated.db",
+      "size": 110592,
+      "sha256": "d7e6bf6ccbbaac48bcc630ea95d9e65c3b98eeba1c226b098d0d432e5514f978"
+    },
+    {
+      "path": "generated_schema.json",
+      "size": 14220,
+      "sha256": "87ead9ab6b94ff2b08afdbf274e52b1abdf9e31579a44e92be1dfc8252a4cb2c"
+    },
+    {
+      "path": "original_run.json",
+      "size": 1160,
+      "sha256": "411e282e75c8d5ebc71d67103e5ec181b09f8fca278a52c518f7101ce3294a75"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "dataset": "university",
+  "condition": "full_llm",
+  "run": 2,
+  "project_id": "1b51b2bf-5787-4242-8f20-f82320f2db4a",
+  "status": "ok",
+  "global_precision": 0.3434,
+  "global_recall": 0.347,
+  "global_f1": 0.2983,
+  "total_cells": 90,
+  "missing_rows": 55,
+  "extra_rows": 40,
+  "alignment": {
+    "tables": {
+      "students": "students",
+      "courses": "courses",
+      "enrollments": "enrollments"
+    },
+    "columns": {
+      "students": {
+        "student_id": "id",
+        "name": "name",
+        "email": "email"
+      },
+      "courses": {
+        "course_code": "code",
+        "title": "title",
+        "credits": "credits"
+      },
+      "enrollments": {
+        "student_id": "student_id",
+        "course_id": "course_id",
+        "semester": "semester",
+        "grade": "grade"
+      }
+    },
+    "unmatched_tables": [],
+    "unmatched_columns": {
+      "courses": [
+        "course_id"
+      ]
+    },
+    "via_registry": [
+      {
+        "table": "students",
+        "gold_column": "student_id",
+        "generated_column": "id"
+      }
+    ]
+  },
+  "adjudication": {
+    "status": "ok",
+    "scores": {
+      "schema_equivalence": 95,
+      "value_accuracy": 50,
+      "completeness": 73
+    },
+    "notes": "Schema uses minor renamings and adds an surrogate ID to enrollments and student_code, which is acceptable. However, value accuracy and completeness are compromised because the generated students table has only 22 rows instead of 30, and the student names/emails do not match the gold standard ground truth.",
+    "metadata": {
+      "provider": "Google Gemini",
+      "model": "gemini-3.5-flash-lite",
+      "parameters": {
+        "temperature": 0.0
+      },
+      "prompt_hash": "199f5180a35000a70cdfa1e20c94718a9ba062f7079c0d8a027ce3366d02f1e8",
+      "document_hashes": []
+    },
+    "rubric_version": "adjudication_rubric_v1",
+    "rubric_hash": "3caa6a73b7f9405a7721c26feab0e115673cd4c09d7b009e368b5fe3f7162783"
+  },
+  "error": null,
+  "detail": null
+}

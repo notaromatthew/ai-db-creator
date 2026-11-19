@@ -1,0 +1,80 @@
+{
+  "protocol": "rq2_blind_adjudication_v1",
+  "status": "prepared_awaiting_two_independent_human_reviews",
+  "source_matrix": "benchmark_openrouter_nemotron35_supervl_structured_twoday_t01_m16384_20261107",
+  "source_matrix_manifest_sha256": "1d0fbb69bc10750cf1e0dbce91e7a386d5d856e5b1cfa6e647aa78843bea77a1",
+  "selection_rule": "all discrepancies from all 30 primary matrix runs",
+  "item_count": 1294,
+  "run_count": 30,
+  "reviewer_count_required": 2,
+  "blinded_fields": [
+    "condition",
+    "run",
+    "provider",
+    "model",
+    "scores"
+  ],
+  "reviewer_a_seed": 20261118,
+  "reviewer_b_seed": 20261119,
+  "decision_values": [
+    "errore",
+    "rappresentazione equivalente",
+    "alias valido",
+    "gold ambiguo",
+    "non determinabile"
+  ],
+  "confidence_values": [
+    "bassa",
+    "media",
+    "alta"
+  ],
+  "machine_discrepancy_counts": {
+    "DUPLICATE_KEY": 16,
+    "ER": 285,
+    "MR": 988,
+    "TM": 1,
+    "WV": 4
+  },
+  "inputs": {
+    "hospital/baseline/run01/cell_discrepancies.csv": "526fe728a0ac36b2289b6cf547d75538c9d966212ac52b324da9ba59f6beda65",
+    "hospital/baseline/run02/cell_discrepancies.csv": "7e65e5609bc0c4b2db7166a8f8d74e802950dbbfe2b279def48d9a1f847942e3",
+    "hospital/baseline/run03/cell_discrepancies.csv": "6137d3daa06556decef6eed8439c93f3163444403227821237be0331f007ae69",
+    "hospital/baseline/run04/cell_discrepancies.csv": "2ba362d1db3a1af526cc2d13e0b8f286357a115180c474b47b7b82365f50adc5",
+    "hospital/baseline/run05/cell_discrepancies.csv": "135d8c79f5fe52981eef5aa67ec13fedb34c9db8c5a8cfb03504d2c084e15410",
+    "hospital/full_llm/run01/cell_discrepancies.csv": "37ea32e044a3a1cd90c3a8a7ad32c501e8f9685beb60840b4d1d085733fb6984",
+    "hospital/full_llm/run02/cell_discrepancies.csv": "b483ec0ab8d82522543d78a2175d16c5524f25edad5326e1d534ec20fbeb618d",
+    "hospital/full_llm/run03/cell_discrepancies.csv": "75c32933c3a9444d5e25d1209e590bd201a15387bc2d55c50721bd1271c273f9",
+    "hospital/full_llm/run04/cell_discrepancies.csv": "9c4c2d436341b8658d87c75cfb7db865511bd1e5005f3fa01bd20892d25db160",
+    "hospital/full_llm/run05/cell_discrepancies.csv": "a1265362bbcb1cdf2b29a3bb2ab16795d1bc8a446e4e7a90379325d7296503c7",
+    "library/baseline/run01/cell_discrepancies.csv": "bfff8261a6a52b7a72293d911e27a4121768451f8d7526ac87da17d5abd28de8",
+    "library/baseline/run02/cell_discrepancies.csv": "c0892142822ea10d942de2319b64f02523f057c373103d79b5825bf574cdbc9e",
+    "library/baseline/run03/cell_discrepancies.csv": "7e87247240f276d918592f27ba63ca668b546f56be39aa96f827d037928c47c2",
+    "library/baseline/run04/cell_discrepancies.csv": "faaa1aca04600dc060609e7ab434b5a1b0a2d02b46fe70c078d3234a0839cf8c",
+    "library/baseline/run05/cell_discrepancies.csv": "f0afc1fc91cc688176c1dd5916ff01562f710ef035a729afe372a25ac979fe3b",
+    "library/full_llm/run01/cell_discrepancies.csv": "21e51b9d7eaaad1192f6c2ffafe069c63208d2af6ade5b76365ff1a6cfb04160",
+    "library/full_llm/run02/cell_discrepancies.csv": "b46a0992f8971ac77be7cbac27ed4261fc1bfffaafeef65eeef107f240afc3de",
+    "library/full_llm/run03/cell_discrepancies.csv": "8c31bca1c10fc5cd843190386752fb6befeca931538e24d805817c2fb6f5b299",
+    "library/full_llm/run04/cell_discrepancies.csv": "5ff21ef0bfb7db730f33f82595b04ff2265366c82706f1730f5a22c981a1b8a8",
+    "library/full_llm/run05/cell_discrepancies.csv": "e9098caed3c259d54153f7145e3f77035c8a8a6296ce54ada5657f3479861cd7",
+    "university/baseline/run01/cell_discrepancies.csv": "20beb80d7c824994d9e0a09d02f737037b7d730a421cc5eeba5ac32716663388",
+    "university/baseline/run02/cell_discrepancies.csv": "1a4a297cb5a17b4bf875e6717da167b7c509660c8248048ce0c27cbd344418cb",
+    "university/baseline/run03/cell_discrepancies.csv": "6d001ec4c221eff6fb068a075194ec554bb41ba46e731a0e6523024e95bf4ce2",
+    "university/baseline/run04/cell_discrepancies.csv": "7233a0bfc6298f078e229b06d034f5d652e28af0cc01c11d52858d259df4975e",
+    "university/baseline/run05/cell_discrepancies.csv": "11887c86bbfb5e6d01d10714f5bbf36724930d094b7822b61d9af02f1713c8eb",
+    "university/full_llm/run01/cell_discrepancies.csv": "160ce0faaab908de2d893d1ee91e75d617e1033be4a3b06ed29f385b924bcade",
+    "university/full_llm/run02/cell_discrepancies.csv": "9a536b3426a2222ed0949b24aa2eb99e80e840886e68bf0ecadc6d26ab138d0b",
+    "university/full_llm/run03/cell_discrepancies.csv": "6026e5a02f98505555530fce18bfddc21e7f2c6026b7381c3367833e4e997be6",
+    "university/full_llm/run04/cell_discrepancies.csv": "1d18a3813c6c2fc78b7916b489a304ae074c959b00c3e9ca5db95ee3d8d73c08",
+    "university/full_llm/run05/cell_discrepancies.csv": "d8fd6c2ab556ecae7a1399ca83d2f078ec4e9a0bdaf269f52c71638413e293fd"
+  },
+  "prepared_outputs": {
+    "private_mapping.json": "f39dbdbc27b78c60113de65f10d5555d56696aecde8dc13175d6e91856da1aa3",
+    "reviewer_a_items.json": "5f12097cafc65dab85d7ef19d07de3fbe4da8872de7df8a2399235c5205a991f",
+    "reviewer_b_items.json": "b3d2792f408447824111fd52b4c24f268a073b0d6a68f13c3ccb6f8c8017fc9a"
+  },
+  "workbooks": {
+    "reviewer_a.xlsx": "1b137cd6385fd32a601cda97c83760da7e89a22f287ef830dbd12c9ba322c541",
+    "reviewer_b.xlsx": "8df220511f836d8c67475f952ab2c5594bf82e3f8c26fe9e852cbd71253a41c6",
+    "coordinator_private_mapping.xlsx": "9514e4fa053fcfa965d8583d2dc053a6284f2d1c55024f7eb44f5101efd61286"
+  }
+}

@@ -37,7 +37,7 @@ def load_gold_schema(path: str | Path) -> NormalizedSchema:
 
 
 def connect_database(path: str | Path) -> sqlite3.Connection:
-    return sqlite3.connect(f"file:{Path(path).resolve()}?mode=ro", uri=True)
+    return sqlite3.connect(f"{Path(path).resolve().as_uri()}?mode=ro", uri=True)
 
 
 def _normalise_numeric(value: Any) -> str | None:
@@ -87,9 +87,7 @@ def normalise_value(value: Any, data_type: str) -> str | None:
 
 
 def _is_null(value: Any) -> bool:
-    if value is None:
-        return True
-    return isinstance(value, str) and value.strip() == ""
+    return value is None
 
 
 def classify_cell(generated: Any, ground: Any, data_type: str) -> str:
@@ -100,13 +98,14 @@ def classify_cell(generated: Any, ground: Any, data_type: str) -> str:
         return "NS"
     if _is_null(ground):
         return "WV"
-    if normalise_value(generated, data_type) is not None \
-            and normalise_value(generated, data_type) == normalise_value(ground, data_type):
-        return "OK"
-    if (data_type or "").upper() in NUMERIC_TYPES | BOOLEAN_TRUE | DATETIME_TYPES or True:
-        upper_type = (data_type or "").upper()
-        if upper_type in NUMERIC_TYPES or upper_type == "BOOLEAN" or upper_type in DATETIME_TYPES:
-            return "TC"
+    generated_normalised = normalise_value(generated, data_type)
+    ground_normalised = normalise_value(ground, data_type)
+    if generated_normalised is not None and generated_normalised == ground_normalised:
+        return "OK" if generated == ground else "TC"
+    upper_type = (data_type or "").upper()
+    if upper_type in NUMERIC_TYPES | DATETIME_TYPES or upper_type == "BOOLEAN":
+        if generated_normalised is None:
+            return "TM"
     return "WV"
 
 
@@ -126,7 +125,8 @@ def _round_ci(ci: tuple[float, float]) -> list[float]:
 
 
 def read_rows(conn: sqlite3.Connection, table: Any,
-              column_aliases: dict[str, str] | None = None) -> list[dict]:
+              column_aliases: dict[str, str] | None = None,
+              table_name: str | None = None) -> list[dict]:
     """Read all rows of a table as dicts keyed by column name.
 
     ``column_aliases`` maps gold column names to the column actually present in
@@ -135,16 +135,17 @@ def read_rows(conn: sqlite3.Connection, table: Any,
     under the gold name so downstream comparison keeps using gold names.
     """
     aliases = column_aliases or {}
+    source_table = table_name or table.name
     selected = [(column.name, aliases.get(column.name, column.name))
                 for column in table.columns]
-    present = [name for name in _table_columns(conn, table.name)]
+    present = [name for name in _table_columns(conn, source_table)]
     usable = [(gold, gen) for gold, gen in selected if gen in present]
-    placeholders = ", ".join(f"[{gen}]" for _, gen in usable)
-    cursor = conn.execute(f"SELECT {placeholders} FROM [{table.name}]")
-    header = [description[0] for description in cursor.description]
-    gold_names = [gold for gold, _ in usable]
     if not usable:
         return []
+    placeholders = ", ".join(f"[{gen}]" for _, gen in usable)
+    cursor = conn.execute(f"SELECT {placeholders} FROM [{source_table}]")
+    header = [description[0] for description in cursor.description]
+    gold_names = [gold for gold, _ in usable]
     return [dict(zip(gold_names, row)) for row in cursor.fetchall()]
 
 
@@ -171,30 +172,147 @@ def _is_fk_violation(value: Any, fk_column: str, fk_table: str, targets: set[tup
     return (fk_table, fk_column, str(value)) not in targets
 
 
+_BUSINESS_KEY_MARKER = "__business_key__"
+
+
+def _row_key_value(value: Any, data_type: str) -> str:
+    if isinstance(value, tuple) and value and value[0] == _BUSINESS_KEY_MARKER:
+        return json.dumps(value, ensure_ascii=False, default=str)
+    return _as_sortable(normalise_value(value, data_type))
+
+
+def _foreign_key_business_maps(conn: sqlite3.Connection, schema: NormalizedSchema,
+                               natural_keys: dict[str, list[str]],
+                               column_aliases: dict[str, dict[str, str]],
+                               table_aliases: dict[str, str]) -> dict[tuple[str, str], dict[str, tuple]]:
+    maps: dict[tuple[str, str], dict[str, tuple]] = {}
+    for table in schema.tables:
+        business_columns = natural_keys.get(table.name) or []
+        if not business_columns:
+            continue
+        schema_columns = {column.name: column for column in table.columns}
+        if any(column not in schema_columns for column in business_columns):
+            raise ValueError(f"Unknown natural-key columns for {table.name}: {business_columns}")
+        primary_columns = [column for column in table.columns if column.is_primary_key]
+        rows = read_rows(
+            conn,
+            table,
+            column_aliases.get(table.name, {}),
+            table_aliases.get(table.name, table.name),
+        )
+        for primary in primary_columns:
+            values: dict[str, tuple] = {}
+            for row in rows:
+                raw_primary = row.get(primary.name)
+                primary_key = _row_key_value(raw_primary, primary.data_type or "TEXT")
+                business_key = tuple(
+                    _row_key_value(row.get(name), schema_columns[name].data_type or "TEXT")
+                    for name in business_columns
+                )
+                values[primary_key] = (_BUSINESS_KEY_MARKER, *business_key)
+            maps[(table.name, primary.name)] = values
+    return maps
+
+
+def _replace_foreign_keys(rows: list[dict], table: Any,
+                          business_maps: dict[tuple[str, str], dict[str, tuple]]) -> list[dict]:
+    replaced: list[dict] = []
+    for source_row in rows:
+        row = dict(source_row)
+        for column in table.columns:
+            if not column.is_foreign_key:
+                continue
+            mapping = business_maps.get((column.foreign_key_table, column.foreign_key_column))
+            if not mapping:
+                continue
+            lookup = _row_key_value(row.get(column.name), column.data_type or "TEXT")
+            if lookup in mapping:
+                row[column.name] = mapping[lookup]
+        replaced.append(row)
+    return replaced
+
+
 def evaluate_table(generated_rows: list[dict], ground_rows: list[dict], table: Any,
-                   fk_targets: set[tuple[str, str, str]]) -> dict:
+                   fk_targets: set[tuple[str, str, str]],
+                   natural_key_columns: list[str] | None = None,
+                   observable_columns: list[str] | None = None,
+                   observable_row_keys: list[list[Any]] | None = None) -> dict:
     """Compare rows of one table, keyed by primary key columns."""
     pk_columns = [column.name for column in table.columns if column.is_primary_key]
-    all_columns = [column.name for column in table.columns]
+    schema_columns = [column.name for column in table.columns]
+    if observable_columns is not None:
+        invalid_columns = sorted(set(observable_columns) - set(schema_columns))
+        if invalid_columns:
+            raise ValueError(f"Unknown observable columns for {table.name}: {invalid_columns}")
+        all_columns = list(observable_columns)
+    else:
+        all_columns = schema_columns
     column_types = {column.name: column.data_type for column in table.columns}
     fk_columns = {column.name: (column.foreign_key_table, column.foreign_key_column)
                   for column in table.columns if column.is_foreign_key}
 
-    key_cols = pk_columns or all_columns
+    requested_keys = natural_key_columns or []
+    invalid_keys = sorted(set(requested_keys) - set(schema_columns))
+    if invalid_keys:
+        raise ValueError(f"Unknown row-key columns for {table.name}: {invalid_keys}")
+    key_cols = requested_keys or pk_columns or all_columns
 
     def row_key(row: dict) -> tuple:
-        return tuple(_as_sortable(row.get(c)) for c in key_cols)
+        return tuple(_row_key_value(row.get(c), column_types.get(c) or "TEXT") for c in key_cols)
+
+    if observable_row_keys is not None:
+        allowed_keys = {
+            tuple(_as_sortable(normalise_value(value, column_types.get(column) or "TEXT"))
+                  for column, value in zip(key_cols, values))
+            for values in observable_row_keys
+        }
+        generated_rows = [row for row in generated_rows if row_key(row) in allowed_keys]
+        ground_rows = [row for row in ground_rows if row_key(row) in allowed_keys]
 
     generated_by_pk: dict[tuple, dict] = {}
+    duplicate_generated: list[tuple[tuple, dict]] = []
     for row in generated_rows:
-        generated_by_pk.setdefault(row_key(row), row)
+        key = row_key(row)
+        if key in generated_by_pk:
+            duplicate_generated.append((key, row))
+        else:
+            generated_by_pk[key] = row
     ground_by_pk: dict[tuple, dict] = {}
+    duplicate_ground: list[tuple[tuple, dict]] = []
     for row in ground_rows:
-        ground_by_pk.setdefault(row_key(row), row)
+        key = row_key(row)
+        if key in ground_by_pk:
+            duplicate_ground.append((key, row))
+        else:
+            ground_by_pk[key] = row
 
     matching_keys = set(generated_by_pk) & set(ground_by_pk)
-    missing_rows = len(set(ground_by_pk) - matching_keys)
-    extra_rows = len(set(generated_by_pk) - matching_keys)
+    missing_keys = set(ground_by_pk) - matching_keys
+    extra_keys = set(generated_by_pk) - matching_keys
+    missing_rows = len(missing_keys)
+    extra_rows = len(extra_keys) + len(duplicate_generated)
+    discrepancies: list[dict] = []
+    for key in sorted(missing_keys):
+        discrepancies.append({
+            "row_key": list(key), "column": None, "error_type": "MR",
+            "generated_value": None, "ground_value": ground_by_pk[key],
+        })
+    for key in sorted(extra_keys):
+        discrepancies.append({
+            "row_key": list(key), "column": None, "error_type": "ER",
+            "generated_value": generated_by_pk[key], "ground_value": None,
+        })
+    for key, row in duplicate_generated:
+        discrepancies.append({
+            "row_key": list(key), "column": None, "error_type": "DUPLICATE_KEY",
+            "generated_value": row, "ground_value": generated_by_pk[key],
+        })
+    for key, row in duplicate_ground:
+        discrepancies.append({
+            "row_key": list(key), "column": None,
+            "error_type": "AMBIGUOUS_GOLD_KEY", "generated_value": None,
+            "ground_value": row,
+        })
 
     counts = {"OK": 0, "TC": 0, "NS": 0, "WV": 0, "FK": 0, "TM": 0}
     total_cells = 0
@@ -206,10 +324,22 @@ def evaluate_table(generated_rows: list[dict], ground_rows: list[dict], table: A
             g_val = generated.get(column)
             t_val = ground.get(column)
             fk = fk_columns.get(column)
-            if fk and _is_fk_violation(g_val, fk[1], fk[0], fk_targets):
+            if fk and not (isinstance(g_val, tuple) and g_val and g_val[0] == _BUSINESS_KEY_MARKER) \
+                    and _is_fk_violation(g_val, fk[1], fk[0], fk_targets):
                 counts["FK"] += 1
+                discrepancies.append({
+                    "row_key": list(key), "column": column, "error_type": "FK",
+                    "generated_value": g_val, "ground_value": t_val,
+                })
                 continue
-            counts[classify_cell(g_val, t_val, column_types.get(column) or "TEXT")] += 1
+            classification = classify_cell(g_val, t_val, column_types.get(column) or "TEXT")
+            counts[classification] += 1
+            if classification != "OK":
+                discrepancies.append({
+                    "row_key": list(key), "column": column,
+                    "error_type": classification, "generated_value": g_val,
+                    "ground_value": t_val,
+                })
 
     exact = counts["OK"]
     type_consistent = counts["TC"]
@@ -229,6 +359,8 @@ def evaluate_table(generated_rows: list[dict], ground_rows: list[dict], table: A
         "type_mismatch": counts["TM"],
         "missing_rows": missing_rows,
         "extra_rows": extra_rows,
+        "duplicate_generated_keys": len(duplicate_generated),
+        "duplicate_ground_keys": len(duplicate_ground),
         "total_cells": total_cells,
         "precision": round(precision, 4),
         "recall": round(recall, 4),
@@ -236,6 +368,8 @@ def evaluate_table(generated_rows: list[dict], ground_rows: list[dict], table: A
         "ci95_precision": _round_ci(wilson_ci(precision, tp + fp)),
         "ci95_recall": _round_ci(wilson_ci(recall, tp + fn)),
         "ci95_f1": _round_ci((f1, f1)),
+        "row_key_columns": key_cols,
+        "discrepancies": discrepancies,
     }
 
 
@@ -247,7 +381,10 @@ def _as_sortable(value: Any) -> str:
 
 def evaluate_generated(generated_conn: sqlite3.Connection, ground_conn: sqlite3.Connection,
                        schema: NormalizedSchema,
-                       column_aliases: dict[str, dict[str, str]] | None = None) -> dict:
+                       column_aliases: dict[str, dict[str, str]] | None = None,
+                       table_aliases: dict[str, str] | None = None,
+                       natural_keys: dict[str, list[str]] | None = None,
+                       observable_scope: dict | None = None) -> dict:
     """Run the full cell-level comparison over all tables in the gold schema.
 
     ``column_aliases`` maps ``gold_table -> {gold_column: generated_column}``
@@ -256,13 +393,38 @@ def evaluate_generated(generated_conn: sqlite3.Connection, ground_conn: sqlite3.
     schema_alignment.py. Tables/columns without an alias use gold names.
     """
     column_aliases = column_aliases or {}
+    table_aliases = table_aliases or {}
+    natural_keys = natural_keys or {}
+    scope_tables = ((observable_scope or {}).get("tables") or {})
+    excluded_tables = ((observable_scope or {}).get("excluded") or {})
     fk_targets = _build_fk_targets(ground_conn, schema)
+    generated_business_maps = {}
+    ground_business_maps = {}
+    if observable_scope and natural_keys:
+        generated_business_maps = _foreign_key_business_maps(
+            generated_conn, schema, natural_keys, column_aliases, table_aliases
+        )
+        ground_business_maps = _foreign_key_business_maps(
+            ground_conn, schema, natural_keys, {}, {}
+        )
     per_table: dict[str, dict] = {}
     for table in schema.tables:
+        if table.name in excluded_tables:
+            continue
+        scope = scope_tables.get(table.name, {})
         aliases = column_aliases.get(table.name, {})
-        generated_rows = read_rows(generated_conn, table, aliases)
+        generated_rows = read_rows(
+            generated_conn, table, aliases, table_aliases.get(table.name, table.name)
+        )
         ground_rows = read_rows(ground_conn, table)
-        per_table[table.name] = evaluate_table(generated_rows, ground_rows, table, fk_targets)
+        if observable_scope and natural_keys:
+            generated_rows = _replace_foreign_keys(generated_rows, table, generated_business_maps)
+            ground_rows = _replace_foreign_keys(ground_rows, table, ground_business_maps)
+        per_table[table.name] = evaluate_table(
+            generated_rows, ground_rows, table, fk_targets,
+            scope.get("key_columns") or natural_keys.get(table.name),
+            scope.get("columns"), scope.get("row_keys"),
+        )
 
     precisions = [t["precision"] for t in per_table.values()]
     recalls = [t["recall"] for t in per_table.values()]
@@ -280,5 +442,9 @@ def evaluate_generated(generated_conn: sqlite3.Connection, ground_conn: sqlite3.
             "total_cells": sum(t["total_cells"] for t in per_table.values()),
             "missing_rows": sum(t["missing_rows"] for t in per_table.values()),
             "extra_rows": sum(t["extra_rows"] for t in per_table.values()),
+        },
+        "scope": {
+            "mode": "observable" if observable_scope else "full_gold",
+            "excluded_tables": excluded_tables,
         },
     }

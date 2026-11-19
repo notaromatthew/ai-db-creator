@@ -59,10 +59,12 @@ def test_normalisation_rules():
 
 def test_classify_cell_types():
     assert classify_cell(42, 42, "INTEGER") == "OK"
-    assert classify_cell("1.0", 1, "REAL") == "OK"
+    assert classify_cell("1.0", 1, "REAL") == "TC"
     assert classify_cell(None, "Smith", "TEXT") == "NS"
     assert classify_cell("Smith", None, "TEXT") == "WV"
-    assert classify_cell(1.5, "1.0", "REAL") == "TC"
+    assert classify_cell(1.5, "1.0", "REAL") == "WV"
+    assert classify_cell("not-a-number", 1, "REAL") == "TM"
+    assert classify_cell("", None, "TEXT") == "WV"
     assert classify_cell("Jones", "Smith", "TEXT") == "WV"
 
 
@@ -177,3 +179,13 @@ def test_column_alignment_handles_generated_schema_with_different_names(tmp_path
     assert students["f1"] == 1.0
     enrollments = result["per_table"]["enrollments"]
     assert enrollments["fk_violations"] == 0
+
+
+def test_connect_database_encodes_uri_reserved_characters(tmp_path):
+    database = tmp_path / "hash#path" / "generated.db"
+    database.parent.mkdir()
+    connection = sqlite3.connect(database)
+    connection.execute("CREATE TABLE sample (id INTEGER PRIMARY KEY)")
+    connection.close()
+    with connect_database(database) as readonly:
+        assert readonly.execute("SELECT COUNT(*) FROM sample").fetchone()[0] == 0

@@ -294,14 +294,14 @@ frontend/
 2. **Group A (AI Only)**: system generates schema and population automatically
 3. **Group B (AI + Interface)**: system generates first version; users review and edit via dashboard
 
-The preregistered RQ0 comparison is Manual vs AI + Interface; the preregistered RQ3 comparison is AI-Only vs AI + Interface. See `docs/08-research-notes.md` and `docs/14-usability-pilot-protocol.md`.
+The preregistered RQ0 comparison is Manual vs AI + Interface; the preregistered RQ3 comparison is AI-Only vs AI + Interface. See `docs/08-research-notes.md`, `docs/14-usability-pilot-protocol.md`, the pre-collection amendment in `docs/23-study-protocol-amendment-2026-11-18.md`, and the frozen analysis workflow in `docs/19-user-study-analysis.md`. RQ2 observable-scope and functional-equivalence rules are frozen in `docs/20-rq2-functional-equivalence-protocol.md`; the primary execution and its limitations are reported in `docs/21-rq2-primary-results.md`. The recovered matrix that is directly linked to the observed RQ1 ratings is documented separately in `docs/22-rq1-expert-linked-matrix-recovery.md`; it is primary for RQ1 linkage and only a historical secondary analysis for RQ2. The separate three-expert RQ1 panel is reproducible from `backend/analyze_rq1_expert_replication.py`; its pseudonymized canonical input, manifest and results are in `backend/reports/rq1_expert_replication/` and are not pooled with the 45 trained student raters.
 
 ### Raccolta metriche / Metrics
 
 - Schema quality: 3NF validation, relationship F1
 - Data quality: precision/recall, duplicate rate
 - Interaction logs: column renames, constraint additions, ignored suggestions
-- Surveys: NASA-TLX (cognitive load), SUS (usability)
+- Optional legacy survey endpoints remain in the platform, but NASA-TLX and SUS are disabled and excluded from the current research protocol.
 
 ## Documentazione bilingue / Bilingual documentation
 

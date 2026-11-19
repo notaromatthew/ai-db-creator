@@ -1,0 +1,1959 @@
+{
+  "spec_version": "rq2_functional_v1",
+  "queries": [
+    {
+      "id": "U01",
+      "critical": true,
+      "passed": false,
+      "gold_sql": "SELECT COUNT(*) AS enrollment_count FROM enrollments",
+      "generated_sql": "SELECT COUNT(*) AS enrollment_count FROM enrollments",
+      "error": null,
+      "gold_rows": [
+        [
+          {
+            "number": "45"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          {
+            "number": "44"
+          }
+        ]
+      ],
+      "gold_result_hash": "5d583c5a8261a40ac5f15db3d087ecd685f4be2933cbdd4ab9a0d464906a9d7a",
+      "generated_result_hash": "6ef745082bc580101bdfca97ae10065cf3ac96caad2ba81d07487a29b33acff0",
+      "gold_row_count": 1,
+      "generated_row_count": 1,
+      "missing_rows": [
+        [
+          {
+            "number": "45"
+          }
+        ]
+      ],
+      "extra_rows": [
+        [
+          {
+            "number": "44"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "U02",
+      "critical": true,
+      "passed": false,
+      "gold_sql": "SELECT DISTINCT s.email, s.name FROM students s JOIN enrollments e ON e.student_id = s.student_id",
+      "generated_sql": "SELECT DISTINCT s.email, s.name FROM students s JOIN enrollments e ON e.student_id = s.student_id",
+      "error": null,
+      "gold_rows": [
+        [
+          "student11@university.example",
+          "Luca Ferrari"
+        ],
+        [
+          "student12@university.example",
+          "Marco Giordano"
+        ],
+        [
+          "student14@university.example",
+          "Davide Bruno"
+        ],
+        [
+          "student15@university.example",
+          "Andrea Rizzo"
+        ],
+        [
+          "student16@university.example",
+          "Federico Rossi"
+        ],
+        [
+          "student17@university.example",
+          "Martina Greco"
+        ],
+        [
+          "student18@university.example",
+          "Andrea Conti"
+        ],
+        [
+          "student21@university.example",
+          "Matteo Greco"
+        ],
+        [
+          "student22@university.example",
+          "Marco Rizzo"
+        ],
+        [
+          "student23@university.example",
+          "Anna Costa"
+        ],
+        [
+          "student24@university.example",
+          "Luca Gallo"
+        ],
+        [
+          "student25@university.example",
+          "Martina Bianchi"
+        ],
+        [
+          "student26@university.example",
+          "Francesca Rossi"
+        ],
+        [
+          "student27@university.example",
+          "Elena Ricci"
+        ],
+        [
+          "student28@university.example",
+          "Chiara Gallo"
+        ],
+        [
+          "student29@university.example",
+          "Francesca Marino"
+        ],
+        [
+          "student30@university.example",
+          "Giulia Greco"
+        ],
+        [
+          "student3@university.example",
+          "Francesca Colombo"
+        ],
+        [
+          "student4@university.example",
+          "Luca Costa"
+        ],
+        [
+          "student6@university.example",
+          "Francesca Colombo"
+        ],
+        [
+          "student8@university.example",
+          "Simone Rizzo"
+        ],
+        [
+          "student9@university.example",
+          "Federico Costa"
+        ]
+      ],
+      "generated_rows": [
+        [
+          "student11@university.example",
+          "Luca Ferrari"
+        ],
+        [
+          "student12@university.example",
+          "Marco Giordano"
+        ],
+        [
+          "student14@university.example",
+          "Davide Bruno"
+        ],
+        [
+          "student15@university.example",
+          "Andrea Rizzo"
+        ],
+        [
+          "student16@university.example",
+          "Federico Rossi"
+        ],
+        [
+          "student17@university.example",
+          "Martina Greco"
+        ],
+        [
+          "student18@university.example",
+          "Andrea Conti"
+        ],
+        [
+          "student21@university.example",
+          "Matteo Greco"
+        ],
+        [
+          "student22@university.example",
+          "Marco Rizzo"
+        ],
+        [
+          "student23@university.example",
+          "Anna Costa"
+        ],
+        [
+          "student24@university.example",
+          "Luca Gallo"
+        ],
+        [
+          "student25@university.example",
+          "Martina Bianchi"
+        ],
+        [
+          "student26@university.example",
+          "Francesca Rossi"
+        ],
+        [
+          "student27@university.example",
+          "Elena Ricci"
+        ],
+        [
+          "student28@university.example",
+          "Chiara Gallo"
+        ],
+        [
+          "student29@university.example",
+          "Francesca Marino"
+        ],
+        [
+          "student30@university.example",
+          "Giulia Greco"
+        ],
+        [
+          "student3@university.example",
+          "Francesca Colombo"
+        ],
+        [
+          "student4@university.example",
+          "Luca Costa"
+        ],
+        [
+          "student8@university.example",
+          "Simone Rizzo"
+        ],
+        [
+          "student9@university.example",
+          "Federico Costa"
+        ]
+      ],
+      "gold_result_hash": "74109dd235f7d9f0cce4429d33791eec79dc02838195261d3da8961d9285db98",
+      "generated_result_hash": "c0cab2cf31548ff4a41cd7a33b1e78ef2b041e61fdfcf49cacd226cc27044db3",
+      "gold_row_count": 22,
+      "generated_row_count": 21,
+      "missing_rows": [
+        [
+          "student6@university.example",
+          "Francesca Colombo"
+        ]
+      ],
+      "extra_rows": []
+    },
+    {
+      "id": "U03",
+      "critical": true,
+      "passed": true,
+      "gold_sql": "SELECT DISTINCT c.course_code, c.title, c.credits FROM courses c JOIN enrollments e ON e.course_id = c.course_id",
+      "generated_sql": "SELECT DISTINCT c.course_code, c.title, c.credits FROM courses c JOIN enrollments e ON e.course_id = c.course_id",
+      "error": null,
+      "gold_rows": [
+        [
+          "cs-101",
+          "Introduction to Programming",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "cs-202",
+          "Databases",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "cs-301",
+          "Operating Systems",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "ec-201",
+          "Microeconomics",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "en-101",
+          "Academic Writing",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "ma-101",
+          "Calculus I",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "ma-202",
+          "Linear Algebra",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "ph-101",
+          "Physics I",
+          {
+            "number": "9"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          "cs-101",
+          "Introduction to Programming",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "cs-202",
+          "Databases",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "cs-301",
+          "Operating Systems",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "ec-201",
+          "Microeconomics",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "en-101",
+          "Academic Writing",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "ma-101",
+          "Calculus I",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "ma-202",
+          "Linear Algebra",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "ph-101",
+          "Physics I",
+          {
+            "number": "9"
+          }
+        ]
+      ],
+      "gold_result_hash": "e57152a03ed93992e5e4ed0c9f378eae7ff3a07d49343c79115fb11d2b3233be",
+      "generated_result_hash": "e57152a03ed93992e5e4ed0c9f378eae7ff3a07d49343c79115fb11d2b3233be",
+      "gold_row_count": 8,
+      "generated_row_count": 8,
+      "missing_rows": [],
+      "extra_rows": []
+    },
+    {
+      "id": "U04",
+      "critical": true,
+      "passed": false,
+      "gold_sql": "SELECT s.email, c.course_code, e.semester, e.grade FROM enrollments e JOIN students s ON s.student_id = e.student_id JOIN courses c ON c.course_id = e.course_id",
+      "generated_sql": "SELECT s.email, c.course_code, e.semester, e.grade FROM enrollments e JOIN students s ON s.student_id = e.student_id JOIN courses c ON c.course_id = e.course_id",
+      "error": null,
+      "gold_rows": [
+        [
+          "student11@university.example",
+          "ec-201",
+          "2026-02",
+          {
+            "number": "26"
+          }
+        ],
+        [
+          "student12@university.example",
+          "cs-202",
+          "2026-02",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "student12@university.example",
+          "ec-201",
+          "2026-02",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "student14@university.example",
+          "cs-202",
+          "2026-02",
+          {
+            "number": "27"
+          }
+        ],
+        [
+          "student15@university.example",
+          "cs-301",
+          "2026-01",
+          "30L"
+        ],
+        [
+          "student15@university.example",
+          "ec-201",
+          "2026-01",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "student15@university.example",
+          "ph-101",
+          "2026-02",
+          {
+            "number": "22"
+          }
+        ],
+        [
+          "student16@university.example",
+          "cs-301",
+          "2026-01",
+          {
+            "number": "27"
+          }
+        ],
+        [
+          "student16@university.example",
+          "en-101",
+          "2026-01",
+          "NS"
+        ],
+        [
+          "student16@university.example",
+          "ma-101",
+          "2026-01",
+          {
+            "number": "22"
+          }
+        ],
+        [
+          "student16@university.example",
+          "ph-101",
+          "2026-01",
+          {
+            "number": "21"
+          }
+        ],
+        [
+          "student17@university.example",
+          "cs-202",
+          "2026-01",
+          {
+            "number": "30"
+          }
+        ],
+        [
+          "student17@university.example",
+          "en-101",
+          "2026-02",
+          {
+            "number": "26"
+          }
+        ],
+        [
+          "student17@university.example",
+          "ma-202",
+          "2026-01",
+          "30L"
+        ],
+        [
+          "student18@university.example",
+          "cs-101",
+          "2026-01",
+          {
+            "number": "30"
+          }
+        ],
+        [
+          "student18@university.example",
+          "cs-202",
+          "2026-01",
+          {
+            "number": "30"
+          }
+        ],
+        [
+          "student18@university.example",
+          "ma-101",
+          "2026-01",
+          {
+            "number": "26"
+          }
+        ],
+        [
+          "student18@university.example",
+          "ma-202",
+          "2026-01",
+          {
+            "number": "30"
+          }
+        ],
+        [
+          "student21@university.example",
+          "cs-301",
+          "2026-02",
+          {
+            "number": "27"
+          }
+        ],
+        [
+          "student21@university.example",
+          "ph-101",
+          "2026-01",
+          {
+            "number": "22"
+          }
+        ],
+        [
+          "student22@university.example",
+          "cs-301",
+          "2026-01",
+          {
+            "number": "30"
+          }
+        ],
+        [
+          "student22@university.example",
+          "ma-101",
+          "2026-01",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "student23@university.example",
+          "cs-101",
+          "2026-02",
+          {
+            "number": "26"
+          }
+        ],
+        [
+          "student23@university.example",
+          "cs-202",
+          "2026-01",
+          {
+            "number": "25"
+          }
+        ],
+        [
+          "student23@university.example",
+          "cs-301",
+          "2026-02",
+          {
+            "number": "21"
+          }
+        ],
+        [
+          "student23@university.example",
+          "ec-201",
+          "2026-02",
+          {
+            "number": "25"
+          }
+        ],
+        [
+          "student24@university.example",
+          "ec-201",
+          "2026-02",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "student25@university.example",
+          "en-101",
+          "2026-01",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "student26@university.example",
+          "cs-101",
+          "2026-02",
+          {
+            "number": "28"
+          }
+        ],
+        [
+          "student26@university.example",
+          "ma-101",
+          "2026-01",
+          "30L"
+        ],
+        [
+          "student27@university.example",
+          "cs-101",
+          "2026-01",
+          {
+            "number": "28"
+          }
+        ],
+        [
+          "student28@university.example",
+          "en-101",
+          "2026-02",
+          {
+            "number": "27"
+          }
+        ],
+        [
+          "student29@university.example",
+          "cs-202",
+          "2026-02",
+          "30L"
+        ],
+        [
+          "student30@university.example",
+          "ma-101",
+          "2026-02",
+          {
+            "number": "26"
+          }
+        ],
+        [
+          "student3@university.example",
+          "cs-301",
+          "2026-01",
+          {
+            "number": "30"
+          }
+        ],
+        [
+          "student3@university.example",
+          "en-101",
+          "2026-01",
+          {
+            "number": "22"
+          }
+        ],
+        [
+          "student4@university.example",
+          "cs-101",
+          "2026-01",
+          {
+            "number": "30"
+          }
+        ],
+        [
+          "student4@university.example",
+          "cs-202",
+          "2026-02",
+          {
+            "number": "23"
+          }
+        ],
+        [
+          "student4@university.example",
+          "ec-201",
+          "2026-02",
+          {
+            "number": "21"
+          }
+        ],
+        [
+          "student4@university.example",
+          "ma-101",
+          "2026-01",
+          {
+            "number": "28"
+          }
+        ],
+        [
+          "student6@university.example",
+          "ma-101",
+          "2026-01",
+          {
+            "number": "24"
+          }
+        ],
+        [
+          "student8@university.example",
+          "cs-202",
+          "2026-02",
+          "30L"
+        ],
+        [
+          "student8@university.example",
+          "ma-101",
+          "2026-02",
+          {
+            "number": "26"
+          }
+        ],
+        [
+          "student9@university.example",
+          "cs-202",
+          "2026-01",
+          {
+            "number": "27"
+          }
+        ],
+        [
+          "student9@university.example",
+          "ph-101",
+          "2026-02",
+          {
+            "number": "21"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          "student11@university.example",
+          "ec-201",
+          "2026-02",
+          {
+            "number": "26"
+          }
+        ],
+        [
+          "student12@university.example",
+          "cs-202",
+          "2026-02",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "student12@university.example",
+          "ec-201",
+          "2026-02",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "student14@university.example",
+          "cs-202",
+          "2026-02",
+          {
+            "number": "27"
+          }
+        ],
+        [
+          "student15@university.example",
+          "cs-301",
+          "2026-01",
+          "30L"
+        ],
+        [
+          "student15@university.example",
+          "ec-201",
+          "2026-01",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "student15@university.example",
+          "ph-101",
+          "2026-02",
+          {
+            "number": "22"
+          }
+        ],
+        [
+          "student16@university.example",
+          "cs-301",
+          "2026-01",
+          {
+            "number": "27"
+          }
+        ],
+        [
+          "student16@university.example",
+          "en-101",
+          "2026-01",
+          "NS"
+        ],
+        [
+          "student16@university.example",
+          "ma-101",
+          "2026-01",
+          {
+            "number": "22"
+          }
+        ],
+        [
+          "student16@university.example",
+          "ph-101",
+          "2026-01",
+          {
+            "number": "21"
+          }
+        ],
+        [
+          "student17@university.example",
+          "cs-202",
+          "2026-01",
+          {
+            "number": "30"
+          }
+        ],
+        [
+          "student17@university.example",
+          "en-101",
+          "2026-02",
+          {
+            "number": "26"
+          }
+        ],
+        [
+          "student17@university.example",
+          "ma-202",
+          "2026-01",
+          "30L"
+        ],
+        [
+          "student18@university.example",
+          "cs-101",
+          "2026-01",
+          {
+            "number": "30"
+          }
+        ],
+        [
+          "student18@university.example",
+          "cs-202",
+          "2026-01",
+          {
+            "number": "30"
+          }
+        ],
+        [
+          "student18@university.example",
+          "ma-101",
+          "2026-01",
+          {
+            "number": "26"
+          }
+        ],
+        [
+          "student18@university.example",
+          "ma-202",
+          "2026-01",
+          {
+            "number": "30"
+          }
+        ],
+        [
+          "student21@university.example",
+          "cs-301",
+          "2026-02",
+          {
+            "number": "27"
+          }
+        ],
+        [
+          "student21@university.example",
+          "ph-101",
+          "2026-01",
+          {
+            "number": "22"
+          }
+        ],
+        [
+          "student22@university.example",
+          "cs-301",
+          "2026-01",
+          {
+            "number": "30"
+          }
+        ],
+        [
+          "student22@university.example",
+          "ma-101",
+          "2026-01",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "student23@university.example",
+          "cs-101",
+          "2026-02",
+          {
+            "number": "26"
+          }
+        ],
+        [
+          "student23@university.example",
+          "cs-202",
+          "2026-01",
+          {
+            "number": "25"
+          }
+        ],
+        [
+          "student23@university.example",
+          "cs-301",
+          "2026-02",
+          {
+            "number": "21"
+          }
+        ],
+        [
+          "student23@university.example",
+          "ec-201",
+          "2026-02",
+          {
+            "number": "25"
+          }
+        ],
+        [
+          "student24@university.example",
+          "ec-201",
+          "2026-02",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "student25@university.example",
+          "en-101",
+          "2026-01",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "student26@university.example",
+          "cs-101",
+          "2026-02",
+          {
+            "number": "28"
+          }
+        ],
+        [
+          "student26@university.example",
+          "ma-101",
+          "2026-01",
+          "30L"
+        ],
+        [
+          "student27@university.example",
+          "cs-101",
+          "2026-01",
+          {
+            "number": "28"
+          }
+        ],
+        [
+          "student28@university.example",
+          "en-101",
+          "2026-02",
+          {
+            "number": "27"
+          }
+        ],
+        [
+          "student29@university.example",
+          "cs-202",
+          "2026-02",
+          "30L"
+        ],
+        [
+          "student30@university.example",
+          "ma-101",
+          "2026-01",
+          {
+            "number": "24"
+          }
+        ],
+        [
+          "student3@university.example",
+          "cs-301",
+          "2026-01",
+          {
+            "number": "30"
+          }
+        ],
+        [
+          "student3@university.example",
+          "en-101",
+          "2026-01",
+          {
+            "number": "22"
+          }
+        ],
+        [
+          "student4@university.example",
+          "cs-101",
+          "2026-01",
+          {
+            "number": "30"
+          }
+        ],
+        [
+          "student4@university.example",
+          "cs-202",
+          "2026-02",
+          {
+            "number": "23"
+          }
+        ],
+        [
+          "student4@university.example",
+          "ec-201",
+          "2026-02",
+          {
+            "number": "21"
+          }
+        ],
+        [
+          "student4@university.example",
+          "ma-101",
+          "2026-01",
+          {
+            "number": "28"
+          }
+        ],
+        [
+          "student8@university.example",
+          "cs-202",
+          "2026-02",
+          "30L"
+        ],
+        [
+          "student8@university.example",
+          "ma-101",
+          "2026-02",
+          {
+            "number": "26"
+          }
+        ],
+        [
+          "student9@university.example",
+          "cs-202",
+          "2026-01",
+          {
+            "number": "27"
+          }
+        ],
+        [
+          "student9@university.example",
+          "ph-101",
+          "2026-02",
+          {
+            "number": "21"
+          }
+        ]
+      ],
+      "gold_result_hash": "666632222e391872101420ec48da3f54cb6a3e251010e3b59c3f10d6c3e2b581",
+      "generated_result_hash": "08c9cf59e7c5a20be13d4ce0ceb6c47f99c48bc6e659927c4dd662362f6fad99",
+      "gold_row_count": 45,
+      "generated_row_count": 44,
+      "missing_rows": [
+        [
+          "student30@university.example",
+          "ma-101",
+          "2026-02",
+          {
+            "number": "26"
+          }
+        ],
+        [
+          "student6@university.example",
+          "ma-101",
+          "2026-01",
+          {
+            "number": "24"
+          }
+        ]
+      ],
+      "extra_rows": [
+        [
+          "student30@university.example",
+          "ma-101",
+          "2026-01",
+          {
+            "number": "24"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "U05",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT c.course_code, COUNT(*) AS enrollment_count FROM enrollments e JOIN courses c ON c.course_id = e.course_id GROUP BY c.course_code",
+      "generated_sql": "SELECT c.course_code, COUNT(*) AS enrollment_count FROM enrollments e JOIN courses c ON c.course_id = e.course_id GROUP BY c.course_code",
+      "error": null,
+      "gold_rows": [
+        [
+          "cs-101",
+          {
+            "number": "5"
+          }
+        ],
+        [
+          "cs-202",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "cs-301",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "ec-201",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "en-101",
+          {
+            "number": "5"
+          }
+        ],
+        [
+          "ma-101",
+          {
+            "number": "8"
+          }
+        ],
+        [
+          "ma-202",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "ph-101",
+          {
+            "number": "4"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          "cs-101",
+          {
+            "number": "5"
+          }
+        ],
+        [
+          "cs-202",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "cs-301",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "ec-201",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "en-101",
+          {
+            "number": "5"
+          }
+        ],
+        [
+          "ma-101",
+          {
+            "number": "7"
+          }
+        ],
+        [
+          "ma-202",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "ph-101",
+          {
+            "number": "4"
+          }
+        ]
+      ],
+      "gold_result_hash": "6ecd9534e0e238a9e74231badef201eaf3e495ba308c6d8fff5b5c508b88189b",
+      "generated_result_hash": "fd639151abfda1cafc50ba4765e7632f160bbc659e1c039695af0ec77f5a564c",
+      "gold_row_count": 8,
+      "generated_row_count": 8,
+      "missing_rows": [
+        [
+          "ma-101",
+          {
+            "number": "8"
+          }
+        ]
+      ],
+      "extra_rows": [
+        [
+          "ma-101",
+          {
+            "number": "7"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "U06",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT semester, COUNT(*) AS enrollment_count FROM enrollments GROUP BY semester",
+      "generated_sql": "SELECT semester, COUNT(*) AS enrollment_count FROM enrollments GROUP BY semester",
+      "error": null,
+      "gold_rows": [
+        [
+          "2026-01",
+          {
+            "number": "25"
+          }
+        ],
+        [
+          "2026-02",
+          {
+            "number": "20"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          "2026-01",
+          {
+            "number": "25"
+          }
+        ],
+        [
+          "2026-02",
+          {
+            "number": "19"
+          }
+        ]
+      ],
+      "gold_result_hash": "d772a6be2b0ccb31d795b402d422245d9052a3a58f0180b2de47aafb03ccfcc1",
+      "generated_result_hash": "70340e3bb3d942ca1780caf256097e32248e46a05b474df7d45bb8e955033a9b",
+      "gold_row_count": 2,
+      "generated_row_count": 2,
+      "missing_rows": [
+        [
+          "2026-02",
+          {
+            "number": "20"
+          }
+        ]
+      ],
+      "extra_rows": [
+        [
+          "2026-02",
+          {
+            "number": "19"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "U07",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT s.email, COUNT(*) AS course_count FROM enrollments e JOIN students s ON s.student_id = e.student_id GROUP BY s.email",
+      "generated_sql": "SELECT s.email, COUNT(*) AS course_count FROM enrollments e JOIN students s ON s.student_id = e.student_id GROUP BY s.email",
+      "error": null,
+      "gold_rows": [
+        [
+          "student11@university.example",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "student12@university.example",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "student14@university.example",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "student15@university.example",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "student16@university.example",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "student17@university.example",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "student18@university.example",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "student21@university.example",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "student22@university.example",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "student23@university.example",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "student24@university.example",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "student25@university.example",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "student26@university.example",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "student27@university.example",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "student28@university.example",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "student29@university.example",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "student30@university.example",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "student3@university.example",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "student4@university.example",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "student6@university.example",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "student8@university.example",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "student9@university.example",
+          {
+            "number": "2"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          "student11@university.example",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "student12@university.example",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "student14@university.example",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "student15@university.example",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "student16@university.example",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "student17@university.example",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "student18@university.example",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "student21@university.example",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "student22@university.example",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "student23@university.example",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "student24@university.example",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "student25@university.example",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "student26@university.example",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "student27@university.example",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "student28@university.example",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "student29@university.example",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "student30@university.example",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "student3@university.example",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "student4@university.example",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "student8@university.example",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "student9@university.example",
+          {
+            "number": "2"
+          }
+        ]
+      ],
+      "gold_result_hash": "1754780b3516ed03f77a5aeb97f340bb250b8d5ef5805018f9bd3ac69cc5023d",
+      "generated_result_hash": "e0dc4943108771d33bd7854389d8c5f0cef96b57213c9de6244045bc1c3c1a9b",
+      "gold_row_count": 22,
+      "generated_row_count": 21,
+      "missing_rows": [
+        [
+          "student6@university.example",
+          {
+            "number": "1"
+          }
+        ]
+      ],
+      "extra_rows": []
+    },
+    {
+      "id": "U08",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT grade, COUNT(*) AS grade_count FROM enrollments GROUP BY grade",
+      "generated_sql": "SELECT grade, COUNT(*) AS grade_count FROM enrollments GROUP BY grade",
+      "error": null,
+      "gold_rows": [
+        [
+          "30L",
+          {
+            "number": "5"
+          }
+        ],
+        [
+          "NS",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          {
+            "number": "18"
+          },
+          {
+            "number": "6"
+          }
+        ],
+        [
+          {
+            "number": "21"
+          },
+          {
+            "number": "4"
+          }
+        ],
+        [
+          {
+            "number": "22"
+          },
+          {
+            "number": "4"
+          }
+        ],
+        [
+          {
+            "number": "23"
+          },
+          {
+            "number": "1"
+          }
+        ],
+        [
+          {
+            "number": "24"
+          },
+          {
+            "number": "1"
+          }
+        ],
+        [
+          {
+            "number": "25"
+          },
+          {
+            "number": "2"
+          }
+        ],
+        [
+          {
+            "number": "26"
+          },
+          {
+            "number": "6"
+          }
+        ],
+        [
+          {
+            "number": "27"
+          },
+          {
+            "number": "5"
+          }
+        ],
+        [
+          {
+            "number": "28"
+          },
+          {
+            "number": "3"
+          }
+        ],
+        [
+          {
+            "number": "30"
+          },
+          {
+            "number": "7"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          "30L",
+          {
+            "number": "5"
+          }
+        ],
+        [
+          "NS",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          {
+            "number": "18"
+          },
+          {
+            "number": "6"
+          }
+        ],
+        [
+          {
+            "number": "21"
+          },
+          {
+            "number": "4"
+          }
+        ],
+        [
+          {
+            "number": "22"
+          },
+          {
+            "number": "4"
+          }
+        ],
+        [
+          {
+            "number": "23"
+          },
+          {
+            "number": "1"
+          }
+        ],
+        [
+          {
+            "number": "24"
+          },
+          {
+            "number": "1"
+          }
+        ],
+        [
+          {
+            "number": "25"
+          },
+          {
+            "number": "2"
+          }
+        ],
+        [
+          {
+            "number": "26"
+          },
+          {
+            "number": "5"
+          }
+        ],
+        [
+          {
+            "number": "27"
+          },
+          {
+            "number": "5"
+          }
+        ],
+        [
+          {
+            "number": "28"
+          },
+          {
+            "number": "3"
+          }
+        ],
+        [
+          {
+            "number": "30"
+          },
+          {
+            "number": "7"
+          }
+        ]
+      ],
+      "gold_result_hash": "e1344367f29b4db68f9f21ae00d881e846edf034aa5846281f20a894e17109c2",
+      "generated_result_hash": "5c57f7cfb8bdb5bdd55ae65154b9f35b2744dffa9f5ed547f10e1e440abb705a",
+      "gold_row_count": 12,
+      "generated_row_count": 12,
+      "missing_rows": [
+        [
+          {
+            "number": "26"
+          },
+          {
+            "number": "6"
+          }
+        ]
+      ],
+      "extra_rows": [
+        [
+          {
+            "number": "26"
+          },
+          {
+            "number": "5"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "U09",
+      "critical": false,
+      "passed": true,
+      "gold_sql": "SELECT course_code, credits FROM courses",
+      "generated_sql": "SELECT course_code, credits FROM courses",
+      "error": null,
+      "gold_rows": [
+        [
+          "cs-101",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "cs-202",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "cs-301",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "ec-201",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "en-101",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "ma-101",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "ma-202",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "ph-101",
+          {
+            "number": "9"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          "cs-101",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "cs-202",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "cs-301",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "ec-201",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "en-101",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "ma-101",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "ma-202",
+          {
+            "number": "6"
+          }
+        ],
+        [
+          "ph-101",
+          {
+            "number": "9"
+          }
+        ]
+      ],
+      "gold_result_hash": "ff12dd1b529a190493d8c23054c267cf80f11c8ac75ab9566c19255796269343",
+      "generated_result_hash": "ff12dd1b529a190493d8c23054c267cf80f11c8ac75ab9566c19255796269343",
+      "gold_row_count": 8,
+      "generated_row_count": 8,
+      "missing_rows": [],
+      "extra_rows": []
+    },
+    {
+      "id": "U10",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT COUNT(DISTINCT student_id) AS observed_student_count FROM enrollments",
+      "generated_sql": "SELECT COUNT(DISTINCT student_id) AS observed_student_count FROM enrollments",
+      "error": null,
+      "gold_rows": [
+        [
+          {
+            "number": "22"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          {
+            "number": "21"
+          }
+        ]
+      ],
+      "gold_result_hash": "2a3e2ad8d83e3d0fd8afd09bc07da1ddb370f4cd738ecd2b42d1b19e51eb095e",
+      "generated_result_hash": "0d2d44e3a6b6d9a806325f992bb216bbdf90815b99c271f94c0c02af4198f893",
+      "gold_row_count": 1,
+      "generated_row_count": 1,
+      "missing_rows": [
+        [
+          {
+            "number": "22"
+          }
+        ]
+      ],
+      "extra_rows": [
+        [
+          {
+            "number": "21"
+          }
+        ]
+      ]
+    }
+  ],
+  "total_queries": 10,
+  "passed_queries": 2,
+  "overall_query_pass_rate": 0.2,
+  "critical_query_pass_rate": 0.25,
+  "thresholds": {
+    "min_overall_query_pass_rate": 0.9,
+    "min_critical_query_pass_rate": 1.0,
+    "max_critical_integrity_violations": 0
+  },
+  "integrity": {
+    "foreign_key_violations": [],
+    "natural_key_duplicate_groups": [],
+    "errors": [],
+    "violation_count": 0
+  },
+  "functionally_equivalent": false
+}

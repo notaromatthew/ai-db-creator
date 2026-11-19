@@ -1,0 +1,27 @@
+{
+  "dataset": "hospital",
+  "condition": "baseline",
+  "source_format": "combined",
+  "n_runs": 5,
+  "n_successful": 0,
+  "n_failed": 5,
+  "errors": [
+    "IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: projects.owner_id\n[SQL: INSERT INTO projects (id, owner_id, name, prompt, db_path, schema_finalized_at, schema_version, target_dialect, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: ('8b427347-cae2-4d36-b9d3-0c5e165b3413', None, 'hospital|combined|baseline|run1', 'Design a fully normalized relational schema (3NF) for a hospital management system.\\n\\nSource documents describe: patients, doctors, wards, medicatio ... (249 characters truncated) ... , column names, types, nullability and\\nuniqueness constraints from the attached documents. Produce a clean relational\\nschema ready to be populated.', None, None, 0, None, '2026-11-04 10:47:44.094209', '2026-11-04 10:47:44.094209')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)",
+    "IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: projects.owner_id\n[SQL: INSERT INTO projects (id, owner_id, name, prompt, db_path, schema_finalized_at, schema_version, target_dialect, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: ('e1a7bee6-0c94-4e64-8547-55d0ebea8311', None, 'hospital|combined|baseline|run2', 'Design a fully normalized relational schema (3NF) for a hospital management system.\\n\\nSource documents describe: patients, doctors, wards, medicatio ... (249 characters truncated) ... , column names, types, nullability and\\nuniqueness constraints from the attached documents. Produce a clean relational\\nschema ready to be populated.', None, None, 0, None, '2026-11-04 10:47:44.159455', '2026-11-04 10:47:44.159455')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)",
+    "IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: projects.owner_id\n[SQL: INSERT INTO projects (id, owner_id, name, prompt, db_path, schema_finalized_at, schema_version, target_dialect, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: ('662dd85b-ca56-4242-8ec7-1173b66af298', None, 'hospital|combined|baseline|run3', 'Design a fully normalized relational schema (3NF) for a hospital management system.\\n\\nSource documents describe: patients, doctors, wards, medicatio ... (249 characters truncated) ... , column names, types, nullability and\\nuniqueness constraints from the attached documents. Produce a clean relational\\nschema ready to be populated.', None, None, 0, None, '2026-11-04 10:47:44.178531', '2026-11-04 10:47:44.178531')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)",
+    "IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: projects.owner_id\n[SQL: INSERT INTO projects (id, owner_id, name, prompt, db_path, schema_finalized_at, schema_version, target_dialect, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: ('0501d17f-d30e-4157-b866-19ebcf42d06a', None, 'hospital|combined|baseline|run4', 'Design a fully normalized relational schema (3NF) for a hospital management system.\\n\\nSource documents describe: patients, doctors, wards, medicatio ... (249 characters truncated) ... , column names, types, nullability and\\nuniqueness constraints from the attached documents. Produce a clean relational\\nschema ready to be populated.', None, None, 0, None, '2026-11-04 10:47:44.209908', '2026-11-04 10:47:44.209908')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)",
+    "IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: projects.owner_id\n[SQL: INSERT INTO projects (id, owner_id, name, prompt, db_path, schema_finalized_at, schema_version, target_dialect, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: ('b7ea0f73-2a17-470d-8436-ab4b86103607', None, 'hospital|combined|baseline|run5', 'Design a fully normalized relational schema (3NF) for a hospital management system.\\n\\nSource documents describe: patients, doctors, wards, medicatio ... (249 characters truncated) ... , column names, types, nullability and\\nuniqueness constraints from the attached documents. Produce a clean relational\\nschema ready to be populated.', None, None, 0, None, '2026-11-04 10:47:44.242525', '2026-11-04 10:47:44.242525')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)"
+  ],
+  "temperature": 0.1,
+  "mean_precision": null,
+  "mean_recall": null,
+  "mean_f1": null,
+  "ci95_f1": null,
+  "mean_total_cells": null,
+  "mean_missing_rows": null,
+  "mean_extra_rows": null,
+  "mean_functional_query_pass_rate": null,
+  "mean_adjudicated_schema_equivalence": null,
+  "mean_adjudicated_value_accuracy": null,
+  "mean_adjudicated_completeness": null
+}

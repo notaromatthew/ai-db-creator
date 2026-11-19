@@ -18,9 +18,9 @@ Optional:
                   and record the scores next to the deterministic metrics.
     --temperature FLOAT  LLM sampling temperature for schema generation and
                   population. Defaults to the pipeline defaults (0.1). Use
-                  0.0/0.1 for byte-for-byte reproducibility across runs; raise
-                  (e.g. 0.5) to sample the run-to-run LLM distribution so the
-                  mean/CI over runs reflects genuine output variability. The
+                  0.0/0.1 as the primary low-variance configuration; provider
+                  revisions and sampling can still change outputs. Raise it
+                  (e.g. 0.5) for a separate sensitivity analysis. The
                   adjudication judge always runs at 0.0.
 
 Conditions:
@@ -31,8 +31,9 @@ Conditions:
 
 Aggregation:
     For each (dataset, condition) a summary CSV and JSON report is written
-    listing per-run global F1 / precision / recall next to the mean and the
-    Wilson 95% confidence interval across runs.
+    listing per-run global F1 / precision / recall next to descriptive means
+    and the observed F1 range. No binomial confidence interval is applied to
+    a mean of per-run F1 values.
 """
 from __future__ import annotations
 
@@ -43,9 +44,8 @@ import json
 import sys
 from pathlib import Path
 
-from app.evaluation.population_evaluation import wilson_ci
 from app.models.schema_models import GenerateRequest
-from app.utils.research import atomic_write_json
+from app.utils.research import atomic_write_json, sanitize_metadata, sha256_file
 
 
 def round_or_none(value, ndigits: int = 4):
@@ -53,36 +53,76 @@ def round_or_none(value, ndigits: int = 4):
         return None
     return round(float(value), ndigits)
 
+
+def parse_run_indices(value: str) -> list[int] | None:
+    if not value:
+        return None
+    indices = sorted({int(item.strip()) for item in value.split(",") if item.strip()})
+    if not indices or any(index < 1 for index in indices):
+        raise ValueError("run indices must contain positive integers")
+    return indices
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATASETS_DIR = REPO_ROOT / "data" / "datasets"
+BENCHMARK_OWNER_ID = "research-benchmark-runner"
 
 
 class BenchmarkRunner:
     def __init__(self, datasets: list[str], conditions: list[str], runs: int,
                  output_dir: Path, parallel: int = 1, adjudicate: bool = False,
-                 temperature: float | None = None):
+                 temperature: float | None = None,
+                 source_formats: list[str] | None = None, resume: bool = False,
+                 retry_failed: bool = False, schedule: str = "blocked",
+                 run_indices: list[int] | None = None):
         self.datasets = datasets
         self.conditions = conditions
         self.runs = runs
+        self.run_indices = run_indices or list(range(1, runs + 1))
+        if any(index < 1 for index in self.run_indices):
+            raise ValueError("run_indices must contain positive integers")
         self.output_dir = output_dir
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.parallel = parallel
         self.adjudicate = adjudicate
         self.temperature = temperature
+        self.source_formats = source_formats or ["combined"]
+        self.resume = resume
+        if retry_failed and not resume:
+            raise ValueError("retry_failed requires resume")
+        self.retry_failed = retry_failed
+        if schedule not in {"blocked", "interleaved"}:
+            raise ValueError(f"Unknown schedule: {schedule}")
+        self.schedule = schedule
         from app.services.schema_service import SchemaService
         from app.services.document_service import DocumentService
         from app.services.population_service import PopulationService
+        from app.core.acl import ensure_user
+        self.owner_id = ensure_user({
+            "sub": BENCHMARK_OWNER_ID,
+            "username": BENCHMARK_OWNER_ID,
+            "name": "Research benchmark runner",
+        }).id
         self.schema_svc = SchemaService()
         self.doc_svc = DocumentService()
         self.pop_svc = PopulationService()
 
     # ------------------------------------------------------------------ utils
     @staticmethod
-    def _source_files(dataset: str) -> list[Path]:
+    def _source_files(dataset: str, source_format: str = "combined") -> list[Path]:
         source = DATASETS_DIR / dataset / "source"
         if not source.exists():
             return []
-        return sorted([p for p in source.iterdir() if p.is_file()])
+        files = sorted([p for p in source.iterdir() if p.is_file()])
+        if source_format == "combined":
+            return files
+        wanted = source_format.lower().lstrip(".")
+        if wanted == "excel":
+            return [p for p in files if p.suffix.lower() in {".xlsx", ".xls"}]
+        return [p for p in files if p.suffix.lower() == f".{wanted}"]
+
+    def _cell_dir(self, dataset: str, source_format: str) -> Path:
+        return self.output_dir / dataset if source_format == "combined" \
+            else self.output_dir / dataset / source_format
 
     @staticmethod
     def _gold_schema(dataset: str) -> Path:
@@ -101,19 +141,41 @@ class BenchmarkRunner:
         with (DATASETS_DIR / dataset / "prompt.txt").open("r", encoding="utf-8") as fh:
             return fh.read().strip()
 
+    @staticmethod
+    def _population_mode(population: dict) -> str:
+        warning_categories = {
+            warning.get("category")
+            for table_result in population.values()
+            for warning in (table_result.get("warnings") or [])
+            if isinstance(warning, dict)
+        }
+        population_methods = {
+            (table_result.get("provenance") or {}).get("method")
+            for table_result in population.values()
+            if table_result.get("provenance")
+        }
+        return (
+            "llm" if population_methods == {"llm"} and "fallback_sql_empty" not in warning_categories
+            else "fallback"
+        )
+
     # ------------------------------------------------------------- per project
     async def _create_populated_project(self, dataset: str, condition: str,
-                                        run_index: int) -> str:
+                                        run_index: int, source_format: str) -> tuple[str, list[Path], dict]:
         from app.models.database import init_db
         init_db()
+        source_files = self._source_files(dataset, source_format)
+        if not source_files:
+            raise ValueError(f"No source files for dataset={dataset}, format={source_format}")
         project = self.schema_svc.create_project(
-            name=f"{dataset}|{condition}|run{run_index}",
+            name=f"{dataset}|{source_format}|{condition}|run{run_index}",
             prompt=self._prompt(dataset),
+            owner_id=self.owner_id,
         )
         project_id = project.id
 
         uploaded = []
-        for src in self._source_files(dataset):
+        for src in source_files:
             doc = self.doc_svc.upload_document(project_id, str(src), original_filename=src.name)
             uploaded.append(doc.id)
 
@@ -135,27 +197,48 @@ class BenchmarkRunner:
 
         project = self.schema_svc.get_project(project_id)
         schema = self.schema_svc.get_schema(project_id)
-        await self.pop_svc.populate(project_id, project.db_path, schema, uploaded,
-                                    temperature=self.temperature)
-        return project_id
+        population = await self.pop_svc.populate(
+            project_id, project.db_path, schema, uploaded, temperature=self.temperature
+        )
+        return project_id, source_files, population
 
     def _evaluate(self, project_id: str, dataset: str, alignment: dict | None = None):
         from app.evaluation.population_evaluation import (
             connect_database, evaluate_generated, load_gold_schema, read_rows,
         )
+        from app.evaluation.functional_equivalence import (
+            evaluate_functional_queries, load_evaluation_spec,
+        )
         project = self.schema_svc.get_project(project_id)
         schema = load_gold_schema(str(self._gold_schema(dataset)))
+        spec, spec_hash = load_evaluation_spec(DATASETS_DIR / dataset)
         column_aliases = (alignment or {}).get("columns") or None
+        table_aliases = (alignment or {}).get("tables") or None
+        natural_keys = spec.get("natural_keys") or None
         generated_rows = {}
         ground_rows = {}
         with connect_database(project.db_path) as generated, \
                 connect_database(str(self._ground_truth(dataset))) as ground:
-            result = evaluate_generated(generated, ground, schema, column_aliases)
+            full_gold_result = evaluate_generated(
+                generated, ground, schema, column_aliases, table_aliases, natural_keys
+            )
+            observable_scope = spec.get("observable_scope")
+            result = evaluate_generated(
+                generated, ground, schema, column_aliases, table_aliases, natural_keys,
+                observable_scope,
+            ) if observable_scope else full_gold_result
+            if observable_scope:
+                result["full_gold_sensitivity"] = full_gold_result
             for table in schema.tables:
                 aliases = (column_aliases or {}).get(table.name, {})
-                generated_rows[table.name] = read_rows(generated, table, aliases)
+                generated_rows[table.name] = read_rows(
+                    generated, table, aliases,
+                    (table_aliases or {}).get(table.name, table.name),
+                )
                 ground_rows[table.name] = read_rows(ground, table)
-        return project, result, generated_rows, ground_rows
+            functional = evaluate_functional_queries(generated, ground, spec, alignment) \
+                if spec.get("functional_queries") else None
+        return project, result, generated_rows, ground_rows, functional, spec_hash
 
     def _build_alignment(self, project_id: str, dataset: str) -> dict | None:
         from app.evaluation.schema_alignment import (
@@ -168,32 +251,67 @@ class BenchmarkRunner:
         with connect_database(project.db_path) as generated:
             return build_alignment(schema, generated, registry)
 
-    async def _run_one(self, dataset: str, condition: str, run_index: int) -> dict:
+    async def _run_one(self, dataset: str, condition: str, run_index: int,
+                       source_format: str = "combined") -> dict:
+        from app.core.llm import get_llm_info
+        from app.evaluation.rq2_artifacts import write_run_bundle
+        from app.services.research_manifest import build_manifest
         record = {
             "dataset": dataset, "condition": condition, "run": run_index,
+            "source_format": source_format,
             "project_id": None, "status": "ok",
             "temperature": self.temperature,
             "global_precision": None, "global_recall": None, "global_f1": None,
             "total_cells": None, "missing_rows": None, "extra_rows": None,
+            "functional_query_pass_rate": None, "functionally_equivalent": None,
+            "population_mode": None,
             "alignment": None, "adjudication": None, "error": None,
         }
-        run_dir = self.output_dir / dataset / condition
+        run_dir = self._cell_dir(dataset, source_format) / condition
         run_dir.mkdir(parents=True, exist_ok=True)
+        bundle_dir = run_dir / f"run{run_index:02d}"
+        project = None
+        generated_schema = None
+        result = None
+        alignment = None
+        functional = None
+        source_files = self._source_files(dataset, source_format)
+        spec_hash = sha256_file(DATASETS_DIR / dataset / "evaluation_spec.json")
         try:
-            project_id = await self._create_populated_project(dataset, condition, run_index)
+            project_id, source_files, population = await self._create_populated_project(
+                dataset, condition, run_index, source_format
+            )
+            record["project_id"] = project_id
+            project = self.schema_svc.get_project(project_id)
+            record["population_mode"] = self._population_mode(population)
+            if record["population_mode"] != "llm":
+                raise RuntimeError(
+                    "LLM population produced no usable SQL; deterministic fallback was used"
+                )
             alignment = self._build_alignment(project_id, dataset) \
                 if condition == "full_llm" else None
-            project, result, generated_rows, ground_rows = \
+            project, result, generated_rows, ground_rows, functional, spec_hash = \
                 self._evaluate(project_id, dataset, alignment)
-            record.update({
-                "project_id": project_id,
-                "global_precision": round_or_none(result["global"]["precision"]),
-                "global_recall": round_or_none(result["global"]["recall"]),
-                "global_f1": round_or_none(result["global"]["f1"]),
-                "total_cells": result["global"]["total_cells"],
-                "missing_rows": result["global"]["missing_rows"],
-                "extra_rows": result["global"]["extra_rows"],
-            })
+            generated_schema = self.schema_svc.get_schema(project_id)
+            if result.get("status") == "not_evaluable":
+                record["status"] = "not_evaluable"
+                record["error"] = sanitize_metadata(result.get("reason"))
+            else:
+                record.update({
+                    "project_id": project_id,
+                    "global_precision": round_or_none(result["global"]["precision"]),
+                    "global_recall": round_or_none(result["global"]["recall"]),
+                    "global_f1": round_or_none(result["global"]["f1"]),
+                    "total_cells": result["global"]["total_cells"],
+                    "missing_rows": result["global"]["missing_rows"],
+                    "extra_rows": result["global"]["extra_rows"],
+                    "functional_query_pass_rate": (
+                        functional or {}
+                    ).get("overall_query_pass_rate"),
+                    "functionally_equivalent": (
+                        functional or {}
+                    ).get("functionally_equivalent"),
+                })
             if alignment is not None:
                 record["alignment"] = {
                     "tables": alignment["tables"],
@@ -212,9 +330,35 @@ class BenchmarkRunner:
                 record["adjudication"] = adjudication
         except Exception as exc:
             record["status"] = "error"
-            record["error"] = f"{type(exc).__name__}: {exc}"
+            record["error"] = sanitize_metadata(f"{type(exc).__name__}: {exc}")
+        llm_info = get_llm_info()
+        source_manifest = [{
+            "path": path.relative_to(DATASETS_DIR / dataset).as_posix(),
+            "sha256": sha256_file(path),
+        } for path in source_files]
+        manifest = build_manifest({
+            "dataset": dataset, "condition": condition,
+            "provider": llm_info["provider"], "model": llm_info["model"],
+            "temperature": self.temperature, "run_index": run_index,
+        }, {
+            "source_format": source_format,
+            "source_files": source_manifest,
+            "evaluation_spec_hash": spec_hash,
+            "project_id": record.get("project_id"),
+            "schema_output_contract": llm_info["schema_output_contract"],
+        })
+        write_run_bundle(
+            bundle_dir,
+            database_path=getattr(project, "db_path", None),
+            generated_schema=generated_schema,
+            evaluation=result,
+            alignment=alignment,
+            functional_evaluation=functional,
+            manifest=manifest,
+            record=record,
+        )
         atomic_write_json(run_dir / f"run{run_index:02d}.json",
-                          {**record, "detail": None})
+                          sanitize_metadata({**record, "detail": None}))
         return record
 
     def _load_gold_schema(self, dataset: str):
@@ -222,41 +366,101 @@ class BenchmarkRunner:
         return load_gold_schema(str(self._gold_schema(dataset)))
 
     # ---------------------------------------------------------------- wrapper
+    def _validate_resume_artifacts(self, record_path: Path, dataset: str,
+                                   source_format: str, condition: str,
+                                   run_index: int) -> tuple[dict, dict]:
+        record = json.loads(record_path.read_text(encoding="utf-8"))
+        manifest_path = record_path.with_suffix("") / "manifest.json"
+        if not manifest_path.exists():
+            raise ValueError(f"Cannot resume incomplete run: {record_path}")
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        from app.core.llm import get_llm_info
+        llm_info = get_llm_info()
+        expected = {
+            "dataset": dataset,
+            "condition": condition,
+            "source_format": source_format,
+            "run_index": run_index,
+            "provider": llm_info["provider"],
+            "model": llm_info["model"],
+            "temperature": self.temperature,
+            "schema_output_contract": llm_info["schema_output_contract"],
+        }
+        actual = {
+            "dataset": manifest.get("dataset"),
+            "condition": manifest.get("condition"),
+            "source_format": manifest.get("source_format", "combined"),
+            "run_index": manifest.get("run_index"),
+            "provider": manifest.get("provider"),
+            "model": manifest.get("model"),
+            "temperature": manifest.get("parameters", {}).get("temperature"),
+            "schema_output_contract": manifest.get(
+                "schema_output_contract", "legacy-pydantic-v1"
+            ),
+        }
+        if actual != expected:
+            raise ValueError(f"Resume configuration mismatch: {record_path}")
+        if record.get("status") not in {"ok", "not_evaluable", "error"}:
+            raise ValueError(f"Cannot resume run with unknown status: {record_path}")
+        return record, manifest
+
     async def run(self) -> list[dict]:
         tasks = []
-        for dataset in self.datasets:
-            for condition in self.conditions:
-                for run_index in range(1, self.runs + 1):
-                    tasks.append(self._run_one(dataset, condition, run_index))
+        existing = []
+        cells = [
+            (dataset, source_format, condition, run_index)
+            for dataset in self.datasets
+            for source_format in self.source_formats
+            for condition in self.conditions
+            for run_index in getattr(self, "run_indices", range(1, self.runs + 1))
+        ]
+        if self.schedule == "interleaved":
+            cells.sort(key=lambda cell: (
+                cell[3], self.datasets.index(cell[0]),
+                self.source_formats.index(cell[1]), self.conditions.index(cell[2]),
+            ))
+        for dataset, source_format, condition, run_index in cells:
+            record_path = self._cell_dir(dataset, source_format) / condition / f"run{run_index:02d}.json"
+            if self.resume and record_path.exists():
+                record, _manifest = self._validate_resume_artifacts(
+                    record_path, dataset, source_format, condition, run_index
+                )
+                if not (self.retry_failed and record["status"] == "error"):
+                    existing.append(record)
+                    continue
+            tasks.append(self._run_one(dataset, condition, run_index, source_format))
         sem = asyncio.Semaphore(self.parallel)
         async def guarded(task):
             async with sem:
                 return await task
-        results = [r for r in await asyncio.gather(*[guarded(t) for t in tasks],
-                                                    return_exceptions=True)
-                   if isinstance(r, dict)]
+        completed = await asyncio.gather(*[guarded(t) for t in tasks], return_exceptions=True)
+        results = existing + [r for r in completed if isinstance(r, dict)]
         for dataset in self.datasets:
-            for condition in self.conditions:
-                self._write_summary(dataset, condition, results)
+            for source_format in self.source_formats:
+                for condition in self.conditions:
+                    self._write_summary(dataset, condition, results, source_format)
         return results
 
     def _write_summary(self, dataset: str, condition: str,
-                       all_records: list[dict]) -> None:
+                       all_records: list[dict], source_format: str = "combined") -> None:
         records = [r for r in all_records
-                   if r["dataset"] == dataset and r["condition"] == condition]
+                   if r["dataset"] == dataset and r["condition"] == condition
+                   and r.get("source_format", "combined") == source_format]
         records.sort(key=lambda r: r["run"])
-        out = self.output_dir / dataset
+        out = self._cell_dir(dataset, source_format)
         out.mkdir(parents=True, exist_ok=True)
 
         rows_path = out / f"{condition}.csv"
-        fields = ["dataset", "condition", "run", "project_id",
+        fields = ["dataset", "source_format", "condition", "run", "project_id", "status", "error",
+                  "population_mode",
                   "global_precision", "global_recall", "global_f1",
-                  "total_cells", "missing_rows", "extra_rows"]
+                   "total_cells", "missing_rows", "extra_rows",
+                   "functional_query_pass_rate", "functionally_equivalent"]
         with rows_path.open("w", newline="", encoding="utf-8") as fh:
             writer = csv.DictWriter(fh, fieldnames=fields)
             writer.writeheader()
             for r in records:
-                writer.writerow({k: r[k] for k in fields})
+                writer.writerow({k: r.get(k) for k in fields})
 
         summary = self._aggregate(records)
         summary_path = out / f"{condition}_summary.json"
@@ -265,13 +469,11 @@ class BenchmarkRunner:
     def _aggregate(self, records: list[dict]) -> dict:
         import statistics as stats
         def col(key: str) -> list[float]:
-            return [r[key] for r in records if r[key] is not None]
+            return [r[key] for r in records if r.get("status") == "ok" and r.get(key) is not None]
         def mean(vals: list[float]) -> float | None:
             return round_or_none(stats.mean(vals)) if vals else None
-        def wci(values: list[float]) -> list | None:
-            if not values:
-                return None
-            return [round_or_none(v) for v in wilson_ci(mean(values), len(values))]
+        def observed_range(values: list[float]) -> list | None:
+            return [round_or_none(min(values)), round_or_none(max(values))] if values else None
         def adjudication_col(key: str) -> list[float]:
             return [r["adjudication"]["scores"][key] for r in records
                     if isinstance(r.get("adjudication"), dict)
@@ -280,15 +482,23 @@ class BenchmarkRunner:
         summary = {
             "dataset": records[0]["dataset"] if records else None,
             "condition": records[0]["condition"] if records else None,
+            "source_format": records[0].get("source_format") if records else None,
             "n_runs": len(records),
+            "n_evaluable": sum(r.get("status") == "ok" for r in records),
+            "n_not_evaluable": sum(r.get("status") == "not_evaluable" for r in records),
+            "n_error": sum(r.get("status") == "error" for r in records),
+            "n_successful": sum(r.get("status") == "ok" for r in records),
+            "n_failed": sum(r.get("status") == "error" for r in records),
+            "errors": [r.get("error") for r in records if r.get("status") == "error"],
             "temperature": records[0].get("temperature") if records else None,
             "mean_precision": mean(col("global_precision")),
             "mean_recall": mean(col("global_recall")),
             "mean_f1": mean(col("global_f1")),
-            "ci95_f1": wci(col("global_f1")),
-            "mean_total_cells": mean([r["total_cells"] for r in records]),
-            "mean_missing_rows": mean([r["missing_rows"] for r in records]),
-            "mean_extra_rows": mean([r["extra_rows"] for r in records]),
+            "f1_observed_range": observed_range(col("global_f1")),
+            "mean_total_cells": mean(col("total_cells")),
+            "mean_missing_rows": mean(col("missing_rows")),
+            "mean_extra_rows": mean(col("extra_rows")),
+            "mean_functional_query_pass_rate": mean(col("functional_query_pass_rate")),
         }
         for dimension in ("schema_equivalence", "value_accuracy", "completeness"):
             values = adjudication_col(dimension)
@@ -303,6 +513,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--conditions", default="full_llm,baseline",
                         help="Comma-separated conditions to run.")
     parser.add_argument("--runs", type=int, default=3, help="Runs per (dataset, condition).")
+    parser.add_argument("--run-indices", default="",
+                        help="Optional comma-separated positive run indices. Overrides --runs.")
     parser.add_argument("--output", default="reports/benchmark",
                         help="Output directory for run reports and summaries.")
     parser.add_argument("--parallel", type=int, default=1,
@@ -313,27 +525,52 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--temperature", type=float, default=None,
                         help="LLM sampling temperature for schema generation and "
                              "population (defaults to the pipeline defaults: 0.1). "
-                             "Keep 0.0/0.1 for byte-for-byte reproducibility; raise "
-                             "(e.g. 0.5) to sample the run-to-run LLM distribution.")
+                             "Use 0.0/0.1 for the primary low-variance configuration; "
+                             "raise it (e.g. 0.5) only in a separate sensitivity run.")
+    parser.add_argument("--source-formats", default="combined",
+                        help="Comma-separated source cells: combined,csv,xlsx,xls,pdf,txt,excel. "
+                             "A format cell fails explicitly when the dataset has no matching file.")
+    parser.add_argument("--resume", action="store_true",
+                        help="Keep complete, configuration-matching run bundles and execute only missing runs.")
+    parser.add_argument("--retry-failed", action="store_true",
+                        help="With --resume, rerun only status=error; preserve ok and not_evaluable runs.")
+    parser.add_argument("--schedule", choices=("blocked", "interleaved"), default="blocked",
+                        help="Run order. Use interleaved to distribute provider drift or quota effects across cells.")
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    if args.retry_failed and not args.resume:
+        parser.error("--retry-failed requires --resume")
     datasets = [d.strip() for d in args.datasets.split(",") if d.strip()]
     conditions = [c.strip() for c in args.conditions.split(",") if c.strip()]
+    source_formats = [f.strip().lower().lstrip(".") for f in args.source_formats.split(",") if f.strip()]
+    try:
+        run_indices = parse_run_indices(args.run_indices)
+    except ValueError:
+        parser.error("--run-indices must contain comma-separated positive integers")
     runner = BenchmarkRunner(datasets, conditions, args.runs,
                              Path(args.output), parallel=args.parallel,
                              adjudicate=args.adjudicate,
-                             temperature=args.temperature)
+                              temperature=args.temperature,
+                              source_formats=source_formats,
+                              resume=args.resume,
+                              retry_failed=args.retry_failed,
+                              schedule=args.schedule,
+                              run_indices=run_indices)
     results = asyncio.run(runner.run())
+    error_count = sum(r.get("status") == "error" for r in results)
     print(json.dumps({
         "output": str(runner.output_dir),
         "n_runs": len(results),
-        "ok": len(results),
+        "ok": sum(r.get("status") == "ok" for r in results),
+        "not_evaluable": sum(r.get("status") == "not_evaluable" for r in results),
+        "failed": error_count,
         "temperature": runner.temperature,
     }, indent=2))
-    return 0
+    return 1 if error_count else 0
 
 
 if __name__ == "__main__":

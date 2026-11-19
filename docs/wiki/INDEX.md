@@ -17,7 +17,7 @@
 | 📊 **[06-benchmark-protocol-and-datasets.md](file:///Users/davide/Documents/repos/ai-db-creator/docs/wiki/06-benchmark-protocol-and-datasets.md)** | Benchmark Protocol & Evaluation | `11-benchmark-protocol.md`, `16-manual-condition-protocol.md` | Datasets A/B/C, 3NF Formulas, Rel F1, Krippendorff's Alpha, Expert Rubric |
 | 🛡️ **[07-risk-register-and-data-governance.md](file:///Users/davide/Documents/repos/ai-db-creator/docs/wiki/07-risk-register-and-data-governance.md)** | Risk Register & Governance | `12-risk-register.md`, `13-data-governance.md` | Risk matrix, GDPR compliance, data retention, safety rules |
 | 🚀 **[08-devops-coolify-and-sonarqube.md](file:///Users/davide/Documents/repos/ai-db-creator/docs/wiki/08-devops-coolify-and-sonarqube.md)** | DevOps, Coolify & Quality | `04-deployment-guide.md`, `17-technical-review-dossier.md` | Coolify PaaS, Docker multi-stage, SonarQube quality gates, env vars |
-| 📝 **[09-usability-pilot-and-results-draft.md](file:///Users/davide/Documents/repos/ai-db-creator/docs/wiki/09-usability-pilot-and-results-draft.md)** | Usability Pilot & Results | `10-thesis-roadmap.md`, `14-usability-pilot-protocol.md`, `18-results-draft.md` | NASA-TLX, SUS, pilot user protocol, research results, thesis roadmap |
+| 📝 **[09-usability-pilot-and-results-draft.md](file:///Users/davide/Documents/repos/ai-db-creator/docs/wiki/09-usability-pilot-and-results-draft.md)** | Pilot & Results | `10-thesis-roadmap.md`, `14-usability-pilot-protocol.md`, `18-results-draft.md`, `23-study-protocol-amendment-2026-11-18.md`, `24-participant-study-runbook.md`, `25-rq2-format-comparison-protocol.md` | objective outcomes, pilot protocol, format comparison, research results, thesis roadmap |
 
 ---
 

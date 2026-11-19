@@ -1,0 +1,6 @@
+dataset,condition,run,project_id,global_precision,global_recall,global_f1,total_cells,missing_rows,extra_rows
+hospital,full_llm,1,cc875e72-77c7-4b30-a7cf-6eede34ca506,0.8021,0.5546,0.5928,1819,621,8
+hospital,full_llm,2,8bfbaad5-5562-442d-93ca-1e2e48930cd4,0.8438,0.4871,0.5658,1693,660,2
+hospital,full_llm,3,37956a12-ceec-436f-8f38-2ddd29f9f1b9,0.8438,0.4571,0.5217,1591,688,0
+hospital,full_llm,4,7561eaa1-8032-4d54-91bd-4d2dbcfdc17b,0.8021,0.7302,0.7478,3530,156,37
+hospital,full_llm,5,80b5ab95-d87c-46e6-8c34-e9adf56bf426,0.7882,0.6607,0.6702,2753,350,37

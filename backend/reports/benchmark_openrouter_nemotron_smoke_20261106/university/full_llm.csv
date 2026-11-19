@@ -1,0 +1,2 @@
+dataset,source_format,condition,run,project_id,status,error,population_mode,global_precision,global_recall,global_f1,total_cells,missing_rows,extra_rows,functional_query_pass_rate,functionally_equivalent
+university,combined,full_llm,1,,error,LLMException: Schema generation failed,,,,,,,,,

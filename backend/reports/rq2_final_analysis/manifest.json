@@ -1,0 +1,13 @@
+{
+  "analysis": "rq2_final_matrix_exploratory_v1",
+  "status": "complete_exploratory",
+  "bootstrap_seed": 20261119,
+  "inputs": {
+    "protocol_manifest.json": "1d0fbb69bc10750cf1e0dbce91e7a386d5d856e5b1cfa6e647aa78843bea77a1",
+    "final_adjudication_summary.json": "52fa02efc331c5b1314951ca02a81cba25535abbb7957ceefadd8cbee60e5fb0"
+  },
+  "outputs": {
+    "rq2_final_analysis.json": "f75ddeade9fa9b44a69490c302d80a6550a9a36db02ac0d03b976b99ffb784bb",
+    "rq2_condition_comparisons.csv": "2b54949940e95bd025b6b1cd9917967d0b6cd99c5100624a5a4731f19e47e59d"
+  }
+}

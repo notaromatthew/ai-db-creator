@@ -1,0 +1,27 @@
+{
+  "dataset": "university",
+  "condition": "full_llm",
+  "source_format": "combined",
+  "n_runs": 5,
+  "n_successful": 0,
+  "n_failed": 5,
+  "errors": [
+    "IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: projects.owner_id\n[SQL: INSERT INTO projects (id, owner_id, name, prompt, db_path, schema_finalized_at, schema_version, target_dialect, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: ('1ef09f54-70f8-46ea-a2eb-daa87a325823', None, 'university|combined|full_llm|run1', 'Design a fully normalized relational schema (3NF) for a university enrollment management system.\\n\\nSource documents describe: students (id, name, em ... (155 characters truncated) ... , column names, types, nullability and\\nuniqueness constraints from the attached documents. Produce a clean relational\\nschema ready to be populated.', None, None, 0, None, '2026-11-04 10:47:43.691140', '2026-11-04 10:47:43.691140')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)",
+    "IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: projects.owner_id\n[SQL: INSERT INTO projects (id, owner_id, name, prompt, db_path, schema_finalized_at, schema_version, target_dialect, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: ('49ae04dc-0f8a-4dc0-a07a-906d8aa5eec8', None, 'university|combined|full_llm|run2', 'Design a fully normalized relational schema (3NF) for a university enrollment management system.\\n\\nSource documents describe: students (id, name, em ... (155 characters truncated) ... , column names, types, nullability and\\nuniqueness constraints from the attached documents. Produce a clean relational\\nschema ready to be populated.', None, None, 0, None, '2026-11-04 10:47:43.711113', '2026-11-04 10:47:43.711113')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)",
+    "IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: projects.owner_id\n[SQL: INSERT INTO projects (id, owner_id, name, prompt, db_path, schema_finalized_at, schema_version, target_dialect, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: ('86f0ad7b-9606-4280-8f1d-d113db6a61ca', None, 'university|combined|full_llm|run3', 'Design a fully normalized relational schema (3NF) for a university enrollment management system.\\n\\nSource documents describe: students (id, name, em ... (155 characters truncated) ... , column names, types, nullability and\\nuniqueness constraints from the attached documents. Produce a clean relational\\nschema ready to be populated.', None, None, 0, None, '2026-11-04 10:47:43.730899', '2026-11-04 10:47:43.730899')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)",
+    "IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: projects.owner_id\n[SQL: INSERT INTO projects (id, owner_id, name, prompt, db_path, schema_finalized_at, schema_version, target_dialect, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: ('c2bea75a-8da6-448b-a64f-2a399a2721ec', None, 'university|combined|full_llm|run4', 'Design a fully normalized relational schema (3NF) for a university enrollment management system.\\n\\nSource documents describe: students (id, name, em ... (155 characters truncated) ... , column names, types, nullability and\\nuniqueness constraints from the attached documents. Produce a clean relational\\nschema ready to be populated.', None, None, 0, None, '2026-11-04 10:47:43.758934', '2026-11-04 10:47:43.758934')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)",
+    "IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: projects.owner_id\n[SQL: INSERT INTO projects (id, owner_id, name, prompt, db_path, schema_finalized_at, schema_version, target_dialect, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: ('36292a96-98cd-4bf5-ad7a-705e42a954f6', None, 'university|combined|full_llm|run5', 'Design a fully normalized relational schema (3NF) for a university enrollment management system.\\n\\nSource documents describe: students (id, name, em ... (155 characters truncated) ... , column names, types, nullability and\\nuniqueness constraints from the attached documents. Produce a clean relational\\nschema ready to be populated.', None, None, 0, None, '2026-11-04 10:47:43.783204', '2026-11-04 10:47:43.783204')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)"
+  ],
+  "temperature": 0.1,
+  "mean_precision": null,
+  "mean_recall": null,
+  "mean_f1": null,
+  "ci95_f1": null,
+  "mean_total_cells": null,
+  "mean_missing_rows": null,
+  "mean_extra_rows": null,
+  "mean_functional_query_pass_rate": null,
+  "mean_adjudicated_schema_equivalence": null,
+  "mean_adjudicated_value_accuracy": null,
+  "mean_adjudicated_completeness": null
+}

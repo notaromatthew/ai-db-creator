@@ -1,4 +1,5 @@
 import { QueryClient } from '@tanstack/react-query'
+import { readStudyContext } from '@/research/studyContext'
 
 const getApiBase = () => {
   if (import.meta.env.VITE_API_URL) {
@@ -72,6 +73,13 @@ export class ApiClient {
     const h: Record<string, string> = { ...custom }
     if (this.token) {
       h['Authorization'] = `Bearer ${this.token}`
+    }
+    if (typeof window !== 'undefined') {
+      const study = readStudyContext()
+      if (study) {
+        h['X-Study-Participant'] = study.participant_id
+        h['X-Study-Arm'] = study.arm
+      }
     }
     return h
   }

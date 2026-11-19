@@ -1,0 +1,14 @@
+{
+  "protocol": "rq2_blind_adjudication_v1",
+  "status": "consensus_complete",
+  "source_sha256": {
+    "reviewer_a": "a0a4a342980b8e4266f9b68df1225e3988f28499fa7a2f03e30e96771c517b53",
+    "reviewer_b": "ee28a514ab00fcd237f52d722c7caef94eb9cc236378bd8f373d2079b6d89788",
+    "consensus": "1626694c7a316f4c737c30bbe78a5f06ea1484f0942e191a12e3f333da2339c3",
+    "private_mapping": "f39dbdbc27b78c60113de65f10d5555d56696aecde8dc13175d6e91856da1aa3"
+  },
+  "outputs": {
+    "final_adjudication_ledger.csv": "c8d386528af1772383fca5b3711f3fb716d964d58989d5a03d416a488e76a88f",
+    "final_adjudication_summary.json": "52fa02efc331c5b1314951ca02a81cba25535abbb7957ceefadd8cbee60e5fb0"
+  }
+}

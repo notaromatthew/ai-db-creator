@@ -2,7 +2,7 @@
 
 For each (dataset, condition) this reads the per-run ``run<NN>.json`` records
 and the ``{condition}_summary.json`` written by run_benchmark (mean precision/
-recall/F1 + Wilson 95% CI + mean adjudication scores), and emits one flat JSON
+recall/F1 + observed F1 range + mean adjudication scores), and emits one flat JSON
 suitable for building the results tables in the thesis/paper draft.
 
 Usage:
@@ -125,8 +125,10 @@ def main(argv: list[str] | None = None) -> int:
             "mean_f1": summary.get("mean_f1"),
             "mean_precision": summary.get("mean_precision"),
             "mean_recall": summary.get("mean_recall"),
-            "ci95_f1": summary.get("ci95_f1"),
-            "mean_cells": summary.get("mean_cells"),
+            "f1_observed_range": summary.get("f1_observed_range") or (
+                [min(f1s), max(f1s)] if f1s else None
+            ),
+            "mean_cells": summary.get("mean_total_cells", summary.get("mean_cells")),
             "mean_missing_rows": summary.get("mean_missing_rows"),
             "mean_extra_rows": summary.get("mean_extra_rows"),
             "mean_duplicate_rate": mean(dup_rates),

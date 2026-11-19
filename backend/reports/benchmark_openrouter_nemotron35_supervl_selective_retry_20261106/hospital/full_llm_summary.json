@@ -1,0 +1,30 @@
+{
+  "dataset": "hospital",
+  "condition": "full_llm",
+  "source_format": "combined",
+  "n_runs": 5,
+  "n_evaluable": 3,
+  "n_not_evaluable": 0,
+  "n_error": 2,
+  "n_successful": 3,
+  "n_failed": 2,
+  "errors": [
+    "LLMException: Schema generation failed",
+    "LLMException: Schema generation failed"
+  ],
+  "temperature": 0.1,
+  "mean_precision": 0.5,
+  "mean_recall": 0.4617,
+  "mean_f1": 0.4792,
+  "f1_observed_range": [
+    0.474,
+    0.4826
+  ],
+  "mean_total_cells": 201.0,
+  "mean_missing_rows": 247.0,
+  "mean_extra_rows": 4.0,
+  "mean_functional_query_pass_rate": 0.0,
+  "mean_adjudicated_schema_equivalence": null,
+  "mean_adjudicated_value_accuracy": null,
+  "mean_adjudicated_completeness": null
+}

@@ -1,0 +1,36 @@
+{
+  "dataset": "university",
+  "condition": "baseline",
+  "run": 5,
+  "project_id": "b91cdf79-4969-49db-9fbb-947eca541449",
+  "status": "ok",
+  "global_precision": 0.7708,
+  "global_recall": 0.8137,
+  "global_f1": 0.7657,
+  "total_cells": 150,
+  "missing_rows": 40,
+  "extra_rows": 32,
+  "alignment": null,
+  "adjudication": {
+    "status": "ok",
+    "scores": {
+      "schema_equivalence": 100,
+      "value_accuracy": 100,
+      "completeness": 73
+    },
+    "notes": "Schema matches perfectly. Courses and enrollments data match well, but the students table only contains 22 out of 30 gold standard rows (missing rows 1, 2, 5, 7, 10, etc.).",
+    "metadata": {
+      "provider": "Google Gemini",
+      "model": "gemini-3.5-flash-lite",
+      "parameters": {
+        "temperature": 0.0
+      },
+      "prompt_hash": "199f5180a35000a70cdfa1e20c94718a9ba062f7079c0d8a027ce3366d02f1e8",
+      "document_hashes": []
+    },
+    "rubric_version": "adjudication_rubric_v1",
+    "rubric_hash": "3caa6a73b7f9405a7721c26feab0e115673cd4c09d7b009e368b5fe3f7162783"
+  },
+  "error": null,
+  "detail": null
+}

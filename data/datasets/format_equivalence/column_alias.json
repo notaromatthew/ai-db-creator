@@ -1,0 +1,8 @@
+{
+  "students": {
+    "student_id": "id"
+  },
+  "enrollments": {
+    "course_id": "id"
+  }
+}

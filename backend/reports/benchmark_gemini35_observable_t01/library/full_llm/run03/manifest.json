@@ -1,0 +1,47 @@
+{
+  "software_revision": "1c12d74c39063293",
+  "research_mode": false,
+  "dataset": "library",
+  "dataset_hash": "974425f9aedea0a13e8d6076183a9aee439ad937f6ed58442c707d8d74622882",
+  "condition": "full_llm",
+  "provider": "Google Gemini",
+  "model": "gemini-3.5-flash-lite",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 3,
+  "created_at": "2026-11-05T07:39:23.602363+00:00",
+  "source_format": "combined",
+  "source_files": [
+    {
+      "path": "source/books.csv",
+      "sha256": "e9808e8883479ba985010064a41ccce6936987b9fd79bdfd087f654c5de32f47"
+    },
+    {
+      "path": "source/description.pdf",
+      "sha256": "161ccf4d8a56de5b58145d8387df322e2529b2ee0ad57cfd12a7e7596b61b9a1"
+    },
+    {
+      "path": "source/loans_members.csv",
+      "sha256": "e58a0472c7f9c2bd7ca7118ac2f9cbbe829b1469103524416a7fca28a0714710"
+    },
+    {
+      "path": "source/members.csv",
+      "sha256": "4e352910699272abeca6ce966de35b2d966531e505988cd3c732d518b40f69a4"
+    }
+  ],
+  "evaluation_spec_hash": "b919d5b5dc1e4d1e45f3852a598b29036edab09346f5c9d2c2b6ef5c62725537",
+  "project_id": "3a5e0f4d-5987-459d-9211-aa50a82227bb",
+  "status": "error",
+  "artifacts": {
+    "generated_database": {
+      "path": "generated.db",
+      "sha256": "3652021e20ee7183e5e71fe2f6262fb4f173247f8bf16071f89a40da0c542ad2"
+    },
+    "run_record": {
+      "path": "run.json",
+      "sha256": "efc7f5ecc6716fee2bd29553adfcbf4a674b2cc128c6852ab4c2834dbf3e80e0"
+    }
+  }
+}

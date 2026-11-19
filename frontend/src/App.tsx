@@ -1,20 +1,7 @@
 import { Routes, Route, Link, NavLink, Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import Dashboard from './pages/Dashboard'
 import ProjectPage from './pages/ProjectPage'
-import HelpPage from './pages/HelpPage'
-import SettingsPage from './pages/SettingsPage'
-import BenchmarkPage from './pages/BenchmarkPage'
-import AdminPage from './pages/AdminPage'
-import ExpertReviewPage from './pages/ExpertReviewPage'
-import AdminEvaluationsPage from './pages/AdminEvaluationsPage'
-import SharedProjectPage from './pages/SharedProjectPage'
-import ExamplesPage from './pages/ExamplesPage'
-import ExampleDetailPage from './pages/ExampleDetailPage'
-import StudyPage from './pages/StudyPage'
-import ResearchPage from './pages/research/ResearchPage'
-import LegalPage from './pages/LegalPage'
-import OnboardingPage from './pages/OnboardingPage'
 import { OnboardingDialog, hasSeenOnboarding, markOnboardingSeen } from './components/Onboarding'
 import SessionBanner from './components/SessionBanner'
 import { markAutoLogin, sanitizeReturnPath, saveReturnTo, shouldAutoLogin } from './hooks/authReturn'
@@ -27,6 +14,20 @@ import { ConfigProvider, useConfig } from './config/AppConfig'
 import { Logo } from './brand/Logo'
 import SiteFooter from './brand/SiteFooter'
 import { api } from './api/client'
+
+const HelpPage = lazy(() => import('./pages/HelpPage'))
+const SettingsPage = lazy(() => import('./pages/SettingsPage'))
+const BenchmarkPage = lazy(() => import('./pages/BenchmarkPage'))
+const AdminPage = lazy(() => import('./pages/AdminPage'))
+const ExpertReviewPage = lazy(() => import('./pages/ExpertReviewPage'))
+const AdminEvaluationsPage = lazy(() => import('./pages/AdminEvaluationsPage'))
+const SharedProjectPage = lazy(() => import('./pages/SharedProjectPage'))
+const ExamplesPage = lazy(() => import('./pages/ExamplesPage'))
+const ExampleDetailPage = lazy(() => import('./pages/ExampleDetailPage'))
+const StudyPage = lazy(() => import('./pages/StudyPage'))
+const ResearchPage = lazy(() => import('./pages/research/ResearchPage'))
+const LegalPage = lazy(() => import('./pages/LegalPage'))
+const OnboardingPage = lazy(() => import('./pages/OnboardingPage'))
 
 /** /app/login e /app/register: aprono subito Keycloak e, dopo l'accesso, riportano a ?next= (o alla home). */
 function AuthEntry({ mode }: { mode: 'login' | 'register' }) {
@@ -162,7 +163,8 @@ function AppShell() {
       </nav>
 
       <main id="contenuto" tabIndex={-1} className="relative z-10 mx-auto outline-none w-full max-w-7xl flex-1 p-4 sm:p-6 lg:p-8">
-        <Routes>
+        <Suspense fallback={<div className="glass p-8 text-center text-tecnia-muted" role="status">Caricamento…</div>}>
+          <Routes>
           <Route index element={<RequireAuth><Dashboard /></RequireAuth>} />
           <Route path="projects/:id" element={<RequireAuth><ProjectPage /></RequireAuth>} />
           <Route path="shared/:token" element={<SharedProjectPage />} />
@@ -182,7 +184,8 @@ function AppShell() {
           {config.research_mode && <Route path="studio" element={<RequireAuth><StudyPage /></RequireAuth>} />}
           {config.research_mode && <Route path="ricerca" element={<RequireAuth><ResearchPage /></RequireAuth>} />}
           <Route path="*" element={<Navigate to="/app" replace />} />
-        </Routes>
+          </Routes>
+        </Suspense>
       </main>
       {projectId && <ProgressBar projectId={projectId} />}
       <LLMStatus />

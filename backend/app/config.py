@@ -1,8 +1,10 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+
     llm_provider: str = "vertex"
     openai_api_key: str = ""
     openai_model: str = "gpt-4o-mini"
@@ -12,9 +14,14 @@ class Settings(BaseSettings):
 
     openrouter_api_key: str = ""
     openrouter_model: str = "openai/gpt-4o-mini"
+    openrouter_reasoning_enabled: bool = False
+    openrouter_schema_json_mode: bool = False
+    openrouter_timeout_seconds: float = 120.0
+    openrouter_max_retries: int = 0
 
     google_api_key: str = ""
-    google_model: str = "gemini-2.0-flash"
+    google_model: str = "gemini-3.5-flash-lite"
+    google_max_retries: int = 2
 
     # Vertex AI (Google Cloud). Pensato per il costo minimo: modello "lite",
     # tetto ai token di output e regione UE. Le credenziali arrivano da un
@@ -37,6 +44,7 @@ class Settings(BaseSettings):
     # interazioni, manifest dei run). Spenta = resta solo il prodotto.
     # Si cambia con la variabile RESEARCH_MODE su Coolify e un redeploy.
     research_mode: bool = False
+    study_questionnaires_enabled: bool = False
     # Quote giornaliere per utente (valori bassi di proposito, modificabili dall'admin).
     default_daily_ai_quota: int = 20
     max_upload_mb: int = 25
@@ -94,10 +102,5 @@ class Settings(BaseSettings):
     # di default: negli esperimenti ogni run deve campionare davvero il modello.
     llm_cache_enabled: bool = False
     llm_cache_max_entries: int = 256
-
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-
 
 settings = Settings()

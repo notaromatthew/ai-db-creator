@@ -80,7 +80,7 @@
 \begin{abstract}
 The design of a relational database schema and the population of its tables remain technical tasks that require expertise in data modelling, normalisation, and SQL. This prevents non-expert users---domain experts, researchers, small-business operators---from autonomously structuring and querying their data. This paper presents \aidb, a research platform that combines Large Language Models (LLMs) with an interactive visual interface to enable users with no database background to generate, populate, and explore relational databases. The system accepts heterogeneous documents (CSV, Excel, PDF, TXT, SQL) and natural-language descriptions, and guides the user through five phases: document ingestion, LLM-based schema generation (normalised tables, primary/foreign keys, constraints), automatic database creation and migration, deterministic-first hybrid population from source documents, and a visual data environment with search, filtering, inline editing, CRUD operations, and multi-dialect export (SQLite, PostgreSQL, MySQL, MSSQL). Backup-and-restore snapshots and operation-history metadata provide safety and traceability.
 
-The paper describes the architecture, schema prompting and deterministic-first hybrid population, the multi-dialect import/export pipeline, and a comprehensive evaluation protocol structured around four research questions. These investigate schema quality (normalisation, key identification F1), population accuracy (cell-level precision/recall), the impact of human-in-the-loop validation (three-arm experiment with Raw NASA-TLX and SUS), and user interaction patterns (log sequence mining and clustering). Sections that require empirical data are explicitly marked with collection instructions.
+The paper describes the architecture, schema prompting and deterministic-first hybrid population, the multi-dialect import/export pipeline, and a comprehensive evaluation protocol structured around four research questions. These investigate schema quality (normalisation, key identification F1), population accuracy (cell-level precision/recall), the impact of human-in-the-loop validation through objective outcomes in a three-arm experiment, and user interaction patterns (log sequence mining and clustering). Sections that require empirical data are explicitly marked with collection instructions.
 \end{abstract}
 
 \noindent\textbf{Keywords:} Large Language Models; database schema generation; automatic data population; visual interface; human-in-the-loop; non-expert users; multi-dialect export; CRUD; normalisation.
@@ -88,7 +88,7 @@ The paper describes the architecture, schema prompting and deterministic-first h
 \section{Introduction}
 Relational databases remain the dominant paradigm for structured data storage in business, research, and government. Their creation, however, requires a combination of skills---data modelling, normalisation theory, SQL proficiency---that is rarely found outside specialised technical roles. According to surveys of small and medium enterprises, a significant fraction of data management is still performed through spreadsheets precisely because the leap from flat tabular data to a normalised relational schema is perceived as too costly or technically demanding~\citep{bernstein2011spreadsheets}. This gap creates friction: data that could be queried, related, and analysed remains locked in isolated documents, and the benefits of structured storage---integrity constraints, efficient joins, standardised access---are lost.
 
-Recent advances in Large Language Models (LLMs) have opened new possibilities for lowering the technical barriers to database creation. LLMs have demonstrated remarkable capabilities in code generation~\citep{chen2021evaluating}, text-to-SQL translation~\citep{yu2018spider}, schema matching~\citep{zhang2023schema}, and structured data extraction~\citep{narayan2022data}. However, existing research has focused on individual sub-tasks in isolation. No prior work, to the best of our knowledge, addresses the complete end-to-end problem: going from a set of heterogeneous, unstructured or semi-structured documents to a fully populated, normalised relational database through a unified workflow accessible to non-experts.
+Recent advances in Large Language Models (LLMs) have opened new possibilities for lowering the technical barriers to database creation. LLMs have demonstrated remarkable capabilities in code generation~\citep{chen2021evaluating}, text-to-SQL translation~\citep{yu2018spider}, schema matching~\citep{zhang2023schema}, and structured data extraction~\citep{narayan2022data}. Recent systems now address schema generation directly, and SQUiD generates and populates relational databases from unstructured text~\citep{wang2025schemaagent,sadia2025squid}. The remaining research opportunity is therefore not the existence of an end-to-end generator, but the evaluation of a heterogeneous-document workflow that exposes schema and data revision to non-expert users, records their interactions, and compares assisted creation with manual and fully automatic conditions.
 
 This paper presents \aidb, a research platform designed to fill this gap. \aidb\ combines an LLM-based generation engine with a visual interactive interface to support users without database expertise through the entire lifecycle of database creation. The key contributions of this work are:
 
@@ -100,7 +100,7 @@ This paper presents \aidb, a research platform designed to fill this gap. \aidb\
   \item \textbf{A reproducible research infrastructure} with full source code, documentation suite, and versioned artifacts available in the project repository.
 \end{enumerate}
 
-The paper is structured as follows. Section~\ref{sec:background} reviews related work in LLMs for databases, schema generation, and human-in-the-loop tools. Section~\ref{sec:system} describes the system architecture, frontend and backend components, and the LLM integration strategy. Section~\ref{sec:workflow} presents the workflow in detail, with examples of the prompting pipelines. Section~\ref{sec:rq} defines the research questions and hypotheses. Section~\ref{sec:eval} describes the evaluation protocol, including datasets, participants, metrics, and statistical methods. Section~\ref{sec:results-placeholder} outlines the expected results and analysis plan. Section~\ref{sec:threats} discusses threats to validity. Section~\ref{sec:discussion} frames the expected contributions and limitations. Section~\ref{sec:conclusion} concludes. Throughout the paper, sections that depend on experimental data are marked with \textbf{[SURVEY / EXPERIMENT REQUIRED]} and include precise instructions for data collection.
+The paper is structured as follows. Section~\ref{sec:background} reviews related work in LLMs for databases, schema generation, and human-in-the-loop tools. Section~\ref{sec:system} describes the system architecture, frontend and backend components, and the LLM integration strategy. Section~\ref{sec:workflow} presents the workflow in detail, with examples of the prompting pipelines. Section~\ref{sec:rq} defines the research questions and hypotheses. Section~\ref{sec:eval} describes the evaluation protocol, including datasets, participants, metrics, and statistical methods. Section~\ref{sec:rq1-results} reports the observed RQ1 results. Section~\ref{sec:threats} discusses threats to validity. Section~\ref{sec:discussion} frames the expected contributions and limitations. Section~\ref{sec:conclusion} concludes. Remaining sections that depend on experimental data are marked with \textbf{[SURVEY / EXPERIMENT REQUIRED]} and include precise instructions for data collection.
 
 \section{Background and related work}
 \label{sec:background}
@@ -112,11 +112,20 @@ Schema matching---identifying correspondences between columns of different table
 Data cleaning and transformation have been explored through LLM-based approaches for entity resolution, missing-value imputation, and format standardisation~\citep{narayan2022data}. These techniques are relevant to the population phase of \aidb, where extracted values may need type coercion or deduplication.
 
 \subsection{Schema generation from natural language}
-The task of generating a database schema from a natural-language description has received less attention. Early work by~\citet{chaudhuri2023nl2schema} proposed NL2Schema, a system that translates natural-language descriptions into CREATE TABLE statements using few-shot prompting. However, that system operates on single-table descriptions and does not handle multi-table normalisation, foreign-key inference, or integration with source documents.
+The task of generating a database schema from a natural-language description has received less attention than text-to-SQL. SchemaAgent formalises Text2Schema and uses specialised agents to generate 3NF logical schemas from requirements~\citep{wang2025schemaagent}. SchemaBridge subsequently showed that human requirements often under-specify referential structure and proposed separate measures for table, attribute, domain, entity, and referential fidelity~\citep{chakrabarti2026schemabridge}.
 
 Reverse-engineering approaches infer schemas from data sources~\citep{rahm2010schema}. These methods analyse the structure of CSV files or spreadsheets to propose column types and potential keys, but they cannot infer relationships across files or enforce normalisation beyond what is evident from the data layout.
 
-\aidb\ differs from both approaches by combining natural-language prompting with document content. The LLM receives both a high-level description of the domain and the actual text extracted from the user's documents, enabling it to propose a schema that is both structurally sound and semantically aligned with the data.
+SQUiD is the closest end-to-end comparison: it generates a schema and populates
+relational tables from unstructured text using a neuro-symbolic pipeline
+\citep{sadia2025squid}. SynSQL also synthesises relational instances, but uses
+them to stress-test text-to-SQL systems rather than to support an end-user
+database-creation workflow~\citep{habibollah2026synsql}. \aidb\ therefore does
+not claim to be the first schema-and-population system. It differs in its
+combination of heterogeneous CSV/XLSX/PDF/TXT inputs, an editable visual
+workflow, deterministic-first extraction, operational provenance, multi-dialect
+export, and a planned three-arm study of manual, automatic, and interactive
+creation.
 
 \subsection{Human-in-the-loop database tools}
 Visual database design tools have existed for decades: MySQL Workbench, ER/Studio, dbdiagram.io, and others provide graphical environments for entity-relationship modelling. These tools are powerful for users who understand normalisation, cardinality, and key selection, but they assume the very expertise that \aidb\ aims to replace. For non-expert users, the challenge is not the graphical notation but the underlying model of what constitutes a well-designed schema.
@@ -124,9 +133,15 @@ Visual database design tools have existed for decades: MySQL Workbench, ER/Studi
 The human-in-the-loop paradigm has been studied in the context of interactive machine learning~\citep{fails2003interactive,amershi2014power}, where user feedback is used to refine model outputs. In the database domain,~\citet{hellerstein2020interactive} explored interactive data cleaning, showing that user involvement improves data quality. \aidb\ applies this paradigm to schema generation: the LLM proposes a schema, and the user can review, edit, add, or remove elements through an intuitive interface before the database is created.
 
 \subsection{Retrieval-Augmented Generation for structured data}
-RAG~\citep{lewis2020rag} combines a generative model with indexed external memory. While most RAG applications focus on question answering over unstructured text, the paradigm is also applicable to structured data. In \aidb, the RAG concept appears in two forms. First, the schema generation prompt includes the full document text as retrieved context. Second, the population prompt uses the generated table definitions as a structured target schema and the document text as the source from which values must be extracted. This dual application of the RAG principle---unstructured context for design, structured target for extraction---is, to our knowledge, novel.
+RAG~\citep{lewis2020rag} combines a generative model with indexed external memory. While most RAG applications focus on question answering over unstructured text, the paradigm is also applicable to structured data. In \aidb, the RAG concept appears in two forms. First, the schema generation prompt includes the full document text as retrieved context. Second, the population prompt uses the generated table definitions as a structured target schema and the document text as the source from which values must be extracted. This is an implementation choice of the platform rather than a claim of conceptual priority.
 
-\surveyplaceholder{RQ1 / RQ2 Literature gap confirmation}{Conduct a systematic literature review using the following search strings: ("LLM" OR "large language model") AND ("schema generation" OR "database creation" OR "automatic schema design"); ("LLM" OR "large language model") AND ("data population" OR "table population" OR "data extraction" AND "relational"). Document: (1) number of relevant papers found, (2) which sub-steps each paper covers, (3) datasets used for evaluation, (4) whether any existing work covers the full end-to-end pipeline. If any system covers both schema generation and population from heterogeneous documents, describe it in detail and explain how \aidb\ differs.}
+\noindent\textbf{Literature-search status.}
+A targeted search of arXiv, ACL Anthology, and ACM-indexed results identified
+direct work on schema generation and end-to-end relational synthesis, including
+SchemaAgent, SQUiD, SchemaBridge, and SynSQL. This search corrects the earlier
+over-broad novelty claim. It is not labelled a systematic review: final venue
+submission still requires a reproducible search in an institutional citation
+database, duplicate removal, and documented inclusion decisions.
 
 \section{System architecture}
 \label{sec:system}
@@ -358,9 +373,9 @@ The overarching research question and its four sub-questions are:
 \noindent\textit{Metrics:} cell-level precision, cell-level recall, row-level accuracy, error-type distribution (missing value, wrong value, misplaced value, duplicate, extraneous).
 
 \bigskip
-\noindent\textbf{RQ3 — Human-in-the-loop validation.} To what extent does an interactive dashboard for schema review and editing reduce residual schema and population errors compared with fully automatic generation, and what is the perceived cognitive load on users?
+\noindent\textbf{RQ3 — Human-in-the-loop validation.} To what extent does an interactive dashboard for schema review and editing reduce residual schema and population errors compared with fully automatic generation?
 
-\noindent\textit{Method:} three-arm controlled between-subjects experiment (Manual, AI-only, AI+UI). The preregistered RQ0 contrast is Manual vs. AI+UI; the RQ3 contrast is AI-only vs. AI+UI. Outcomes include residual error rate, Raw NASA-TLX, SUS, and completion time.
+\noindent\textit{Method:} three-arm controlled between-subjects experiment (Manual, AI-only, AI+UI). The preregistered RQ0 contrast is Manual vs. AI+UI; the RQ3 contrast is AI-only vs. AI+UI. Primary outcomes are schema quality and residual error rate; completion time and task success are secondary.
 
 \bigskip
 \noindent\textbf{RQ4 — Interaction patterns.} What behavioural patterns emerge during the validation phase (column renaming, constraint toggling, row editing, suggestion dismissal), and which patterns correlate with improved final schema quality?
@@ -381,25 +396,35 @@ We propose the following hypotheses:
 \label{sec:eval}
 
 \subsection{Datasets}
-\authoraction{Prepare three datasets of increasing complexity:}
+Three versioned synthetic datasets provide increasing relational complexity:
 
 \begin{itemize}
-  \item \textbf{Dataset A (simple): 2--3 tables, no many-to-many relationships.}\\
-  Example: a library catalogue with tables \texttt{books}, \texttt{authors}, \texttt{publishers}. Provide two CSV files and a textual description.
-  \item \textbf{Dataset B (medium): 4--6 tables with one-to-many and many-to-many relationships.}\\
-  Example: an e-commerce domain with \texttt{customers}, \texttt{orders}, \texttt{order\_items}, \texttt{products}, \texttt{categories}. Provide two CSV files, one Excel file, and a text description.
-  \item \textbf{Dataset C (complex): 6+ tables with multiple many-to-many, self-references, and composite keys.}\\
-  Example: a university enrolment system with \texttt{students}, \texttt{courses}, \texttt{enrolments}, \texttt{professors}, \texttt{departments}, \texttt{prerequisites}. Provide mixed document types.
+  \item \textbf{University (simple):} three tables (\texttt{students},
+  \texttt{courses}, and \texttt{enrollments}) with a many-to-many relationship
+  resolved through the enrolment table.
+  \item \textbf{Library (medium):} five tables (\texttt{categories},
+  \texttt{members}, \texttt{books}, \texttt{loans}, and \texttt{fines}) with
+  linked circulation and fine records.
+  \item \textbf{Hospital (complex):} eight tables (\texttt{patients},
+  \texttt{doctors}, \texttt{wards}, \texttt{appointments},
+  \texttt{treatments}, \texttt{medications}, \texttt{prescriptions}, and
+  \texttt{invoices}) with multiple foreign-key paths.
 \end{itemize}
 
-For each dataset, prepare:
+Each dataset contains:
 \begin{enumerate}
-  \item The source documents (as the user would upload them).
-  \item A gold-standard schema (tables, columns, types, keys, constraints).
-  \item Gold-standard populated tables (CSV files with correct data).
+  \item source documents in the formats presented to the system;
+  \item a versioned gold-standard schema with tables, columns, types, keys,
+  and constraints;
+  \item a populated ground-truth SQLite database and evaluation specification.
 \end{enumerate}
 
-\surveyplaceholder{RQ1 / RQ2 Dataset preparation}{For each dataset, verify that the gold-standard schema is in at least 3NF. Create an automated script that checks a schema against the gold standard for: (1) table existence, (2) column existence and types, (3) primary key match, (4) foreign key match. The same script should compute precision, recall, and F1 for each dimension. For population accuracy, create a cell-by-cell comparison script that aligns rows by primary key and classifies each discrepancy into one of five error types.}
+\noindent\textbf{Dataset implementation status.}
+The three versioned datasets include source documents, gold schemas, and
+ground-truth SQLite databases. Automated population comparison, type-aware
+normalisation, schema alignment, Wilson intervals, and discrepancy
+classification are implemented in the evaluation package. Independent human
+validation of the gold standards remains required before the final freeze.
 
 \subsection{Participants}
 \surveyplaceholder{RQ0 / RQ3 / RQ4 Participant recruitment}{First recruit 5--8 pilot participants and exclude their data from confirmatory analyses. For the confirmatory three-arm study, recruit approximately 114 participants to obtain at least 34 completed cases per arm after attrition. Eligible participants have no formal database training (never taken a university-level database course and never worked professionally as a database administrator or data engineer). Stratify randomisation by technical background and dataset assignment. Document the recruitment funnel, exclusions, attrition, and deviations from the preregistered allocation.}
@@ -418,7 +443,7 @@ Procedure for each participant:
   \item \textbf{Informed consent} (5 min): read and sign the consent form.
   \item \textbf{Tutorial} (10 min): standardised video tutorial showing the interface and the task.
   \item \textbf{Task} (30 min max): create a database from Dataset B (medium complexity) using the assigned condition.
-  \item \textbf{Post-task questionnaire} (10 min): Raw NASA-TLX (six 0--100 ratings, aggregate arithmetic mean)~\citep{hart1988tlx} and SUS (10 standard items, 5-point Likert, score 0--100)~\citep{brooke1996sus}.
+  \item \textbf{Post-task debrief} (5 min): optional privacy-filtered feedback and reminder of withdrawal rights; no NASA-TLX or SUS questionnaire is administered.
   \item \textbf{Debriefing} (5 min): brief interview about the experience.
 \end{enumerate}
 
@@ -429,10 +454,34 @@ Procedure for each participant:
   \item 3NF compliance rate: proportion of tables satisfying all three normal form conditions (atomic columns, no partial dependencies, no transitive dependencies). Verified through functional dependency analysis.
   \item Key F1: precision and recall of primary-key detection (which columns are marked PK) and foreign-key detection (which FK relationships are identified).
   \item Relationship coverage: proportion of expected foreign-key relationships (from gold standard) that appear in the generated schema.
-  \item Expert rating: three independent database experts rate each schema on five dimensions (structural soundness, naming quality, type appropriateness, completeness, constraint adequacy) using a 5-point Likert scale. Inter-rater agreement is measured with Krippendorff's alpha using ordinal distance~\citep{krippendorff2018content}.
+  \item Planned expert rating: three independent database experts rate each schema on five dimensions (D1 3NF compliance, D2 naming quality, D3 constraint coverage, D4 relationship accuracy, and D5 domain alignment) using a 5-point Likert scale. Inter-rater agreement is measured with Krippendorff's alpha using ordinal distance~\citep{krippendorff2018content}.
 \end{itemize}
 
-\surveyplaceholder{RQ1 Expert evaluation}{Recruit three database experts (academic researchers or industry professionals with 5+ years of relational database experience). Provide each with the original documents and anonymised generated schema; keep condition labels hidden. Experts rate independently. Use ordinal Krippendorff's alpha as the primary agreement statistic with bootstrap 95\% confidence intervals. Treat $\alpha \geq 0.80$ as confirmatory and $0.67 \leq \alpha < 0.80$ as tentative; below 0.67, revise the rubric or report ratings descriptively. Pairwise weighted Cohen's $\kappa$ may be reported only as a sensitivity analysis.}
+The planned RQ1 protocol targeted three database experts. The observed export
+instead contains 45 computer-science students aged 17--18 who were studying
+databases, each rating all 30 schemas on five dimensions. They are reported as
+trained student raters, not professional or academic database experts. This
+deviation is retained explicitly rather than rewriting the planned sample.
+Database coursework supports task relevance; independence additionally requires
+documented individual, condition-blind administration without discussion or
+access to peers' scores. Institutional verification of assent/consent and data
+protection for minors remains outside the ratings file. The effective response
+scale is Likert 1--5. The primary agreement statistic remains ordinal
+Krippendorff's $\alpha$ with schema-clustered bootstrap confidence intervals.
+The historical 30-run matrix that generated these rating stimuli was recovered
+and linked directly to the anonymised mapping. The seed-42 code assignment was
+reproduced, and all 30 rendered structural bodies match the corresponding
+project \texttt{schema\_json} (tables, columns, constraints, and relationships).
+This recovered matrix is therefore the primary linkage artifact for RQ1.
+
+A separate panel was subsequently completed by the three planned sector
+experts. The user attested that the first two worked individually, without
+discussion or access to one another's scores, and were blind to the condition
+labels. The third rater was identified by the user as an expert, and the user's
+attestation confirms that rater's independence; condition blindness remains
+pending. These procedural facts are recorded as user attestations rather than
+inferred from the ratings. The panel is analysed separately from the 45 trained
+student raters.
 
 \subsubsection{RQ2 — Population accuracy metrics}
 \begin{itemize}
@@ -449,17 +498,108 @@ Procedure for each participant:
     \end{enumerate}
 \end{itemize}
 
-\surveyplaceholder{RQ2 Automated comparison}{Write a Python script for each dataset that: (1) loads the gold-standard CSV, (2) connects to the SQLite database and queries each table, (3) aligns rows by primary key (or best match if PK is absent), (4) compares cell by cell, (5) classifies discrepancies. Run the script for each dataset (simple, medium, complex) and each document type. Output: per-dataset and per-document-type precision/recall table, confusion matrix of error types, and 10 randomly sampled error examples for qualitative analysis.}
+Primary cell metrics are restricted to facts observable in the supplied source
+documents. An audit found that the current gold databases also contain values
+created only by dataset builders (eight unobserved university students; library
+loan--book links and fines; hospital treatments, medications, prescriptions and
+invoices). These are excluded from primary denominators and retained only in a
+full-gold sensitivity analysis. A versioned functional-query suite evaluates
+information preservation independently of synthetic keys. The current document
+bundles mix non-equivalent facts across formats and contain no XLSX variant;
+format comparisons therefore require semantically equivalent derived fixtures
+before execution.
+
+The expert-linked historical matrix was also re-evaluated offline with the
+current observable-scope and functional-query code. It is treated only as a
+secondary RQ2 sensitivity: the original run records do not preserve per-run
+protocol manifests, generation provider/model, software revision, research
+mode, population mode, or pre-generation source hashes. Recovery-time hashes
+verify all 30 databases and all 100 referenced source uploads, but these checks
+must not be presented as contemporaneous provenance or combined with the newer
+structured-output matrix.
+
+A first 30-run execution exposed a client incompatibility with Gemini content
+blocks and is retained only as a technical pilot. After correcting and testing
+content normalization, a complete rerun was started with Google Gemini
+Developer API, \texttt{gemini-3.5-flash-lite}, temperature 0.1, and the same
+three-dataset, two-condition, five-repetition design. All 30 corrected bundles
+and manifests are present and their artifact hashes verify. Nineteen runs
+completed, nine failed schema generation, and two used a rejected deterministic
+fallback. Provider quota exhaustion occurred during the final, blocked
+Hospital full-LLM cell (0/5 successful), confounding condition with execution
+order; the corrected matrix is therefore descriptive rather than confirmatory.
+It also spans two software revisions (23 and seven manifests respectively),
+was executed with research mode disabled, and the nine early schema failures
+lack source-file hashes because provenance was captured after schema generation
+in that runner version. The Wilson intervals stored for the mean per-run F1 are
+not appropriate for a continuous run-level mean and are excluded from
+interpretation.
+The execution loads heterogeneous sources jointly and does not support a causal
+comparison by file format. A semantically equivalent CSV/XLSX/TXT/PDF fixture
+containing 45 observable facts has now been frozen and validated, but its
+separate 40-run format matrix has not yet been executed. A complete
+blind-review package covering all 1,294
+ledger discrepancies has been generated with separate randomized orders and a
+private condition mapping. The two independent reviews and the blinded
+consensus phase are now complete. Exact pre-consensus agreement was 967/1,294
+(74.7\%), while nominal Cohen's kappa was $-0.081$ because the marginal
+distributions were strongly concentrated on the error category and expected
+agreement was 76.6\%.
+
+An independent structured-output sensitivity was subsequently preregistered
+and executed over two quota-bounded day blocks with an interleaved schedule.
+All 30 runs completed without fallback under one software revision, OpenRouter
+\texttt{nvidia/nemotron-3.5-super-vl:free}, temperature 0.1, and the versioned
+\texttt{schema-json-v2} response contract. Artifact integrity checks verified
+195 generated-artifact hashes, 100 source-file hashes, and 30 evaluation-spec
+hashes without discrepancy. Mean cell-level F1 / functional-query pass rate
+were 0.9638 / 0.44 (University baseline), 0.6651 / 0.36 (University full-LLM),
+0.9348 / 0.62 (Library baseline), 0.9848 / 0.40 (Library full-LLM), 0.9496 /
+0.42 (Hospital baseline), and 0.6427 / 0.20 (Hospital full-LLM). Thus reliable
+execution did not imply functional equivalence, and cell-level similarity did
+not consistently predict query preservation. Four of six cells had lower F1
+in the second day block; with only two or three observations per day and cell,
+this is reported as possible provider-day drift rather than a causal effect.
+The matrix remains exploratory, uses jointly loaded heterogeneous sources, and
+has now completed blind human adjudication. Final classifications across the
+1,294 machine-flagged discrepancy records were 967 errors, four equivalent
+representations, 12 ambiguous-gold cases, and 311 non-determinable cases.
+Baseline contributed 362 errors and four equivalent representations among 366
+flags; full-LLM contributed 605 errors, 12 ambiguous-gold cases, and 311
+non-determinable cases among 928 flags. Excluding ambiguous and
+non-determinable records, 967/971 evaluable flags (99.6\%) were confirmed as
+errors. These proportions characterize the flagged discrepancy ledger and do
+not replace the automated cell-level precision, recall, or F1 estimates. The
+311 non-determinable records are concentrated in University full-LLM (225) and
+Hospital full-LLM (86), limiting confirmatory interpretation of schema-divergent
+outputs.
+
+An exploratory post-hoc comparison used exact permutation tests for the five
+runs per condition within each dataset and Holm adjustment across the six
+dataset-by-metric tests. The full-LLM minus baseline F1 differences were
+$-0.2987$ for University (exact $p=0.0079$, Holm-adjusted $p=0.0476$),
+$+0.0500$ for Library ($p=1.0000$), and $-0.3068$ for Hospital (exact
+$p=0.0079$, Holm-adjusted $p=0.0476$). Functional-query pass-rate differences
+were $-0.08$, $-0.22$, and $-0.22$, respectively; none remained below 0.05
+after Holm adjustment. Across all 30 runs, F1 and functional-query pass rate
+had Spearman $\rho=0.490$ ($p=0.006$), whereas within-dataset estimates were
+positive but more uncertain ($p=0.059$--$0.102$). These analyses are
+exploratory, are based on five runs per cell, and do not make F1 a substitute
+for functional evaluation.
 
 \subsubsection{RQ3 — Human-in-the-loop metrics}
 \begin{itemize}
   \item Residual error rate: proportion of schema elements (tables, columns, keys) or data cells that remain incorrect after the participant's intervention (or after generation in the AI-only condition).
-  \item Raw NASA-TLX score: arithmetic mean of six 0--100 dimension ratings (mental demand, physical demand, temporal demand, performance, effort, frustration).
-  \item SUS score: computed from 10 items, yielding a 0--100 scale.
   \item Time on task: minutes spent from start to submission.
 \end{itemize}
 
 \surveyplaceholder{RQ0/RQ3 Between-subjects experiment}{Randomly assign participants to Manual, AI-only, or AI+UI using stratified block randomisation. Target at least 34 completed participants per arm (102 total), recruiting approximately 114 for attrition. Preregister two primary contrasts: Manual vs. AI+UI for RQ0 and AI-only vs. AI+UI for RQ3. Report descriptive statistics, multiplicity-adjusted two-sided tests, Cohen's $d$ with 95\% confidence intervals, and a regression of residual error on condition plus preregistered covariates. A smaller achieved sample is explicitly labelled exploratory.}
+
+The analysis entry point \texttt{backend/analyze\_user\_study.py} is prepared
+before collection. It validates complete pseudonymous exports, derives task
+duration from events, computes the two preregistered contrasts, and applies
+Holm correction across the four contrast-by-primary-outcome tests. It produces
+no empirical result until complete observed exports are supplied.
 
 \subsubsection{RQ4 — Interaction pattern metrics}
 \begin{itemize}
@@ -468,7 +608,94 @@ Procedure for each participant:
   \item Correlation between edit behaviour and final schema quality.
 \end{itemize}
 
-\surveyplaceholder{RQ4 Log analysis}{Export interaction logs as a CSV with columns: participant\_id, timestamp (ISO 8601), event\_type, details (JSON), session\_time\_seconds. Use Python (pandas 2.0+, scikit-learn 1.3+) for analysis. Steps: (1) aggregate edit counts per participant; (2) transform each participant's log into a sequence of event types; (3) apply PrefixSpan (min support = 0.3) to find frequent subsequences; (4) compute Spearman correlation between edit frequency and expert schema rating; (5) apply k-means clustering ($k = 3$ to $5$) on normalised edit-type frequencies; (6) interpret clusters by examining their edit profiles and average schema quality. Report: top-5 frequent patterns with support, correlation matrix, cluster centroids, and silhouette score.}
+\surveyplaceholder{RQ4 observed interaction logs}{Collect and freeze the pseudonymous event export. The prepared analysis aggregates event counts, mines PrefixSpan patterns with minimum support 0.30, computes Spearman correlations with Benjamini--Hochberg correction, and performs exploratory k-means clustering for $k=3$ to $5$ when sample size and feature variability permit it. Cluster interpretation and causal claims remain human analytical tasks.}
+
+\section{Observed RQ1 results}
+\label{sec:rq1-results}
+
+The validated RQ1 export contains 1,350 ratings: 45 evaluators by 30 schemas,
+with no missing or duplicate evaluator--schema pairs. Comments are excluded
+from the quantitative analysis. The five missing submission timestamps are not
+outcome variables. The source export, schema mapping, analysis script, software
+revision, bootstrap seed, and resample count are identified by SHA-256 in the
+analysis manifest.
+The recovered generation artifacts additionally establish a complete join from
+each anonymous schema code through dataset, condition, and run to its original
+project schema. The mapping is reproducible with seed 42 and all 30 structural
+schema renderings match; translated introductory prose is excluded from this
+structural comparison.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Dimension} & \textbf{Ordinal $\alpha$} & \textbf{Bootstrap 95\% CI} & \textbf{Adjacent agreement}\\
+\midrule
+D1 3NF compliance       & 0.812  & [0.742, 0.855]   & 30.0\%\\
+D2 naming quality       & -0.018 & [-0.021, -0.014] & 43.3\%\\
+D3 constraint coverage  & 0.794  & [0.550, 0.855]   & 23.3\%\\
+D4 relationship accuracy& 0.803  & [0.564, 0.867]   & 23.3\%\\
+D5 domain alignment     & 0.775  & [0.536, 0.841]   & 16.7\%\\
+Overall                 & 0.791  & [0.653, 0.846]   & 27.3\%\\
+\bottomrule
+\end{tabular}
+\caption{RQ1 inter-rater agreement across 45 evaluators. Bootstrap intervals use 5,000 schema-clustered resamples.}
+\label{tab:rq1-agreement}
+\end{table}
+
+D1 reaches the preregistered confirmatory agreement threshold. The point
+estimates for D3--D5 are tentative to confirmatory, but their intervals are
+wide. D2 has a mean score of 4.956 in both conditions and almost no variance;
+its near-zero $\alpha$ is therefore interpreted together with the strong
+ceiling effect rather than as evidence of missing observations.
+
+For the primary condition comparison, ratings are averaged within schema so
+that the experimental unit is the schema ($n=15$ per condition), not each of
+the 1,350 repeated ratings. Table~\ref{tab:rq1-condition} reports the
+full-LLM-minus-baseline contrast. The five primary $p$-values are adjusted with
+Holm's procedure.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lrrrrrr}
+\toprule
+\textbf{Dimension} & \textbf{Baseline} & \textbf{Full LLM} & \textbf{$\Delta$} & \textbf{95\% CI} & \textbf{$p_{Holm}$} & \textbf{$d$}\\
+\midrule
+D1 & 4.364 & 4.871 & 0.507 & [0.221, 0.776]  & 0.0135 & 1.233\\
+D2 & 4.956 & 4.956 & 0.000 & [-0.021, 0.022] & 1.0000 & 0.000\\
+D3 & 4.622 & 4.944 & 0.321 & [0.116, 0.572]  & 0.0726 & 0.960\\
+D4 & 4.330 & 4.944 & 0.613 & [0.221, 1.080]  & 0.0726 & 0.959\\
+D5 & 4.618 & 4.938 & 0.320 & [0.117, 0.564]  & 0.0726 & 0.975\\
+\bottomrule
+\end{tabular}
+\caption{RQ1 schema-level comparison between the recorded baseline and full-LLM conditions. Confidence intervals are bootstrap intervals for the mean difference.}
+\label{tab:rq1-condition}
+\end{table}
+
+Only D1 remains below 0.05 after multiplicity correction. D3--D5 have large
+standardised effects and positive bootstrap intervals, but they are not labelled
+significant under the multiplicity-adjusted primary test. These findings refer
+to the recorded \texttt{baseline} and \texttt{full\_llm} benchmark labels and
+must not be relabelled as the RQ3 AI-only and AI+UI participant arms.
+
+\subsection{Separate three-expert panel}
+
+The separate panel contains 90 complete expert--schema records. Exact agreement
+is observed in 20 of 150 dimension cells and in none of the 30 complete
+five-dimensional schema vectors; overall adjacent agreement is 63.3\%.
+Ordinal Krippendorff's $\alpha$ is 0.054 overall (95\% bootstrap CI
+[-0.241, 0.300]), with dimension estimates of 0.242 for D1, -0.463 for D2,
+and 0.103 for D3--D5. The third profile differs substantially from the first
+two. This disagreement is retained as an observed result and is not removed or
+resolved by retrospective exclusion.
+
+At schema level ($n=15$ per condition), full LLM minus baseline is 0.800 for D1
+(95\% bootstrap CI [0.422, 1.156], Holm-adjusted $p=0.0021$, $d=1.515$),
+0.089 for D2 (CI [-0.044, 0.200], adjusted $p=0.2073$), and 0.533 for each
+of D3--D5 (CI approximately [0.178, 0.912], adjusted $p=0.0670$,
+$d=0.974$). The panel reaches the planned size of three but does not demonstrate
+strong inter-rater consensus. It remains separate from, and does not
+retroactively replace, the student-rater analysis.
 
 \section{Implementation and technical details}
 \label{sec:implementation}
@@ -517,7 +744,7 @@ A third threat is the ordering of edits in the user experiment: participants may
 The participant sample is drawn from university mailing lists and social media, which may not represent the full population of non-expert users. The document sets are artificial and may not capture the messiness and variability of real-world business data. Replication studies with real-world datasets and broader participant pools are needed.
 
 \subsection{Construct validity}
-Schema quality is a multidimensional construct. A single metric (e.g.\ 3NF compliance) captures only one aspect. The expert rating rubric attempts to cover multiple dimensions, but expert judgment is inherently subjective. NASA-TLX and SUS are validated instruments but are subject to self-report bias and may be influenced by the participant's familiarity with survey-type evaluations.
+Schema quality is a multidimensional construct. A single metric (e.g.\ 3NF compliance) captures only one aspect. The expert rating rubric attempts to cover multiple dimensions, but expert judgment is inherently subjective. The current protocol intentionally omits perceived workload and usability questionnaires, so it cannot support claims about cognitive load or perceived usability; these remain possible outcomes for a separate future revision.
 
 \subsection{Conclusion validity}
 The confirmatory target is at least 34 completed participants per arm in the three-arm design. If recruitment yields a smaller sample, inference is labelled exploratory and effect estimates are reported with confidence intervals rather than redefining the target post hoc. For RQ4, log analysis remains exploratory and controls the false-discovery rate across multiple behavioural associations.
@@ -553,30 +780,32 @@ The expected contributions of this work are:
 
 \section{Discussion}
 \label{sec:discussion}
-\surveyplaceholder{General discussion}{After the experiments, populate this section with: (1) interpretation of RQ1--RQ4 results in the context of the hypotheses; (2) comparison with related work (how do the results compare to NL2Schema~\citep{chaudhuri2023nl2schema} or other relevant baselines?); (3) practical implications for tool design (which interaction patterns should be encouraged or discouraged?); (4) limitations of the study (sample size, LLM provider dependence, language model version); (5) threats to validity analysis; (6) unexpected findings. This section should be approximately 3--5 pages.}
+\surveyplaceholder{General discussion}{After the experiments, populate this section with: (1) interpretation of RQ1--RQ4 results in the context of the hypotheses; (2) comparison with verified related work, especially SchemaAgent and SQUiD; (3) practical implications for tool design (which interaction patterns should be encouraged or discouraged?); (4) limitations of the study (sample size, LLM provider dependence, language model version); (5) threats to validity analysis; (6) unexpected findings. This section should be approximately 3--5 pages.}
 
 \section{Conclusion}
 \label{sec:conclusion}
 This paper presented \aidb, a research platform that combines LLM-based generation with an interactive visual interface to enable non-expert users to create normalised, populated relational databases from heterogeneous documents. We described the architecture, workflow, prompting strategy, and a comprehensive evaluation protocol spanning four research questions.
 
-The platform is designed not merely as a practical tool but as a controlled environment for studying the interplay between automatic generation, human validation, and user behaviour. The four research questions target complementary aspects: schema quality (RQ1), population accuracy (RQ2), the added value of human review (RQ3), and user interaction patterns (RQ4). All sections that depend on empirical data are explicitly marked with detailed collection instructions.
+The platform is designed not merely as a practical tool but as a controlled environment for studying the interplay between automatic generation, human validation, and user behaviour. The four research questions target complementary aspects: schema quality (RQ1), population accuracy (RQ2), the added value of human review (RQ3), and user interaction patterns (RQ4). RQ1 now has an observed, reproducible analysis; eligibility and procedural evidence for the 45 trained student raters still requires review. The separate expert panel has reached its planned size of three and all three experts are user-attested as independent, although explicit condition-blinding evidence remains pending for the third expert. RQ2 now includes a complete, order-balanced 30-run structured-output sensitivity with verified provenance and completed blinded human adjudication of all 1,294 discrepancy records; it remains exploratory because execution spans two provider days, sources are loaded jointly, and 311 records could not be determined from the blinded evidence. RQ3 and RQ4 still require participant data collection.
 
-The next phase of this research will execute the experimental protocol, collect the required data, and populate the placeholder sections with quantitative and qualitative findings. The complete source code and documentation are publicly available to support replication and extension.
+The next phase will archive the user-reported institutional determination that prior ethics approval
+is not required if written evidence is available, run the formative pilot, and
+then collect the frozen three-arm user study without NASA-TLX or SUS. The
+complete source code and documentation are intended to support replication and
+extension.
 
 \section*{Quick checklist to complete the paper}
 \begin{enumerate}
   \item Confirm title, authors, affiliations, and target venue (journal/conference).
-  \item Prepare the three datasets (simple, medium, complex) with gold-standard schemas and population.
-  \item Validate gold standards with two independent experts.
-  \item Write the automated comparison scripts for RQ1 and RQ2.
-  \item Recruit two database experts for RQ1 schema evaluation.
-  \item Recruit 30+ participants for RQ3/RQ4; randomly assign to conditions.
-  \item Obtain ethics approval before starting participant recruitment.
-  \item Run the RQ1 and RQ2 automated evaluations.
-  \item Run the RQ3 between-subjects experiment.
-  \item Analyse RQ4 interaction logs.
+  \item Complete independent validation and freeze of the three gold standards.
+  \item Review and document the eligibility of the 45 observed RQ1 evaluators.
+  \item Validate format-equivalent fixtures and run the separate format matrix before any per-format comparison.
+  \item Archive, if available, the communication supporting the reported institutional determination that prior ethics approval is not required; retain informed consent and data-protection safeguards.
+  \item Run the 5--8 participant formative pilot and close all high-severity findings.
+  \item Recruit approximately 114 participants to obtain at least 34 completed cases per arm.
+  \item Run the RQ0/RQ3 three-arm experiment using frozen materials and allocation procedures.
+  \item Run the prepared RQ0/RQ3/RQ4 analysis only after the data lock.
   \item Populate all \texttt{\textbackslash surveyplaceholder} and \texttt{\textbackslash authoraction} sections with results.
-  \item Add a \texttt{results} section after Section~\ref{sec:eval}.
   \item Expand the discussion (Section~\ref{sec:discussion}) with interpretation of findings.
   \item Finalise the bibliography.
 \end{enumerate}

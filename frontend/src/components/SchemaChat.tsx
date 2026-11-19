@@ -12,6 +12,7 @@ interface Props {
   locked?: boolean
   /** Ruolo di sola lettura. */
   readOnly?: boolean
+  runContext?: Record<string, string>
 }
 
 interface Message {
@@ -27,7 +28,7 @@ function stripCodeBlocks(text: string): string {
 
 const INTRO_NEW = 'Ciao! Descrivi cosa vuoi cambiare nello schema (per esempio "aggiungi la data di consegna agli ordini"): ti propongo le modifiche e le applico quando confermi.'
 
-export default function SchemaChat({ projectId, schema, documentIds, locked = false, readOnly = false }: Props) {
+export default function SchemaChat({ projectId, schema, documentIds, locked = false, readOnly = false, runContext = {} }: Props) {
   const queryClient = useQueryClient()
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
@@ -86,7 +87,7 @@ export default function SchemaChat({ projectId, schema, documentIds, locked = fa
     setMessages((prev) => [...prev, { role: 'user', content: msg }])
     setLoading(true)
     try {
-      const res = await api.post(`/projects/${projectId}/chat`, { message: msg, document_ids: documentIds })
+      const res = await api.post(`/projects/${projectId}/chat`, { message: msg, document_ids: documentIds, ...runContext })
       setMessages((prev) => [...prev, { role: 'assistant', content: stripCodeBlocks(res.response) || 'Ho capito.', proposal: !!res.proposal }])
       if (res.schema) await applyAndReport(res.schema)
     } catch (e: any) {
@@ -101,7 +102,7 @@ export default function SchemaChat({ projectId, schema, documentIds, locked = fa
     clearProposal()
     setLoading(true)
     try {
-      const res = await api.post(`/projects/${projectId}/chat/apply`, {})
+      const res = await api.post(`/projects/${projectId}/chat/apply`, runContext)
       await applyAndReport(res.schema)
     } catch (e: any) {
       say(`Non sono riuscito ad applicare la modifica: ${e?.message || 'riprova tra poco'}`)
@@ -113,7 +114,7 @@ export default function SchemaChat({ projectId, schema, documentIds, locked = fa
   const dismissProposal = async () => {
     clearProposal()
     try {
-      await api.post(`/projects/${projectId}/chat/dismiss`, {})
+      await api.post(`/projects/${projectId}/chat/dismiss`, runContext)
     } catch {
       /* la proposta resta scartata nella conversazione anche se il server non risponde */
     }

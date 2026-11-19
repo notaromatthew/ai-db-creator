@@ -1,0 +1,496 @@
+{
+  "tables": [
+    {
+      "name": "departments",
+      "columns": [
+        {
+          "name": "department_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Unique identifier for the department"
+        },
+        {
+          "name": "department_name",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": true,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Name of the medical department"
+        }
+      ],
+      "description": "Medical departments in the hospital"
+    },
+    {
+      "name": "wards",
+      "columns": [
+        {
+          "name": "ward_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Unique identifier for the ward"
+        },
+        {
+          "name": "ward_name",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": true,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Name of the ward (e.g., Reparto A)"
+        },
+        {
+          "name": "department_id",
+          "data_type": "INTEGER",
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_key_table": "departments",
+          "foreign_key_column": "department_id",
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Associated department ID"
+        }
+      ],
+      "description": "Hospital wards mapped to departments"
+    },
+    {
+      "name": "doctors",
+      "columns": [
+        {
+          "name": "doctor_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Unique identifier for the doctor"
+        },
+        {
+          "name": "full_name",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Full name of the doctor"
+        },
+        {
+          "name": "department_id",
+          "data_type": "INTEGER",
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_key_table": "departments",
+          "foreign_key_column": "department_id",
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Department the doctor specializes in"
+        }
+      ],
+      "description": "Doctors working in the hospital"
+    },
+    {
+      "name": "patients",
+      "columns": [
+        {
+          "name": "patient_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Unique identifier for the patient"
+        },
+        {
+          "name": "fiscal_code",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": true,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Unique fiscal code of the patient"
+        },
+        {
+          "name": "full_name",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Full name of the patient"
+        },
+        {
+          "name": "birth_date",
+          "data_type": "DATE",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Date of birth of the patient"
+        }
+      ],
+      "description": "Patients registered in the hospital network"
+    },
+    {
+      "name": "appointments",
+      "columns": [
+        {
+          "name": "appointment_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Unique identifier for the appointment"
+        },
+        {
+          "name": "patient_id",
+          "data_type": "INTEGER",
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_key_table": "patients",
+          "foreign_key_column": "patient_id",
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Patient attending the appointment"
+        },
+        {
+          "name": "doctor_id",
+          "data_type": "INTEGER",
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_key_table": "doctors",
+          "foreign_key_column": "doctor_id",
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Doctor conducting the appointment"
+        },
+        {
+          "name": "ward_id",
+          "data_type": "INTEGER",
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_key_table": "wards",
+          "foreign_key_column": "ward_id",
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Ward where the appointment takes place"
+        },
+        {
+          "name": "scheduled_on",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Scheduled date and time of the appointment"
+        }
+      ],
+      "description": "Clinical appointments linking patients, doctors, and wards"
+    },
+    {
+      "name": "treatments",
+      "columns": [
+        {
+          "name": "treatment_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Unique identifier for the treatment"
+        },
+        {
+          "name": "appointment_id",
+          "data_type": "INTEGER",
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_key_table": "appointments",
+          "foreign_key_column": "appointment_id",
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Appointment during which the treatment was performed"
+        },
+        {
+          "name": "treatment_name",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Name or type of treatment performed"
+        },
+        {
+          "name": "fee",
+          "data_type": "REAL",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Base fee for the treatment"
+        }
+      ],
+      "description": "Clinical treatments performed during an appointment"
+    },
+    {
+      "name": "medications",
+      "columns": [
+        {
+          "name": "medication_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Unique identifier for the medication"
+        },
+        {
+          "name": "medication_name",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": true,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Name of the medication"
+        }
+      ],
+      "description": "Medications available for prescription"
+    },
+    {
+      "name": "prescriptions",
+      "columns": [
+        {
+          "name": "prescription_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Unique identifier for the prescription"
+        },
+        {
+          "name": "treatment_id",
+          "data_type": "INTEGER",
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_key_table": "treatments",
+          "foreign_key_column": "treatment_id",
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Treatment requiring the medication"
+        },
+        {
+          "name": "medication_id",
+          "data_type": "INTEGER",
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_key_table": "medications",
+          "foreign_key_column": "medication_id",
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Medication prescribed"
+        },
+        {
+          "name": "dosage_instruction",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Dosage instructions for the medication"
+        }
+      ],
+      "description": "Links treatments to medications with dosage instructions"
+    },
+    {
+      "name": "invoices",
+      "columns": [
+        {
+          "name": "invoice_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Unique identifier for the invoice"
+        },
+        {
+          "name": "appointment_id",
+          "data_type": "INTEGER",
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_key_table": "appointments",
+          "foreign_key_column": "appointment_id",
+          "is_unique": true,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Appointment being billed"
+        },
+        {
+          "name": "amount",
+          "data_type": "REAL",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Total amount including treatment fee and 15% co-payment"
+        },
+        {
+          "name": "issue_date",
+          "data_type": "DATE",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Date when the invoice was issued"
+        }
+      ],
+      "description": "Invoices generated for appointments based on treatments"
+    }
+  ],
+  "relationships": [
+    {
+      "type": "one_to_many",
+      "from_table": "departments",
+      "from_column": "department_id",
+      "to_table": "wards",
+      "to_column": "department_id"
+    },
+    {
+      "type": "one_to_many",
+      "from_table": "departments",
+      "from_column": "department_id",
+      "to_table": "doctors",
+      "to_column": "department_id"
+    },
+    {
+      "type": "one_to_many",
+      "from_table": "patients",
+      "from_column": "patient_id",
+      "to_table": "appointments",
+      "to_column": "patient_id"
+    },
+    {
+      "type": "one_to_many",
+      "from_table": "doctors",
+      "from_column": "doctor_id",
+      "to_table": "appointments",
+      "to_column": "doctor_id"
+    },
+    {
+      "type": "one_to_many",
+      "from_table": "wards",
+      "from_column": "ward_id",
+      "to_table": "appointments",
+      "to_column": "ward_id"
+    },
+    {
+      "type": "one_to_many",
+      "from_table": "appointments",
+      "from_column": "appointment_id",
+      "to_table": "treatments",
+      "to_column": "appointment_id"
+    },
+    {
+      "type": "one_to_many",
+      "from_table": "treatments",
+      "from_column": "treatment_id",
+      "to_table": "prescriptions",
+      "to_column": "treatment_id"
+    },
+    {
+      "type": "one_to_many",
+      "from_table": "medications",
+      "from_column": "medication_id",
+      "to_table": "prescriptions",
+      "to_column": "medication_id"
+    },
+    {
+      "type": "one_to_one",
+      "from_table": "appointments",
+      "from_column": "appointment_id",
+      "to_table": "invoices",
+      "to_column": "appointment_id"
+    }
+  ],
+  "description": "Normalized 3NF database schema for a private hospital management system, handling patients, doctors, departments, wards, appointments, treatments, medications, prescriptions, and invoices."
+}

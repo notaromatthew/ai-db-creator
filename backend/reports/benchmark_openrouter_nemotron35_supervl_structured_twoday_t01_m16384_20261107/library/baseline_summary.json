@@ -1,0 +1,27 @@
+{
+  "dataset": "library",
+  "condition": "baseline",
+  "source_format": "combined",
+  "n_runs": 5,
+  "n_evaluable": 5,
+  "n_not_evaluable": 0,
+  "n_error": 0,
+  "n_successful": 5,
+  "n_failed": 0,
+  "errors": [],
+  "temperature": 0.1,
+  "mean_precision": 0.95,
+  "mean_recall": 0.9213,
+  "mean_f1": 0.9348,
+  "f1_observed_range": [
+    0.7348,
+    0.9848
+  ],
+  "mean_total_cells": 274.0,
+  "mean_missing_rows": 26.0,
+  "mean_extra_rows": 0.0,
+  "mean_functional_query_pass_rate": 0.62,
+  "mean_adjudicated_schema_equivalence": null,
+  "mean_adjudicated_value_accuracy": null,
+  "mean_adjudicated_completeness": null
+}

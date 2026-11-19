@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, Body, Depends
+from fastapi import APIRouter, UploadFile, File, HTTPException, Body, Depends, Header
 from pydantic import BaseModel, Field
 from sqlalchemy import create_engine, text
 import asyncio
@@ -26,6 +26,7 @@ from app.core.llm import get_llm_info, get_llm_run_metadata, _get_llm, allowed_v
 from app.utils.research import atomic_write_json, new_run_id, record_run, run_manifest, sha256_file, sha256_text, stable_hash, utc_now
 from app.services.metrics_service import MetricsService
 from app.services.interaction_logger import interaction_logger
+from app.services import research_study
 from app.services.backup_service import BackupService
 from app.utils.logger import log
 from app.utils.exceptions import AppException
@@ -35,6 +36,7 @@ from starlette.concurrency import run_in_threadpool
 import os
 import shutil
 from typing import Literal
+from collections import Counter
 
 
 def _outbound_tls_verify() -> bool:
@@ -43,6 +45,45 @@ def _outbound_tls_verify() -> bool:
 
 
 router = APIRouter(prefix="/api")
+
+
+def _study_context(participant_id: str | None, condition: str | None, user_id: str,
+                   allowed_arms: set[str]) -> dict:
+    if not participant_id and not condition:
+        return {}
+    if not participant_id or not condition:
+        raise HTTPException(status_code=422, detail="Contesto sperimentale incompleto")
+    context = research_study.active_context(participant_id, condition, research_study.account_hash(user_id))
+    if context is None:
+        raise HTTPException(status_code=403, detail="Contesto sperimentale non valido")
+    if condition not in allowed_arms:
+        raise HTTPException(status_code=409, detail="Operazione non disponibile nel braccio sperimentale assegnato")
+    return context
+
+
+def _schema_edit_counts(previous: NormalizedSchema | None, current: NormalizedSchema) -> dict[str, int]:
+    old_tables = {table.name: table for table in previous.tables} if previous else {}
+    new_tables = {table.name: table for table in current.tables}
+    counts = Counter()
+    counts["table_added"] = len(new_tables.keys() - old_tables.keys())
+    counts["table_removed"] = len(old_tables.keys() - new_tables.keys())
+    for name in old_tables.keys() & new_tables.keys():
+        old_columns = {column.name: column for column in old_tables[name].columns}
+        new_columns = {column.name: column for column in new_tables[name].columns}
+        counts["column_added"] += len(new_columns.keys() - old_columns.keys())
+        counts["column_removed"] += len(old_columns.keys() - new_columns.keys())
+        for column_name in old_columns.keys() & new_columns.keys():
+            old, new = old_columns[column_name], new_columns[column_name]
+            counts["type_changed"] += old.data_type != new.data_type
+            counts["primary_key_toggled"] += old.is_primary_key != new.is_primary_key
+            counts["foreign_key_toggled"] += old.is_foreign_key != new.is_foreign_key
+            counts["not_null_toggled"] += old.is_not_null != new.is_not_null
+            counts["unique_toggled"] += old.is_unique != new.is_unique
+    old_relationships = {json.dumps(item.model_dump(), sort_keys=True) for item in previous.relationships} if previous else set()
+    new_relationships = {json.dumps(item.model_dump(), sort_keys=True) for item in current.relationships}
+    counts["relationship_added"] = len(new_relationships - old_relationships)
+    counts["relationship_removed"] = len(old_relationships - new_relationships)
+    return {key: int(value) for key, value in counts.items() if value}
 schema_svc = SchemaService()
 doc_svc = DocumentService()
 pop_svc = PopulationService()
@@ -114,6 +155,7 @@ def _with_repair(manifest: dict) -> dict:
 
 @router.post("/projects/{project_id}/generate", dependencies=[Depends(project_editor), Depends(consume_ai("generate"))])
 async def generate_schema(project_id: str, req: GenerateRequest, access: ProjectAccess = Depends(project_editor)):
+    context = _study_context(req.participant_id, req.condition, access.user_id, {"ai_only", "ai_interface"})
     _set_finalized(project_id, None)
     started_at = utc_now()
     run_id = new_run_id()
@@ -137,6 +179,7 @@ async def generate_schema(project_id: str, req: GenerateRequest, access: Project
         }, run_id=run_id)
         raise
     _log_research_run("schema_generated", project_id, {
+        **context,
         **get_llm_run_metadata(0.1, req.prompt, document_hashes),
         "schema_initial": result.model_dump(),
         "schema_final": result.model_dump(),
@@ -154,16 +197,20 @@ def get_schema(project_id: str):
     return schema_svc.get_schema(project_id)
 
 @router.put("/projects/{project_id}/schema", dependencies=[Depends(project_editor)])
-def update_schema(project_id: str, schema: NormalizedSchema, access: ProjectAccess = Depends(project_editor)):
+def update_schema(project_id: str, schema: NormalizedSchema, access: ProjectAccess = Depends(project_editor),
+                  x_study_participant: str | None = Header(None), x_study_arm: str | None = Header(None)):
+    context = _study_context(x_study_participant, x_study_arm, access.user_id, {"ai_interface"})
     _ensure_not_finalized(project_id)
     previous = schema_svc.get_schema(project_id)
     result = schema_svc.update_schema(project_id, schema, author=access.user_id, origin="manuale")
     _log_research_run("schema_updated", project_id, {
+        **context,
         "schema_initial": previous.model_dump() if previous else None,
         "schema_final": schema.model_dump(),
         "schema_initial_hash": stable_hash(previous.model_dump()) if previous else None,
         "schema_final_hash": stable_hash(schema.model_dump()),
         "method": "human_in_the_loop",
+        "edit_counts": _schema_edit_counts(previous, schema),
     })
     return result
 
@@ -217,8 +264,15 @@ class ChatRequest(BaseModel):
     session_id: str | None = Field(default=None, pattern=r"^[A-Za-z0-9_.-]{1,128}$")
     participant_id: str | None = Field(default=None, pattern=r"^[A-Za-z0-9_.-]{1,128}$")
 
+
+class ChatContext(BaseModel):
+    condition: str | None = Field(default=None, pattern=r"^[A-Za-z0-9_.-]{1,64}$")
+    session_id: str | None = Field(default=None, pattern=r"^[A-Za-z0-9_.-]{1,128}$")
+    participant_id: str | None = Field(default=None, pattern=r"^[A-Za-z0-9_.-]{1,128}$")
+
 @router.post("/projects/{project_id}/chat", dependencies=[Depends(project_editor), Depends(consume_ai("chat"))])
-async def chat_schema(project_id: str, req: ChatRequest):
+async def chat_schema(project_id: str, req: ChatRequest, access: ProjectAccess = Depends(project_editor)):
+    context = _study_context(req.participant_id, req.condition, access.user_id, {"ai_interface"})
     _ensure_not_finalized(project_id)
     started_at = utc_now()
     run_id = new_run_id()
@@ -243,6 +297,7 @@ async def chat_schema(project_id: str, req: ChatRequest):
         }, run_id=run_id)
         raise
     _log_research_run("schema_chat", project_id, {
+        **context,
         **get_llm_run_metadata(0.1, req.message, document_hashes),
         "schema_initial": existing.model_dump() if existing else None,
         "schema_final": schema.model_dump() if schema else None,
@@ -257,8 +312,10 @@ async def chat_schema(project_id: str, req: ChatRequest):
 
 
 @router.post("/projects/{project_id}/chat/apply", dependencies=[Depends(project_editor), Depends(consume_ai("chat"))])
-async def chat_apply(project_id: str):
+async def chat_apply(project_id: str, req: ChatContext = Body(default=ChatContext()),
+                     access: ProjectAccess = Depends(project_editor)):
     """Conferma con il pulsante: costruisce lo schema aggiornato dalla proposta in attesa."""
+    context = _study_context(req.participant_id, req.condition, access.user_id, {"ai_interface"})
     _ensure_not_finalized(project_id)
     existing = schema_svc.get_schema(project_id)
     if existing is None or not has_pending_proposal(project_id):
@@ -266,18 +323,22 @@ async def chat_apply(project_id: str):
     started_at = utc_now()
     schema = await apply_proposal(project_id, existing)
     _log_research_run("schema_chat", project_id, {
+        **context,
         **get_llm_run_metadata(0.1, "chat_apply", []),
         "schema_initial": existing.model_dump(), "schema_final": schema.model_dump(),
         "schema_initial_hash": stable_hash(existing.model_dump()),
         "schema_final_hash": stable_hash(schema.model_dump()),
-        "run_manifest": run_manifest(started_at, "schema_chat_prompt_v2", None, {"prompt_sha256": sha256_text("chat_apply")}),
+        "run_manifest": run_manifest(started_at, "schema_chat_prompt_v2", req, {"prompt_sha256": sha256_text("chat_apply")}),
     }, run_id=new_run_id())
     return {"response": "Ho preparato le modifiche.", "schema": schema.model_dump()}
 
 
 @router.post("/projects/{project_id}/chat/dismiss", dependencies=[Depends(project_editor)])
-def chat_dismiss(project_id: str):
+def chat_dismiss(project_id: str, req: ChatContext = Body(default=ChatContext()),
+                 access: ProjectAccess = Depends(project_editor)):
+    context = _study_context(req.participant_id, req.condition, access.user_id, {"ai_interface"})
     resolve_proposals(project_id)
+    _log_research_run("schema_chat_dismissed", project_id, context)
     return {"dismissed": True}
 
 @router.get("/projects/{project_id}/chat/history", dependencies=[Depends(project_viewer)])
@@ -481,7 +542,8 @@ def delete_document(project_id: str, doc_id: str):
     return doc_svc.delete_document(project_id, doc_id)
 
 @router.post("/projects/{project_id}/populate", dependencies=[Depends(project_editor), Depends(consume_ai("populate"))])
-async def populate(project_id: str, req: PopulateRequest):
+async def populate(project_id: str, req: PopulateRequest, access: ProjectAccess = Depends(project_editor)):
+    context = _study_context(req.participant_id, req.condition, access.user_id, {"ai_only", "ai_interface"})
     started_at = utc_now()
     run_id = new_run_id()
     project = schema_svc.get_project(project_id)
@@ -521,6 +583,7 @@ async def populate(project_id: str, req: PopulateRequest):
         raise
     document_hashes = [sha256_file(doc_svc.get_document(doc_id, project_id).file_path) for doc_id in req.document_ids]
     _log_research_run("populate", project_id, {
+        **context,
         "result": result, "schema_initial": schema.model_dump(), "schema_final": schema.model_dump(),
         "schema_initial_hash": stable_hash(schema.model_dump()),
         "schema_final_hash": stable_hash(schema.model_dump()),
@@ -866,6 +929,8 @@ def compare_approaches(payload: dict, user: dict = Depends(get_current_user)):
 @router.post("/surveys/nasa-tlx", dependencies=[Depends(require_research)])
 def submit_nasa_tlx(payload: dict, user: dict = Depends(get_current_user)):
     _assert_project_role(payload.get("project_id"), user, "viewer")
+    if not settings.study_questionnaires_enabled:
+        raise HTTPException(status_code=409, detail="Questionari disabilitati dal protocollo corrente.")
     """Submit NASA-TLX survey for cognitive load measurement."""
     project_id = payload.get("project_id")
     if not isinstance(project_id, str) or not project_id:
@@ -894,6 +959,8 @@ def submit_nasa_tlx(payload: dict, user: dict = Depends(get_current_user)):
 @router.post("/surveys/sus", dependencies=[Depends(require_research)])
 def submit_sus(payload: dict, user: dict = Depends(get_current_user)):
     _assert_project_role(payload.get("project_id"), user, "viewer")
+    if not settings.study_questionnaires_enabled:
+        raise HTTPException(status_code=409, detail="Questionari disabilitati dal protocollo corrente.")
     """Submit SUS (System Usability Scale) survey."""
     project_id = payload.get("project_id")
     if not isinstance(project_id, str) or not project_id:

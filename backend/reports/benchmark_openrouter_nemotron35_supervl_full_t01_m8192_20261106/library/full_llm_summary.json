@@ -1,0 +1,31 @@
+{
+  "dataset": "library",
+  "condition": "full_llm",
+  "source_format": "combined",
+  "n_runs": 5,
+  "n_evaluable": 2,
+  "n_not_evaluable": 0,
+  "n_error": 3,
+  "n_successful": 2,
+  "n_failed": 3,
+  "errors": [
+    "LLMException: Schema generation failed",
+    "LLMException: Schema generation failed",
+    "LLMException: Schema generation failed"
+  ],
+  "temperature": 0.1,
+  "mean_precision": 1.0,
+  "mean_recall": 0.9713,
+  "mean_f1": 0.9848,
+  "f1_observed_range": [
+    0.9848,
+    0.9848
+  ],
+  "mean_total_cells": 298.0,
+  "mean_missing_rows": 14.0,
+  "mean_extra_rows": 0.0,
+  "mean_functional_query_pass_rate": 0.4,
+  "mean_adjudicated_schema_equivalence": null,
+  "mean_adjudicated_value_accuracy": null,
+  "mean_adjudicated_completeness": null
+}

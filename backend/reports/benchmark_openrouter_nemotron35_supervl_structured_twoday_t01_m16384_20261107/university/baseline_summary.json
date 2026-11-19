@@ -1,0 +1,27 @@
+{
+  "dataset": "university",
+  "condition": "baseline",
+  "source_format": "combined",
+  "n_runs": 5,
+  "n_evaluable": 5,
+  "n_not_evaluable": 0,
+  "n_error": 0,
+  "n_successful": 5,
+  "n_failed": 0,
+  "errors": [],
+  "temperature": 0.1,
+  "mean_precision": 0.9983,
+  "mean_recall": 0.9402,
+  "mean_f1": 0.9638,
+  "f1_observed_range": [
+    0.8442,
+    0.9942
+  ],
+  "mean_total_cells": 141.4,
+  "mean_missing_rows": 7.8,
+  "mean_extra_rows": 4.6,
+  "mean_functional_query_pass_rate": 0.44,
+  "mean_adjudicated_schema_equivalence": null,
+  "mean_adjudicated_value_accuracy": null,
+  "mean_adjudicated_completeness": null
+}

@@ -1,0 +1,27 @@
+{
+  "dataset": "hospital",
+  "condition": "baseline",
+  "source_format": "combined",
+  "n_runs": 2,
+  "n_evaluable": 2,
+  "n_not_evaluable": 0,
+  "n_error": 0,
+  "n_successful": 2,
+  "n_failed": 0,
+  "errors": [],
+  "temperature": 0.1,
+  "mean_precision": 0.25,
+  "mean_recall": 0.225,
+  "mean_f1": 0.2369,
+  "f1_observed_range": [
+    0.2369,
+    0.2369
+  ],
+  "mean_total_cells": 225.0,
+  "mean_missing_rows": 243.0,
+  "mean_extra_rows": 0.0,
+  "mean_functional_query_pass_rate": 0.0,
+  "mean_adjudicated_schema_equivalence": null,
+  "mean_adjudicated_value_accuracy": null,
+  "mean_adjudicated_completeness": null
+}

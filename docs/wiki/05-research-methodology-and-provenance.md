@@ -8,10 +8,10 @@
 
 AI-DB-Creator is designed to answer four foundational PhD research questions in AI-assisted software engineering:
 
-- **RQ0 (End-to-End Efficacy)**: How does an LLM-powered visual schema design & population workflow compare with traditional manual relational database design for non-expert domain experts in terms of time, error rate, and cognitive load?
+- **RQ0 (End-to-End Efficacy)**: How does an LLM-powered visual schema design and population workflow compare with traditional manual relational database design for non-expert domain experts in terms of objective quality, error rate, task success, and time?
 - **RQ1 (Schema Generation Quality)**: To what extent do LLMs generate 3NF-compliant relational schemas from natural language domain descriptions and multi-document inputs across varying complexity tiers?
 - **RQ2 (Population Ingestion & Provenance)**: How accurately do LLMs map heterogeneous tabular/unstructured documents into relational tables compared to deterministic header matching, and how can cell provenance be tracked reliably?
-- **RQ3 (Human-in-the-Loop Interventions)**: What impact do interactive user refinements (chat corrections, schema edits, Likert expert ratings) have on overall schema quality and usability?
+- **RQ3 (Human-in-the-Loop Interventions)**: What impact do interactive user refinements have on final schema quality and residual errors compared with fully automatic generation?
 
 ---
 

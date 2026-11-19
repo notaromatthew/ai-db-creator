@@ -1,0 +1,23 @@
+{
+  "protocol": "rq2_format_equivalence_v1",
+  "status": "fixture_frozen_before_format_comparison_runs",
+  "canonical_source": "../university/source/enrollments.csv",
+  "record_count": 45,
+  "formats": [
+    "csv",
+    "xlsx",
+    "txt",
+    "pdf"
+  ],
+  "semantic_rule": "same 45 enrollment facts and seven named fields in every format",
+  "hashes": {
+    "source/records.csv": "8fc7bb39ea180c47616813448083a5028b4989d3fa0ed04de5d87c8f95043f9f",
+    "source/records.xlsx": "1d24a261e52d0215fa69e116a8cb98c81257c78827b3b0679a4e07a74bc8b876",
+    "source/records.txt": "25ce20e5ea811fb1889f452b6398c499708234155b3d8217a237313b992c6663",
+    "source/records.pdf": "ba920ac1c1a7aa768fa65616132578293a5dfd9c68aaf951a6fc1bb31307b526",
+    "gold_schema.json": "45669a18e5134b3c118818f084e5c8a7211f93664b0cf8fa02269326e053348d",
+    "ground_truth.db": "60fb716d243457033e5dd2218624a1c8bdcaea8aba16be08879da83db81c6c1e",
+    "evaluation_spec.json": "f770508927bf7bab80d521d59f28007306880e0aa08f629244e530a114c60fec",
+    "prompt.txt": "432c82e33183d000a749373f92f2019883c6668c632e4fd0a0dcd704215a0274"
+  }
+}

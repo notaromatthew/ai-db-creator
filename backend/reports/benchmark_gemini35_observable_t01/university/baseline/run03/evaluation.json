@@ -1,0 +1,1625 @@
+{
+  "per_table": {
+    "students": {
+      "exact": 44,
+      "type_consistent": 0,
+      "null_in_source": 0,
+      "wrong_value": 0,
+      "fk_violations": 0,
+      "type_mismatch": 0,
+      "missing_rows": 0,
+      "extra_rows": 0,
+      "duplicate_generated_keys": 0,
+      "duplicate_ground_keys": 0,
+      "total_cells": 44,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "ci95_precision": [
+        0.9197,
+        1.0
+      ],
+      "ci95_recall": [
+        0.9197,
+        1.0
+      ],
+      "ci95_f1": [
+        1.0,
+        1.0
+      ],
+      "row_key_columns": [
+        "email"
+      ],
+      "discrepancies": []
+    },
+    "courses": {
+      "exact": 24,
+      "type_consistent": 0,
+      "null_in_source": 0,
+      "wrong_value": 0,
+      "fk_violations": 0,
+      "type_mismatch": 0,
+      "missing_rows": 0,
+      "extra_rows": 0,
+      "duplicate_generated_keys": 0,
+      "duplicate_ground_keys": 0,
+      "total_cells": 24,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "ci95_precision": [
+        0.862,
+        1.0
+      ],
+      "ci95_recall": [
+        0.862,
+        1.0
+      ],
+      "ci95_f1": [
+        1.0,
+        1.0
+      ],
+      "row_key_columns": [
+        "course_code"
+      ],
+      "discrepancies": []
+    },
+    "enrollments": {
+      "exact": 90,
+      "type_consistent": 0,
+      "null_in_source": 0,
+      "wrong_value": 0,
+      "fk_violations": 0,
+      "type_mismatch": 0,
+      "missing_rows": 0,
+      "extra_rows": 0,
+      "duplicate_generated_keys": 0,
+      "duplicate_ground_keys": 0,
+      "total_cells": 90,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "ci95_precision": [
+        0.9591,
+        1.0
+      ],
+      "ci95_recall": [
+        0.9591,
+        1.0
+      ],
+      "ci95_f1": [
+        1.0,
+        1.0
+      ],
+      "row_key_columns": [
+        "student_id",
+        "course_id",
+        "semester"
+      ],
+      "discrepancies": []
+    }
+  },
+  "global": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "total_cells": 158,
+    "missing_rows": 0,
+    "extra_rows": 0
+  },
+  "scope": {
+    "mode": "observable",
+    "excluded_tables": {
+      "students_not_in_source": {
+        "reason": "Eight gold students do not occur in any supplied source document."
+      },
+      "enrollments.student_id": {
+        "reason": "Synthetic identifier; row alignment resolves it through students.email."
+      },
+      "enrollments.course_id": {
+        "reason": "Synthetic identifier; row alignment resolves it through courses.course_code."
+      }
+    }
+  },
+  "full_gold_sensitivity": {
+    "per_table": {
+      "students": {
+        "exact": 66,
+        "type_consistent": 0,
+        "null_in_source": 0,
+        "wrong_value": 0,
+        "fk_violations": 0,
+        "type_mismatch": 0,
+        "missing_rows": 8,
+        "extra_rows": 0,
+        "duplicate_generated_keys": 0,
+        "duplicate_ground_keys": 0,
+        "total_cells": 66,
+        "precision": 1.0,
+        "recall": 0.8919,
+        "f1": 0.9429,
+        "ci95_precision": [
+          0.945,
+          1.0
+        ],
+        "ci95_recall": [
+          0.8009,
+          0.9442
+        ],
+        "ci95_f1": [
+          0.9429,
+          0.9429
+        ],
+        "row_key_columns": [
+          "email"
+        ],
+        "discrepancies": [
+          {
+            "row_key": [
+              "student10@university.example"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 10,
+              "name": "Sara Ferrari",
+              "email": "student10@university.example"
+            }
+          },
+          {
+            "row_key": [
+              "student13@university.example"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 13,
+              "name": "Andrea Bruno",
+              "email": "student13@university.example"
+            }
+          },
+          {
+            "row_key": [
+              "student19@university.example"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 19,
+              "name": "Andrea Bianchi",
+              "email": "student19@university.example"
+            }
+          },
+          {
+            "row_key": [
+              "student1@university.example"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 1,
+              "name": "Federico Ferrari",
+              "email": "student1@university.example"
+            }
+          },
+          {
+            "row_key": [
+              "student20@university.example"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 20,
+              "name": "Francesca Ricci",
+              "email": "student20@university.example"
+            }
+          },
+          {
+            "row_key": [
+              "student2@university.example"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 2,
+              "name": "Marco Greco",
+              "email": "student2@university.example"
+            }
+          },
+          {
+            "row_key": [
+              "student5@university.example"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 5,
+              "name": "Sara Costa",
+              "email": "student5@university.example"
+            }
+          },
+          {
+            "row_key": [
+              "student7@university.example"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 7,
+              "name": "Francesca Colombo",
+              "email": "student7@university.example"
+            }
+          }
+        ]
+      },
+      "courses": {
+        "exact": 25,
+        "type_consistent": 0,
+        "null_in_source": 0,
+        "wrong_value": 7,
+        "fk_violations": 0,
+        "type_mismatch": 0,
+        "missing_rows": 0,
+        "extra_rows": 0,
+        "duplicate_generated_keys": 0,
+        "duplicate_ground_keys": 0,
+        "total_cells": 32,
+        "precision": 0.7812,
+        "recall": 1.0,
+        "f1": 0.8772,
+        "ci95_precision": [
+          0.6124,
+          0.8898
+        ],
+        "ci95_recall": [
+          0.8668,
+          1.0
+        ],
+        "ci95_f1": [
+          0.8772,
+          0.8772
+        ],
+        "row_key_columns": [
+          "course_code"
+        ],
+        "discrepancies": [
+          {
+            "row_key": [
+              "CS-301"
+            ],
+            "column": "course_id",
+            "error_type": "WV",
+            "generated_value": 6,
+            "ground_value": 3
+          },
+          {
+            "row_key": [
+              "EC-201"
+            ],
+            "column": "course_id",
+            "error_type": "WV",
+            "generated_value": 4,
+            "ground_value": 8
+          },
+          {
+            "row_key": [
+              "CS-202"
+            ],
+            "column": "course_id",
+            "error_type": "WV",
+            "generated_value": 3,
+            "ground_value": 2
+          },
+          {
+            "row_key": [
+              "MA-202"
+            ],
+            "column": "course_id",
+            "error_type": "WV",
+            "generated_value": 8,
+            "ground_value": 5
+          },
+          {
+            "row_key": [
+              "EN-101"
+            ],
+            "column": "course_id",
+            "error_type": "WV",
+            "generated_value": 2,
+            "ground_value": 7
+          },
+          {
+            "row_key": [
+              "PH-101"
+            ],
+            "column": "course_id",
+            "error_type": "WV",
+            "generated_value": 7,
+            "ground_value": 6
+          },
+          {
+            "row_key": [
+              "MA-101"
+            ],
+            "column": "course_id",
+            "error_type": "WV",
+            "generated_value": 5,
+            "ground_value": 4
+          }
+        ]
+      },
+      "enrollments": {
+        "exact": 29,
+        "type_consistent": 0,
+        "null_in_source": 0,
+        "wrong_value": 3,
+        "fk_violations": 0,
+        "type_mismatch": 0,
+        "missing_rows": 37,
+        "extra_rows": 37,
+        "duplicate_generated_keys": 0,
+        "duplicate_ground_keys": 0,
+        "total_cells": 32,
+        "precision": 0.9062,
+        "recall": 0.4394,
+        "f1": 0.5918,
+        "ci95_precision": [
+          0.7578,
+          0.9676
+        ],
+        "ci95_recall": [
+          0.3263,
+          0.5592
+        ],
+        "ci95_f1": [
+          0.5918,
+          0.5918
+        ],
+        "row_key_columns": [
+          "student_id",
+          "course_id",
+          "semester"
+        ],
+        "discrepancies": [
+          {
+            "row_key": [
+              "11",
+              "8",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 11,
+              "course_id": 8,
+              "semester": "2026-02",
+              "grade": "26"
+            }
+          },
+          {
+            "row_key": [
+              "12",
+              "2",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 12,
+              "course_id": 2,
+              "semester": "2026-02",
+              "grade": "18"
+            }
+          },
+          {
+            "row_key": [
+              "12",
+              "8",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 12,
+              "course_id": 8,
+              "semester": "2026-02",
+              "grade": "18"
+            }
+          },
+          {
+            "row_key": [
+              "14",
+              "2",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 14,
+              "course_id": 2,
+              "semester": "2026-02",
+              "grade": "27"
+            }
+          },
+          {
+            "row_key": [
+              "15",
+              "3",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 15,
+              "course_id": 3,
+              "semester": "2026-01",
+              "grade": "30L"
+            }
+          },
+          {
+            "row_key": [
+              "15",
+              "6",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 15,
+              "course_id": 6,
+              "semester": "2026-02",
+              "grade": "22"
+            }
+          },
+          {
+            "row_key": [
+              "15",
+              "8",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 15,
+              "course_id": 8,
+              "semester": "2026-01",
+              "grade": "18"
+            }
+          },
+          {
+            "row_key": [
+              "16",
+              "3",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 16,
+              "course_id": 3,
+              "semester": "2026-01",
+              "grade": "27"
+            }
+          },
+          {
+            "row_key": [
+              "16",
+              "4",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 16,
+              "course_id": 4,
+              "semester": "2026-01",
+              "grade": "22"
+            }
+          },
+          {
+            "row_key": [
+              "17",
+              "2",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 17,
+              "course_id": 2,
+              "semester": "2026-01",
+              "grade": "30"
+            }
+          },
+          {
+            "row_key": [
+              "17",
+              "5",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 17,
+              "course_id": 5,
+              "semester": "2026-01",
+              "grade": "30L"
+            }
+          },
+          {
+            "row_key": [
+              "17",
+              "7",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 17,
+              "course_id": 7,
+              "semester": "2026-02",
+              "grade": "26"
+            }
+          },
+          {
+            "row_key": [
+              "18",
+              "2",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 18,
+              "course_id": 2,
+              "semester": "2026-01",
+              "grade": "30"
+            }
+          },
+          {
+            "row_key": [
+              "18",
+              "4",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 18,
+              "course_id": 4,
+              "semester": "2026-01",
+              "grade": "26"
+            }
+          },
+          {
+            "row_key": [
+              "21",
+              "3",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 21,
+              "course_id": 3,
+              "semester": "2026-02",
+              "grade": "27"
+            }
+          },
+          {
+            "row_key": [
+              "21",
+              "6",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 21,
+              "course_id": 6,
+              "semester": "2026-01",
+              "grade": "22"
+            }
+          },
+          {
+            "row_key": [
+              "22",
+              "3",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 22,
+              "course_id": 3,
+              "semester": "2026-01",
+              "grade": "30"
+            }
+          },
+          {
+            "row_key": [
+              "22",
+              "4",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 22,
+              "course_id": 4,
+              "semester": "2026-01",
+              "grade": "18"
+            }
+          },
+          {
+            "row_key": [
+              "23",
+              "2",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 23,
+              "course_id": 2,
+              "semester": "2026-01",
+              "grade": "25"
+            }
+          },
+          {
+            "row_key": [
+              "23",
+              "3",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 23,
+              "course_id": 3,
+              "semester": "2026-02",
+              "grade": "21"
+            }
+          },
+          {
+            "row_key": [
+              "23",
+              "8",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 23,
+              "course_id": 8,
+              "semester": "2026-02",
+              "grade": "25"
+            }
+          },
+          {
+            "row_key": [
+              "24",
+              "8",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 24,
+              "course_id": 8,
+              "semester": "2026-02",
+              "grade": "18"
+            }
+          },
+          {
+            "row_key": [
+              "25",
+              "7",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 25,
+              "course_id": 7,
+              "semester": "2026-01",
+              "grade": "18"
+            }
+          },
+          {
+            "row_key": [
+              "26",
+              "4",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 26,
+              "course_id": 4,
+              "semester": "2026-01",
+              "grade": "30L"
+            }
+          },
+          {
+            "row_key": [
+              "28",
+              "7",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 28,
+              "course_id": 7,
+              "semester": "2026-02",
+              "grade": "27"
+            }
+          },
+          {
+            "row_key": [
+              "29",
+              "2",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 29,
+              "course_id": 2,
+              "semester": "2026-02",
+              "grade": "30L"
+            }
+          },
+          {
+            "row_key": [
+              "3",
+              "3",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 3,
+              "course_id": 3,
+              "semester": "2026-01",
+              "grade": "30"
+            }
+          },
+          {
+            "row_key": [
+              "3",
+              "7",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 3,
+              "course_id": 7,
+              "semester": "2026-01",
+              "grade": "22"
+            }
+          },
+          {
+            "row_key": [
+              "30",
+              "4",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 30,
+              "course_id": 4,
+              "semester": "2026-02",
+              "grade": "26"
+            }
+          },
+          {
+            "row_key": [
+              "4",
+              "2",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 4,
+              "course_id": 2,
+              "semester": "2026-02",
+              "grade": "23"
+            }
+          },
+          {
+            "row_key": [
+              "4",
+              "4",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 4,
+              "course_id": 4,
+              "semester": "2026-01",
+              "grade": "28"
+            }
+          },
+          {
+            "row_key": [
+              "4",
+              "8",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 4,
+              "course_id": 8,
+              "semester": "2026-02",
+              "grade": "21"
+            }
+          },
+          {
+            "row_key": [
+              "6",
+              "4",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 6,
+              "course_id": 4,
+              "semester": "2026-01",
+              "grade": "24"
+            }
+          },
+          {
+            "row_key": [
+              "8",
+              "2",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 8,
+              "course_id": 2,
+              "semester": "2026-02",
+              "grade": "30L"
+            }
+          },
+          {
+            "row_key": [
+              "8",
+              "4",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 8,
+              "course_id": 4,
+              "semester": "2026-02",
+              "grade": "26"
+            }
+          },
+          {
+            "row_key": [
+              "9",
+              "2",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 9,
+              "course_id": 2,
+              "semester": "2026-01",
+              "grade": "27"
+            }
+          },
+          {
+            "row_key": [
+              "9",
+              "6",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "MR",
+            "generated_value": null,
+            "ground_value": {
+              "student_id": 9,
+              "course_id": 6,
+              "semester": "2026-02",
+              "grade": "21"
+            }
+          },
+          {
+            "row_key": [
+              "11",
+              "4",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 11,
+              "course_id": 4,
+              "semester": "2026-02",
+              "grade": "26"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "12",
+              "3",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 12,
+              "course_id": 3,
+              "semester": "2026-02",
+              "grade": "18"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "12",
+              "4",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 12,
+              "course_id": 4,
+              "semester": "2026-02",
+              "grade": "18"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "14",
+              "3",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 14,
+              "course_id": 3,
+              "semester": "2026-02",
+              "grade": "27"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "15",
+              "4",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 15,
+              "course_id": 4,
+              "semester": "2026-01",
+              "grade": "18"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "15",
+              "6",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 15,
+              "course_id": 6,
+              "semester": "2026-01",
+              "grade": "30L"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "15",
+              "7",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 15,
+              "course_id": 7,
+              "semester": "2026-02",
+              "grade": "22"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "16",
+              "2",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 16,
+              "course_id": 2,
+              "semester": "2026-01",
+              "grade": "NS"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "16",
+              "5",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 16,
+              "course_id": 5,
+              "semester": "2026-01",
+              "grade": "22"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "17",
+              "2",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 17,
+              "course_id": 2,
+              "semester": "2026-02",
+              "grade": "26"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "17",
+              "3",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 17,
+              "course_id": 3,
+              "semester": "2026-01",
+              "grade": "30"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "17",
+              "8",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 17,
+              "course_id": 8,
+              "semester": "2026-01",
+              "grade": "30L"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "18",
+              "3",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 18,
+              "course_id": 3,
+              "semester": "2026-01",
+              "grade": "30"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "18",
+              "8",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 18,
+              "course_id": 8,
+              "semester": "2026-01",
+              "grade": "30"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "21",
+              "6",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 21,
+              "course_id": 6,
+              "semester": "2026-02",
+              "grade": "27"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "21",
+              "7",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 21,
+              "course_id": 7,
+              "semester": "2026-01",
+              "grade": "22"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "22",
+              "5",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 22,
+              "course_id": 5,
+              "semester": "2026-01",
+              "grade": "18"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "22",
+              "6",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 22,
+              "course_id": 6,
+              "semester": "2026-01",
+              "grade": "30"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "23",
+              "3",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 23,
+              "course_id": 3,
+              "semester": "2026-01",
+              "grade": "25"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "23",
+              "4",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 23,
+              "course_id": 4,
+              "semester": "2026-02",
+              "grade": "25"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "23",
+              "6",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 23,
+              "course_id": 6,
+              "semester": "2026-02",
+              "grade": "21"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "24",
+              "4",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 24,
+              "course_id": 4,
+              "semester": "2026-02",
+              "grade": "18"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "25",
+              "2",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 25,
+              "course_id": 2,
+              "semester": "2026-01",
+              "grade": "18"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "26",
+              "5",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 26,
+              "course_id": 5,
+              "semester": "2026-01",
+              "grade": "30L"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "28",
+              "2",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 28,
+              "course_id": 2,
+              "semester": "2026-02",
+              "grade": "27"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "29",
+              "3",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 29,
+              "course_id": 3,
+              "semester": "2026-02",
+              "grade": "30L"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "3",
+              "2",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 3,
+              "course_id": 2,
+              "semester": "2026-01",
+              "grade": "22"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "3",
+              "6",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 3,
+              "course_id": 6,
+              "semester": "2026-01",
+              "grade": "30"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "30",
+              "5",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 30,
+              "course_id": 5,
+              "semester": "2026-02",
+              "grade": "26"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "4",
+              "3",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 4,
+              "course_id": 3,
+              "semester": "2026-02",
+              "grade": "23"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "4",
+              "4",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 4,
+              "course_id": 4,
+              "semester": "2026-02",
+              "grade": "21"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "4",
+              "5",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 4,
+              "course_id": 5,
+              "semester": "2026-01",
+              "grade": "28"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "6",
+              "5",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 6,
+              "course_id": 5,
+              "semester": "2026-01",
+              "grade": "24"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "8",
+              "3",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 8,
+              "course_id": 3,
+              "semester": "2026-02",
+              "grade": "30L"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "8",
+              "5",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 8,
+              "course_id": 5,
+              "semester": "2026-02",
+              "grade": "26"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "9",
+              "3",
+              "2026-01"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 9,
+              "course_id": 3,
+              "semester": "2026-01",
+              "grade": "27"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "9",
+              "7",
+              "2026-02"
+            ],
+            "column": null,
+            "error_type": "ER",
+            "generated_value": {
+              "student_id": 9,
+              "course_id": 7,
+              "semester": "2026-02",
+              "grade": "21"
+            },
+            "ground_value": null
+          },
+          {
+            "row_key": [
+              "18",
+              "5",
+              "2026-01"
+            ],
+            "column": "grade",
+            "error_type": "WV",
+            "generated_value": "26",
+            "ground_value": "30"
+          },
+          {
+            "row_key": [
+              "16",
+              "6",
+              "2026-01"
+            ],
+            "column": "grade",
+            "error_type": "WV",
+            "generated_value": "27",
+            "ground_value": "21"
+          },
+          {
+            "row_key": [
+              "16",
+              "7",
+              "2026-01"
+            ],
+            "column": "grade",
+            "error_type": "WV",
+            "generated_value": "21",
+            "ground_value": "NS"
+          }
+        ]
+      }
+    },
+    "global": {
+      "precision": 0.8958,
+      "recall": 0.7771,
+      "f1": 0.804,
+      "total_cells": 130,
+      "missing_rows": 45,
+      "extra_rows": 37
+    },
+    "scope": {
+      "mode": "full_gold",
+      "excluded_tables": {}
+    }
+  }
+}

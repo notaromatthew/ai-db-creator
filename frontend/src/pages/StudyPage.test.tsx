@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -12,12 +12,11 @@ let arm = 'ai_only'
 beforeEach(() => {
   Object.values(api).forEach((f) => f.mockReset())
   sessionStorage.clear()
+  localStorage.clear()
   arm = 'ai_only'
   api.post.mockImplementation((path: string) => {
     if (path === '/study/participants') return Promise.resolve({ participant_id: 'abc123', code: 'AB12C-D34EF', arm, step: 'task' })
-    if (path.endsWith('/task/complete')) return Promise.resolve({ step: 'tlx' })
-    if (path.endsWith('/nasa-tlx')) return Promise.resolve({ step: 'sus', score: 50 })
-    if (path.endsWith('/sus')) return Promise.resolve({ step: 'debrief', score: 75 })
+    if (path.endsWith('/task/complete')) return Promise.resolve({ step: 'debrief' })
     if (path.endsWith('/debrief')) return Promise.resolve({ step: 'done' })
     if (path.endsWith('/withdraw')) return Promise.resolve({ status: 'withdrawn' })
     return Promise.resolve({ status: 'saved' })
@@ -63,6 +62,7 @@ describe('StudyPage (percorso del partecipante)', () => {
       demographics: { age_band: '25-34', role: 'studente', db_experience: 3, ai_experience: 5 },
     })
     expect(await screen.findByLabelText('Codice di ritiro')).toHaveTextContent('AB12C-D34EF')
+    expect(JSON.parse(localStorage.getItem('aidb.study.context.v1') || '{}')).toEqual({ participant_id: 'abc123', arm: 'ai_only' })
     await userEvent.click(screen.getByRole('button', { name: /Ho annotato il codice/ }))
     expect(await screen.findByText('Il tuo compito')).toBeInTheDocument()
     expect(screen.getByText('Lavora con l\'assistente')).toBeInTheDocument()
@@ -70,30 +70,16 @@ describe('StudyPage (percorso del partecipante)', () => {
     expect(screen.queryByText('Editor dello schema')).toBeNull()
   })
 
-  it('percorre compito, NASA-TLX, SUS e debrief fino alla fine', async () => {
+  it('percorre compito e debrief senza questionari fino alla fine', async () => {
     await consentAndEnroll()
     await userEvent.click(await screen.findByRole('button', { name: /Ho annotato il codice/ }))
     await userEvent.click(await screen.findByRole('button', { name: 'Ho finito il compito' }))
     expect(api.post).toHaveBeenCalledWith('/study/participants/abc123/task/complete', { code: 'AB12C-D34EF' })
 
-    const submitTlx = await screen.findByRole('button', { name: 'Continua' })
-    expect(submitTlx).toBeDisabled()
-    for (const slider of screen.getAllByRole('slider')) fireEvent.change(slider, { target: { value: '40' } })
-    expect(submitTlx).toBeEnabled()
-    await userEvent.click(submitTlx)
-    expect(api.post).toHaveBeenCalledWith('/study/participants/abc123/nasa-tlx', expect.objectContaining({
-      code: 'AB12C-D34EF', mental_demand: 40, frustration: 40,
-    }))
-
-    const submitSus = await screen.findByRole('button', { name: 'Continua' })
-    expect(submitSus).toBeDisabled()
-    for (let i = 1; i <= 10; i++) await userEvent.click(screen.getByLabelText(`Domanda ${i}, risposta 4`))
-    await userEvent.click(submitSus)
-    expect(api.post).toHaveBeenCalledWith('/study/participants/abc123/sus', { code: 'AB12C-D34EF', scores: Array(10).fill(4) })
-
     await userEvent.type(await screen.findByLabelText(/Vuoi aggiungere un commento/), 'Tutto chiaro')
     await userEvent.click(screen.getByRole('button', { name: 'Concludi lo studio' }))
     expect(await screen.findByText('Grazie, hai finito')).toBeInTheDocument()
+    expect(localStorage.getItem('aidb.study.context.v1')).toBeNull()
   })
 
   it('il braccio manuale ha l\'editor di schema e conclude solo dopo aver salvato', async () => {
@@ -123,12 +109,13 @@ describe('StudyPage (percorso del partecipante)', () => {
     expect(api.post).toHaveBeenCalledWith('/study/participants/abc123/withdraw', { code: 'AB12C-D34EF' })
     expect(await screen.findByText('Ti sei ritirato')).toBeInTheDocument()
     expect(sessionStorage.getItem('aidb.study.v1')).toBeNull()
+    expect(localStorage.getItem('aidb.study.context.v1')).toBeNull()
   })
 
   it('riprende dal passo salvato nella scheda', async () => {
     sessionStorage.setItem('aidb.study.v1', JSON.stringify({ id: 'abc123', code: 'AB12C-D34EF', arm: 'ai_only' }))
-    api.post.mockImplementation((path: string) => path.endsWith('/state') ? Promise.resolve({ step: 'sus' }) : Promise.resolve({}))
+    api.post.mockImplementation((path: string) => path.endsWith('/state') ? Promise.resolve({ step: 'debrief' }) : Promise.resolve({}))
     renderPage()
-    expect(await screen.findByText(/Quanto è stato facile da usare/)).toBeInTheDocument()
+    expect(await screen.findByText(/Un'ultima cosa/)).toBeInTheDocument()
   })
 })

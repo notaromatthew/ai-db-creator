@@ -92,3 +92,85 @@ def test_sampled_calls_are_never_cached(monkeypatch):
 
     asyncio.run(run())
     assert chain.calls == 2
+
+
+def test_message_text_supports_gemini_content_blocks():
+    assert llm.message_text("SELECT 1") == "SELECT 1"
+    assert llm.message_text([
+        {"type": "text", "text": "INSERT INTO t "},
+        {"type": "text", "text": "VALUES (1);"},
+        {"type": "thinking", "thinking": "not user-facing"},
+    ]) == "INSERT INTO t VALUES (1);"
+
+
+def test_google_retry_limit_is_configurable(monkeypatch):
+    module = types.ModuleType("langchain_google_genai")
+    module.ChatGoogleGenerativeAI = _FakeVertex
+    monkeypatch.setitem(sys.modules, "langchain_google_genai", module)
+    monkeypatch.setattr(settings, "llm_provider", "google")
+    monkeypatch.setattr(settings, "google_max_retries", 0)
+
+    model = llm._get_llm(temperature=0.1)
+
+    assert model.kwargs["max_retries"] == 0
+
+
+def test_openrouter_disables_reasoning_and_bounds_requests(monkeypatch):
+    monkeypatch.setattr(llm, "ChatOpenAI", _FakeVertex)
+    monkeypatch.setattr(settings, "llm_provider", "openrouter")
+    monkeypatch.setattr(settings, "openrouter_model", "nvidia/nemotron-3.5-super-vl:free")
+    monkeypatch.setattr(settings, "openrouter_reasoning_enabled", False)
+    monkeypatch.setattr(settings, "openrouter_timeout_seconds", 90.0)
+    monkeypatch.setattr(settings, "openrouter_max_retries", 0)
+    monkeypatch.setattr(settings, "llm_max_tokens", 4096)
+
+    model = llm._get_llm(temperature=0.1)
+
+    assert model.kwargs["model"] == "nvidia/nemotron-3.5-super-vl:free"
+    assert model.kwargs["max_tokens"] == 4096
+    assert model.kwargs["timeout"] == 90.0
+    assert model.kwargs["max_retries"] == 0
+    assert model.kwargs["extra_body"] == {"reasoning": {"enabled": False}}
+
+
+def test_openrouter_schema_json_mode_is_explicit_and_scoped(monkeypatch):
+    monkeypatch.setattr(llm, "ChatOpenAI", _FakeVertex)
+    monkeypatch.setattr(settings, "llm_provider", "openrouter")
+    monkeypatch.setattr(settings, "openrouter_schema_json_mode", False)
+
+    regular = llm._get_llm(temperature=0.1)
+    disabled_schema = llm._get_llm(temperature=0.1, structured_json=True)
+    monkeypatch.setattr(settings, "openrouter_schema_json_mode", True)
+    schema = llm._get_llm(temperature=0.1, structured_json=True)
+
+    assert "model_kwargs" not in regular.kwargs
+    assert "model_kwargs" not in disabled_schema.kwargs
+    response_format = schema.kwargs["model_kwargs"]["response_format"]
+    assert response_format["type"] == "json_schema"
+    assert response_format["json_schema"]["name"] == "normalized_schema"
+    assert response_format["json_schema"]["strict"] is False
+    assert response_format["json_schema"]["schema"] == llm.NormalizedSchema.model_json_schema()
+    assert llm.get_llm_info()["schema_output_contract"] == "schema-json-v2"
+
+
+def test_schema_repair_extracts_and_validates_one_json_object():
+    payload = {
+        "tables": [{
+            "name": "patients",
+            "columns": [{"name": "patient_id", "data_type": "INTEGER"}],
+        }],
+        "relationships": [],
+    }
+    raw = types.SimpleNamespace(content=f"prefix {__import__('json').dumps(payload)} suffix")
+
+    schema, repair = llm._repair_schema_output(raw)
+
+    assert schema.tables[0].name == "patients"
+    assert repair == "deterministic_json_extract"
+
+
+def test_schema_repair_classifies_truncated_json():
+    raw = types.SimpleNamespace(content='{"tables": [')
+
+    with pytest.raises(ValueError, match="truncated_json"):
+        llm._repair_schema_output(raw)

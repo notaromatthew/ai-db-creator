@@ -1,0 +1,39 @@
+{
+  "software_revision": "1c12d74c39063293",
+  "research_mode": false,
+  "dataset": "university",
+  "dataset_hash": "04eb0dff12a262038dc4de77fc6d1ceca538f485116cdaa7d221f314fdd4bdb5",
+  "condition": "full_llm",
+  "provider": "Google Gemini",
+  "model": "gemini-3.5-flash-lite",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 5,
+  "created_at": "2026-11-05T07:35:16.651205+00:00",
+  "source_format": "combined",
+  "source_files": [
+    {
+      "path": "source/description.pdf",
+      "sha256": "e7c73c9a481e46b78c02c83b6c91f6f35e56aeb65378dddfc801c44454d69cb9"
+    },
+    {
+      "path": "source/enrollments.csv",
+      "sha256": "8fc7bb39ea180c47616813448083a5028b4989d3fa0ed04de5d87c8f95043f9f"
+    }
+  ],
+  "evaluation_spec_hash": "10ed90b5e56cb76976aacafd98b26d04234af2ee37ff93ce666bc41a96aaa33b",
+  "project_id": "56d63125-363b-4581-9799-3ebd3f89ed28",
+  "status": "error",
+  "artifacts": {
+    "generated_database": {
+      "path": "generated.db",
+      "sha256": "fe726fad3046a639f73af8d601b96bcd8d0996539740d4571a102273249ddce6"
+    },
+    "run_record": {
+      "path": "run.json",
+      "sha256": "0ce0fa9e466b23845f1fb44096cd5c245a8471033f8635301fb32fd77db8090d"
+    }
+  }
+}

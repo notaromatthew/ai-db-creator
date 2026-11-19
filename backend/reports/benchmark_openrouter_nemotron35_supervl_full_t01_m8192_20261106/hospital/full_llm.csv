@@ -1,0 +1,6 @@
+dataset,source_format,condition,run,project_id,status,error,population_mode,global_precision,global_recall,global_f1,total_cells,missing_rows,extra_rows,functional_query_pass_rate,functionally_equivalent
+hospital,combined,full_llm,1,01a1b2d9-0fbe-4282-b1fb-07c2da43b793,ok,,llm,0.75,0.5763,0.6169,378,176,12,0.2,False
+hospital,combined,full_llm,2,a04a5c3c-6fe5-4a80-8c8b-46422d6769a1,ok,,llm,0.75,0.5763,0.6169,378,176,12,0.2,False
+hospital,combined,full_llm,3,,error,LLMException: Schema generation failed,,,,,,,,,
+hospital,combined,full_llm,4,,error,LLMException: Schema generation failed,,,,,,,,,
+hospital,combined,full_llm,5,,error,LLMException: Schema generation failed,,,,,,,,,

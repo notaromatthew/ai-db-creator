@@ -16,7 +16,7 @@ describe('ApiClient multipart uploads', () => {
 })
 
 describe('ApiClient auth header', () => {
-  afterEach(() => vi.unstubAllGlobals())
+  afterEach(() => { vi.unstubAllGlobals(); localStorage.clear() })
   const ok = () => new Response('{}', { status: 200, headers: { 'content-type': 'application/json' } })
 
   it('omits Authorization without token and sends Bearer with token', async () => {
@@ -51,6 +51,16 @@ describe('ApiClient auth header', () => {
     vi.stubGlobal('fetch', fetchMock)
     await new ApiClient().get('/x')
     expect(fetchMock.mock.calls[0][0]).toBe(window.location.origin + '/api/x')
+  })
+
+  it('propaga solo id pseudonimo e braccio durante lo studio', async () => {
+    localStorage.setItem('aidb.study.context.v1', JSON.stringify({ participant_id: 'p-123', arm: 'ai_only' }))
+    const fetchMock = vi.fn().mockImplementation(() => Promise.resolve(ok()))
+    vi.stubGlobal('fetch', fetchMock)
+    await new ApiClient('http://test').post('/x', {})
+    expect(fetchMock.mock.calls[0][1].headers['X-Study-Participant']).toBe('p-123')
+    expect(fetchMock.mock.calls[0][1].headers['X-Study-Arm']).toBe('ai_only')
+    expect(fetchMock.mock.calls[0][1].headers['X-Study-Code']).toBeUndefined()
   })
 })
 

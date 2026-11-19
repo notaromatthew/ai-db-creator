@@ -109,5 +109,19 @@ class InteractionLogger:
             self._atomic_write(self.persist_path, retained)
         return removed
 
+    def erase_participant(self, participant_id: str) -> int:
+        def belongs(event: dict) -> bool:
+            data = event.get("data") if isinstance(event.get("data"), dict) else {}
+            manifest = data.get("run_manifest") if isinstance(data.get("run_manifest"), dict) else {}
+            return data.get("participant_id") == participant_id or manifest.get("participant_id") == participant_id
+
+        with self._locked():
+            persisted = self._load_events()
+            retained = [event for event in persisted if not belongs(event)]
+            removed = len(persisted) - len(retained)
+            self.events = retained
+            self._atomic_write(self.persist_path, retained)
+        return removed
+
 
 interaction_logger = InteractionLogger()

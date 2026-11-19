@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '@/api/client'
 import ManualSchemaEditor from './research/ManualSchemaEditor'
+import { writeStudyContext } from '@/research/studyContext'
 import {
-  AGE_BANDS, ARM_TASK, CONSENT_VERSION, INFORMATIVA, ROLES, SUS, TASK_BRIEF, TLX,
+  AGE_BANDS, ARM_TASK, CONSENT_VERSION, INFORMATIVA, ROLES, TASK_BRIEF,
 } from './research/studyTexts'
 
-type Stage = 'loading' | 'consent' | 'demo' | 'code' | 'task' | 'tlx' | 'sus' | 'debrief' | 'done' | 'withdrawn'
+type Stage = 'loading' | 'consent' | 'demo' | 'code' | 'task' | 'debrief' | 'done' | 'withdrawn'
 interface Session { id: string; code: string; arm: string }
 
 const STORE = 'aidb.study.v1'
@@ -20,8 +21,8 @@ function Ico({ n, className = '' }: { n: string; className?: string }) {
   return <span aria-hidden="true" className={`material-symbols-outlined ${className}`}>{n}</span>
 }
 
-const STEP_ORDER: Stage[] = ['task', 'tlx', 'sus', 'debrief', 'done']
-const STEP_LABEL = ['Compito', 'Carico di lavoro', 'Usabilità', 'Conclusione']
+const STEP_ORDER: Stage[] = ['task', 'debrief', 'done']
+const STEP_LABEL = ['Compito', 'Conclusione']
 
 export default function StudyPage(_props: { lang?: 'it' | 'en' }) {
   const [stage, setStage] = useState<Stage>('loading')
@@ -44,8 +45,13 @@ export default function StudyPage(_props: { lang?: 'it' | 'en' }) {
     const stored = readSession()
     if (!stored) { setStage('consent'); return }
     api.post(`/study/participants/${stored.id}/state`, { code: stored.code })
-      .then((s: { step: Stage }) => { setSession(stored); setStage(s.step) })
-      .catch(() => { writeSession(null); setStage('consent') })
+      .then((s: { step: Stage }) => {
+        setSession(stored)
+        setStage(s.step)
+        if (s.step === 'done' || s.step === 'withdrawn') writeStudyContext(null)
+        else writeStudyContext({ participant_id: stored.id, arm: stored.arm as 'manual' | 'ai_only' | 'ai_interface' })
+      })
+      .catch(() => { writeSession(null); writeStudyContext(null); setStage('consent') })
   }, [])
 
   const event = useCallback((type: string, data: Record<string, unknown> = {}) => {
@@ -61,13 +67,18 @@ export default function StudyPage(_props: { lang?: 'it' | 'en' }) {
     const r = await call(() => api.post('/study/participants', { consent: true, consent_version: CONSENT_VERSION, demographics: demo }))
     if (!r) return
     const s = { id: r.participant_id, code: r.code, arm: r.arm }
-    writeSession(s); setSession(s); setStage('code')
+    writeSession(s)
+    writeStudyContext({ participant_id: s.id, arm: s.arm })
+    setSession(s); setStage('code')
   }
 
   const post = async (path: string, body: Record<string, unknown>, next: Stage) => {
     if (!session) return
     const r = await call(() => api.post(`/study/participants/${session.id}/${path}`, { code: session.code, ...body }))
-    if (r) setStage(next)
+    if (r) {
+      setStage(next)
+      if (next === 'done') writeStudyContext(null)
+    }
   }
 
   const saveSchema = async (tables: unknown[]) => {
@@ -81,7 +92,7 @@ export default function StudyPage(_props: { lang?: 'it' | 'en' }) {
     if (!session) return
     if (!window.confirm('Vuoi ritirarti? I tuoi dati vengono cancellati e non potrai riprendere.')) return
     const r = await call(() => api.post(`/study/participants/${session.id}/withdraw`, { code: session.code }))
-    if (r) { writeSession(null); setStage('withdrawn') }
+    if (r) { writeSession(null); writeStudyContext(null); setStage('withdrawn') }
   }
 
   const demoOk = !!demo.age_band && !!demo.role && demo.db_experience > 0 && demo.ai_experience > 0
@@ -92,7 +103,7 @@ export default function StudyPage(_props: { lang?: 'it' | 'en' }) {
       <div>
         <span className="tag text-tecnia-magentaDeep dark:text-pink-300">Modalità ricerca</span>
         <h1 className="mt-2.5 text-3xl font-bold tracking-tight sm:text-[34px]">Partecipa allo studio</h1>
-        <p className="mt-1.5 max-w-xl text-base text-tecnia-muted dark:text-slate-300">Un compito di circa 15 minuti e due brevi questionari. Puoi fermarti quando vuoi.</p>
+        <p className="mt-1.5 max-w-xl text-base text-tecnia-muted dark:text-slate-300">Un compito di circa 15 minuti seguito da una breve conclusione. Puoi fermarti quando vuoi.</p>
       </div>
 
       {stepIndex >= 0 && stage !== 'done' && (
@@ -180,15 +191,12 @@ export default function StudyPage(_props: { lang?: 'it' | 'en' }) {
             <div><a href="/app" target="_blank" rel="noreferrer" className="primary-button" onClick={() => event('page_view', { page: 'app' })}>Apri l'app in una nuova scheda <Ico n="open_in_new" /></a></div>
           )}
           <div className="flex flex-wrap items-center gap-3 border-t border-tecnia-line/50 pt-4">
-            <button type="button" className="primary-button" disabled={busy || (session.arm === 'manual' && !saved)} onClick={() => post('task/complete', {}, 'tlx')}>Ho finito il compito</button>
+            <button type="button" className="primary-button" disabled={busy || (session.arm === 'manual' && !saved)} onClick={() => post('task/complete', {}, 'debrief')}>Ho finito il compito</button>
             {session.arm === 'manual' && !saved && <span className="text-xs text-tecnia-muted">Salva lo schema prima di concludere.</span>}
             <button type="button" className="secondary-button" onClick={() => event('help_request', { category: 'ambiente' })}>Segnala un problema tecnico</button>
           </div>
         </section>
       )}
-
-      {stage === 'tlx' && <TlxForm busy={busy} onSubmit={(scores) => post('nasa-tlx', scores, 'sus')} />}
-      {stage === 'sus' && <SusForm busy={busy} onSubmit={(scores) => post('sus', { scores }, 'debrief')} />}
 
       {stage === 'debrief' && (
         <DebriefForm busy={busy} onSubmit={(comment) => post('debrief', { comment }, 'done')} />
@@ -209,55 +217,10 @@ export default function StudyPage(_props: { lang?: 'it' | 'en' }) {
         </section>
       )}
 
-      {session && ['task', 'tlx', 'sus', 'debrief'].includes(stage) && (
+      {session && ['task', 'debrief'].includes(stage) && (
         <p className="text-sm"><button type="button" className="text-tecnia-magentaDeep underline dark:text-pink-300" onClick={withdraw}>Ritira la mia partecipazione e cancella i miei dati</button></p>
       )}
     </div>
-  )
-}
-
-function TlxForm({ busy, onSubmit }: { busy: boolean; onSubmit: (scores: Record<string, number>) => void }) {
-  const [scores, setScores] = useState<Record<string, number>>({})
-  const complete = TLX.every((q) => scores[q.key] !== undefined)
-  return (
-    <form className="glass flex flex-col gap-5 p-6" aria-labelledby="tlx-h" onSubmit={(e) => { e.preventDefault(); if (complete) onSubmit(scores) }}>
-      <h2 id="tlx-h" className="text-lg font-semibold">Com'è andato il compito? (NASA-TLX)</h2>
-      <p className="text-sm text-tecnia-muted dark:text-slate-300">Per ogni voce sposta il cursore: da 0 a 100.</p>
-      {TLX.map((q) => (
-        <div key={q.key} className="flex flex-col gap-1">
-          <label htmlFor={`tlx-${q.key}`} className="text-sm font-semibold">{q.label} <span className="font-normal text-tecnia-muted">· {q.hint}</span></label>
-          <input id={`tlx-${q.key}`} type="range" min={0} max={100} step={5} value={scores[q.key] ?? 50}
-            onChange={(e) => setScores({ ...scores, [q.key]: Number(e.target.value) })}
-            onPointerDown={() => scores[q.key] === undefined && setScores((s) => ({ ...s, [q.key]: 50 }))}
-            onKeyDown={() => scores[q.key] === undefined && setScores((s) => ({ ...s, [q.key]: 50 }))}
-            aria-valuetext={scores[q.key] === undefined ? 'non ancora scelto' : String(scores[q.key])} />
-          <div className="flex justify-between text-xs text-tecnia-muted"><span>{q.low}</span><span>{scores[q.key] === undefined ? 'scegli un valore' : scores[q.key]}</span><span>{q.high}</span></div>
-        </div>
-      ))}
-      <div><button type="submit" className="primary-button" disabled={!complete || busy}>Continua</button></div>
-    </form>
-  )
-}
-
-function SusForm({ busy, onSubmit }: { busy: boolean; onSubmit: (scores: number[]) => void }) {
-  const [scores, setScores] = useState<(number | undefined)[]>(Array(SUS.length).fill(undefined))
-  const complete = scores.every((s) => s !== undefined)
-  return (
-    <form className="glass flex flex-col gap-5 p-6" aria-labelledby="sus-h" onSubmit={(e) => { e.preventDefault(); if (complete) onSubmit(scores as number[]) }}>
-      <h2 id="sus-h" className="text-lg font-semibold">Quanto è stato facile da usare? (SUS)</h2>
-      <p className="text-sm text-tecnia-muted dark:text-slate-300">1 = per niente d'accordo, 5 = del tutto d'accordo.</p>
-      {SUS.map((q, i) => (
-        <fieldset key={q} className="flex flex-col gap-1.5">
-          <legend className="text-sm">{i + 1}. {q}</legend>
-          <div className="flex gap-4">
-            {[1, 2, 3, 4, 5].map((n) => (
-              <label key={n} className="flex items-center gap-1.5 text-sm"><input type="radio" name={`sus-${i}`} checked={scores[i] === n} onChange={() => setScores(scores.map((s, k) => (k === i ? n : s)))} aria-label={`Domanda ${i + 1}, risposta ${n}`} />{n}</label>
-            ))}
-          </div>
-        </fieldset>
-      ))}
-      <div><button type="submit" className="primary-button" disabled={!complete || busy}>Continua</button></div>
-    </form>
   )
 }
 

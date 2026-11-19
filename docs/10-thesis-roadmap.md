@@ -39,7 +39,7 @@ This document outlines the planned phases for the PhD research project "AI-DB-Cr
 - Write all project documentation (this documentation suite)
 - Prepare benchmark datasets with gold-standard schemas
 - Develop automated evaluation scripts for population accuracy
-- Prepare ethics approval application for human subjects research
+- Record the user-reported institutional determination that prior ethics approval is not required for the current study
 - Write the system description paper for conference submission
 
 ### Deliverables
@@ -49,55 +49,63 @@ This document outlines the planned phases for the PhD research project "AI-DB-Cr
   - Gold-standard NormalizedSchema (validated by domain experts)
   - Ground-truth databases with known cell values
 - Automated evaluation pipeline for cell-level accuracy comparison
-- Ethics clearance application (IRB / university ethics committee)
+- Protocol amendment documenting the institutional determination and participant safeguards
 - Draft of system paper targeting VLDB, SIGMOD, or ICDE demo track
 
 ### Risks
 - Dataset complexity level calibration (too simple → ceiling effect; too complex → floor effect)
-- Ethics approval delays (typically 4–8 weeks at most universities)
+- Missing written trace of the institutional determination; archive the communication if available
 
 ---
 
-## Phase 3: Expert Evaluation of Generated Schemas (RQ1) (Planned)
+## Phase 3: Evaluation of Generated Schemas (RQ1) (Observed student-rater panel)
 
 **Timeline:** Months 6–7 (8 weeks)
 
-### Objectives
-- Recruit 3 database experts (PhD-level or industry DBA with 5+ years)
-- Generate 30 schemas: 3 datasets × 2 conditions (AI-Only vs. AI + Interface) × 5 runs
-- Experts rate each schema on 5 dimensions (3NF compliance, naming quality, constraint coverage, relationship accuracy, domain alignment) using a 5-point Likert scale
+### Objectives and observed status
+- The planned sample was 3 database experts (PhD-level or industry DBA with 5+ years); the observed export contains 45 computer-science students aged 17--18 who were studying databases. They are reported as trained student raters, not database experts.
+- The observed package contains 30 schemas: 3 datasets × 2 recorded benchmark conditions (`baseline` and `full_llm`) × 5 runs. These conditions must not be relabelled as the RQ3 participant arms.
+- All 45 evaluators rated every schema on 5 dimensions (3NF compliance, naming quality, constraint coverage, relationship accuracy, domain alignment) using a 5-point Likert scale.
 - Measure inter-rater agreement with Krippendorff's alpha using ordinal distance
 - Compare mean quality scores across conditions
 
 ### Methods
 - Blind review: schemas are anonymised and presented in random order
-- Each expert works independently
+- Independence is claimed only if the administration records show individual, condition-blind ratings without discussion or access to peers' scores
 - Analysis: mean ± SD per dimension, ordinal Krippendorff's alpha for agreement, independent-samples t-test or Mann-Whitney U
 
-### Success Criteria
+### Planned success criteria
 - Krippendorff's alpha ≥ 0.67 for tentative conclusions and ≥ 0.80 for confirmatory interpretation
 - AI + Interface condition scores significantly higher (p < 0.05) than AI-Only on at least 3 of 5 dimensions
 - Effect size d ≥ 0.5 for the primary dimension (3NF compliance)
 
+Observed analyses and provenance are stored in `backend/reports/rq1_analysis/`. The difference between the planned and observed evaluator sample is a protocol deviation, not a retrospective redesign. Institutional verification of the curriculum, independence procedure, and assent/consent arrangements for minors remains separate from the statistical analysis.
+
 ---
 
-## Phase 4: Automated Population Accuracy Measurement (RQ2) (Planned)
+## Phase 4: Automated Population Accuracy Measurement (RQ2) (Partially completed)
 
 **Timeline:** Month 7–8 (4 weeks overlap with Phase 3)
 
 ### Objectives
-- Measure cell-level accuracy of automatic data population for all 30 generated databases
+- Measure cell-level accuracy on facts observable in the supplied documents
 - Compare accuracy across dataset complexity levels
-- Compare accuracy across source document types (CSV vs. Excel vs. PDF vs. TXT)
+- Compare accuracy across source document types only after deriving semantically equivalent CSV/XLSX/PDF/TXT variants from one canonical observable fact set
 - Classify errors by typology (see Benchmark Protocol)
 
 ### Methods
-- Automated Python script reads every cell from every table in each generated database
-- Compares each cell to the corresponding cell in the ground-truth database
+- Automated Python script reads the declared observable scope from each dataset's `evaluation_spec.json`
+- Compares observable cells to the corresponding ground-truth cells and retains the full gold only as sensitivity analysis
 - Matching is performed at two levels:
   - **Exact match:** string equality after type-appropriate normalisation
   - **Type-consistent match:** same value after type coercion (e.g., 1.0 ≡ 1, "true" ≡ True)
 - All mismatches are classified by error type
+- Frozen functional queries test information preservation independently of synthetic identifiers and schema decomposition
+
+The audit in `docs/20-rq2-functional-equivalence-protocol.md` records that the
+current bundles contain no XLSX variants and that several gold rows or columns
+are not present in any source document. Historical full-gold F1 must not be
+presented as primary extraction accuracy.
 
 ### Success Criteria
 - Overall cell-level F1 ≥ 0.85 on CSV/Excel sources
@@ -116,26 +124,26 @@ This document outlines the planned phases for the PhD research project "AI-DB-Cr
 - Recruit approximately 114 participants to obtain at least 34 completed cases in each of three arms after attrition
 - Randomly assign to Manual, AI-Only, or AI + Interface; preregister Manual vs. AI + Interface for RQ0 and AI-Only vs. AI + Interface for RQ3
 - Each participant creates a database from one of the three datasets
-- Collect: schema quality (expert-rated post-hoc), NASA-TLX, SUS, completion time, task success rate
+- Collect: schema quality (expert-rated post-hoc), residual error rate, completion time, and task success rate
 
 ### Procedure
-1. **Pre-session (online, 5 min):** Informed consent, demographics questionnaire
+1. **Pre-session (online, 5 min):** Informed consent and short demographic form
 2. **Training video (10 min):** Pre-recorded walkthrough of the system
 3. **Task (45 min):** Participants create a database from assigned dataset in their assigned condition
-4. **Post-task (10 min):** Raw NASA-TLX (six 0–100 ratings; aggregate mean), SUS (10 standard 1–5 items; score 0–100), free-text feedback
+4. **Post-task (5 min):** optional privacy-filtered free-text debrief; no NASA-TLX or SUS in the current protocol
 5. **Debrief:** Explanation of purpose, opportunity to withdraw
 
 ### Analysis Plan
 - **Primary analyses:** Two preregistered pairwise contrasts: Manual vs. AI + Interface (RQ0), and AI-Only vs. AI + Interface (RQ3), with multiplicity control and effect sizes with 95% confidence intervals
-- **Secondary analysis:** Mann-Whitney U for NASA-TLX and SUS scores (non-normal distributions anticipated)
+- **Secondary analysis:** completion time and task-success summaries; no perceived-load or usability questionnaire outcome
 - **Exploratory analysis:** Correlation between computer literacy and schema quality within each group
 - **Power:** α = 0.05, power = 0.80, expected d = 0.7 → approximately 34 completed participants per arm (102 total); recruit approximately 114 for 10% attrition. A smaller achieved sample is reported as exploratory rather than retrospectively redefining the target.
 
 ### Materials Needed
-- Pre-session: online consent form + questionnaire
+- Pre-session: online consent and demographic form
 - Training: screen-capture video with narration
 - Task: prepared project in AI-DB-Creator with uploaded documents (one of three datasets)
-- Post-task: NASA-TLX and SUS forms (built into the application)
+- Post-task: short debrief and withdrawal reminder; questionnaire forms are excluded from the current study
 - Debrief: information sheet with research team contact details
 - Pilot protocol and frozen issue log: `docs/14-usability-pilot-protocol.md`
 - Manual-condition tool, tutorial and deviation protocol: `docs/16-manual-condition-protocol.md`
@@ -155,8 +163,10 @@ This document outlines the planned phases for the PhD research project "AI-DB-Cr
 ### Methods
 - **Sequence analysis:** Convert logged events into ordered sequences per participant, compute transition matrices between tool states (view schema, edit schema, chat, populate, explore data)
 - **Cluster analysis:** Group participants by behavioural profile (e.g., "chat-heavy", "edit-heavy", "minimal interaction")
-- **Outcome correlation:** Correlate behavioural clusters with schema quality scores and NASA-TLX ratings
+- **Outcome correlation:** Correlate behavioural clusters with schema quality and residual-error outcomes
 - **Error analysis:** Identify common patterns of schema errors (e.g., "removing foreign keys", "adding unnecessary tables")
+
+The frozen analysis entry point is `backend/analyze_user_study.py`. It consumes the three pseudonymous exports documented in `docs/19-user-study-analysis.md`, applies the preregistered RQ0/RQ3 contrasts, and keeps RQ4 analyses explicitly exploratory.
 
 ### Tools
 - Python + pandas for event extraction and preprocessing
@@ -227,6 +237,6 @@ Phase 7                                              █████████
 | Low expert recruitment | Use 2 experts instead of 3; report agreement metrics with fewer raters | +0 weeks (reduced statistical power) |
 | Low participant recruitment | Extend recruitment period; use snowball sampling; offer higher compensation | +2–4 weeks |
 | LLM provider API change | Switch to alternative provider (system is provider-agnostic) | +1 week (testing) |
-| Ethics approval delay | Submit to alternative committee; start Phase 3 (expert eval, no human subjects) immediately | +0–8 weeks (can parallelise) |
+| Institutional determination not archived | Preserve the communication if available and report its status without inferring formal approval | Documentation risk |
 | Null results in RQ3 | Report negative finding; focus discussion on why AI-Only may be sufficient for simple datasets | +0 weeks (no extra work) |
 | Major bug in experiment | Pilot test with 5 colleagues before each participant session | Prevents delays |

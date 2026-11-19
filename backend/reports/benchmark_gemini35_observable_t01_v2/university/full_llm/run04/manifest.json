@@ -1,0 +1,59 @@
+{
+  "software_revision": "80bd7a7a8f4d5657",
+  "research_mode": false,
+  "dataset": "university",
+  "dataset_hash": "04eb0dff12a262038dc4de77fc6d1ceca538f485116cdaa7d221f314fdd4bdb5",
+  "condition": "full_llm",
+  "provider": "Google Gemini",
+  "model": "gemini-3.5-flash-lite",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 4,
+  "created_at": "2026-11-05T08:22:51.818873+00:00",
+  "source_format": "combined",
+  "source_files": [
+    {
+      "path": "source/description.pdf",
+      "sha256": "e7c73c9a481e46b78c02c83b6c91f6f35e56aeb65378dddfc801c44454d69cb9"
+    },
+    {
+      "path": "source/enrollments.csv",
+      "sha256": "8fc7bb39ea180c47616813448083a5028b4989d3fa0ed04de5d87c8f95043f9f"
+    }
+  ],
+  "evaluation_spec_hash": "10ed90b5e56cb76976aacafd98b26d04234af2ee37ff93ce666bc41a96aaa33b",
+  "project_id": "6c8029ba-796a-4449-a030-923ecbcd7017",
+  "status": "ok",
+  "artifacts": {
+    "generated_database": {
+      "path": "generated.db",
+      "sha256": "102e04af1360496910edc4645021b7f8433987308d084998df05f60629ef2b0e"
+    },
+    "generated_schema": {
+      "path": "generated_schema.json",
+      "sha256": "24d3f31078251131575f00f72af6eb646ad2969546a64929acb0cc85cac099b2"
+    },
+    "evaluation": {
+      "path": "evaluation.json",
+      "sha256": "d408443b7160d89c13ef6b2efd9102e8e489ce685afd84576113b61b9f1f955b"
+    },
+    "cell_discrepancies": {
+      "path": "cell_discrepancies.csv",
+      "sha256": "f682a6b999d7fb1a8223b622d02005787655b935d1a884dea0675efbbf51e00b"
+    },
+    "alignment": {
+      "path": "alignment.json",
+      "sha256": "28647090f1fbb592b9dc9d1cecf60629bdbb33c43f2b8eea395b2e2ae313cf31"
+    },
+    "functional_query_results": {
+      "path": "functional_query_results.json",
+      "sha256": "59a71a0ba7d4a9344c57db4b15f388b423eb23141cb1dc6b5a828a63b177af72"
+    },
+    "run_record": {
+      "path": "run.json",
+      "sha256": "e79eeb74e1a7dd877626cc323d2453a5751189dd19b75a6bc97cf4c4399501a4"
+    }
+  }
+}

@@ -1,0 +1,1 @@
+Create a normalized relational database for university enrollments. Preserve every observable fact from the supplied document. Use separate students, courses, and enrollments tables. Students are identified by institutional email, courses by course code, and an enrollment links one student to one course with semester and grade. Do not invent facts that are not in the document.

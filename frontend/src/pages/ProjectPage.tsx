@@ -1,17 +1,15 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { api } from '@/api/client'
 import { cancelJob, createJob, setProjectDialect } from '@/api/projects'
 import { useConfig } from '@/config/AppConfig'
 import SchemaViewer from '@/components/SchemaViewer'
-import SchemaDiagram from '@/components/SchemaDiagram'
 import DataViewer from '@/components/DataViewer'
 import DocumentUploader from '@/components/DocumentUploader'
 import SchemaChat from '@/components/SchemaChat'
 import QueryBuilder from '@/components/QueryBuilder'
 import BackupManager from '@/components/BackupManager'
-import Survey from '@/components/Survey'
 import OperationHistory from '@/components/OperationHistory'
 import ShareDialog from '@/components/ShareDialog'
 import { downloadScript } from '@/components/ExportButton'
@@ -27,11 +25,19 @@ import SchemaStatusBadge from '@/components/project/SchemaStatusBadge'
 import SchemaVersionsPanel from '@/components/project/SchemaVersionsPanel'
 import { isActive, useProjectJobs } from '@/components/project/useProjectJobs'
 import type { QueryHistoryItem } from '@/types'
+import { readStudyContext, studyRunContext } from '@/research/studyContext'
 
 const READ_ONLY_NOTE = 'Hai accesso in sola lettura.'
 const GEN_MAX_AGE_MS = 10 * 60 * 1000
 const RECENT_JOB_MS = 30 * 60 * 1000
 const AUTOSAVE_MS = 1500
+const SchemaDiagram = lazy(() => import('@/components/SchemaDiagram'))
+
+const LazySchemaDiagram = ({ schema }: { schema: any }) => (
+  <Suspense fallback={<div className="h-[min(560px,65vh)] animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800" role="status" aria-label="Caricamento diagramma" />}>
+    <SchemaDiagram schema={schema} />
+  </Suspense>
+)
 
 const isRecent = (iso?: string) => {
   const t = iso ? Date.parse(iso) : NaN
@@ -63,6 +69,8 @@ export default function ProjectPage() {
   const queryClient = useQueryClient()
   const { config } = useConfig()
   const research = !!config.research_mode
+  const study = readStudyContext()
+  const studyReadOnly = !!study && study.arm !== 'ai_interface'
 
   const [chosen, setChosen] = useState<number | null>(null)
   const [finalized, setFinalized] = useState(() => store.get(`aidb:final:${projectId}`) === '1')
@@ -99,6 +107,7 @@ export default function ProjectPage() {
 
   const role: 'owner' | 'editor' | 'viewer' = project?.my_role ?? 'viewer'
   const canEdit = role !== 'viewer'
+  const canReview = canEdit && !studyReadOnly
 
   const generationPolling = genStartedAt !== null
   const { data: schema } = useQuery({
@@ -146,7 +155,7 @@ export default function ProjectPage() {
   const genMut = useMutation({
     mutationFn: () => {
       const prompt = description.trim() || project?.prompt || 'Crea lo schema del database a partire dai documenti caricati.'
-      return api.post(`/projects/${projectId}/generate`, { prompt, document_ids: docIds })
+      return api.post(`/projects/${projectId}/generate`, { prompt, document_ids: docIds, ...studyRunContext() })
     },
     onMutate: () => {
       const now = Date.now()
@@ -251,7 +260,7 @@ export default function ProjectPage() {
   const populateMut = useMutation({
     mutationFn: async (reset?: boolean) => {
       if (reset === true) await api.post(`/projects/${projectId}/reset-data`, {})
-      return api.post(`/projects/${projectId}/populate`, { document_ids: docIds })
+      return api.post(`/projects/${projectId}/populate`, { document_ids: docIds, ...studyRunContext() })
     },
     onSuccess: (data: any) => {
       const parts: string[] = []
@@ -380,7 +389,7 @@ export default function ProjectPage() {
           </div>
         )}
         {(genError || schemaJobError) && <p role="alert" className="rounded-xl bg-red-50 px-3 py-2 text-sm font-medium text-red-700 dark:bg-red-950/40 dark:text-red-300">{genError || schemaJobError}</p>}
-        {canEdit && (
+        {canReview && (
           <details className="surface p-4">
             <summary className="cursor-pointer text-sm font-semibold">Hai già uno script SQL? Importalo</summary>
             <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -398,7 +407,7 @@ export default function ProjectPage() {
             </div>
           </details>
         )}
-        {canEdit && hasSchema && !isFinal && (
+        {canReview && hasSchema && !isFinal && (
           <button type="button" className="secondary-button" onClick={regenerateSchema}>Rigenera lo schema da capo</button>
         )}
         <p className="text-sm text-tecnia-muted dark:text-slate-400">I tuoi file restano privati: li vedono solo le persone con cui condividi il progetto.</p>
@@ -424,12 +433,12 @@ export default function ProjectPage() {
             </p>
           </div>
           {tabs(schemaView, setSchemaView, [{ id: 'diagram', label: 'Diagramma', icon: 'account_tree' }, { id: 'tables', label: 'Tabelle', icon: 'table_rows' }], 'Vista dello schema')}
-          {schemaView === 'diagram' ? <SchemaDiagram schema={schema} /> : <SchemaViewer schema={schema} projectId={projectId} readOnly={!canEdit || isFinal} autosaveMs={AUTOSAVE_MS} />}
+          {schemaView === 'diagram' ? <LazySchemaDiagram schema={schema} /> : <SchemaViewer schema={schema} projectId={projectId} readOnly={!canEdit || isFinal || studyReadOnly} autosaveMs={AUTOSAVE_MS} />}
           <p className="text-xs text-tecnia-muted dark:text-slate-400">Un legame 1 : N è una relazione uno a molti. Chiedi all'IA a destra di cambiare qualcosa: il diagramma si aggiorna e approvi tu.</p>
-          <SchemaVersionsPanel projectId={projectId} readOnly={!canEdit} />
+          <SchemaVersionsPanel projectId={projectId} readOnly={!canEdit || studyReadOnly} />
         </section>
         <aside className="lg:sticky lg:top-4 lg:self-start">
-          <SchemaChat projectId={projectId} schema={schema} documentIds={docIds} locked={isFinal} readOnly={!canEdit} />
+          <SchemaChat projectId={projectId} schema={schema} documentIds={docIds} locked={isFinal} readOnly={!canEdit || studyReadOnly} runContext={studyRunContext()} />
         </aside>
       </div>
     )
@@ -456,12 +465,12 @@ export default function ProjectPage() {
           <section className="min-w-0 space-y-4">
             {tabs(dbView, setDbView, [{ id: 'diagram', label: 'Diagramma', icon: 'account_tree' }, { id: 'sql', label: 'Istruzioni SQL', icon: 'code' }], 'Vista del database')}
             {dbView === 'diagram'
-              ? <SchemaDiagram schema={schema} />
+              ? <LazySchemaDiagram schema={schema} />
               : <pre className="max-h-[560px] overflow-auto rounded-2xl border border-tecnia-line bg-white/80 p-4 font-mono text-xs dark:border-slate-700 dark:bg-slate-900" aria-label="Istruzioni SQL dello schema">{ddl?.content ?? 'Preparo le istruzioni…'}</pre>}
-            <SchemaVersionsPanel projectId={projectId} readOnly={!canEdit} />
+            <SchemaVersionsPanel projectId={projectId} readOnly={!canEdit || studyReadOnly} />
           </section>
           <aside className="lg:sticky lg:top-4 lg:self-start">
-            <SchemaChat projectId={projectId} schema={schema} documentIds={docIds} locked={isFinal} readOnly={!canEdit} />
+            <SchemaChat projectId={projectId} schema={schema} documentIds={docIds} locked={isFinal} readOnly={!canEdit || studyReadOnly} runContext={studyRunContext()} />
           </aside>
         </div>
       </div>
@@ -498,7 +507,7 @@ export default function ProjectPage() {
             onDialectChange={changeDialect}
             queryOpen={queryOpen}
             onToggleQuery={() => setQueryOpen((v) => !v)}
-            onRegenerate={canEdit ? regenerateData : undefined}
+            onRegenerate={canReview ? regenerateData : undefined}
             regenerating={populating}
           />
         )}
@@ -515,9 +524,8 @@ export default function ProjectPage() {
             />
           </>
         )}
-        {canEdit && <BackupManager projectId={projectId} />}
+        {canReview && <BackupManager projectId={projectId} />}
         {research && <OperationHistory projectId={projectId} />}
-        {research && <Survey projectId={projectId} />}
       </div>
     )
     bar = {
@@ -562,6 +570,12 @@ export default function ProjectPage() {
         <p className="mb-5 flex items-center gap-2 rounded-xl bg-amber-50 px-4 py-2.5 text-sm font-medium text-amber-800 dark:bg-amber-950/30 dark:text-amber-200" role="note">
           <span className="material-symbols-outlined text-[18px]" aria-hidden="true">visibility</span>
           {READ_ONLY_NOTE} Puoi guardare tutto, ma non modificare.
+        </p>
+      )}
+      {studyReadOnly && (
+        <p className="mb-5 flex items-center gap-2 rounded-xl bg-blue-50 px-4 py-2.5 text-sm font-medium text-blue-800 dark:bg-slate-800 dark:text-blue-200" role="note">
+          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">science</span>
+          Condizione sperimentale automatica: puoi caricare i documenti, generare e consultare il risultato, ma non modificare o rigenerare selettivamente lo schema.
         </p>
       )}
 

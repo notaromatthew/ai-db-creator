@@ -1,0 +1,133 @@
+{
+  "version": "rq2_functional_v1",
+  "dataset": "library",
+  "status": "frozen_before_regenerated_outcomes",
+  "natural_keys": {
+    "categories": ["name"],
+    "members": ["email"],
+    "books": ["isbn"],
+    "loans": ["member_id", "loan_date", "due_date"]
+  },
+  "observable_scope": {
+    "tables": {
+      "categories": {
+        "columns": ["name"],
+        "key_columns": ["name"]
+      },
+      "members": {
+        "columns": ["full_name", "email", "joined_on"],
+        "key_columns": ["email"]
+      },
+      "books": {
+        "columns": ["isbn", "title", "author"],
+        "key_columns": ["isbn"]
+      },
+      "loans": {
+        "columns": ["loan_date", "due_date"],
+        "key_columns": ["member_id", "loan_date", "due_date"]
+      }
+    },
+    "excluded": {
+      "loans.book_id": {
+        "reason": "The supplied loans_members.csv does not identify the borrowed book."
+      },
+      "books.category_id": {
+        "reason": "Synthetic identifier; the category relationship is evaluated by functional query L03."
+      },
+      "loans.member_id": {
+        "reason": "Synthetic identifier; row alignment resolves it through members.email."
+      },
+      "fines": {
+        "reason": "Fine rows, amounts and payment dates are generated only in the gold builder and are absent from source documents."
+      }
+    }
+  },
+  "canonicalization": {
+    "unicode": "NFKC",
+    "text": {"trim": true, "collapse_whitespace": true, "case_sensitive": true},
+    "case_insensitive_columns": ["email", "isbn"],
+    "numeric": {"compare_by_value": true, "absolute_tolerance": 0.0},
+    "date": "YYYY-MM-DD",
+    "datetime": "YYYY-MM-DD HH:MM:SS",
+    "null_equals_empty": false,
+    "ignore_row_order": true
+  },
+  "functional_equivalence": {
+    "critical_query_pass_rate": 1.0,
+    "overall_query_pass_rate": 0.9,
+    "max_critical_integrity_violations": 0,
+    "require_no_missing_or_extra_critical_entities": true
+  },
+  "functional_queries": [
+    {
+      "id": "L01",
+      "description": "Numero di membri osservabili",
+      "critical": true,
+      "sql": "SELECT COUNT(*) AS member_count FROM members",
+      "comparison": {"mode": "scalar", "columns": ["member_count"]}
+    },
+    {
+      "id": "L02",
+      "description": "Anagrafica dei membri per email",
+      "critical": true,
+      "sql": "SELECT email, full_name, joined_on FROM members",
+      "comparison": {"mode": "unordered_rows", "columns": ["email", "full_name", "joined_on"]}
+    },
+    {
+      "id": "L03",
+      "description": "Catalogo dei libri e categoria per chiave ISBN",
+      "critical": true,
+      "sql": "SELECT b.isbn, b.title, b.author, c.name AS category_name FROM books b JOIN categories c ON c.category_id = b.category_id",
+      "comparison": {"mode": "unordered_rows", "columns": ["isbn", "title", "author", "category_name"]}
+    },
+    {
+      "id": "L04",
+      "description": "Prestiti osservabili senza associazione al libro non fornita",
+      "critical": true,
+      "sql": "SELECT m.email, l.loan_date, l.due_date FROM loans l JOIN members m ON m.member_id = l.member_id",
+      "comparison": {"mode": "unordered_rows", "columns": ["email", "loan_date", "due_date"]}
+    },
+    {
+      "id": "L05",
+      "description": "Numero di libri per categoria",
+      "critical": false,
+      "sql": "SELECT c.name AS category_name, COUNT(*) AS book_count FROM books b JOIN categories c ON c.category_id = b.category_id GROUP BY c.name",
+      "comparison": {"mode": "unordered_rows", "columns": ["category_name", "book_count"]}
+    },
+    {
+      "id": "L06",
+      "description": "Numero di prestiti per membro",
+      "critical": false,
+      "sql": "SELECT m.email, COUNT(*) AS loan_count FROM loans l JOIN members m ON m.member_id = l.member_id GROUP BY m.email",
+      "comparison": {"mode": "unordered_rows", "columns": ["email", "loan_count"]}
+    },
+    {
+      "id": "L07",
+      "description": "Durata prevista dei prestiti",
+      "critical": false,
+      "sql": "SELECT m.email, l.loan_date, l.due_date, CAST(julianday(l.due_date) - julianday(l.loan_date) AS INTEGER) AS duration_days FROM loans l JOIN members m ON m.member_id = l.member_id",
+      "comparison": {"mode": "unordered_rows", "columns": ["email", "loan_date", "due_date", "duration_days"]}
+    },
+    {
+      "id": "L08",
+      "description": "Elenco delle categorie osservabili",
+      "critical": false,
+      "sql": "SELECT name AS category_name FROM categories",
+      "comparison": {"mode": "unordered_rows", "columns": ["category_name"]}
+    },
+    {
+      "id": "L09",
+      "description": "Numero complessivo di prestiti osservabili",
+      "critical": false,
+      "sql": "SELECT COUNT(*) AS loan_count FROM loans",
+      "comparison": {"mode": "scalar", "columns": ["loan_count"]}
+    },
+    {
+      "id": "L10",
+      "description": "Numero complessivo di libri osservabili",
+      "critical": false,
+      "sql": "SELECT COUNT(*) AS book_count FROM books",
+      "comparison": {"mode": "scalar", "columns": ["book_count"]}
+    }
+  ]
+}

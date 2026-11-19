@@ -1,0 +1,63 @@
+{
+  "software_revision": "1c12d74c39063293",
+  "research_mode": false,
+  "dataset": "library",
+  "dataset_hash": "974425f9aedea0a13e8d6076183a9aee439ad937f6ed58442c707d8d74622882",
+  "condition": "baseline",
+  "provider": "Google Gemini",
+  "model": "gemini-3.5-flash-lite",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 1,
+  "created_at": "2026-11-05T07:35:42.052040+00:00",
+  "source_format": "combined",
+  "source_files": [
+    {
+      "path": "source/books.csv",
+      "sha256": "e9808e8883479ba985010064a41ccce6936987b9fd79bdfd087f654c5de32f47"
+    },
+    {
+      "path": "source/description.pdf",
+      "sha256": "161ccf4d8a56de5b58145d8387df322e2529b2ee0ad57cfd12a7e7596b61b9a1"
+    },
+    {
+      "path": "source/loans_members.csv",
+      "sha256": "e58a0472c7f9c2bd7ca7118ac2f9cbbe829b1469103524416a7fca28a0714710"
+    },
+    {
+      "path": "source/members.csv",
+      "sha256": "4e352910699272abeca6ce966de35b2d966531e505988cd3c732d518b40f69a4"
+    }
+  ],
+  "evaluation_spec_hash": "b919d5b5dc1e4d1e45f3852a598b29036edab09346f5c9d2c2b6ef5c62725537",
+  "project_id": "e8cc738a-63aa-428f-b298-f97069e2fd13",
+  "status": "ok",
+  "artifacts": {
+    "generated_database": {
+      "path": "generated.db",
+      "sha256": "bb9433d0a9e251eeab42829f6539d6d40e21b7292403d6a043dda7564d8dafcc"
+    },
+    "generated_schema": {
+      "path": "generated_schema.json",
+      "sha256": "e1c15bbe25867a08fc5c201b8d783872681b27ac6cdd2a48116d59a75aecf760"
+    },
+    "evaluation": {
+      "path": "evaluation.json",
+      "sha256": "e5710be0102f3bd14397f106ebc15782b0ca1f172895bc4c426745e0335a33ce"
+    },
+    "cell_discrepancies": {
+      "path": "cell_discrepancies.csv",
+      "sha256": "b15ec385eefe7a2cce549022b6086c56a23fff3fe4c06ca2a9ddef0642b494a0"
+    },
+    "functional_query_results": {
+      "path": "functional_query_results.json",
+      "sha256": "49185234c47e41284b44da3993d82253555510cc619a0b4ddf46524590d080d4"
+    },
+    "run_record": {
+      "path": "run.json",
+      "sha256": "aa2bce2debf025a43c794023061a8cdb638bace5fad53e6a8d20178613a788b7"
+    }
+  }
+}

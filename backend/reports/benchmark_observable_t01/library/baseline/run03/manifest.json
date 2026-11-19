@@ -1,0 +1,26 @@
+{
+  "software_revision": "e4ccc9151c08ad91",
+  "research_mode": false,
+  "dataset": "library",
+  "dataset_hash": "974425f9aedea0a13e8d6076183a9aee439ad937f6ed58442c707d8d74622882",
+  "condition": "baseline",
+  "provider": "Google Vertex AI",
+  "model": "gemini-2.5-flash-lite",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 3,
+  "created_at": "2026-11-04T10:47:43.896974+00:00",
+  "source_format": "combined",
+  "source_files": [],
+  "evaluation_spec_hash": "b919d5b5dc1e4d1e45f3852a598b29036edab09346f5c9d2c2b6ef5c62725537",
+  "project_id": null,
+  "status": "error",
+  "artifacts": {
+    "run_record": {
+      "path": "run.json",
+      "sha256": "bd4b5e5a53fd4c4ef115560346a5c9a0c342c9abdc4d61dd3b221702facb34c3"
+    }
+  }
+}

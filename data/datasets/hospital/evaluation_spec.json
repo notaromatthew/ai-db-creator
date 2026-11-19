@@ -1,0 +1,148 @@
+{
+  "version": "rq2_functional_v1",
+  "dataset": "hospital",
+  "status": "frozen_before_regenerated_outcomes",
+  "natural_keys": {
+    "patients": ["fiscal_code"],
+    "doctors": ["full_name", "specialty"],
+    "wards": ["name"],
+    "appointments": ["appointment_id"]
+  },
+  "observable_scope": {
+    "tables": {
+      "patients": {
+        "columns": ["fiscal_code", "full_name", "birth_date"],
+        "key_columns": ["fiscal_code"]
+      },
+      "doctors": {
+        "columns": ["full_name", "specialty"],
+        "key_columns": ["full_name", "specialty"]
+      },
+      "wards": {
+        "columns": ["name"],
+        "key_columns": ["name"]
+      },
+      "appointments": {
+        "columns": ["appointment_id", "scheduled_on"],
+        "key_columns": ["appointment_id"]
+      }
+    },
+    "excluded": {
+      "doctors.department": {
+        "reason": "The source states specialty and an English department-to-ward rule, while the gold stores a separate Italian department value."
+      },
+      "wards.department": {
+        "reason": "The exact stored department representation is not supplied as a row-level source value."
+      },
+      "appointments.patient_id": {
+        "reason": "Synthetic identifier; the relationship is evaluated by functional query H04."
+      },
+      "appointments.doctor_id": {
+        "reason": "Synthetic identifier; the relationship is evaluated by functional query H04."
+      },
+      "appointments.ward_id": {
+        "reason": "Synthetic identifier; the relationship is evaluated by functional query H04."
+      },
+      "treatments": {
+        "reason": "Exact treatment rows are generated only in the gold builder."
+      },
+      "medications": {
+        "reason": "Exact medication rows are generated only in the gold builder."
+      },
+      "prescriptions": {
+        "reason": "Exact prescription rows and dosages are generated only in the gold builder."
+      },
+      "invoices": {
+        "reason": "Exact invoice rows, amounts and dates are generated only in the gold builder."
+      }
+    }
+  },
+  "canonicalization": {
+    "unicode": "NFKC",
+    "text": {"trim": true, "collapse_whitespace": true, "case_sensitive": true},
+    "case_insensitive_columns": ["fiscal_code"],
+    "numeric": {"compare_by_value": true, "absolute_tolerance": 0.0},
+    "date": "YYYY-MM-DD",
+    "datetime": "YYYY-MM-DD HH:MM:SS",
+    "null_equals_empty": false,
+    "ignore_row_order": true
+  },
+  "functional_equivalence": {
+    "critical_query_pass_rate": 1.0,
+    "overall_query_pass_rate": 0.9,
+    "max_critical_integrity_violations": 0,
+    "require_no_missing_or_extra_critical_entities": true
+  },
+  "functional_queries": [
+    {
+      "id": "H01",
+      "description": "Numero di pazienti osservabili",
+      "critical": true,
+      "sql": "SELECT COUNT(*) AS patient_count FROM patients",
+      "comparison": {"mode": "scalar", "columns": ["patient_count"]}
+    },
+    {
+      "id": "H02",
+      "description": "Anagrafica pazienti per codice fiscale",
+      "critical": true,
+      "sql": "SELECT fiscal_code, full_name, birth_date FROM patients",
+      "comparison": {"mode": "unordered_rows", "columns": ["fiscal_code", "full_name", "birth_date"]}
+    },
+    {
+      "id": "H03",
+      "description": "Numero di appuntamenti osservabili",
+      "critical": true,
+      "sql": "SELECT COUNT(*) AS appointment_count FROM appointments",
+      "comparison": {"mode": "scalar", "columns": ["appointment_count"]}
+    },
+    {
+      "id": "H04",
+      "description": "Appuntamenti ricostruiti senza dipendere dagli ID di medico e reparto",
+      "critical": true,
+      "sql": "SELECT a.appointment_id, p.fiscal_code, d.full_name AS doctor_name, d.specialty, w.name AS ward_name, a.scheduled_on FROM appointments a JOIN patients p ON p.patient_id = a.patient_id JOIN doctors d ON d.doctor_id = a.doctor_id JOIN wards w ON w.ward_id = a.ward_id",
+      "comparison": {"mode": "unordered_rows", "columns": ["appointment_id", "fiscal_code", "doctor_name", "specialty", "ward_name", "scheduled_on"]}
+    },
+    {
+      "id": "H05",
+      "description": "Medici citati negli appuntamenti",
+      "critical": false,
+      "sql": "SELECT DISTINCT d.full_name AS doctor_name, d.specialty FROM doctors d JOIN appointments a ON a.doctor_id = d.doctor_id",
+      "comparison": {"mode": "unordered_rows", "columns": ["doctor_name", "specialty"]}
+    },
+    {
+      "id": "H06",
+      "description": "Reparti citati negli appuntamenti",
+      "critical": false,
+      "sql": "SELECT DISTINCT w.name AS ward_name FROM wards w JOIN appointments a ON a.ward_id = w.ward_id",
+      "comparison": {"mode": "unordered_rows", "columns": ["ward_name"]}
+    },
+    {
+      "id": "H07",
+      "description": "Numero di appuntamenti per medico",
+      "critical": false,
+      "sql": "SELECT d.full_name AS doctor_name, d.specialty, COUNT(*) AS appointment_count FROM appointments a JOIN doctors d ON d.doctor_id = a.doctor_id GROUP BY d.full_name, d.specialty",
+      "comparison": {"mode": "unordered_rows", "columns": ["doctor_name", "specialty", "appointment_count"]}
+    },
+    {
+      "id": "H08",
+      "description": "Numero di appuntamenti per reparto",
+      "critical": false,
+      "sql": "SELECT w.name AS ward_name, COUNT(*) AS appointment_count FROM appointments a JOIN wards w ON w.ward_id = a.ward_id GROUP BY w.name",
+      "comparison": {"mode": "unordered_rows", "columns": ["ward_name", "appointment_count"]}
+    },
+    {
+      "id": "H09",
+      "description": "Numero di appuntamenti per paziente con attività",
+      "critical": false,
+      "sql": "SELECT p.fiscal_code, COUNT(*) AS appointment_count FROM appointments a JOIN patients p ON p.patient_id = a.patient_id GROUP BY p.fiscal_code",
+      "comparison": {"mode": "unordered_rows", "columns": ["fiscal_code", "appointment_count"]}
+    },
+    {
+      "id": "H10",
+      "description": "Distribuzione mensile degli appuntamenti",
+      "critical": false,
+      "sql": "SELECT substr(scheduled_on, 1, 7) AS month, COUNT(*) AS appointment_count FROM appointments GROUP BY substr(scheduled_on, 1, 7)",
+      "comparison": {"mode": "unordered_rows", "columns": ["month", "appointment_count"]}
+    }
+  ]
+}

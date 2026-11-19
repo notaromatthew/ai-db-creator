@@ -1,0 +1,1913 @@
+{
+  "spec_version": "rq2_functional_v1",
+  "queries": [
+    {
+      "id": "H01",
+      "critical": true,
+      "passed": true,
+      "gold_sql": "SELECT COUNT(*) AS patient_count FROM patients",
+      "generated_sql": "SELECT COUNT(*) AS patient_count FROM [patients]",
+      "error": null,
+      "gold_rows": [
+        [
+          {
+            "number": "100"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          {
+            "number": "100"
+          }
+        ]
+      ],
+      "gold_result_hash": "7652be061c000616cf5a0bbf81997bab91a42cbaf6565f2fe511e2348c6c9237",
+      "generated_result_hash": "7652be061c000616cf5a0bbf81997bab91a42cbaf6565f2fe511e2348c6c9237",
+      "gold_row_count": 1,
+      "generated_row_count": 1,
+      "missing_rows": [],
+      "extra_rows": []
+    },
+    {
+      "id": "H02",
+      "critical": true,
+      "passed": true,
+      "gold_sql": "SELECT fiscal_code, full_name, birth_date FROM patients",
+      "generated_sql": "SELECT [fiscal_code], [full_name], [birth_date] FROM [patients]",
+      "error": null,
+      "gold_rows": [
+        [
+          "aa10041a7930",
+          "Valentina Ferrari",
+          {
+            "date": "1974-02-06"
+          }
+        ],
+        [
+          "aa2569a3613",
+          "Marco Esposito",
+          {
+            "date": "2008-06-27"
+          }
+        ],
+        [
+          "aa5086a8550",
+          "Simone Ricci",
+          {
+            "date": "1978-01-09"
+          }
+        ],
+        [
+          "aa7546a8999",
+          "Martina Ricci",
+          {
+            "date": "1943-08-22"
+          }
+        ],
+        [
+          "bh0128d4951",
+          "Chiara Gallo",
+          {
+            "date": "1972-03-27"
+          }
+        ],
+        [
+          "bh2675d5051",
+          "Davide Greco",
+          {
+            "date": "1980-02-04"
+          }
+        ],
+        [
+          "bh5126d4926",
+          "Simone Conti",
+          {
+            "date": "1976-12-17"
+          }
+        ],
+        [
+          "bh7641d5056",
+          "Anna Gallo",
+          {
+            "date": "2001-04-12"
+          }
+        ],
+        [
+          "cp0218g5943",
+          "Valentina Gallo",
+          {
+            "date": "1973-07-14"
+          }
+        ],
+        [
+          "cp2780g1086",
+          "Federico Bruno",
+          {
+            "date": "1999-03-09"
+          }
+        ],
+        [
+          "cp5253g9072",
+          "Martina Colombo",
+          {
+            "date": "1988-12-01"
+          }
+        ],
+        [
+          "cp7776g5402",
+          "Federico Ricci",
+          {
+            "date": "1953-12-22"
+          }
+        ],
+        [
+          "dw0396k6410",
+          "Simone Rizzo",
+          {
+            "date": "2010-01-12"
+          }
+        ],
+        [
+          "dw2814k8836",
+          "Marco Bianchi",
+          {
+            "date": "1998-03-09"
+          }
+        ],
+        [
+          "dw5349k6806",
+          "Andrea Greco",
+          {
+            "date": "1976-03-24"
+          }
+        ],
+        [
+          "dw7816k9148",
+          "Sara Gallo",
+          {
+            "date": "1959-03-13"
+          }
+        ],
+        [
+          "ed0445n4012",
+          "Luca Ferrari",
+          {
+            "date": "1958-03-01"
+          }
+        ],
+        [
+          "ed2915n6901",
+          "Luca Greco",
+          {
+            "date": "1979-03-09"
+          }
+        ],
+        [
+          "ed5442n6756",
+          "Francesca Conti",
+          {
+            "date": "1999-04-16"
+          }
+        ],
+        [
+          "ed7996n4674",
+          "Martina Gallo",
+          {
+            "date": "1995-04-20"
+          }
+        ],
+        [
+          "fl0585q7098",
+          "Andrea Bruno",
+          {
+            "date": "1941-08-17"
+          }
+        ],
+        [
+          "fl3073q3164",
+          "Simone Marino",
+          {
+            "date": "1978-08-07"
+          }
+        ],
+        [
+          "fl5554q3991",
+          "Luca Giordano",
+          {
+            "date": "2002-07-18"
+          }
+        ],
+        [
+          "fl8096q1177",
+          "Anna Costa",
+          {
+            "date": "1971-07-09"
+          }
+        ],
+        [
+          "gs0681t2781",
+          "Francesca Ricci",
+          {
+            "date": "1981-11-24"
+          }
+        ],
+        [
+          "gs3167t3932",
+          "Luca Conti",
+          {
+            "date": "2000-12-17"
+          }
+        ],
+        [
+          "gs5658t1736",
+          "Giulia Giordano",
+          {
+            "date": "1941-07-06"
+          }
+        ],
+        [
+          "gs8130t7802",
+          "Elena Ricci",
+          {
+            "date": "1968-02-12"
+          }
+        ],
+        [
+          "hz0778w4784",
+          "Martina Rossi",
+          {
+            "date": "2008-03-12"
+          }
+        ],
+        [
+          "hz3289w5029",
+          "Luca Bruno",
+          {
+            "date": "1994-08-06"
+          }
+        ],
+        [
+          "hz5718w2744",
+          "Marco Rizzo",
+          {
+            "date": "1946-09-27"
+          }
+        ],
+        [
+          "hz8285w6248",
+          "Davide Marino",
+          {
+            "date": "2000-06-19"
+          }
+        ],
+        [
+          "jg0825z2195",
+          "Francesca Rossi",
+          {
+            "date": "1978-11-03"
+          }
+        ],
+        [
+          "jg3372z2498",
+          "Sara Colombo",
+          {
+            "date": "2007-12-17"
+          }
+        ],
+        [
+          "jg5810z2517",
+          "Giulia Gallo",
+          {
+            "date": "1963-04-09"
+          }
+        ],
+        [
+          "jg8319z9090",
+          "Davide Giordano",
+          {
+            "date": "1967-10-12"
+          }
+        ],
+        [
+          "ko0960c9816",
+          "Francesca Gallo",
+          {
+            "date": "1984-02-14"
+          }
+        ],
+        [
+          "ko3428c4387",
+          "Simone Gallo",
+          {
+            "date": "1953-03-15"
+          }
+        ],
+        [
+          "ko5958c5172",
+          "Sara Greco",
+          {
+            "date": "1942-03-26"
+          }
+        ],
+        [
+          "ko8482c1476",
+          "Francesca Conti",
+          {
+            "date": "1951-11-10"
+          }
+        ],
+        [
+          "lv1030f9609",
+          "Simone Rizzo",
+          {
+            "date": "1992-11-25"
+          }
+        ],
+        [
+          "lv3584f3022",
+          "Sara Romano",
+          {
+            "date": "1971-01-17"
+          }
+        ],
+        [
+          "lv6070f2160",
+          "Federico Rossi",
+          {
+            "date": "2007-02-04"
+          }
+        ],
+        [
+          "lv8540f5238",
+          "Anna Bianchi",
+          {
+            "date": "1980-03-07"
+          }
+        ],
+        [
+          "mc1117j4250",
+          "Martina Bianchi",
+          {
+            "date": "1962-06-15"
+          }
+        ],
+        [
+          "mc3624j9598",
+          "Federico Esposito",
+          {
+            "date": "1993-11-15"
+          }
+        ],
+        [
+          "mc6142j7564",
+          "Francesca Giordano",
+          {
+            "date": "1981-11-06"
+          }
+        ],
+        [
+          "mc8694j4297",
+          "Sara Colombo",
+          {
+            "date": "1997-06-19"
+          }
+        ],
+        [
+          "nk1219m2160",
+          "Giulia Conti",
+          {
+            "date": "1984-04-26"
+          }
+        ],
+        [
+          "nk3748m4360",
+          "Valentina Ferrari",
+          {
+            "date": "1969-10-02"
+          }
+        ],
+        [
+          "nk6299m7771",
+          "Giulia Romano",
+          {
+            "date": "1950-08-29"
+          }
+        ],
+        [
+          "nk8757m7826",
+          "Anna Marino",
+          {
+            "date": "1999-09-17"
+          }
+        ],
+        [
+          "or1320p7639",
+          "Valentina Costa",
+          {
+            "date": "1992-12-06"
+          }
+        ],
+        [
+          "or3814p2061",
+          "Valentina Esposito",
+          {
+            "date": "2004-09-02"
+          }
+        ],
+        [
+          "or6390p5040",
+          "Chiara Gallo",
+          {
+            "date": "1997-02-03"
+          }
+        ],
+        [
+          "or8849p1560",
+          "Anna Gallo",
+          {
+            "date": "1997-10-10"
+          }
+        ],
+        [
+          "py1459s7976",
+          "Chiara Costa",
+          {
+            "date": "1986-10-04"
+          }
+        ],
+        [
+          "py3991s8956",
+          "Federico Romano",
+          {
+            "date": "1989-04-17"
+          }
+        ],
+        [
+          "py6461s4204",
+          "Matteo Ferrari",
+          {
+            "date": "2009-02-16"
+          }
+        ],
+        [
+          "py8984s7001",
+          "Francesca Marino",
+          {
+            "date": "1946-10-13"
+          }
+        ],
+        [
+          "qf1576v2248",
+          "Chiara Romano",
+          {
+            "date": "1982-11-20"
+          }
+        ],
+        [
+          "qf4018v2683",
+          "Andrea Colombo",
+          {
+            "date": "1999-12-18"
+          }
+        ],
+        [
+          "qf6525v8993",
+          "Luca Romano",
+          {
+            "date": "1941-11-17"
+          }
+        ],
+        [
+          "qf9047v4579",
+          "Federico Rizzo",
+          {
+            "date": "1956-02-22"
+          }
+        ],
+        [
+          "rn1663y1189",
+          "Marco Bianchi",
+          {
+            "date": "1983-01-20"
+          }
+        ],
+        [
+          "rn4190y9872",
+          "Martina Colombo",
+          {
+            "date": "1986-02-13"
+          }
+        ],
+        [
+          "rn6665y7397",
+          "Luca Romano",
+          {
+            "date": "1970-11-01"
+          }
+        ],
+        [
+          "rn9168y7501",
+          "Davide Gallo",
+          {
+            "date": "1979-06-29"
+          }
+        ],
+        [
+          "su1736b3166",
+          "Chiara Giordano",
+          {
+            "date": "1944-12-25"
+          }
+        ],
+        [
+          "su4225b2590",
+          "Chiara Gallo",
+          {
+            "date": "1959-08-22"
+          }
+        ],
+        [
+          "su6764b8829",
+          "Andrea Rizzo",
+          {
+            "date": "1973-05-21"
+          }
+        ],
+        [
+          "su9279b6017",
+          "Chiara Conti",
+          {
+            "date": "1993-12-23"
+          }
+        ],
+        [
+          "tb1842e2235",
+          "Francesca Colombo",
+          {
+            "date": "1982-09-21"
+          }
+        ],
+        [
+          "tb4321e7065",
+          "Francesca Conti",
+          {
+            "date": "1993-12-06"
+          }
+        ],
+        [
+          "tb6875e8958",
+          "Chiara Ricci",
+          {
+            "date": "2002-07-20"
+          }
+        ],
+        [
+          "tb9322e8625",
+          "Sara Ricci",
+          {
+            "date": "1961-08-17"
+          }
+        ],
+        [
+          "uj1957h8180",
+          "Martina Giordano",
+          {
+            "date": "2002-08-03"
+          }
+        ],
+        [
+          "uj4492h2288",
+          "Anna Romano",
+          {
+            "date": "1943-01-19"
+          }
+        ],
+        [
+          "uj6918h5638",
+          "Matteo Bruno",
+          {
+            "date": "2010-11-06"
+          }
+        ],
+        [
+          "uj9437h6380",
+          "Andrea Esposito",
+          {
+            "date": "1964-03-18"
+          }
+        ],
+        [
+          "vq2072l3481",
+          "Luca Bianchi",
+          {
+            "date": "1961-05-22"
+          }
+        ],
+        [
+          "vq4563l4601",
+          "Luca Giordano",
+          {
+            "date": "1942-03-23"
+          }
+        ],
+        [
+          "vq7013l1798",
+          "Marco Ricci",
+          {
+            "date": "2002-05-15"
+          }
+        ],
+        [
+          "vq9535l7083",
+          "Francesca Rizzo",
+          {
+            "date": "2010-10-28"
+          }
+        ],
+        [
+          "wx2179o2714",
+          "Francesca Giordano",
+          {
+            "date": "1960-02-05"
+          }
+        ],
+        [
+          "wx4676o2823",
+          "Sara Bianchi",
+          {
+            "date": "1983-09-01"
+          }
+        ],
+        [
+          "wx7185o9479",
+          "Martina Ferrari",
+          {
+            "date": "1958-02-20"
+          }
+        ],
+        [
+          "wx9641o7247",
+          "Giulia Esposito",
+          {
+            "date": "2007-05-10"
+          }
+        ],
+        [
+          "xe2293r3933",
+          "Chiara Esposito",
+          {
+            "date": "1986-08-21"
+          }
+        ],
+        [
+          "xe4798r4727",
+          "Francesca Bruno",
+          {
+            "date": "1977-12-17"
+          }
+        ],
+        [
+          "xe7256r1861",
+          "Matteo Giordano",
+          {
+            "date": "1973-03-13"
+          }
+        ],
+        [
+          "xe9720r1340",
+          "Andrea Ricci",
+          {
+            "date": "1958-09-30"
+          }
+        ],
+        [
+          "ym2377u2390",
+          "Matteo Colombo",
+          {
+            "date": "1962-11-09"
+          }
+        ],
+        [
+          "ym4838u7720",
+          "Elena Romano",
+          {
+            "date": "1990-04-12"
+          }
+        ],
+        [
+          "ym7394u5016",
+          "Valentina Conti",
+          {
+            "date": "2008-01-20"
+          }
+        ],
+        [
+          "ym9864u3980",
+          "Simone Costa",
+          {
+            "date": "1943-09-20"
+          }
+        ],
+        [
+          "zt2452x9382",
+          "Sara Colombo",
+          {
+            "date": "1991-09-16"
+          }
+        ],
+        [
+          "zt4910x2236",
+          "Federico Rossi",
+          {
+            "date": "1945-10-26"
+          }
+        ],
+        [
+          "zt7410x7863",
+          "Davide Ferrari",
+          {
+            "date": "1942-08-17"
+          }
+        ],
+        [
+          "zt9991x1199",
+          "Matteo Rizzo",
+          {
+            "date": "1949-07-17"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          "aa10041a7930",
+          "Valentina Ferrari",
+          {
+            "date": "1974-02-06"
+          }
+        ],
+        [
+          "aa2569a3613",
+          "Marco Esposito",
+          {
+            "date": "2008-06-27"
+          }
+        ],
+        [
+          "aa5086a8550",
+          "Simone Ricci",
+          {
+            "date": "1978-01-09"
+          }
+        ],
+        [
+          "aa7546a8999",
+          "Martina Ricci",
+          {
+            "date": "1943-08-22"
+          }
+        ],
+        [
+          "bh0128d4951",
+          "Chiara Gallo",
+          {
+            "date": "1972-03-27"
+          }
+        ],
+        [
+          "bh2675d5051",
+          "Davide Greco",
+          {
+            "date": "1980-02-04"
+          }
+        ],
+        [
+          "bh5126d4926",
+          "Simone Conti",
+          {
+            "date": "1976-12-17"
+          }
+        ],
+        [
+          "bh7641d5056",
+          "Anna Gallo",
+          {
+            "date": "2001-04-12"
+          }
+        ],
+        [
+          "cp0218g5943",
+          "Valentina Gallo",
+          {
+            "date": "1973-07-14"
+          }
+        ],
+        [
+          "cp2780g1086",
+          "Federico Bruno",
+          {
+            "date": "1999-03-09"
+          }
+        ],
+        [
+          "cp5253g9072",
+          "Martina Colombo",
+          {
+            "date": "1988-12-01"
+          }
+        ],
+        [
+          "cp7776g5402",
+          "Federico Ricci",
+          {
+            "date": "1953-12-22"
+          }
+        ],
+        [
+          "dw0396k6410",
+          "Simone Rizzo",
+          {
+            "date": "2010-01-12"
+          }
+        ],
+        [
+          "dw2814k8836",
+          "Marco Bianchi",
+          {
+            "date": "1998-03-09"
+          }
+        ],
+        [
+          "dw5349k6806",
+          "Andrea Greco",
+          {
+            "date": "1976-03-24"
+          }
+        ],
+        [
+          "dw7816k9148",
+          "Sara Gallo",
+          {
+            "date": "1959-03-13"
+          }
+        ],
+        [
+          "ed0445n4012",
+          "Luca Ferrari",
+          {
+            "date": "1958-03-01"
+          }
+        ],
+        [
+          "ed2915n6901",
+          "Luca Greco",
+          {
+            "date": "1979-03-09"
+          }
+        ],
+        [
+          "ed5442n6756",
+          "Francesca Conti",
+          {
+            "date": "1999-04-16"
+          }
+        ],
+        [
+          "ed7996n4674",
+          "Martina Gallo",
+          {
+            "date": "1995-04-20"
+          }
+        ],
+        [
+          "fl0585q7098",
+          "Andrea Bruno",
+          {
+            "date": "1941-08-17"
+          }
+        ],
+        [
+          "fl3073q3164",
+          "Simone Marino",
+          {
+            "date": "1978-08-07"
+          }
+        ],
+        [
+          "fl5554q3991",
+          "Luca Giordano",
+          {
+            "date": "2002-07-18"
+          }
+        ],
+        [
+          "fl8096q1177",
+          "Anna Costa",
+          {
+            "date": "1971-07-09"
+          }
+        ],
+        [
+          "gs0681t2781",
+          "Francesca Ricci",
+          {
+            "date": "1981-11-24"
+          }
+        ],
+        [
+          "gs3167t3932",
+          "Luca Conti",
+          {
+            "date": "2000-12-17"
+          }
+        ],
+        [
+          "gs5658t1736",
+          "Giulia Giordano",
+          {
+            "date": "1941-07-06"
+          }
+        ],
+        [
+          "gs8130t7802",
+          "Elena Ricci",
+          {
+            "date": "1968-02-12"
+          }
+        ],
+        [
+          "hz0778w4784",
+          "Martina Rossi",
+          {
+            "date": "2008-03-12"
+          }
+        ],
+        [
+          "hz3289w5029",
+          "Luca Bruno",
+          {
+            "date": "1994-08-06"
+          }
+        ],
+        [
+          "hz5718w2744",
+          "Marco Rizzo",
+          {
+            "date": "1946-09-27"
+          }
+        ],
+        [
+          "hz8285w6248",
+          "Davide Marino",
+          {
+            "date": "2000-06-19"
+          }
+        ],
+        [
+          "jg0825z2195",
+          "Francesca Rossi",
+          {
+            "date": "1978-11-03"
+          }
+        ],
+        [
+          "jg3372z2498",
+          "Sara Colombo",
+          {
+            "date": "2007-12-17"
+          }
+        ],
+        [
+          "jg5810z2517",
+          "Giulia Gallo",
+          {
+            "date": "1963-04-09"
+          }
+        ],
+        [
+          "jg8319z9090",
+          "Davide Giordano",
+          {
+            "date": "1967-10-12"
+          }
+        ],
+        [
+          "ko0960c9816",
+          "Francesca Gallo",
+          {
+            "date": "1984-02-14"
+          }
+        ],
+        [
+          "ko3428c4387",
+          "Simone Gallo",
+          {
+            "date": "1953-03-15"
+          }
+        ],
+        [
+          "ko5958c5172",
+          "Sara Greco",
+          {
+            "date": "1942-03-26"
+          }
+        ],
+        [
+          "ko8482c1476",
+          "Francesca Conti",
+          {
+            "date": "1951-11-10"
+          }
+        ],
+        [
+          "lv1030f9609",
+          "Simone Rizzo",
+          {
+            "date": "1992-11-25"
+          }
+        ],
+        [
+          "lv3584f3022",
+          "Sara Romano",
+          {
+            "date": "1971-01-17"
+          }
+        ],
+        [
+          "lv6070f2160",
+          "Federico Rossi",
+          {
+            "date": "2007-02-04"
+          }
+        ],
+        [
+          "lv8540f5238",
+          "Anna Bianchi",
+          {
+            "date": "1980-03-07"
+          }
+        ],
+        [
+          "mc1117j4250",
+          "Martina Bianchi",
+          {
+            "date": "1962-06-15"
+          }
+        ],
+        [
+          "mc3624j9598",
+          "Federico Esposito",
+          {
+            "date": "1993-11-15"
+          }
+        ],
+        [
+          "mc6142j7564",
+          "Francesca Giordano",
+          {
+            "date": "1981-11-06"
+          }
+        ],
+        [
+          "mc8694j4297",
+          "Sara Colombo",
+          {
+            "date": "1997-06-19"
+          }
+        ],
+        [
+          "nk1219m2160",
+          "Giulia Conti",
+          {
+            "date": "1984-04-26"
+          }
+        ],
+        [
+          "nk3748m4360",
+          "Valentina Ferrari",
+          {
+            "date": "1969-10-02"
+          }
+        ],
+        [
+          "nk6299m7771",
+          "Giulia Romano",
+          {
+            "date": "1950-08-29"
+          }
+        ],
+        [
+          "nk8757m7826",
+          "Anna Marino",
+          {
+            "date": "1999-09-17"
+          }
+        ],
+        [
+          "or1320p7639",
+          "Valentina Costa",
+          {
+            "date": "1992-12-06"
+          }
+        ],
+        [
+          "or3814p2061",
+          "Valentina Esposito",
+          {
+            "date": "2004-09-02"
+          }
+        ],
+        [
+          "or6390p5040",
+          "Chiara Gallo",
+          {
+            "date": "1997-02-03"
+          }
+        ],
+        [
+          "or8849p1560",
+          "Anna Gallo",
+          {
+            "date": "1997-10-10"
+          }
+        ],
+        [
+          "py1459s7976",
+          "Chiara Costa",
+          {
+            "date": "1986-10-04"
+          }
+        ],
+        [
+          "py3991s8956",
+          "Federico Romano",
+          {
+            "date": "1989-04-17"
+          }
+        ],
+        [
+          "py6461s4204",
+          "Matteo Ferrari",
+          {
+            "date": "2009-02-16"
+          }
+        ],
+        [
+          "py8984s7001",
+          "Francesca Marino",
+          {
+            "date": "1946-10-13"
+          }
+        ],
+        [
+          "qf1576v2248",
+          "Chiara Romano",
+          {
+            "date": "1982-11-20"
+          }
+        ],
+        [
+          "qf4018v2683",
+          "Andrea Colombo",
+          {
+            "date": "1999-12-18"
+          }
+        ],
+        [
+          "qf6525v8993",
+          "Luca Romano",
+          {
+            "date": "1941-11-17"
+          }
+        ],
+        [
+          "qf9047v4579",
+          "Federico Rizzo",
+          {
+            "date": "1956-02-22"
+          }
+        ],
+        [
+          "rn1663y1189",
+          "Marco Bianchi",
+          {
+            "date": "1983-01-20"
+          }
+        ],
+        [
+          "rn4190y9872",
+          "Martina Colombo",
+          {
+            "date": "1986-02-13"
+          }
+        ],
+        [
+          "rn6665y7397",
+          "Luca Romano",
+          {
+            "date": "1970-11-01"
+          }
+        ],
+        [
+          "rn9168y7501",
+          "Davide Gallo",
+          {
+            "date": "1979-06-29"
+          }
+        ],
+        [
+          "su1736b3166",
+          "Chiara Giordano",
+          {
+            "date": "1944-12-25"
+          }
+        ],
+        [
+          "su4225b2590",
+          "Chiara Gallo",
+          {
+            "date": "1959-08-22"
+          }
+        ],
+        [
+          "su6764b8829",
+          "Andrea Rizzo",
+          {
+            "date": "1973-05-21"
+          }
+        ],
+        [
+          "su9279b6017",
+          "Chiara Conti",
+          {
+            "date": "1993-12-23"
+          }
+        ],
+        [
+          "tb1842e2235",
+          "Francesca Colombo",
+          {
+            "date": "1982-09-21"
+          }
+        ],
+        [
+          "tb4321e7065",
+          "Francesca Conti",
+          {
+            "date": "1993-12-06"
+          }
+        ],
+        [
+          "tb6875e8958",
+          "Chiara Ricci",
+          {
+            "date": "2002-07-20"
+          }
+        ],
+        [
+          "tb9322e8625",
+          "Sara Ricci",
+          {
+            "date": "1961-08-17"
+          }
+        ],
+        [
+          "uj1957h8180",
+          "Martina Giordano",
+          {
+            "date": "2002-08-03"
+          }
+        ],
+        [
+          "uj4492h2288",
+          "Anna Romano",
+          {
+            "date": "1943-01-19"
+          }
+        ],
+        [
+          "uj6918h5638",
+          "Matteo Bruno",
+          {
+            "date": "2010-11-06"
+          }
+        ],
+        [
+          "uj9437h6380",
+          "Andrea Esposito",
+          {
+            "date": "1964-03-18"
+          }
+        ],
+        [
+          "vq2072l3481",
+          "Luca Bianchi",
+          {
+            "date": "1961-05-22"
+          }
+        ],
+        [
+          "vq4563l4601",
+          "Luca Giordano",
+          {
+            "date": "1942-03-23"
+          }
+        ],
+        [
+          "vq7013l1798",
+          "Marco Ricci",
+          {
+            "date": "2002-05-15"
+          }
+        ],
+        [
+          "vq9535l7083",
+          "Francesca Rizzo",
+          {
+            "date": "2010-10-28"
+          }
+        ],
+        [
+          "wx2179o2714",
+          "Francesca Giordano",
+          {
+            "date": "1960-02-05"
+          }
+        ],
+        [
+          "wx4676o2823",
+          "Sara Bianchi",
+          {
+            "date": "1983-09-01"
+          }
+        ],
+        [
+          "wx7185o9479",
+          "Martina Ferrari",
+          {
+            "date": "1958-02-20"
+          }
+        ],
+        [
+          "wx9641o7247",
+          "Giulia Esposito",
+          {
+            "date": "2007-05-10"
+          }
+        ],
+        [
+          "xe2293r3933",
+          "Chiara Esposito",
+          {
+            "date": "1986-08-21"
+          }
+        ],
+        [
+          "xe4798r4727",
+          "Francesca Bruno",
+          {
+            "date": "1977-12-17"
+          }
+        ],
+        [
+          "xe7256r1861",
+          "Matteo Giordano",
+          {
+            "date": "1973-03-13"
+          }
+        ],
+        [
+          "xe9720r1340",
+          "Andrea Ricci",
+          {
+            "date": "1958-09-30"
+          }
+        ],
+        [
+          "ym2377u2390",
+          "Matteo Colombo",
+          {
+            "date": "1962-11-09"
+          }
+        ],
+        [
+          "ym4838u7720",
+          "Elena Romano",
+          {
+            "date": "1990-04-12"
+          }
+        ],
+        [
+          "ym7394u5016",
+          "Valentina Conti",
+          {
+            "date": "2008-01-20"
+          }
+        ],
+        [
+          "ym9864u3980",
+          "Simone Costa",
+          {
+            "date": "1943-09-20"
+          }
+        ],
+        [
+          "zt2452x9382",
+          "Sara Colombo",
+          {
+            "date": "1991-09-16"
+          }
+        ],
+        [
+          "zt4910x2236",
+          "Federico Rossi",
+          {
+            "date": "1945-10-26"
+          }
+        ],
+        [
+          "zt7410x7863",
+          "Davide Ferrari",
+          {
+            "date": "1942-08-17"
+          }
+        ],
+        [
+          "zt9991x1199",
+          "Matteo Rizzo",
+          {
+            "date": "1949-07-17"
+          }
+        ]
+      ],
+      "gold_result_hash": "fd759766d621edccbd9efde6ce9776bb61543bb4d1a3e4ffd46dc4bc84fa91cb",
+      "generated_result_hash": "fd759766d621edccbd9efde6ce9776bb61543bb4d1a3e4ffd46dc4bc84fa91cb",
+      "gold_row_count": 100,
+      "generated_row_count": 100,
+      "missing_rows": [],
+      "extra_rows": []
+    },
+    {
+      "id": "H03",
+      "critical": true,
+      "passed": false,
+      "gold_sql": "SELECT COUNT(*) AS appointment_count FROM appointments",
+      "generated_sql": "SELECT COUNT(*) AS appointment_count FROM [appointments]",
+      "error": null,
+      "gold_rows": [
+        [
+          {
+            "number": "200"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          {
+            "number": "36"
+          }
+        ]
+      ],
+      "gold_result_hash": "6ac8877bb4246f106d3125d052bba9cb3afee0f768b855a9eb521c15b21cea5d",
+      "generated_result_hash": "fd67d172d40dbe81a28d5647dbe067bcb6ac03bb978033e94d75fd0dc57d2131",
+      "gold_row_count": 1,
+      "generated_row_count": 1,
+      "missing_rows": [
+        [
+          {
+            "number": "200"
+          }
+        ]
+      ],
+      "extra_rows": [
+        [
+          {
+            "number": "36"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "H04",
+      "critical": true,
+      "passed": false,
+      "gold_sql": "SELECT a.appointment_id, p.fiscal_code, d.full_name AS doctor_name, d.specialty, w.name AS ward_name, a.scheduled_on FROM appointments a JOIN patients p ON p.patient_id = a.patient_id JOIN doctors d ON d.doctor_id = a.doctor_id JOIN wards w ON w.ward_id = a.ward_id",
+      "generated_sql": "SELECT [a].[[appointment_id]], [p].[[fiscal_code]], [d].[[full_name]] AS doctor_name, d.specialty, [w].[ward_name] AS ward_name, [a].[[scheduled_on]] FROM [appointments] a JOIN [patients] p ON [p].[[patient_id]] = [a].[[patient_id]] JOIN [doctors] d ON [d].[[doctor_id]] = [a].[[doctor_id]] JOIN [wards] w ON [w].[[ward_id]] = [a].[[ward_id]]",
+      "error": "OperationalError: unrecognized token: \"]\""
+    },
+    {
+      "id": "H05",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT DISTINCT d.full_name AS doctor_name, d.specialty FROM doctors d JOIN appointments a ON a.doctor_id = d.doctor_id",
+      "generated_sql": "SELECT DISTINCT [d].[[full_name]] AS doctor_name, d.specialty FROM [doctors] d JOIN [appointments] a ON [a].[[doctor_id]] = [d].[[doctor_id]]",
+      "error": "OperationalError: unrecognized token: \"]\""
+    },
+    {
+      "id": "H06",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT DISTINCT w.name AS ward_name FROM wards w JOIN appointments a ON a.ward_id = w.ward_id",
+      "generated_sql": "SELECT DISTINCT [w].[ward_name] AS ward_name FROM [wards] w JOIN [appointments] a ON [a].[[ward_id]] = [w].[[ward_id]]",
+      "error": "OperationalError: unrecognized token: \"]\""
+    },
+    {
+      "id": "H07",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT d.full_name AS doctor_name, d.specialty, COUNT(*) AS appointment_count FROM appointments a JOIN doctors d ON d.doctor_id = a.doctor_id GROUP BY d.full_name, d.specialty",
+      "generated_sql": "SELECT [d].[[full_name]] AS doctor_name, d.specialty, COUNT(*) AS appointment_count FROM [appointments] a JOIN [doctors] d ON [d].[[doctor_id]] = [a].[[doctor_id]] GROUP BY [d].[[full_name]], d.specialty",
+      "error": "OperationalError: unrecognized token: \"]\""
+    },
+    {
+      "id": "H08",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT w.name AS ward_name, COUNT(*) AS appointment_count FROM appointments a JOIN wards w ON w.ward_id = a.ward_id GROUP BY w.name",
+      "generated_sql": "SELECT [w].[ward_name] AS ward_name, COUNT(*) AS appointment_count FROM [appointments] a JOIN [wards] w ON [w].[[ward_id]] = [a].[[ward_id]] GROUP BY [w].[ward_name]",
+      "error": "OperationalError: unrecognized token: \"]\""
+    },
+    {
+      "id": "H09",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT p.fiscal_code, COUNT(*) AS appointment_count FROM appointments a JOIN patients p ON p.patient_id = a.patient_id GROUP BY p.fiscal_code",
+      "generated_sql": "SELECT [p].[[fiscal_code]], COUNT(*) AS appointment_count FROM [appointments] a JOIN [patients] p ON [p].[[patient_id]] = [a].[[patient_id]] GROUP BY [p].[[fiscal_code]]",
+      "error": "OperationalError: unrecognized token: \"]\""
+    },
+    {
+      "id": "H10",
+      "critical": false,
+      "passed": false,
+      "gold_sql": "SELECT substr(scheduled_on, 1, 7) AS month, COUNT(*) AS appointment_count FROM appointments GROUP BY substr(scheduled_on, 1, 7)",
+      "generated_sql": "SELECT substr([scheduled_on], 1, 7) AS month, COUNT(*) AS appointment_count FROM [appointments] GROUP BY substr([scheduled_on], 1, 7)",
+      "error": null,
+      "gold_rows": [
+        [
+          "2026-01",
+          {
+            "number": "16"
+          }
+        ],
+        [
+          "2026-02",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "2026-03",
+          {
+            "number": "17"
+          }
+        ],
+        [
+          "2026-04",
+          {
+            "number": "12"
+          }
+        ],
+        [
+          "2026-05",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "2026-06",
+          {
+            "number": "10"
+          }
+        ],
+        [
+          "2026-07",
+          {
+            "number": "17"
+          }
+        ],
+        [
+          "2026-08",
+          {
+            "number": "13"
+          }
+        ],
+        [
+          "2026-09",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "2026-10",
+          {
+            "number": "10"
+          }
+        ],
+        [
+          "2026-11",
+          {
+            "number": "16"
+          }
+        ],
+        [
+          "2026-12",
+          {
+            "number": "17"
+          }
+        ],
+        [
+          "2027-01",
+          {
+            "number": "15"
+          }
+        ],
+        [
+          "2027-02",
+          {
+            "number": "12"
+          }
+        ]
+      ],
+      "generated_rows": [
+        [
+          "2026-01",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "2026-02",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "2026-03",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "2026-04",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "2026-05",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "2026-06",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "2026-07",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "2026-08",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "2026-09",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "2026-10",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "2026-11",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "2026-12",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "2027-01",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "2027-02",
+          {
+            "number": "2"
+          }
+        ]
+      ],
+      "gold_result_hash": "58fdc7ef00bcce7740cb9afca476b8e2a936189e845400c1576d521d4d76f035",
+      "generated_result_hash": "7b60b23fd1720127f70d6fd164c7d42c7f5eae4f86c45081783746b5c9251ac1",
+      "gold_row_count": 14,
+      "generated_row_count": 14,
+      "missing_rows": [
+        [
+          "2026-01",
+          {
+            "number": "16"
+          }
+        ],
+        [
+          "2026-02",
+          {
+            "number": "9"
+          }
+        ],
+        [
+          "2026-03",
+          {
+            "number": "17"
+          }
+        ],
+        [
+          "2026-04",
+          {
+            "number": "12"
+          }
+        ],
+        [
+          "2026-05",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "2026-06",
+          {
+            "number": "10"
+          }
+        ],
+        [
+          "2026-07",
+          {
+            "number": "17"
+          }
+        ],
+        [
+          "2026-08",
+          {
+            "number": "13"
+          }
+        ],
+        [
+          "2026-09",
+          {
+            "number": "18"
+          }
+        ],
+        [
+          "2026-10",
+          {
+            "number": "10"
+          }
+        ],
+        [
+          "2026-11",
+          {
+            "number": "16"
+          }
+        ],
+        [
+          "2026-12",
+          {
+            "number": "17"
+          }
+        ],
+        [
+          "2027-01",
+          {
+            "number": "15"
+          }
+        ],
+        [
+          "2027-02",
+          {
+            "number": "12"
+          }
+        ]
+      ],
+      "extra_rows": [
+        [
+          "2026-01",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "2026-02",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "2026-03",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "2026-04",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "2026-05",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "2026-06",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "2026-07",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "2026-08",
+          {
+            "number": "1"
+          }
+        ],
+        [
+          "2026-09",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "2026-10",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "2026-11",
+          {
+            "number": "4"
+          }
+        ],
+        [
+          "2026-12",
+          {
+            "number": "2"
+          }
+        ],
+        [
+          "2027-01",
+          {
+            "number": "3"
+          }
+        ],
+        [
+          "2027-02",
+          {
+            "number": "2"
+          }
+        ]
+      ]
+    }
+  ],
+  "total_queries": 10,
+  "passed_queries": 2,
+  "overall_query_pass_rate": 0.2,
+  "critical_query_pass_rate": 0.5,
+  "thresholds": {
+    "min_overall_query_pass_rate": 0.9,
+    "min_critical_query_pass_rate": 1.0,
+    "max_critical_integrity_violations": 0
+  },
+  "integrity": {
+    "foreign_key_violations": [],
+    "natural_key_duplicate_groups": [],
+    "errors": [
+      "doctors: OperationalError: no such column: specialty"
+    ],
+    "violation_count": 1
+  },
+  "functionally_equivalent": false
+}

@@ -1,0 +1,30 @@
+{
+  "label": "supplementary_selective_retry",
+  "date": "2026-11-06",
+  "source_matrix": "benchmark_gemini35_observable_t01_v2",
+  "selection_rule": "Only the 11 source runs whose recorded status was error",
+  "selected_runs": {
+    "university/full_llm": [1, 5],
+    "library/full_llm": [3, 5],
+    "hospital/baseline": [4, 5],
+    "hospital/full_llm": [1, 2, 3, 4, 5]
+  },
+  "provider": "OpenRouter",
+  "model": "nvidia/nemotron-3.5-super-vl:free",
+  "parameters": {
+    "temperature": 0.1,
+    "reasoning_enabled": false,
+    "max_output_tokens": 4096,
+    "timeout_seconds": 120,
+    "max_retries": 0,
+    "parallel": 1,
+    "max_requests_per_minute": 10
+  },
+  "outcomes": {
+    "selected": 11,
+    "ok": 8,
+    "error": 3,
+    "not_evaluable": 0
+  },
+  "interpretation": "Supplementary provider-sensitivity recovery. Do not pool with or replace the Gemini matrix."
+}

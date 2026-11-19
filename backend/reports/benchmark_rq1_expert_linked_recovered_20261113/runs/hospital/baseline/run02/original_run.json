@@ -1,0 +1,36 @@
+{
+  "dataset": "hospital",
+  "condition": "baseline",
+  "run": 2,
+  "project_id": "9adbc5cf-ffe2-4af9-8ed5-a5263ee60382",
+  "status": "ok",
+  "global_precision": 0.7214,
+  "global_recall": 0.9183,
+  "global_f1": 0.7892,
+  "total_cells": 3536,
+  "missing_rows": 154,
+  "extra_rows": 37,
+  "alignment": null,
+  "adjudication": {
+    "status": "ok",
+    "scores": {
+      "schema_equivalence": 100,
+      "value_accuracy": 20,
+      "completeness": 80
+    },
+    "notes": "The schema matches perfectly, but the generated data values (names, descriptions, medications, amounts, rows counts for some tables) completely diverge from the gold-standard ground truth data, though patients match well.",
+    "metadata": {
+      "provider": "Google Gemini",
+      "model": "gemini-3.5-flash-lite",
+      "parameters": {
+        "temperature": 0.0
+      },
+      "prompt_hash": "199f5180a35000a70cdfa1e20c94718a9ba062f7079c0d8a027ce3366d02f1e8",
+      "document_hashes": []
+    },
+    "rubric_version": "adjudication_rubric_v1",
+    "rubric_hash": "3caa6a73b7f9405a7721c26feab0e115673cd4c09d7b009e368b5fe3f7162783"
+  },
+  "error": null,
+  "detail": null
+}

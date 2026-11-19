@@ -1,0 +1,21 @@
+{
+  "dataset": "hospital",
+  "condition": "baseline",
+  "run": 5,
+  "source_format": "combined",
+  "project_id": "ade07605-5834-4eb7-92ac-ccde4425c018",
+  "status": "ok",
+  "temperature": 0.1,
+  "global_precision": 1.0,
+  "global_recall": 0.9726,
+  "global_f1": 0.9855,
+  "total_cells": 649,
+  "missing_rows": 27,
+  "extra_rows": 1,
+  "functional_query_pass_rate": 0.6,
+  "functionally_equivalent": false,
+  "population_mode": "llm",
+  "alignment": null,
+  "adjudication": null,
+  "error": null
+}

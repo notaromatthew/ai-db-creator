@@ -1,0 +1,18 @@
+{
+  "dataset": "hospital",
+  "condition": "full_llm",
+  "n_runs": 5,
+  "mean_precision": 0.816,
+  "mean_recall": 0.5779,
+  "mean_f1": 0.6197,
+  "ci95_f1": [
+    0.2435,
+    0.8919
+  ],
+  "mean_total_cells": 2277.2,
+  "mean_missing_rows": 495.0,
+  "mean_extra_rows": 16.8,
+  "mean_adjudicated_schema_equivalence": 87.0,
+  "mean_adjudicated_value_accuracy": 42.0,
+  "mean_adjudicated_completeness": 56.0
+}

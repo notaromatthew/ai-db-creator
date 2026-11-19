@@ -1,0 +1,95 @@
+{
+  "dataset": "hospital",
+  "condition": "full_llm",
+  "run": 2,
+  "source_format": "combined",
+  "project_id": "c95b91e2-a593-4548-a007-8e683f72e0be",
+  "status": "ok",
+  "temperature": 0.1,
+  "global_precision": 0.75,
+  "global_recall": 0.7354,
+  "global_f1": 0.7425,
+  "total_cells": 662,
+  "missing_rows": 34,
+  "extra_rows": 12,
+  "functional_query_pass_rate": 0.2,
+  "functionally_equivalent": false,
+  "population_mode": "llm",
+  "alignment": {
+    "tables": {
+      "patients": "patients",
+      "doctors": "doctors",
+      "wards": "wards",
+      "appointments": "appointments",
+      "treatments": "treatments",
+      "medications": "medications",
+      "prescriptions": "prescriptions",
+      "invoices": "invoices"
+    },
+    "columns": {
+      "patients": {
+        "patient_id": "patient_id",
+        "fiscal_code": "fiscal_code",
+        "full_name": "full_name",
+        "birth_date": "birth_date"
+      },
+      "doctors": {
+        "doctor_id": "doctor_id",
+        "department": "department_id"
+      },
+      "wards": {
+        "ward_id": "ward_id",
+        "name": "ward_name"
+      },
+      "appointments": {
+        "appointment_id": "appointment_id",
+        "patient_id": "patient_id",
+        "doctor_id": "doctor_id",
+        "ward_id": "ward_id",
+        "scheduled_on": "scheduled_on"
+      },
+      "treatments": {
+        "treatment_id": "treatment_id"
+      },
+      "medications": {
+        "medication_id": "medication_id",
+        "name": "medication_name"
+      },
+      "prescriptions": {
+        "prescription_id": "prescription_id",
+        "treatment_id": "treatment_id",
+        "medication_id": "medication_id",
+        "dosage": "dosage_instruction"
+      },
+      "invoices": {
+        "invoice_id": "invoice_id",
+        "appointment_id": "appointment_id",
+        "amount": "amount"
+      }
+    },
+    "unmatched_tables": [],
+    "unmatched_columns": {
+      "doctors": [
+        "full_name",
+        "specialty"
+      ],
+      "wards": [
+        "department"
+      ],
+      "treatments": [
+        "appointment_id",
+        "description"
+      ],
+      "medications": [
+        "active_ingredient"
+      ],
+      "invoices": [
+        "issued_on"
+      ]
+    },
+    "via_registry": []
+  },
+  "adjudication": null,
+  "error": null,
+  "detail": null
+}

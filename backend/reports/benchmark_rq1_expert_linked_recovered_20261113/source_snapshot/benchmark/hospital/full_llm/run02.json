@@ -1,0 +1,109 @@
+{
+  "dataset": "hospital",
+  "condition": "full_llm",
+  "run": 2,
+  "project_id": "8bfbaad5-5562-442d-93ca-1e2e48930cd4",
+  "status": "ok",
+  "global_precision": 0.8438,
+  "global_recall": 0.4871,
+  "global_f1": 0.5658,
+  "total_cells": 1693,
+  "missing_rows": 660,
+  "extra_rows": 2,
+  "alignment": {
+    "tables": {
+      "patients": "patients",
+      "doctors": "doctors",
+      "wards": "wards",
+      "appointments": "appointments",
+      "treatments": "treatments",
+      "medications": "medications",
+      "prescriptions": "prescriptions",
+      "invoices": "invoices"
+    },
+    "columns": {
+      "patients": {
+        "patient_id": "patient_id",
+        "fiscal_code": "fiscal_code",
+        "full_name": "full_name",
+        "birth_date": "birth_date"
+      },
+      "doctors": {
+        "doctor_id": "doctor_id",
+        "department": "department_id"
+      },
+      "wards": {
+        "ward_id": "ward_id",
+        "name": "ward_name"
+      },
+      "appointments": {
+        "appointment_id": "appointment_id",
+        "patient_id": "patient_id",
+        "doctor_id": "doctor_id",
+        "ward_id": "ward_id",
+        "scheduled_on": "scheduled_on"
+      },
+      "treatments": {
+        "treatment_id": "treatment_id",
+        "appointment_id": "appointment_id"
+      },
+      "medications": {
+        "medication_id": "medication_id",
+        "name": "medication_name"
+      },
+      "prescriptions": {
+        "prescription_id": "prescription_id",
+        "treatment_id": "treatment_id",
+        "medication_id": "medication_id",
+        "dosage": "dosage_instruction"
+      },
+      "invoices": {
+        "invoice_id": "invoice_id",
+        "appointment_id": "appointment_id",
+        "amount": "amount"
+      }
+    },
+    "unmatched_tables": [],
+    "unmatched_columns": {
+      "doctors": [
+        "full_name",
+        "specialty"
+      ],
+      "wards": [
+        "department"
+      ],
+      "treatments": [
+        "description"
+      ],
+      "medications": [
+        "active_ingredient"
+      ],
+      "invoices": [
+        "issued_on"
+      ]
+    },
+    "via_registry": []
+  },
+  "adjudication": {
+    "status": "ok",
+    "scores": {
+      "schema_equivalence": 85,
+      "value_accuracy": 30,
+      "completeness": 35
+    },
+    "notes": "The generated schema introduces a normalized departments table and changes some table structures/column names, which is mostly acceptable. However, the generated data suffers from severe completeness issues (e.g., only 20 treatments instead of 250, 5 medications instead of 10, 20 invoices instead of 163) and value inaccuracies (different names, dosages, and incorrect foreign key mappings in doctors such as doctor_id mapping to wrong department IDs, leading to mismatched values compared to gold standard).",
+    "metadata": {
+      "provider": "Google Gemini",
+      "model": "gemini-3.5-flash-lite",
+      "parameters": {
+        "temperature": 0.0
+      },
+      "prompt_hash": "199f5180a35000a70cdfa1e20c94718a9ba062f7079c0d8a027ce3366d02f1e8",
+      "document_hashes": []
+    },
+    "rubric_version": "adjudication_rubric_v1",
+    "rubric_hash": "3caa6a73b7f9405a7721c26feab0e115673cd4c09d7b009e368b5fe3f7162783"
+  },
+  "error": null,
+  "detail": null
+}

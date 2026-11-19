@@ -1,0 +1,69 @@
+{
+  "dataset": "university",
+  "condition": "full_llm",
+  "run": 1,
+  "project_id": "b762df6d-29dc-4852-b3be-146582b247f4",
+  "status": "ok",
+  "global_precision": 0.3333,
+  "global_recall": 0.2973,
+  "global_f1": 0.3143,
+  "total_cells": 66,
+  "missing_rows": 61,
+  "extra_rows": 23,
+  "alignment": {
+    "tables": {
+      "students": "students",
+      "courses": "courses",
+      "enrollments": "enrollments"
+    },
+    "columns": {
+      "students": {
+        "student_id": "student_id",
+        "name": "student_name",
+        "email": "student_email"
+      },
+      "courses": {
+        "course_code": "course_code",
+        "title": "course_title",
+        "credits": "credits"
+      },
+      "enrollments": {
+        "student_id": "student_id",
+        "semester": "semester",
+        "grade": "grade"
+      }
+    },
+    "unmatched_tables": [],
+    "unmatched_columns": {
+      "courses": [
+        "course_id"
+      ],
+      "enrollments": [
+        "course_id"
+      ]
+    },
+    "via_registry": []
+  },
+  "adjudication": {
+    "status": "ok",
+    "scores": {
+      "schema_equivalence": 90,
+      "value_accuracy": 95,
+      "completeness": 73
+    },
+    "notes": "Schema has minor structural changes (e.g., surrogate key in enrollments instead of composite PK, using course_code as PK for courses), but models the data well. Courses and enrollments row counts match, but the students table is missing 8 rows (22 instead of 30), significantly hurting completeness.",
+    "metadata": {
+      "provider": "Google Gemini",
+      "model": "gemini-3.5-flash-lite",
+      "parameters": {
+        "temperature": 0.0
+      },
+      "prompt_hash": "199f5180a35000a70cdfa1e20c94718a9ba062f7079c0d8a027ce3366d02f1e8",
+      "document_hashes": []
+    },
+    "rubric_version": "adjudication_rubric_v1",
+    "rubric_hash": "3caa6a73b7f9405a7721c26feab0e115673cd4c09d7b009e368b5fe3f7162783"
+  },
+  "error": null,
+  "detail": null
+}

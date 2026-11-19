@@ -1,0 +1,48 @@
+{
+  "label": "complete_two_day_structured_matrix",
+  "dates": ["2026-11-07", "2026-11-08"],
+  "protocol_manifest": "protocol_manifest.json",
+  "planned_runs": 30,
+  "completed_runs": 30,
+  "ok": 30,
+  "error": 0,
+  "not_evaluable": 0,
+  "fallback": 0,
+  "success_rate": 1.0,
+  "cells": [
+    {"dataset": "university", "condition": "baseline", "n": 5, "mean_precision": 0.9983, "mean_recall": 0.9402, "mean_f1": 0.9638, "mean_functional_query_pass_rate": 0.44, "mean_missing_rows": 7.8, "mean_extra_rows": 4.6},
+    {"dataset": "university", "condition": "full_llm", "n": 5, "mean_precision": 0.6667, "mean_recall": 0.6636, "mean_f1": 0.6651, "mean_functional_query_pass_rate": 0.36, "mean_missing_rows": 45.4, "mean_extra_rows": 45.0},
+    {"dataset": "library", "condition": "baseline", "n": 5, "mean_precision": 0.95, "mean_recall": 0.9213, "mean_f1": 0.9348, "mean_functional_query_pass_rate": 0.62, "mean_missing_rows": 26.0, "mean_extra_rows": 0.0},
+    {"dataset": "library", "condition": "full_llm", "n": 5, "mean_precision": 1.0, "mean_recall": 0.9713, "mean_f1": 0.9848, "mean_functional_query_pass_rate": 0.4, "mean_missing_rows": 14.0, "mean_extra_rows": 0.0},
+    {"dataset": "hospital", "condition": "baseline", "n": 5, "mean_precision": 0.9996, "mean_recall": 0.9312, "mean_f1": 0.9496, "mean_functional_query_pass_rate": 0.42, "mean_missing_rows": 33.4, "mean_extra_rows": 0.8},
+    {"dataset": "hospital", "condition": "full_llm", "n": 5, "mean_precision": 0.6496, "mean_recall": 0.6364, "mean_f1": 0.6427, "mean_functional_query_pass_rate": 0.2, "mean_missing_rows": 71.0, "mean_extra_rows": 9.8}
+  ],
+  "day_f1_difference_day2_minus_day1": {
+    "university/baseline": -0.0743,
+    "university/full_llm": 0.004,
+    "library/baseline": -0.0833,
+    "library/full_llm": 0.0,
+    "hospital/baseline": -0.0776,
+    "hospital/full_llm": -0.1672
+  },
+  "provenance": {
+    "software_revision": "84bf74b33c54bbcb",
+    "research_mode": true,
+    "provider": "OpenRouter",
+    "model": "nvidia/nemotron-3.5-super-vl:free",
+    "temperature": 0.1,
+    "schema_output_contract": "schema-json-v2",
+    "source_format": "combined"
+  },
+  "integrity": {
+    "manifests": 30,
+    "artifact_hashes_checked": 195,
+    "artifact_hash_failures": 0,
+    "source_hashes_checked": 100,
+    "source_hash_failures": 0,
+    "evaluation_spec_hashes_checked": 30,
+    "evaluation_spec_hash_failures": 0,
+    "secret_files": 0
+  },
+  "interpretation": "Complete exploratory sensitivity with homogeneous software and LLM configuration across two preregistered day blocks. Day-2 F1 is lower in four of six cells, so provider-day drift remains a descriptive limitation. Do not pool with legacy or selective-retry matrices."
+}

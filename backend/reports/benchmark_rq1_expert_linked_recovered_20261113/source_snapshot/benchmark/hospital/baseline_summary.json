@@ -1,0 +1,18 @@
+{
+  "dataset": "hospital",
+  "condition": "baseline",
+  "n_runs": 5,
+  "mean_precision": 0.7413,
+  "mean_recall": 0.8082,
+  "mean_f1": 0.7207,
+  "ci95_f1": [
+    0.3139,
+    0.9357
+  ],
+  "mean_total_cells": 2850.4,
+  "mean_missing_rows": 335.2,
+  "mean_extra_rows": 29.6,
+  "mean_adjudicated_schema_equivalence": 100.0,
+  "mean_adjudicated_value_accuracy": 29.0,
+  "mean_adjudicated_completeness": 61.0
+}

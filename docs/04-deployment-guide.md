@@ -99,7 +99,7 @@ The frontend is now available at `http://localhost:5173` (Vite default).
 | `OPENAI_API_KEY` | Conditional | — | Required if provider is `openai` or as fallback |
 | `OPENAI_MODEL` | No | `gpt-4o-mini` | OpenAI model name |
 | `GOOGLE_API_KEY` | Conditional | — | Required if provider is `google` |
-| `GOOGLE_MODEL` | No | `gemini-2.0-flash` | Google Gemini model name |
+| `GOOGLE_MODEL` | No | `gemini-3.5-flash-lite` | Google Gemini model name |
 | `GROQ_API_KEY` | Conditional | — | Required if provider is `groq` |
 | `GROQ_MODEL` | No | `llama3-70b-8192` | Groq model name |
 | `OPENROUTER_API_KEY` | Conditional | — | Required if provider is `openrouter` |
@@ -233,7 +233,7 @@ backend/
 │   │   ├── database.sqlite # Generated database
 │   │   ├── backups/        # Snapshot backups
 │   │   └── interactions.json # Per-project export
-│   ├── surveys/            # NASA-TLX / SUS responses
+│   ├── surveys/            # optional legacy survey responses; unused by current study
 │   └── interactions_store.json # Global interaction log
 ├── logs/                   # Application logs
 ├── app.db                  # Application state database

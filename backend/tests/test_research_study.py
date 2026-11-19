@@ -1,4 +1,4 @@
-"""Studio con partecipanti: consenso, bracci bilanciati, questionari, eventi anonimi, ritiro e cancellazione (8.x)."""
+"""Studio con partecipanti: consenso, bracci bilanciati, eventi anonimi, ritiro e cancellazione (8.x)."""
 import csv
 import itertools
 import io
@@ -98,27 +98,21 @@ def test_participant_needs_code(study):
     assert c.post(f"{url}/state", json={"code": p["code"].lower()}).status_code == 200
 
 
-def test_full_path_task_tlx_sus_debrief_in_order(study):
+def test_full_path_task_debrief_without_questionnaires(study):
     c = study
     p = enroll(c).json()
     base = f"/api/study/participants/{p['participant_id']}"
     h = hdr(p)
     # non si salta il passo del task
     assert c.post(f"{base}/nasa-tlx", json=TLX, headers=h).status_code == 409
-    assert c.post(f"{base}/task/complete", headers=h).json()["step"] == "tlx"
+    assert c.post(f"{base}/task/complete", headers=h).json()["step"] == "debrief"
     assert c.post(f"{base}/task/complete", headers=h).status_code == 409
-    bad = {**TLX, "effort": 42}
-    assert c.post(f"{base}/nasa-tlx", json=bad, headers=h).status_code == 422
-    assert c.post(f"{base}/nasa-tlx", json={"effort": 5}, headers=h).status_code == 422
-    r = c.post(f"{base}/nasa-tlx", json=TLX, headers=h).json()
-    assert r == {"step": "sus", "score": 40.0}
-    assert c.post(f"{base}/sus", json={"scores": SUS[:9]}, headers=h).status_code == 422
-    assert c.post(f"{base}/sus", json={"scores": [6] * 10}, headers=h).status_code == 422
-    assert c.post(f"{base}/sus", json={"scores": SUS}, headers=h).json() == {"step": "debrief", "score": 75.0}
+    assert c.post(f"{base}/nasa-tlx", json=TLX, headers=h).status_code == 409
+    assert c.post(f"{base}/sus", json={"scores": SUS}, headers=h).status_code == 409
     done = c.post(f"{base}/debrief", json={"comment": "scrivimi a mario@esempio.it"}, headers=h).json()
     assert done["step"] == "done"
     state = c.post(f"{base}/state", headers=h).json()
-    assert state["step"] == "done" and state["responses"] == ["debrief", "nasa_tlx", "sus"]
+    assert state["step"] == "done" and state["responses"] == ["debrief"]
     session = get_session(init_db())
     try:
         assert "mario@esempio.it" not in json.dumps(session.query(StudyResponse).filter_by(kind="debrief").one().data)
@@ -184,7 +178,6 @@ def test_withdrawal_erases_everything_but_keeps_balance_row(study):
     base = f"/api/study/participants/{p['participant_id']}"
     c.post(f"{base}/events", json={"type": "task_start"}, headers=hdr(p))
     c.post(f"{base}/task/complete", headers=hdr(p))
-    c.post(f"{base}/nasa-tlx", json=TLX, headers=hdr(p))
     assert c.post(f"{base}/withdraw", headers=hdr(p)).json() == {"status": "withdrawn"}
     assert c.post(f"{base}/state", json={"code": p["code"]}).status_code == 410
     session = get_session(init_db())
@@ -203,8 +196,6 @@ def test_researcher_panel_status_export_and_erase_by_code(study):
         base = f"/api/study/participants/{p['participant_id']}"
         c.post(f"{base}/events", json={"type": "task_start", "data": {"n": 1}}, headers=hdr(p))
         c.post(f"{base}/task/complete", headers=hdr(p))
-        c.post(f"{base}/nasa-tlx", json=TLX, headers=hdr(p))
-        c.post(f"{base}/sus", json={"scores": SUS}, headers=hdr(p))
         c.post(f"{base}/debrief", json={}, headers=hdr(p))
     # un partecipante non puo' usare il pannello
     assert c.get("/api/study/admin/status").status_code == 403
@@ -215,13 +206,14 @@ def test_researcher_panel_status_export_and_erase_by_code(study):
     assert status["total"] == 6 and status["balanced"] is True
     assert {a["arm"]: a["active"] for a in status["arms"]} == {"manual": 2, "ai_only": 2, "ai_interface": 2}
     assert sum(a["completed"] for a in status["arms"]) == 2
+    assert all(a["target"] == 34 for a in status["arms"])
 
     events = list(csv.DictReader(io.StringIO(c.get("/api/study/admin/export?kind=events").text)))
     assert {"participant_id", "arm", "type", "created_at", "data"} == set(events[0])
     assert {e["type"] for e in events} == {"task_start", "task_end"}
     parts = list(csv.DictReader(io.StringIO(c.get("/api/study/admin/export?kind=participants").text)))
-    assert len(parts) == 6 and sum(1 for p in parts if p["sus"] == "75.0") == 2 and "email" not in parts[0]
-    assert len(list(csv.DictReader(io.StringIO(c.get("/api/study/admin/export?kind=responses").text)))) == 6
+    assert len(parts) == 6 and "nasa_tlx" not in parts[0] and "sus" not in parts[0] and "email" not in parts[0]
+    assert len(list(csv.DictReader(io.StringIO(c.get("/api/study/admin/export?kind=responses").text)))) == 2
     assert c.get("/api/study/admin/export?kind=altro").status_code == 422
     assert c.get("/api/study/admin/export?kind=events&wrap=1").json()["filename"] == "studio-events.csv"
 
@@ -241,6 +233,23 @@ def test_researcher_panel_status_export_and_erase_by_code(study):
         session.close()
     after = c.get("/api/study/admin/status").json()
     assert sum(a["withdrawn"] for a in after["arms"]) == 1
+
+
+def test_researcher_exports_granular_app_interactions(study):
+    from app.services.interaction_logger import interaction_logger
+
+    c = study
+    participant = enroll(c).json()
+    interaction_logger.log_event("schema_updated", "project-1", {
+        "participant_id": participant["participant_id"],
+        "edit_counts": {"column_added": 2, "primary_key_toggled": 1},
+    })
+    as_user("ricercatore", ["aidb-researcher"])
+    response = c.get("/api/study/admin/export?kind=interactions")
+    assert response.status_code == 200
+    rows = list(csv.DictReader(io.StringIO(response.text)))
+    assert [row["type"] for row in rows].count("column_added") == 2
+    assert [row["type"] for row in rows].count("primary_key_toggled") == 1
 
 
 # --- rafforzamenti della revisione ---
@@ -314,11 +323,11 @@ def test_advance_is_a_conditional_update(study):
         stale = session.get(StudyParticipant, p["participant_id"])
         # un'altra richiesta ha gia' completato il passo mentre questa teneva in mano la riga "vecchia"
         other = get_session(init_db())
-        other.query(StudyParticipant).filter_by(id=stale.id).update({"step": "tlx"})
+        other.query(StudyParticipant).filter_by(id=stale.id).update({"step": "debrief"})
         other.commit()
         other.close()
         with pytest.raises(research_study.StudyError) as exc:
-            research_study._advance(session, stale, "task", "tlx")
+            research_study._advance(session, stale, "task", "debrief")
         assert exc.value.status == 409
     finally:
         session.close()

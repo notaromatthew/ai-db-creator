@@ -1,0 +1,22 @@
+{
+  "dataset": "university",
+  "condition": "full_llm",
+  "run": 5,
+  "source_format": "combined",
+  "project_id": "56d63125-363b-4581-9799-3ebd3f89ed28",
+  "status": "error",
+  "temperature": 0.1,
+  "global_precision": null,
+  "global_recall": null,
+  "global_f1": null,
+  "total_cells": null,
+  "missing_rows": null,
+  "extra_rows": null,
+  "functional_query_pass_rate": null,
+  "functionally_equivalent": null,
+  "population_mode": "fallback",
+  "alignment": null,
+  "adjudication": null,
+  "error": "RuntimeError: LLM population produced no usable SQL; deterministic fallback was used",
+  "detail": null
+}

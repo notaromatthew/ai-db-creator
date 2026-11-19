@@ -1,0 +1,6 @@
+dataset,condition,run,project_id,global_precision,global_recall,global_f1,total_cells,missing_rows,extra_rows
+university,baseline,1,0b033c90-e77b-4815-b73c-de0a9c04d320,0.3087,0.5833,0.4033,98,53,0
+university,baseline,2,1c33f9cb-d0fa-4827-b339-19ed343d75d9,0.7708,0.8137,0.7657,150,40,32
+university,baseline,3,ef2d830e-408a-4ca5-9ec3-ada28fccbff5,0.7708,0.8137,0.7657,150,40,32
+university,baseline,4,6d2e1391-e361-43b4-8094-9b3090aa4df7,0.7708,0.8137,0.7657,150,40,32
+university,baseline,5,b91cdf79-4969-49db-9fbb-947eca541449,0.7708,0.8137,0.7657,150,40,32

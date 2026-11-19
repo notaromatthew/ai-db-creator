@@ -38,3 +38,12 @@ def test_logger_preserves_legacy_events_without_run_id(tmp_path):
     events = InteractionLogger(store).get_events("p1")
     assert len(events) == 2
     assert events[0]["run_id"] == legacy_id
+
+
+def test_logger_erases_events_linked_to_participant(tmp_path):
+    logger = InteractionLogger(tmp_path / "events.json")
+    logger.log_event("schema_updated", "p1", {"participant_id": "person-a"})
+    logger.log_event("schema_generated", "p2", {"run_manifest": {"participant_id": "person-a"}})
+    logger.log_event("schema_generated", "p3", {"participant_id": "person-b"})
+    assert logger.erase_participant("person-a") == 2
+    assert [event["project_id"] for event in logger.get_events()] == ["p3"]

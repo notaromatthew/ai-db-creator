@@ -1,0 +1,27 @@
+{
+  "dataset": "university",
+  "condition": "full_llm",
+  "source_format": "combined",
+  "n_runs": 1,
+  "n_evaluable": 1,
+  "n_not_evaluable": 0,
+  "n_error": 0,
+  "n_successful": 1,
+  "n_failed": 0,
+  "errors": [],
+  "temperature": 0.1,
+  "mean_precision": 0.8333,
+  "mean_recall": 0.6737,
+  "mean_f1": 0.6899,
+  "f1_observed_range": [
+    0.6899,
+    0.6899
+  ],
+  "mean_total_cells": 70.0,
+  "mean_missing_rows": 44.0,
+  "mean_extra_rows": 43.0,
+  "mean_functional_query_pass_rate": 0.3,
+  "mean_adjudicated_schema_equivalence": null,
+  "mean_adjudicated_value_accuracy": null,
+  "mean_adjudicated_completeness": null
+}

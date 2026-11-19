@@ -1,0 +1,398 @@
+{
+  "protocol": "rq2_blind_adjudication_v1",
+  "status": "consensus_complete",
+  "metric_scope": "Human classification of the 1,294 machine-flagged discrepancy records; not a replacement for automated cell-level precision, recall, or F1.",
+  "source_sha256": {
+    "reviewer_a": "a0a4a342980b8e4266f9b68df1225e3988f28499fa7a2f03e30e96771c517b53",
+    "reviewer_b": "ee28a514ab00fcd237f52d722c7caef94eb9cc236378bd8f373d2079b6d89788",
+    "consensus": "1626694c7a316f4c737c30bbe78a5f06ea1484f0942e191a12e3f333da2339c3",
+    "private_mapping": "f39dbdbc27b78c60113de65f10d5555d56696aecde8dc13175d6e91856da1aa3"
+  },
+  "item_count": 1294,
+  "independent_agreement_count": 967,
+  "consensus_count": 327,
+  "final_decision_counts": {
+    "errore": 967,
+    "gold ambiguo": 12,
+    "non determinabile": 311,
+    "rappresentazione equivalente": 4
+  },
+  "confirmed_error_proportion_all": 0.7472952086553323,
+  "evaluable_item_count": 971,
+  "confirmed_error_rate_evaluable": 0.995880535530381,
+  "excluded_from_evaluable": {
+    "gold_ambiguo": 12,
+    "non_determinabile": 311
+  },
+  "by_condition": {
+    "baseline": {
+      "item_count": 366,
+      "decision_counts": {
+        "errore": 362,
+        "rappresentazione equivalente": 4
+      },
+      "confirmed_error_proportion_all": 0.9890710382513661,
+      "evaluable_item_count": 366,
+      "confirmed_error_rate_evaluable": 0.9890710382513661
+    },
+    "full_llm": {
+      "item_count": 928,
+      "decision_counts": {
+        "errore": 605,
+        "gold ambiguo": 12,
+        "non determinabile": 311
+      },
+      "confirmed_error_proportion_all": 0.6519396551724138,
+      "evaluable_item_count": 605,
+      "confirmed_error_rate_evaluable": 1.0
+    }
+  },
+  "by_dataset_condition": {
+    "hospital | baseline": {
+      "item_count": 173,
+      "decision_counts": {
+        "errore": 169,
+        "rappresentazione equivalente": 4
+      },
+      "confirmed_error_proportion_all": 0.976878612716763,
+      "evaluable_item_count": 173,
+      "confirmed_error_rate_evaluable": 0.976878612716763
+    },
+    "hospital | full_llm": {
+      "item_count": 406,
+      "decision_counts": {
+        "errore": 308,
+        "gold ambiguo": 12,
+        "non determinabile": 86
+      },
+      "confirmed_error_proportion_all": 0.7586206896551724,
+      "evaluable_item_count": 308,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "library | baseline": {
+      "item_count": 130,
+      "decision_counts": {
+        "errore": 130
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 130,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "library | full_llm": {
+      "item_count": 70,
+      "decision_counts": {
+        "errore": 70
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 70,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "university | baseline": {
+      "item_count": 63,
+      "decision_counts": {
+        "errore": 63
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 63,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "university | full_llm": {
+      "item_count": 452,
+      "decision_counts": {
+        "errore": 227,
+        "non determinabile": 225
+      },
+      "confirmed_error_proportion_all": 0.5022123893805309,
+      "evaluable_item_count": 227,
+      "confirmed_error_rate_evaluable": 1.0
+    }
+  },
+  "by_dataset_condition_run": {
+    "hospital | baseline | 1": {
+      "item_count": 28,
+      "decision_counts": {
+        "errore": 27,
+        "rappresentazione equivalente": 1
+      },
+      "confirmed_error_proportion_all": 0.9642857142857143,
+      "evaluable_item_count": 28,
+      "confirmed_error_rate_evaluable": 0.9642857142857143
+    },
+    "hospital | baseline | 2": {
+      "item_count": 23,
+      "decision_counts": {
+        "errore": 22,
+        "rappresentazione equivalente": 1
+      },
+      "confirmed_error_proportion_all": 0.9565217391304348,
+      "evaluable_item_count": 23,
+      "confirmed_error_rate_evaluable": 0.9565217391304348
+    },
+    "hospital | baseline | 3": {
+      "item_count": 69,
+      "decision_counts": {
+        "errore": 69
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 69,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "hospital | baseline | 4": {
+      "item_count": 25,
+      "decision_counts": {
+        "errore": 24,
+        "rappresentazione equivalente": 1
+      },
+      "confirmed_error_proportion_all": 0.96,
+      "evaluable_item_count": 25,
+      "confirmed_error_rate_evaluable": 0.96
+    },
+    "hospital | baseline | 5": {
+      "item_count": 28,
+      "decision_counts": {
+        "errore": 27,
+        "rappresentazione equivalente": 1
+      },
+      "confirmed_error_proportion_all": 0.9642857142857143,
+      "evaluable_item_count": 28,
+      "confirmed_error_rate_evaluable": 0.9642857142857143
+    },
+    "hospital | full_llm | 1": {
+      "item_count": 43,
+      "decision_counts": {
+        "errore": 29,
+        "non determinabile": 14
+      },
+      "confirmed_error_proportion_all": 0.6744186046511628,
+      "evaluable_item_count": 29,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "hospital | full_llm | 2": {
+      "item_count": 46,
+      "decision_counts": {
+        "errore": 23,
+        "gold ambiguo": 11,
+        "non determinabile": 12
+      },
+      "confirmed_error_proportion_all": 0.5,
+      "evaluable_item_count": 23,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "hospital | full_llm | 3": {
+      "item_count": 46,
+      "decision_counts": {
+        "errore": 22,
+        "non determinabile": 24
+      },
+      "confirmed_error_proportion_all": 0.4782608695652174,
+      "evaluable_item_count": 22,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "hospital | full_llm | 4": {
+      "item_count": 53,
+      "decision_counts": {
+        "errore": 28,
+        "gold ambiguo": 1,
+        "non determinabile": 24
+      },
+      "confirmed_error_proportion_all": 0.5283018867924528,
+      "evaluable_item_count": 28,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "hospital | full_llm | 5": {
+      "item_count": 218,
+      "decision_counts": {
+        "errore": 206,
+        "non determinabile": 12
+      },
+      "confirmed_error_proportion_all": 0.944954128440367,
+      "evaluable_item_count": 206,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "library | baseline | 1": {
+      "item_count": 14,
+      "decision_counts": {
+        "errore": 14
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 14,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "library | baseline | 2": {
+      "item_count": 14,
+      "decision_counts": {
+        "errore": 14
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 14,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "library | baseline | 3": {
+      "item_count": 14,
+      "decision_counts": {
+        "errore": 14
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 14,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "library | baseline | 4": {
+      "item_count": 14,
+      "decision_counts": {
+        "errore": 14
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 14,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "library | baseline | 5": {
+      "item_count": 74,
+      "decision_counts": {
+        "errore": 74
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 74,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "library | full_llm | 1": {
+      "item_count": 14,
+      "decision_counts": {
+        "errore": 14
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 14,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "library | full_llm | 2": {
+      "item_count": 14,
+      "decision_counts": {
+        "errore": 14
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 14,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "library | full_llm | 3": {
+      "item_count": 14,
+      "decision_counts": {
+        "errore": 14
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 14,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "library | full_llm | 4": {
+      "item_count": 14,
+      "decision_counts": {
+        "errore": 14
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 14,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "library | full_llm | 5": {
+      "item_count": 14,
+      "decision_counts": {
+        "errore": 14
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 14,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "university | baseline | 1": {
+      "item_count": 4,
+      "decision_counts": {
+        "errore": 4
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 4,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "university | baseline | 2": {
+      "item_count": 50,
+      "decision_counts": {
+        "errore": 50
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 50,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "university | baseline | 3": {
+      "item_count": 3,
+      "decision_counts": {
+        "errore": 3
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 3,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "university | baseline | 4": {
+      "item_count": 3,
+      "decision_counts": {
+        "errore": 3
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 3,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "university | baseline | 5": {
+      "item_count": 3,
+      "decision_counts": {
+        "errore": 3
+      },
+      "confirmed_error_proportion_all": 1.0,
+      "evaluable_item_count": 3,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "university | full_llm | 1": {
+      "item_count": 91,
+      "decision_counts": {
+        "errore": 46,
+        "non determinabile": 45
+      },
+      "confirmed_error_proportion_all": 0.5054945054945055,
+      "evaluable_item_count": 46,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "university | full_llm | 2": {
+      "item_count": 90,
+      "decision_counts": {
+        "errore": 45,
+        "non determinabile": 45
+      },
+      "confirmed_error_proportion_all": 0.5,
+      "evaluable_item_count": 45,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "university | full_llm | 3": {
+      "item_count": 91,
+      "decision_counts": {
+        "errore": 46,
+        "non determinabile": 45
+      },
+      "confirmed_error_proportion_all": 0.5054945054945055,
+      "evaluable_item_count": 46,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "university | full_llm | 4": {
+      "item_count": 90,
+      "decision_counts": {
+        "errore": 45,
+        "non determinabile": 45
+      },
+      "confirmed_error_proportion_all": 0.5,
+      "evaluable_item_count": 45,
+      "confirmed_error_rate_evaluable": 1.0
+    },
+    "university | full_llm | 5": {
+      "item_count": 90,
+      "decision_counts": {
+        "errore": 45,
+        "non determinabile": 45
+      },
+      "confirmed_error_proportion_all": 0.5,
+      "evaluable_item_count": 45,
+      "confirmed_error_rate_evaluable": 1.0
+    }
+  }
+}

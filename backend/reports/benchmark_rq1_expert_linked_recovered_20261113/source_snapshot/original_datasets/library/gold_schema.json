@@ -1,0 +1,101 @@
+{
+  "tables": [
+    {
+      "name": "categories",
+      "description": "Categorie librarie",
+      "columns": [
+        {"name": "category_id", "data_type": "INTEGER", "is_primary_key": true, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Identificativo unico della categoria"},
+        {"name": "name", "data_type": "TEXT", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Nome della categoria (es. Fiction, Saggistica)"}
+      ]
+    },
+    {
+      "name": "members",
+      "description": "Iscritti alla biblioteca",
+      "columns": [
+        {"name": "member_id", "data_type": "INTEGER", "is_primary_key": true, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Identificativo unico dell'iscritto"},
+        {"name": "full_name", "data_type": "TEXT", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
+         "default_value": null, "description": "Nome completo"},
+        {"name": "email", "data_type": "TEXT", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Email di contatto"},
+        {"name": "joined_on", "data_type": "DATE", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
+         "default_value": null, "description": "Data di iscrizione"}
+      ]
+    },
+    {
+      "name": "books",
+      "description": "Libri presenti in biblioteca",
+      "columns": [
+        {"name": "book_id", "data_type": "INTEGER", "is_primary_key": true, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Identificativo unico del libro"},
+        {"name": "isbn", "data_type": "TEXT", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Codice ISBN"},
+        {"name": "title", "data_type": "TEXT", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
+         "default_value": null, "description": "Titolo del libro"},
+        {"name": "author", "data_type": "TEXT", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
+         "default_value": null, "description": "Autore"},
+        {"name": "category_id", "data_type": "INTEGER", "is_primary_key": false, "is_foreign_key": true,
+         "foreign_key_table": "categories", "foreign_key_column": "category_id", "is_unique": false,
+         "is_not_null": true, "default_value": null, "description": "Categoria del libro"}
+      ]
+    },
+    {
+      "name": "loans",
+      "description": "Prestiti effettuati",
+      "columns": [
+        {"name": "loan_id", "data_type": "INTEGER", "is_primary_key": true, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Identificativo unico del prestito"},
+        {"name": "book_id", "data_type": "INTEGER", "is_primary_key": false, "is_foreign_key": true,
+         "foreign_key_table": "books", "foreign_key_column": "book_id", "is_unique": false,
+         "is_not_null": true, "default_value": null, "description": "Libro preso in prestito"},
+        {"name": "member_id", "data_type": "INTEGER", "is_primary_key": false, "is_foreign_key": true,
+         "foreign_key_table": "members", "foreign_key_column": "member_id", "is_unique": false,
+         "is_not_null": true, "default_value": null, "description": "Iscritto che ha preso il libro"},
+        {"name": "loan_date", "data_type": "DATE", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
+         "default_value": null, "description": "Data del prestito"},
+        {"name": "due_date", "data_type": "DATE", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
+         "default_value": null, "description": "Data prevista di restituzione"}
+      ]
+    },
+    {
+      "name": "fines",
+      "description": "Multe per restituzioni in ritardo",
+      "columns": [
+        {"name": "fine_id", "data_type": "INTEGER", "is_primary_key": true, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
+         "default_value": null, "description": "Identificativo unico della multa"},
+        {"name": "loan_id", "data_type": "INTEGER", "is_primary_key": false, "is_foreign_key": true,
+         "foreign_key_table": "loans", "foreign_key_column": "loan_id", "is_unique": false,
+         "is_not_null": true, "default_value": null, "description": "Prestito a cui è associata la multa"},
+        {"name": "amount", "data_type": "REAL", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
+         "default_value": null, "description": "Importo della multa in euro"},
+        {"name": "paid_on", "data_type": "DATE", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": false,
+         "default_value": null, "description": "Data di pagamento (NULL se non ancora pagata)"}
+      ]
+    }
+  ],
+  "relationships": [
+    {"type": "one_to_many", "from_table": "books", "from_column": "category_id", "to_table": "categories", "to_column": "category_id"},
+    {"type": "one_to_many", "from_table": "loans", "from_column": "member_id", "to_table": "members", "to_column": "member_id"},
+    {"type": "one_to_many", "from_table": "loans", "from_column": "book_id", "to_table": "books", "to_column": "book_id"},
+    {"type": "one_to_many", "from_table": "fines", "from_column": "loan_id", "to_table": "loans", "to_column": "loan_id"}
+  ],
+  "description": "Biblioteca pubblica: categorie, libri, iscritti, prestiti e multe."
+}

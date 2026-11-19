@@ -1,0 +1,29 @@
+{
+  "dataset": "university",
+  "condition": "full_llm",
+  "source_format": "combined",
+  "n_runs": 5,
+  "n_successful": 1,
+  "n_failed": 4,
+  "errors": [
+    "LLMException: Schema generation failed",
+    "LLMException: Schema generation failed",
+    "RuntimeError: LLM population produced no usable SQL; deterministic fallback was used",
+    "RuntimeError: LLM population produced no usable SQL; deterministic fallback was used"
+  ],
+  "temperature": 0.1,
+  "mean_precision": 0.6667,
+  "mean_recall": 0.6667,
+  "mean_f1": 0.6667,
+  "ci95_f1": [
+    0.0942,
+    0.9747
+  ],
+  "mean_total_cells": 68.0,
+  "mean_missing_rows": 45.0,
+  "mean_extra_rows": 45.0,
+  "mean_functional_query_pass_rate": 0.5,
+  "mean_adjudicated_schema_equivalence": null,
+  "mean_adjudicated_value_accuracy": null,
+  "mean_adjudicated_completeness": null
+}

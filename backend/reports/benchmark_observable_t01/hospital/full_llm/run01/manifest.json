@@ -1,0 +1,26 @@
+{
+  "software_revision": "e4ccc9151c08ad91",
+  "research_mode": false,
+  "dataset": "hospital",
+  "dataset_hash": "183590dae802ea4d47b09ba1936df11fd203509b8439b89c92c3a63883ddb633",
+  "condition": "full_llm",
+  "provider": "Google Vertex AI",
+  "model": "gemini-2.5-flash-lite",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 1,
+  "created_at": "2026-11-04T10:47:44.279325+00:00",
+  "source_format": "combined",
+  "source_files": [],
+  "evaluation_spec_hash": "7558bdbd80a1f130e47fdd5220c888000c2ab0e31d68923dec6c14a516437e4e",
+  "project_id": null,
+  "status": "error",
+  "artifacts": {
+    "run_record": {
+      "path": "run.json",
+      "sha256": "35dca99a69121311a4e3bce673989c655b992efa689bb850a390c0a339570a9f"
+    }
+  }
+}
