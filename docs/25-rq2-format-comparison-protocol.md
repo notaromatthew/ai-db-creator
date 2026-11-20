@@ -44,7 +44,10 @@ Dopo aver congelato provider e modello nell'ambiente:
 
 ```powershell
 $env:RESEARCH_MODE='true'
-$env:LLM_MAX_REQUESTS_PER_MINUTE='10'
+$env:LLM_MAX_REQUESTS_PER_MINUTE='8'
+$env:LLM_MAX_TOKENS='8192'
+$env:GOOGLE_MAX_RETRIES='0'
+$env:GOOGLE_TIMEOUT_SECONDS='120'
 backend\.venv\Scripts\python.exe backend\run_benchmark.py `
   --datasets format_equivalence `
   --conditions baseline,full_llm `
@@ -53,12 +56,15 @@ backend\.venv\Scripts\python.exe backend\run_benchmark.py `
   --schedule interleaved `
   --temperature 0.1 `
   --parallel 1 `
+  --freeze-protocol `
   --output backend\reports\benchmark_format_equivalence_<provider>_<model>_<date>
 ```
 
-Il comando deve essere verificato contro `--help` immediatamente prima
-dell'esecuzione. Se un'opzione non esiste, non sostituirla silenziosamente:
-documentare l'emendamento e aggiornare il manifest.
+`--freeze-protocol` crea il manifesto prima di inizializzare il runner e rifiuta
+ogni ripresa con revisione, modello o parametri diversi. Il comando deve essere
+verificato contro `--help` immediatamente prima dell'esecuzione. Se un'opzione
+non esiste, non sostituirla silenziosamente: documentare l'emendamento e
+aggiornare il manifest.
 
 ## Outcome
 

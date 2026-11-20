@@ -109,10 +109,14 @@ def test_google_retry_limit_is_configurable(monkeypatch):
     monkeypatch.setitem(sys.modules, "langchain_google_genai", module)
     monkeypatch.setattr(settings, "llm_provider", "google")
     monkeypatch.setattr(settings, "google_max_retries", 0)
+    monkeypatch.setattr(settings, "google_timeout_seconds", 90.0)
+    monkeypatch.setattr(settings, "llm_max_tokens", 4096)
 
     model = llm._get_llm(temperature=0.1)
 
     assert model.kwargs["max_retries"] == 0
+    assert model.kwargs["request_timeout"] == 90.0
+    assert model.kwargs["max_tokens"] == 4096
 
 
 def test_openrouter_disables_reasoning_and_bounds_requests(monkeypatch):

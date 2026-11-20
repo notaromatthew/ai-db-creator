@@ -52,8 +52,9 @@ Gli output finali sono in:
 ### Matrice RQ2 per formato
 
 La fixture CSV/XLSX/TXT/PDF è congelata e i test di equivalenza passano. La
-matrice prevista contiene 40 run. Prima dell'avvio devono essere fissati in un
-nuovo manifest:
+matrice prevista contiene 40 run. Il runner ora può creare, prima del primo
+outcome, un manifest immutabile con `--freeze-protocol` e rifiuta una ripresa
+se uno dei seguenti elementi cambia:
 
 - provider e modello disponibili per tutti i run
 - limite token e timeout

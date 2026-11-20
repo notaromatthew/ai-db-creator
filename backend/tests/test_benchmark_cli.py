@@ -201,3 +201,39 @@ def test_retry_failed_requires_resume(capsys):
         run_benchmark.main(["--retry-failed"])
     assert error.value.code == 2
     assert "requires --resume" in capsys.readouterr().err
+
+
+def test_protocol_manifest_is_frozen_before_runs_and_rejects_drift(tmp_path, monkeypatch):
+    monkeypatch.setattr(run_benchmark, "git_revision", lambda: "abc123")
+    monkeypatch.setattr(settings, "llm_provider", "google")
+    monkeypatch.setattr(settings, "google_model", "gemini-3.5-flash-lite")
+    monkeypatch.setattr(settings, "google_max_retries", 0)
+    monkeypatch.setattr(settings, "google_timeout_seconds", 120.0)
+    monkeypatch.setattr(settings, "llm_max_tokens", 8192)
+    monkeypatch.setattr(settings, "llm_max_requests_per_minute", 8)
+    monkeypatch.setattr(settings, "research_mode", True)
+    monkeypatch.setattr(settings, "llm_cache_enabled", False)
+
+    kwargs = {
+        "datasets": ["format_equivalence"],
+        "conditions": ["baseline", "full_llm"],
+        "source_formats": ["csv", "xlsx", "txt", "pdf"],
+        "runs": 5,
+        "run_indices": None,
+        "schedule": "interleaved",
+        "temperature": 0.1,
+        "parallel": 1,
+        "adjudicate": False,
+    }
+    first = run_benchmark.freeze_protocol_manifest(tmp_path, **kwargs)
+    second = run_benchmark.freeze_protocol_manifest(tmp_path, **kwargs)
+    assert first == second
+    assert first["git_revision"] == "abc123"
+    assert first["max_output_tokens"] == 8192
+    assert first["provider_retries"] == 0
+    assert first["run_indices"] == [1, 2, 3, 4, 5]
+
+    with pytest.raises(ValueError, match="Protocol manifest mismatch"):
+        run_benchmark.freeze_protocol_manifest(
+            tmp_path, **{**kwargs, "temperature": 0.5}
+        )

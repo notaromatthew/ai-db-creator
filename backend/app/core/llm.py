@@ -240,7 +240,9 @@ def _get_llm(temperature: float = 0.1, structured_json: bool = False):
                 api_key=settings.google_api_key,
                 model=settings.google_model,
                 temperature=temperature,
+                max_tokens=settings.llm_max_tokens,
                 max_retries=settings.google_max_retries,
+                request_timeout=settings.google_timeout_seconds,
             )
         except ImportError as exc:
             raise RuntimeError(

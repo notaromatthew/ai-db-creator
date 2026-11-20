@@ -102,3 +102,13 @@ Agents and developers can append structured comments below using the following t
   7. `tests/test_population_pipeline.py::test_parser_empty_is_propagated_as_warning` makes an unmocked LLM call and can hang: mock it.
   8. Cloud Run: persistent storage for `uploads/`/`projects/` (GCS volume), Redis/Celery for `*-async` endpoints.
 - **Status**: Proposed
+
+---
+
+### 💡 [RFC-008] Immutable protocol manifest for multi-day benchmarks
+- **Date**: 2026-11-20
+- **Agent/Author**: Codex
+- **Target File(s)**: `backend/run_benchmark.py`, `backend/app/core/llm.py`, `docs/25-rq2-format-comparison-protocol.md`
+- **Observation / Problem**: The RQ2 format matrix may span multiple quota days, but the runner did not create a study-level manifest before the first outcome or reject changes to model, revision, limits, schedule, or formats on resume. Google requests also did not bind the configured token limit and timeout explicitly.
+- **Proposed Solution**: Add opt-in `--freeze-protocol`, persist the complete secret-free configuration before runner initialisation, reject configuration drift, and pass explicit token, timeout, and retry limits to the Google client.
+- **Status**: Implemented

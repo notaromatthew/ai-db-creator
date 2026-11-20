@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     google_api_key: str = ""
     google_model: str = "gemini-3.5-flash-lite"
     google_max_retries: int = 2
+    google_timeout_seconds: float = 120.0
 
     # Vertex AI (Google Cloud). Pensato per il costo minimo: modello "lite",
     # tetto ai token di output e regione UE. Le credenziali arrivano da un

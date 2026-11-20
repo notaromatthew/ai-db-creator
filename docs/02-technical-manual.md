@@ -304,6 +304,9 @@ The initial implementation used OpenAI GPT-4o-mini, but the architecture was des
 - It offers a generous free tier for research.
 - Its large context window provides headroom for future controlled experiments; the application deliberately limits LLM-bound content to 5,000 characters per document for privacy, cost control, and reproducibility, and records a warning when truncation occurs.
 - The LangChain `ChatGoogleGenerativeAI` integration is stable.
+- Google requests use the configured `LLM_MAX_TOKENS`,
+  `GOOGLE_TIMEOUT_SECONDS`, and `GOOGLE_MAX_RETRIES`; benchmark protocols must
+  freeze these values before the first outcome.
 
 The `_get_llm()` function allows switching providers at runtime via environment variables, enabling direct comparison of schema quality across models (a planned experiment).
 

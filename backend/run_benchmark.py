@@ -41,6 +41,7 @@ import argparse
 import asyncio
 import csv
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -61,6 +62,76 @@ def parse_run_indices(value: str) -> list[int] | None:
     if not indices or any(index < 1 for index in indices):
         raise ValueError("run indices must contain positive integers")
     return indices
+
+
+def git_revision() -> str:
+    try:
+        return subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, check=True,
+            capture_output=True, text=True,
+        ).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        return "unknown"
+
+
+def freeze_protocol_manifest(output_dir: Path, *, datasets: list[str],
+                             conditions: list[str], source_formats: list[str],
+                             runs: int, run_indices: list[int] | None,
+                             schedule: str, temperature: float | None,
+                             parallel: int, adjudicate: bool) -> dict:
+    from app.config import settings
+    from app.core.llm import get_llm_info
+    from app.core.revision import software_revision
+    from app.utils.research import utc_now
+
+    info = get_llm_info()
+    provider = settings.llm_provider.strip().lower()
+    timeout = {
+        "google": settings.google_timeout_seconds,
+        "openrouter": settings.openrouter_timeout_seconds,
+    }.get(provider)
+    retries = {
+        "google": settings.google_max_retries,
+        "openrouter": settings.openrouter_max_retries,
+    }.get(provider)
+    manifest = {
+        "protocol_version": "rq2-format-comparison-v1",
+        "created_at": utc_now().isoformat(),
+        "git_revision": git_revision(),
+        "software_revision": software_revision(),
+        "datasets": datasets,
+        "conditions": conditions,
+        "source_formats": source_formats,
+        "runs_per_cell": runs,
+        "run_indices": run_indices or list(range(1, runs + 1)),
+        "schedule": schedule,
+        "temperature": temperature,
+        "parallel": parallel,
+        "adjudicate": adjudicate,
+        "provider": info["provider"],
+        "model": info["model"],
+        "schema_output_contract": info["schema_output_contract"],
+        "max_output_tokens": settings.llm_max_tokens,
+        "timeout_seconds": timeout,
+        "provider_retries": retries,
+        "max_requests_per_minute": settings.llm_max_requests_per_minute,
+        "research_mode": bool(settings.research_mode),
+        "llm_cache_enabled": bool(settings.llm_cache_enabled),
+    }
+    output_dir.mkdir(parents=True, exist_ok=True)
+    path = output_dir / "protocol_manifest.json"
+    if path.exists():
+        existing = json.loads(path.read_text(encoding="utf-8"))
+        comparable_existing = {k: v for k, v in existing.items() if k != "created_at"}
+        comparable_new = {k: v for k, v in manifest.items() if k != "created_at"}
+        if comparable_existing != comparable_new:
+            raise ValueError(
+                f"Protocol manifest mismatch: {path}. Start a new output directory "
+                "or restore the frozen configuration."
+            )
+        return existing
+    atomic_write_json(path, manifest)
+    return manifest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATASETS_DIR = REPO_ROOT / "data" / "datasets"
@@ -536,6 +607,8 @@ def build_parser() -> argparse.ArgumentParser:
                         help="With --resume, rerun only status=error; preserve ok and not_evaluable runs.")
     parser.add_argument("--schedule", choices=("blocked", "interleaved"), default="blocked",
                         help="Run order. Use interleaved to distribute provider drift or quota effects across cells.")
+    parser.add_argument("--freeze-protocol", action="store_true",
+                        help="Write protocol_manifest.json before the first run and reject configuration drift.")
     return parser
 
 
@@ -551,8 +624,20 @@ def main(argv: list[str] | None = None) -> int:
         run_indices = parse_run_indices(args.run_indices)
     except ValueError:
         parser.error("--run-indices must contain comma-separated positive integers")
+    output_dir = Path(args.output)
+    if args.freeze_protocol:
+        try:
+            freeze_protocol_manifest(
+                output_dir, datasets=datasets, conditions=conditions,
+                source_formats=source_formats, runs=args.runs,
+                run_indices=run_indices, schedule=args.schedule,
+                temperature=args.temperature, parallel=args.parallel,
+                adjudicate=args.adjudicate,
+            )
+        except ValueError as exc:
+            parser.error(str(exc))
     runner = BenchmarkRunner(datasets, conditions, args.runs,
-                             Path(args.output), parallel=args.parallel,
+                             output_dir, parallel=args.parallel,
                              adjudicate=args.adjudicate,
                               temperature=args.temperature,
                               source_formats=source_formats,

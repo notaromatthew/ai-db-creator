@@ -90,7 +90,9 @@ numerosità pianificata è quindi raggiunta. Per i primi due esperti, compilazio
 individuale senza confronto o accesso ai punteggi reciproci e cecità alle
 etichette di condizione sono state attestate dall'utente il 14 novembre 2026.
 Il terzo valutatore è stato identificato dall'utente come esperto il 18 novembre;
-la sua indipendenza e cecità alle condizioni devono ancora essere confermate.
+la sua indipendenza è stata confermata dall'utente il 19 novembre 2026. La
+cecità del terzo esperto alle condizioni non è invece documentata e resta una
+limitazione procedurale esplicita.
 
 L'accordo esatto è 20/150 celle e 0/30 vettori-schema; quello adiacente
 complessivo è 63,3%. L'alpha ordinale complessivo è 0,054 (IC bootstrap 95%
@@ -146,8 +148,12 @@ per giorno/cella è un segnale descrittivo di possibile deriva del provider, non
 una stima causale. La matrice usa sorgenti congiunte e non consente ancora il
 confronto causale fra formati. La fixture equivalente CSV/XLSX/TXT/PDF è stata
 ora congelata e validata, ma la matrice separata da 40 run non è stata ancora
-eseguita. Il pacchetto cieco per tutte le 1.294 discrepanze è pronto;
-l'adjudication resta pendente finché due revisori reali non lo compilano.
+eseguita. L'adjudication cieca delle 1.294 discrepanze è stata completata da due
+revisori indipendenti, seguita dal consenso sui 327 disaccordi. Il ledger finale
+contiene 967 errori, 4 equivalenze funzionali, 12 casi ambigui nel gold standard
+e 311 casi non determinabili dagli artefatti ciechi. Risultati e manifesti sono
+in `backend/reports/rq2_adjudication_completed/` e
+`backend/reports/rq2_final_analysis/`.
 
 ### Serie storica non verificata — non usare per le conclusioni
 
@@ -297,9 +303,8 @@ PK (es. righe identiche su tutte le colonne non-PK), non prevista dal protocollo
    `docs/22`. I 30 database, i record grezzi recuperati, i ledger e gli hash
    della rivalutazione sono ora presenti. Sono pronti anche i due fogli ciechi
    per l'adjudication e la fixture semanticamente equivalente in quattro
-   formati. Restano da ottenere le due revisioni umane, eseguire la matrice
-   separata da 40 run con provider/modello congelati e classificare i risultati
-   finali nel testo scientifico.
+   formati. Le due revisioni umane e il consenso sono conclusi; resta da
+   eseguire la matrice separata da 40 run con provider/modello congelati.
 3. I numeri RQ2 vanno messi in relazione CRITICA con l'adjudication: F1 e giudice
    non sempre concordano → nel paper va dichiarato che l'F1 deterministico è un
    limite quando i PK differiscono.
