@@ -37,8 +37,11 @@
   "condition_blinding": "first_two_user_attested; third_not_yet_explicitly_attested",
   "attestation_recorded_on": {
     "first_two_procedure": "2026-11-14",
-    "third_expert_eligibility": "2026-11-18"
+    "third_expert_eligibility": "2026-11-18",
+    "third_expert_independence": "2026-11-19"
   },
+  "attestation_metadata_updated_at": "2026-11-20",
+  "attestation_update_basis": "user_attestation_in_project_conversation",
   "comments_included": false,
   "evaluation_timestamps_published": false,
   "responses_marked_as_imputed": false,

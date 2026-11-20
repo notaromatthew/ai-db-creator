@@ -215,7 +215,7 @@ def render_report(
         "- Replica osservata separata dalle 1.350 valutazioni dei 45 trained student raters; nessun pooling.",
         f"- Il protocollo pianificava {manifest['planned_evaluators']} esperti; il pannello osservato ne contiene {manifest['n_evaluators']}.",
         "- Per i primi due esperti, indipendenza, assenza di confronto/accesso ai punteggi reciproci e cecità alle condizioni sono attestazioni dell'utente, non inferenze dai dati.",
-        "- Per il terzo esperto l'idoneità è attestata dall'utente; indipendenza e cecità alle condizioni restano da confermare esplicitamente.",
+        "- Per il terzo esperto idoneità e indipendenza sono attestate dall'utente; la cecità alle condizioni resta da confermare esplicitamente.",
         f"- L'accordo esatto osservato è {manifest['exact_score_cell_agreement']} celle e {manifest['exact_schema_vector_agreement']} vettori-schema.",
         "",
         "## Accordo",
@@ -247,7 +247,7 @@ def render_report(
         )
     lines.extend([
         "",
-        "Il pannello raggiunge la numerosità pianificata di tre esperti e resta separato dal campione studentesco. L'evidenza procedurale del terzo esperto deve essere completata prima di descrivere l'intero pannello come indipendente e cieco alle condizioni.",
+        "Il pannello raggiunge la numerosità pianificata di tre esperti, resta separato dal campione studentesco ed è attestato come indipendente. L'evidenza procedurale sulla cecità alle condizioni del terzo esperto deve essere completata prima di descrivere l'intero pannello come cieco alle condizioni.",
         "",
     ])
     return "\n".join(lines)
@@ -340,11 +340,12 @@ def main(argv: list[str] | None = None) -> int:
         "exact_score_cell_agreement": f"{exact_cells}/{len(codes) * len(DIMENSIONS)}",
         "exact_schema_vector_agreement": f"{exact_vectors}/{len(codes)}",
         "expert_eligibility": "user_attested_sector_experts",
-        "independence": "first_two_user_attested; third_not_yet_explicitly_attested",
+        "independence": "all_three_user_attested",
         "condition_blinding": "first_two_user_attested; third_not_yet_explicitly_attested",
         "attestation_recorded_on": {
             "first_two_procedure": "2026-11-14",
             "third_expert_eligibility": "2026-11-18",
+            "third_expert_independence": "2026-11-19",
         },
         "comments_included": any((row.get("comment") or "").strip() for row in rows),
         "evaluation_timestamps_published": False,

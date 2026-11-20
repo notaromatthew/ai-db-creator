@@ -78,6 +78,9 @@ def test_three_expert_panel_accepts_mixed_exports_is_pseudonymized_and_handles_c
     assert manifest["planned_evaluators"] == 3
     assert manifest["raw_evaluator_names_persisted"] is False
     assert manifest["evaluation_timestamps_published"] is False
+    assert manifest["independence"] == "all_three_user_attested"
+    assert manifest["condition_blinding"] == "first_two_user_attested; third_not_yet_explicitly_attested"
+    assert manifest["attestation_recorded_on"]["third_expert_independence"] == "2026-11-19"
     assert "completion_span_minutes_by_evaluator_id" not in manifest
     assert set(manifest["original_source_sha256"]) == {source_path.name, third_source_path.name}
     assert manifest["exact_score_cell_agreement"].endswith("/150")
