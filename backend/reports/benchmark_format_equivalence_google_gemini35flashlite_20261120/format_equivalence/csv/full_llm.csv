@@ -1,0 +1,6 @@
+dataset,source_format,condition,run,project_id,status,error,population_mode,global_precision,global_recall,global_f1,total_cells,missing_rows,extra_rows,functional_query_pass_rate,functionally_equivalent
+format_equivalence,csv,full_llm,1,,error,LLMException: Schema generation failed,,,,,,,,,
+format_equivalence,csv,full_llm,2,eca10ba5-9fc5-49b6-b5c9-1de57eae4296,ok,,llm,0.6667,0.6667,0.6667,68,45,45,0.4,False
+format_equivalence,csv,full_llm,3,0c824533-398a-4e64-83a4-8184e58617a2,ok,,llm,0.6667,0.6667,0.6667,68,45,45,0.4,False
+format_equivalence,csv,full_llm,4,1b1007de-d1d9-4564-9b73-1cb7f1570cd9,ok,,llm,0.6667,0.6667,0.6667,68,45,45,0.4,False
+format_equivalence,csv,full_llm,5,04ed6b43-116b-4363-8ed4-220ee035a198,ok,,llm,0.6667,0.6667,0.6667,68,45,45,0.4,False

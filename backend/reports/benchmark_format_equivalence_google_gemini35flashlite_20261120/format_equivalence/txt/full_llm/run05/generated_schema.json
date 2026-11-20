@@ -1,0 +1,159 @@
+{
+  "tables": [
+    {
+      "name": "students",
+      "columns": [
+        {
+          "name": "student_email",
+          "data_type": "TEXT",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Institutional email serving as the unique identifier for a student."
+        },
+        {
+          "name": "student_name",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Full name of the student."
+        }
+      ],
+      "description": "Stores information about university students."
+    },
+    {
+      "name": "courses",
+      "columns": [
+        {
+          "name": "course_code",
+          "data_type": "TEXT",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Unique code identifying a course."
+        },
+        {
+          "name": "course_title",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Title of the course."
+        },
+        {
+          "name": "credits",
+          "data_type": "INTEGER",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Number of credits the course awards."
+        }
+      ],
+      "description": "Stores information about university courses."
+    },
+    {
+      "name": "enrollments",
+      "columns": [
+        {
+          "name": "enrollment_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Primary key for the enrollment record."
+        },
+        {
+          "name": "student_email",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_key_table": "students",
+          "foreign_key_column": "student_email",
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "The institutional email of the enrolled student."
+        },
+        {
+          "name": "course_code",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_key_table": "courses",
+          "foreign_key_column": "course_code",
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "The course code of the enrolled course."
+        },
+        {
+          "name": "semester",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "The semester in which the student took the course."
+        },
+        {
+          "name": "grade",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "The grade achieved by the student in the course."
+        }
+      ],
+      "description": "Links a student to a course for a specific semester with a grade."
+    }
+  ],
+  "relationships": [
+    {
+      "type": "one_to_many",
+      "from_table": "students",
+      "from_column": "student_email",
+      "to_table": "enrollments",
+      "to_column": "student_email"
+    },
+    {
+      "type": "one_to_many",
+      "from_table": "courses",
+      "from_column": "course_code",
+      "to_table": "enrollments",
+      "to_column": "course_code"
+    }
+  ],
+  "description": "Database schema for university enrollments, normalized to 3NF, modeling students, courses, and enrollments with semesters and grades."
+}

@@ -1,6 +1,6 @@
 # Protocollo RQ2 per il confronto causale fra formati
 
-Stato: fixture congelata e validata; esecuzione non iniziata.
+Stato: protocollo congelato; matrice completata il 20 novembre 2026 e analizzata.
 
 ## Obiettivo
 
@@ -73,3 +73,30 @@ precision, recall e F1 osservabile, discrepanze per categoria, query funzionali
 superate ed equivalenza funzionale. I confronti sono descrittivi se la potenza
 non è stata definita prima degli outcome. Non combinare questi risultati con la
 matrice OpenRouter su sorgenti `combined`.
+
+## Esecuzione osservata
+
+La matrice congelata è stata eseguita con Google Gemini Developer API, modello
+`gemini-3.5-flash-lite`, temperatura `0.1`, 8 richieste/minuto, timeout 120
+secondi, massimo 8192 token e zero retry applicativi. Il manifest è stato
+scritto prima del primo outcome e registra la revisione Git
+`0d225aabf6a01ac61d39223df3461e83db1c9170` e la revisione software
+`b08c17b85053fd3a`. I 40 run pianificati sono presenti: 38 sono riusciti senza
+fallback e due (`csv/full_llm` run 1 e `xlsx/full_llm` run 3) sono terminati con
+`LLMException: Schema generation failed`. Non è stato registrato alcun errore
+di quota; Nemotron non è stato usato e i due fallimenti non sono stati sostituiti.
+
+Nei run riusciti le metriche non variano tra formati. La baseline ottiene F1
+`1.0000` e query funzionali `1.0000` in tutte le celle; `full_llm` ottiene F1
+`0.6667` e query funzionali `0.4000`. Il successo tecnico è 5/5 per TXT e PDF,
+4/5 per CSV e XLSX nella condizione `full_llm`, e 5/5 in tutte le celle
+baseline. Tutti i confronti esatti di Fisher fra formati, corretti con Holm,
+sono non significativi. La numerosità ridotta, la singola fixture e la
+variabilità metrica nulla impongono un'interpretazione esplorativa: i dati non
+dimostrano equivalenza generale fra formati.
+
+Artefatti e analisi riproducibile:
+
+- `backend/reports/benchmark_format_equivalence_google_gemini35flashlite_20261120/`;
+- `backend/analyze_rq2_format_matrix.py`;
+- `backend/reports/rq2_format_analysis/`.

@@ -130,6 +130,39 @@ run Gemini, dai pilot legacy e dai recovery selettivi.
 I risultati finali e la provenienza sono congelati in `execution_complete.json`
 nella directory della matrice.
 
+## Matrice separata per formato
+
+Il 20 novembre 2026 è stata completata la matrice controllata sulla fixture
+`format_equivalence`, che rappresenta gli stessi 45 fatti in CSV, XLSX, TXT e
+PDF. Il protocollo è stato congelato prima del primo outcome: Google Gemini
+Developer API, `gemini-3.5-flash-lite`, temperatura `0.1`, 8192 token, timeout
+120 secondi, zero retry, concorrenza 1 e massimo 8 richieste/minuto. Sono
+presenti tutti i 40 run previsti (quattro formati, due condizioni, cinque
+repliche): 38 sono riusciti con `population_mode=llm` e senza fallback. Due run
+`full_llm`, CSV run 1 e XLSX run 3, sono falliti durante la generazione dello
+schema. Non è stato registrato alcun errore di quota e Nemotron non è stato
+usato.
+
+| Formato | Condizione | OK/totale | F1 sui successi | Query funzionali | Equivalenti |
+|---|---|---:|---:|---:|---:|
+| CSV | baseline | 5/5 | 1.0000 | 1.0000 | 5/5 |
+| CSV | full-LLM | 4/5 | 0.6667 | 0.4000 | 0/4 |
+| XLSX | baseline | 5/5 | 1.0000 | 1.0000 | 5/5 |
+| XLSX | full-LLM | 4/5 | 0.6667 | 0.4000 | 0/4 |
+| TXT | baseline | 5/5 | 1.0000 | 1.0000 | 5/5 |
+| TXT | full-LLM | 5/5 | 0.6667 | 0.4000 | 0/5 |
+| PDF | baseline | 5/5 | 1.0000 | 1.0000 | 5/5 |
+| PDF | full-LLM | 5/5 | 0.6667 | 0.4000 | 0/5 |
+
+Tra i run riusciti non emerge una differenza di accuratezza fra formati. Il
+successo tecnico è descrittivamente inferiore di 0,20 per CSV e XLSX rispetto
+a TXT e PDF nella condizione `full_llm`, ma tutti i confronti esatti di Fisher
+corretti con Holm hanno `p=1.0000`. Con una sola fixture, cinque repliche per
+cella e variabilità metrica nulla, il risultato è esplorativo e non dimostra
+equivalenza generale fra formati. Artefatti e analisi sono in
+`backend/reports/benchmark_format_equivalence_google_gemini35flashlite_20261120/`
+e `backend/reports/rq2_format_analysis/`.
+
 ## Analisi statistica esplorativa e adjudication finale
 
 I confronti post-hoc tra condizioni usano i cinque run di ciascuna cella,

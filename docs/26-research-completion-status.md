@@ -4,9 +4,9 @@
 
 La parte automatizzabile di RQ1 e della matrice RQ2 principale è stata
 eseguita e resa riproducibile. RQ0, RQ3 e RQ4 dipendono ancora dalla raccolta
-con partecipanti. Il confronto causale fra formati RQ2 è predisposto ma non è
-stato avviato, perché richiede 40 nuove chiamate sperimentali con provider,
-modello, quota e revisione software congelati prima del primo outcome.
+con partecipanti. Il confronto controllato fra formati RQ2 è stato completato
+come analisi esplorativa su 40 run con protocollo, provider, modello e revisione
+software congelati prima del primo outcome.
 
 ## Completato
 
@@ -32,12 +32,16 @@ dai punteggi.
 - ledger finale ricongiunto alla mappa privata dopo il consenso
 - confronto esplorativo `baseline`/`full_llm`, test esatti e correzione di Holm
 - analisi della correlazione fra F1 ed equivalenza funzionale
+- matrice separata CSV/XLSX/TXT/PDF: 40 run pianificati, 38 successi senza
+  fallback e due fallimenti di generazione conservati come outcome
+- analisi esplorativa per formato con confronti esatti e correzione di Holm
 
 Gli output finali sono in:
 
 - `backend/reports/rq2_adjudication_completed/`
 - `backend/reports/rq2_final_analysis/`
 - `docs/21-rq2-primary-results.md`
+- `backend/reports/rq2_format_analysis/`
 
 ### Infrastruttura per RQ0/RQ3/RQ4
 
@@ -49,20 +53,11 @@ Gli output finali sono in:
 
 ## Attività automatizzabili ancora disponibili
 
-### Matrice RQ2 per formato
+### Repliche RQ2 opzionali
 
-La fixture CSV/XLSX/TXT/PDF è congelata e i test di equivalenza passano. La
-matrice prevista contiene 40 run. Il runner ora può creare, prima del primo
-outcome, un manifest immutabile con `--freeze-protocol` e rifiuta una ripresa
-se uno dei seguenti elementi cambia:
-
-- provider e modello disponibili per tutti i run
-- limite token e timeout
-- revisione Git
-- calendario bilanciato se la quota richiede più giorni
-
-L'esecuzione usa chiamate API esterne e non deve partire con un modello o una
-configurazione diversi senza un emendamento esplicito al protocollo.
+La matrice RQ2 per formato è conclusa. Eventuali repliche con Nemotron o altri
+modelli devono essere nuove matrici complete e separate, non sostituzioni dei
+due fallimenti Gemini. Non sono necessarie per chiudere l'analisi corrente.
 
 ### Analisi dopo la raccolta partecipanti
 

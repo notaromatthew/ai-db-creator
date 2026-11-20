@@ -1,0 +1,12 @@
+{
+  "analysis": "rq2_format_matrix_exploratory_v1",
+  "status": "complete_exploratory",
+  "protocol_manifest_sha256": "c0729ab9ba8d42c380fff04208abf816d53a8feeff18882702bc70a53446386d",
+  "input_tree_sha256": "a6d3320b12f75f6e9bdd8381b9afb844ff70682bb9a9208091c78bdeb9421627",
+  "outputs": {
+    "format_summary.csv": "0de2c1fe6f1140e4bed7a02f190e42456a3ab340d8366bf2a9aad38fd9d2861a",
+    "format_pairwise_comparisons.csv": "8edf9e28f90213fa7067f1062505b5b07106b96b08d6de168a2f98a7cd442400",
+    "rq2_format_analysis.json": "a6194b0a79fc3e60d8b0a9c0922725d384ba811047973bfeb3d1c93e420e7b50",
+    "REPORT.md": "b7fb151ff48eb06563224e5b278b913f3647a82dbfa1da756332aaa960153021"
+  }
+}

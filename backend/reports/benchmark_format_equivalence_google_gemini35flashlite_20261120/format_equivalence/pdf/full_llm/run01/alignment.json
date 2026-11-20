@@ -1,0 +1,36 @@
+{
+  "tables": {
+    "students": "students",
+    "courses": "courses",
+    "enrollments": "enrollments"
+  },
+  "columns": {
+    "students": {
+      "name": "student_name",
+      "email": "student_email"
+    },
+    "courses": {
+      "course_code": "course_code",
+      "title": "course_title",
+      "credits": "credits"
+    },
+    "enrollments": {
+      "semester": "semester",
+      "grade": "grade"
+    }
+  },
+  "unmatched_tables": [],
+  "unmatched_columns": {
+    "students": [
+      "student_id"
+    ],
+    "courses": [
+      "course_id"
+    ],
+    "enrollments": [
+      "student_id",
+      "course_id"
+    ]
+  },
+  "via_registry": []
+}

@@ -1,0 +1,56 @@
+{
+  "software_revision": "b08c17b85053fd3a",
+  "research_mode": true,
+  "dataset": "format_equivalence",
+  "dataset_hash": "e9c93bd621eeb064eb4b32fc247db82a385c50d96b0da2830422470a84f6d9b2",
+  "condition": "full_llm",
+  "provider": "Google Gemini",
+  "model": "gemini-3.5-flash-lite",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 2,
+  "created_at": "2026-11-20T00:10:32.229481+00:00",
+  "source_format": "txt",
+  "source_files": [
+    {
+      "path": "source/records.txt",
+      "sha256": "25ce20e5ea811fb1889f452b6398c499708234155b3d8217a237313b992c6663"
+    }
+  ],
+  "evaluation_spec_hash": "f770508927bf7bab80d521d59f28007306880e0aa08f629244e530a114c60fec",
+  "project_id": "7f7338e8-f0bf-4ef6-a3cd-f98b0712ce5d",
+  "schema_output_contract": "legacy-pydantic-v1",
+  "status": "ok",
+  "artifacts": {
+    "generated_database": {
+      "path": "generated.db",
+      "sha256": "1865aabef60561dac2724e20883fdafe7a23a99b6346bfdd63b7860951fee16d"
+    },
+    "generated_schema": {
+      "path": "generated_schema.json",
+      "sha256": "e4ddfbbf08200e7310c23e5c71b7cd1a74b7c40c2139d97d16e1a09b73dc17ce"
+    },
+    "evaluation": {
+      "path": "evaluation.json",
+      "sha256": "69c234ec1815fb93ccba58f1c458d29381e7282efb1437af0081dfe784481e4b"
+    },
+    "cell_discrepancies": {
+      "path": "cell_discrepancies.csv",
+      "sha256": "801510625eb1fbc6f87c8d4f2d41188ac782aa4e01e1195f634e78b1e4e8bec5"
+    },
+    "alignment": {
+      "path": "alignment.json",
+      "sha256": "0a51097a5265b97e509e4ee6404efdb1b86c85a2e5028467ec48bcb87641bfb4"
+    },
+    "functional_query_results": {
+      "path": "functional_query_results.json",
+      "sha256": "4d2551ef1ce2123dbf1e66836c7aa8c77a3c9b7a6ee96eab48d3882fc451d50c"
+    },
+    "run_record": {
+      "path": "run.json",
+      "sha256": "2b1615fe1036c88f9d78280f740800aea19bcc9c9e09fd52af09ded9e48f22a8"
+    }
+  }
+}

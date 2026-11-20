@@ -504,10 +504,11 @@ created only by dataset builders (eight unobserved university students; library
 loan--book links and fines; hospital treatments, medications, prescriptions and
 invoices). These are excluded from primary denominators and retained only in a
 full-gold sensitivity analysis. A versioned functional-query suite evaluates
-information preservation independently of synthetic keys. The current document
-bundles mix non-equivalent facts across formats and contain no XLSX variant;
-format comparisons therefore require semantically equivalent derived fixtures
-before execution.
+information preservation independently of synthetic keys. The original
+document bundles mix non-equivalent facts across formats and contain no XLSX
+variant; they are therefore not used for format comparisons. A separate
+derived fixture represents the same 45 observable facts in CSV, XLSX, TXT, and
+PDF.
 
 The expert-linked historical matrix was also re-evaluated offline with the
 current observable-scope and functional-query code. It is treated only as a
@@ -535,9 +536,19 @@ in that runner version. The Wilson intervals stored for the mean per-run F1 are
 not appropriate for a continuous run-level mean and are excluded from
 interpretation.
 The execution loads heterogeneous sources jointly and does not support a causal
-comparison by file format. A semantically equivalent CSV/XLSX/TXT/PDF fixture
-containing 45 observable facts has now been frozen and validated, but its
-separate 40-run format matrix has not yet been executed. A complete
+comparison by file format. A separate 40-run matrix was therefore executed on
+the frozen, validated CSV/XLSX/TXT/PDF fixture, using Gemini
+\texttt{gemini-3.5-flash-lite}, temperature 0.1, five repetitions per format
+and condition, zero retries, and a protocol manifest written before the first
+outcome. Thirty-eight runs completed without fallback; one CSV full-LLM run and
+one XLSX full-LLM run failed schema generation. Among successful runs, metrics
+were identical across formats: baseline F1 was 1.0000 with a functional-query
+pass rate of 1.0000, whereas full-LLM F1 was 0.6667 with a pass rate of 0.4000.
+All Holm-corrected pairwise Fisher tests of technical success were
+non-significant. These results are exploratory because they use one fixture,
+five repetitions per cell, and show no within-condition metric variation; they
+do not establish general equivalence between formats. No quota error was
+recorded, so no alternative model was introduced. A complete
 blind-review package covering all 1,294
 ledger discrepancies has been generated with separate randomized orders and a
 private condition mapping. The two independent reviews and the blinded
@@ -786,7 +797,7 @@ The expected contributions of this work are:
 \label{sec:conclusion}
 This paper presented \aidb, a research platform that combines LLM-based generation with an interactive visual interface to enable non-expert users to create normalised, populated relational databases from heterogeneous documents. We described the architecture, workflow, prompting strategy, and a comprehensive evaluation protocol spanning four research questions.
 
-The platform is designed not merely as a practical tool but as a controlled environment for studying the interplay between automatic generation, human validation, and user behaviour. The four research questions target complementary aspects: schema quality (RQ1), population accuracy (RQ2), the added value of human review (RQ3), and user interaction patterns (RQ4). RQ1 now has an observed, reproducible analysis; eligibility and procedural evidence for the 45 trained student raters still requires review. The separate expert panel has reached its planned size of three and all three experts are user-attested as independent, although explicit condition-blinding evidence remains pending for the third expert. RQ2 now includes a complete, order-balanced 30-run structured-output sensitivity with verified provenance and completed blinded human adjudication of all 1,294 discrepancy records; it remains exploratory because execution spans two provider days, sources are loaded jointly, and 311 records could not be determined from the blinded evidence. RQ3 and RQ4 still require participant data collection.
+The platform is designed not merely as a practical tool but as a controlled environment for studying the interplay between automatic generation, human validation, and user behaviour. The four research questions target complementary aspects: schema quality (RQ1), population accuracy (RQ2), the added value of human review (RQ3), and user interaction patterns (RQ4). RQ1 now has an observed, reproducible analysis; eligibility and procedural evidence for the 45 trained student raters still requires review. The separate expert panel has reached its planned size of three and all three experts are user-attested as independent, although explicit condition-blinding evidence remains pending for the third expert. RQ2 now includes a complete, order-balanced 30-run structured-output sensitivity with verified provenance and completed blinded human adjudication of all 1,294 discrepancy records; it remains exploratory because execution spans two provider days, sources are loaded jointly, and 311 records could not be determined from the blinded evidence. A separate frozen 40-run format matrix adds an exploratory controlled comparison of CSV, XLSX, TXT, and PDF: 38 runs succeeded, two schema-generation failures were retained, and no accuracy difference appeared among successful runs. RQ3 and RQ4 still require participant data collection.
 
 The next phase will archive the user-reported institutional determination that prior ethics approval
 is not required if written evidence is available, run the formative pilot, and
@@ -799,7 +810,7 @@ extension.
   \item Confirm title, authors, affiliations, and target venue (journal/conference).
   \item Complete independent validation and freeze of the three gold standards.
   \item Review and document the eligibility of the 45 observed RQ1 evaluators.
-  \item Validate format-equivalent fixtures and run the separate format matrix before any per-format comparison.
+  \item If stronger format-level inference is required, preregister and run a powered replication with multiple semantically equivalent fixtures.
   \item Archive, if available, the communication supporting the reported institutional determination that prior ethics approval is not required; retain informed consent and data-protection safeguards.
   \item Run the 5--8 participant formative pilot and close all high-severity findings.
   \item Recruit approximately 114 participants to obtain at least 34 completed cases per arm.

@@ -303,8 +303,9 @@ PK (es. righe identiche su tutte le colonne non-PK), non prevista dal protocollo
    `docs/22`. I 30 database, i record grezzi recuperati, i ledger e gli hash
    della rivalutazione sono ora presenti. Sono pronti anche i due fogli ciechi
    per l'adjudication e la fixture semanticamente equivalente in quattro
-   formati. Le due revisioni umane e il consenso sono conclusi; resta da
-   eseguire la matrice separata da 40 run con provider/modello congelati.
+   formati. Le due revisioni umane e il consenso sono conclusi. Anche la
+   matrice separata per formato è conclusa: 40 run Gemini congelati, 38
+   successi senza fallback e due fallimenti di generazione conservati.
 3. I numeri RQ2 vanno messi in relazione CRITICA con l'adjudication: F1 e giudice
    non sempre concordano → nel paper va dichiarato che l'F1 deterministico è un
    limite quando i PK differiscono.
@@ -323,6 +324,8 @@ PK (es. righe identiche su tutte le colonne non-PK), non prevista dal protocollo
 | `backend/reports/rq1_analysis/` | Manifesto, matrice pseudonimizzata, descrittive, accordo, confronti e report |
 | `backend/aggregate_benchmark.py` | Aggregazione numeri RQ2 (F1/CI/adjudication/duplicate rate) da report → JSON |
 | `backend/reports/benchmark_rq1_expert_linked_recovered_20261113/` | Matrice storica RQ1 recuperata, 30 database, rivalutazione RQ2 secondaria e manifesti |
+| `backend/reports/benchmark_format_equivalence_google_gemini35flashlite_20261120/` | Matrice RQ2 per formato congelata: 40 run, manifesti e artefatti grezzi |
+| `backend/analyze_rq2_format_matrix.py` / `backend/reports/rq2_format_analysis/` | Validazione e analisi esplorativa riproducibile del confronto CSV/XLSX/TXT/PDF |
 | `backend/recover_expert_linked_matrix.py` | Recupero riproducibile, verifica linkage seed 42, sanitizzazione e rivalutazione offline |
 | `backend/reports/benchmark_aggregates_01.json` / `_05.json` | Aggregati storici originali non recuperati; non necessari per la rivalutazione corrente |
 | `backend/reports/benchmark_t05_full/` | Serie t=0.5 ancora assente; non mescolare con la matrice recuperata |

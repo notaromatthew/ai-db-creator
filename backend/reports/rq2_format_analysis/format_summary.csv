@@ -1,0 +1,9 @@
+source_format,condition,n_total,n_ok,n_error,technical_success_rate,functionally_equivalent_n,functionally_equivalent_rate_evaluable,errors,mean_global_precision,min_global_precision,max_global_precision,mean_global_recall,min_global_recall,max_global_recall,mean_global_f1,min_global_f1,max_global_f1,mean_functional_query_pass_rate,min_functional_query_pass_rate,max_functional_query_pass_rate
+csv,baseline,5,5,0,1.0,5,1.0,,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+csv,full_llm,5,4,1,0.8,0,0.0,LLMException: Schema generation failed,0.6667,0.6667,0.6667,0.6667,0.6667,0.6667,0.6667,0.6667,0.6667,0.4,0.4,0.4
+xlsx,baseline,5,5,0,1.0,5,1.0,,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+xlsx,full_llm,5,4,1,0.8,0,0.0,LLMException: Schema generation failed,0.6667,0.6667,0.6667,0.6667,0.6667,0.6667,0.6667,0.6667,0.6667,0.4,0.4,0.4
+txt,baseline,5,5,0,1.0,5,1.0,,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+txt,full_llm,5,5,0,1.0,0,0.0,,0.6667,0.6667,0.6667,0.6667,0.6667,0.6667,0.6667,0.6667,0.6667,0.4,0.4,0.4
+pdf,baseline,5,5,0,1.0,5,1.0,,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+pdf,full_llm,5,5,0,1.0,0,0.0,,0.6667,0.6667,0.6667,0.6667,0.6667,0.6667,0.6667,0.6667,0.6667,0.4,0.4,0.4

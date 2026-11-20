@@ -1,0 +1,13 @@
+condition,format_a,format_b,n_shared_successful_runs,technical_success_difference_a_minus_b,fisher_exact_p,fisher_exact_p_holm,paired_mean_difference_global_precision_a_minus_b,paired_mean_difference_global_recall_a_minus_b,paired_mean_difference_global_f1_a_minus_b,paired_mean_difference_functional_query_pass_rate_a_minus_b
+baseline,csv,xlsx,5,0.0,1.0,1.0,0.0,0.0,0.0,0.0
+baseline,csv,txt,5,0.0,1.0,1.0,0.0,0.0,0.0,0.0
+baseline,csv,pdf,5,0.0,1.0,1.0,0.0,0.0,0.0,0.0
+baseline,xlsx,txt,5,0.0,1.0,1.0,0.0,0.0,0.0,0.0
+baseline,xlsx,pdf,5,0.0,1.0,1.0,0.0,0.0,0.0,0.0
+baseline,txt,pdf,5,0.0,1.0,1.0,0.0,0.0,0.0,0.0
+full_llm,csv,xlsx,3,0.0,1.0,1.0,0.0,0.0,0.0,0.0
+full_llm,csv,txt,4,-0.19999999999999996,1.0,1.0,0.0,0.0,0.0,0.0
+full_llm,csv,pdf,4,-0.19999999999999996,1.0,1.0,0.0,0.0,0.0,0.0
+full_llm,xlsx,txt,4,-0.19999999999999996,1.0,1.0,0.0,0.0,0.0,0.0
+full_llm,xlsx,pdf,4,-0.19999999999999996,1.0,1.0,0.0,0.0,0.0,0.0
+full_llm,txt,pdf,5,0.0,1.0,1.0,0.0,0.0,0.0,0.0

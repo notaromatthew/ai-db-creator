@@ -1,0 +1,21 @@
+{
+  "dataset": "format_equivalence",
+  "condition": "baseline",
+  "run": 3,
+  "source_format": "csv",
+  "project_id": "104d8124-cf0d-474f-b359-91cd62b65813",
+  "status": "ok",
+  "temperature": 0.1,
+  "global_precision": 1.0,
+  "global_recall": 1.0,
+  "global_f1": 1.0,
+  "total_cells": 158,
+  "missing_rows": 0,
+  "extra_rows": 0,
+  "functional_query_pass_rate": 1.0,
+  "functionally_equivalent": true,
+  "population_mode": "llm",
+  "alignment": null,
+  "adjudication": null,
+  "error": null
+}

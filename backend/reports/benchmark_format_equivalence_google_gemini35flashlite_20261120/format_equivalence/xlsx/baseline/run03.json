@@ -1,0 +1,22 @@
+{
+  "dataset": "format_equivalence",
+  "condition": "baseline",
+  "run": 3,
+  "source_format": "xlsx",
+  "project_id": "4f6121d6-b08f-403e-91d0-714dea2f10e4",
+  "status": "ok",
+  "temperature": 0.1,
+  "global_precision": 1.0,
+  "global_recall": 1.0,
+  "global_f1": 1.0,
+  "total_cells": 158,
+  "missing_rows": 0,
+  "extra_rows": 0,
+  "functional_query_pass_rate": 1.0,
+  "functionally_equivalent": true,
+  "population_mode": "llm",
+  "alignment": null,
+  "adjudication": null,
+  "error": null,
+  "detail": null
+}
