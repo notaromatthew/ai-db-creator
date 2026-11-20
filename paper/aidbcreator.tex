@@ -562,7 +562,12 @@ with the same Gemini configuration. Both completed without fallback and matched
 the other successful full-LLM runs (F1 0.6667; functional-query pass rate
 0.4000). Because selection was conditioned on observed failure, these attempts
 demonstrate technical recoverability but do not replace or enter the primary
-38/40 result.
+38/40 result. A reproducible secondary overlay yields 40/40 technically
+successful databases while leaving every accuracy estimate unchanged:
+baseline F1 and functional-query pass rate are both 1.0000, and full-LLM F1
+and pass rate remain 0.6667 and 0.4000, respectively, for every format. All
+post-recovery between-format differences are zero. This is reported solely as
+a post-outcome robustness sensitivity.
 
 An independent structured-output sensitivity was subsequently preregistered
 and executed over two quota-bounded day blocks with an interleaved schedule.
@@ -781,6 +786,13 @@ The repository currently versions source code, dependency manifests, prompt temp
   \item \textbf{Run manifests}: run ID, experimental condition, exact provider/model identifier, decoding parameters, prompt-template version, hashes of prompts/documents, software revision, timestamps, extraction method, and before/after schema hashes. Credentials and raw sensitive content are excluded.
   \item \textbf{Provenance artifacts}: document, sheet/page, row/column coordinates, mapping method, and confidence for each automatically mapped value where available.
 \end{itemize}
+
+For the completed RQ1 and RQ2 evidence, a machine-readable public index now
+classifies seven components, records SHA-256 hashes for 34 selected artifacts,
+and verifies 12 internal output hashes. It excludes private adjudication
+mappings, raw participant exports, and completion-time data. The index preserves
+the distinction between the primary 38/40 format matrix and the secondary
+post-outcome 40/40 recovery overlay.
 
 The tested Python compatibility target is 3.10--3.13 with Node.js 18+. Python 3.14 is not currently supported by the pinned Pydantic/PyO3 dependency chain. Cloud-provider reproduction requires a researcher-supplied API key and may incur provider-dependent cost; no assumption is made about continuing free-tier availability. A local Ollama configuration is available for offline replication, but results from different providers or model versions are analysed as distinct conditions.
 

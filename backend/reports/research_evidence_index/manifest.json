@@ -1,0 +1,280 @@
+{
+  "index_version": "rq1-rq2-evidence-index-v1",
+  "status": "complete_automated_evidence_index",
+  "scope": "RQ1 and RQ2 completed evidence only; RQ0, RQ3 and RQ4 excluded pending participant data",
+  "components": [
+    {
+      "evidence_id": "rq1_student_panel",
+      "rq": "RQ1",
+      "classification": "observed_primary_panel",
+      "anchor": "backend/reports/rq1_analysis/manifest.json",
+      "revisions": {
+        "software_revision": "c18ad9b42b63edb9acae375098bd03c460a73136"
+      },
+      "counts": {
+        "n_evaluators": 45,
+        "n_schemas": 30,
+        "n_ratings": 1350
+      },
+      "selected_public_artifacts": [
+        {
+          "path": "backend/reports/rq1_analysis/manifest.json",
+          "sha256": "a81750315cb92788a18805c63a795fa534aaa5c55b9f293eb0c77768192d95df"
+        },
+        {
+          "path": "backend/reports/rq1_analysis/REPORT.md",
+          "sha256": "421ba78c0116013789214ea21525eddeec2078089d149918cae532b429c18f02"
+        },
+        {
+          "path": "backend/reports/rq1_analysis/descriptive_summary.csv",
+          "sha256": "a4e9af19baae0e4fbfc7296276c35b446a0683e9c74b1e828fb1ef9bfa3e9e40"
+        },
+        {
+          "path": "backend/reports/rq1_analysis/agreement.csv",
+          "sha256": "a319388a245893dc462486e4b72c792682cced20f3c475ccb190198269d6c470"
+        },
+        {
+          "path": "backend/reports/rq1_analysis/condition_comparison.csv",
+          "sha256": "16730663cebd168c0ca1268f87644314bdec341b8c84ee3ce1265ddb855f0b6b"
+        }
+      ],
+      "internal_output_hashes_verified": 0
+    },
+    {
+      "evidence_id": "rq1_expert_replication",
+      "rq": "RQ1",
+      "classification": "observed_secondary_independent_panel",
+      "anchor": "backend/reports/rq1_expert_replication/manifest.json",
+      "revisions": {
+        "software_revision": "c18ad9b42b63edb9acae375098bd03c460a73136"
+      },
+      "counts": {
+        "n_evaluators": 3,
+        "n_schemas": 30,
+        "n_ratings": 90
+      },
+      "selected_public_artifacts": [
+        {
+          "path": "backend/reports/rq1_expert_replication/manifest.json",
+          "sha256": "e95f622f06975ac0ae32fd4d72e996a0cf376b25da61e28338293382a98080ce"
+        },
+        {
+          "path": "backend/reports/rq1_expert_replication/REPORT.md",
+          "sha256": "431b59fed2f84c04b84070fe1cbace0cb9f6de20b03df3639dd0c2983b610c21"
+        },
+        {
+          "path": "backend/reports/rq1_expert_replication/descriptive_summary.csv",
+          "sha256": "4d95417a757b415f33881016e06b35b490fa431c5ec8b9c50c161c974a0fc573"
+        },
+        {
+          "path": "backend/reports/rq1_expert_replication/agreement.csv",
+          "sha256": "41fad1c5a2aa8d6c6bdd153bced09ad31dce17bb2d408dbf3d5b442596a03c08"
+        },
+        {
+          "path": "backend/reports/rq1_expert_replication/condition_comparison.csv",
+          "sha256": "c40fb1fd4d77afb93cd78c4ec0b030e9721dee5ac7731edff542023e5a9cac4b"
+        }
+      ],
+      "internal_output_hashes_verified": 0
+    },
+    {
+      "evidence_id": "rq2_structured_matrix",
+      "rq": "RQ2",
+      "classification": "complete_exploratory_matrix",
+      "anchor": "backend/reports/benchmark_openrouter_nemotron35_supervl_structured_twoday_t01_m16384_20261107/execution_complete.json",
+      "revisions": {
+        "software_revision": "84bf74b33c54bbcb"
+      },
+      "counts": {
+        "planned_runs": 30,
+        "ok": 30,
+        "error": 0,
+        "fallback": 0
+      },
+      "selected_public_artifacts": [
+        {
+          "path": "backend/reports/benchmark_openrouter_nemotron35_supervl_structured_twoday_t01_m16384_20261107/execution_complete.json",
+          "sha256": "2bd6278d0efb0283d8ea293dc54bd537899f3b3c342c96dc2d2ebd0aae44dba8"
+        },
+        {
+          "path": "backend/reports/benchmark_openrouter_nemotron35_supervl_structured_twoday_t01_m16384_20261107/protocol_manifest.json",
+          "sha256": "1d0fbb69bc10750cf1e0dbce91e7a386d5d856e5b1cfa6e647aa78843bea77a1"
+        },
+        {
+          "path": "backend/reports/benchmark_openrouter_nemotron35_supervl_structured_twoday_t01_m16384_20261107/execution_day1_20261107.json",
+          "sha256": "d01d17e20c92cd5b97de7aee278a04339fae4b15902b331761842feaea1fa7fc"
+        },
+        {
+          "path": "backend/reports/benchmark_openrouter_nemotron35_supervl_structured_twoday_t01_m16384_20261107/execution_day2_20261108.json",
+          "sha256": "b5cc8950adcce3df8259a06da3791aa4b064d3298596fda2b17d2c4475413081"
+        }
+      ],
+      "internal_output_hashes_verified": 0
+    },
+    {
+      "evidence_id": "rq2_human_adjudication",
+      "rq": "RQ2",
+      "classification": "observed_blinded_consensus",
+      "anchor": "backend/reports/rq2_adjudication_completed/final_manifest.json",
+      "revisions": {},
+      "counts": {
+        "item_count": 1294,
+        "independent_agreement_count": 967,
+        "consensus_count": 327
+      },
+      "selected_public_artifacts": [
+        {
+          "path": "backend/reports/rq2_adjudication_completed/final_manifest.json",
+          "sha256": "3986ef4e072d6437ad906cdf6a35d1e9a4f065cd28fe0b1f8b37a487290c896d"
+        },
+        {
+          "path": "backend/reports/rq2_adjudication_completed/REPORT.md",
+          "sha256": "1122617ee43f752abde3606074ee9066a0927b7ad94df91272c7b0087f611b5d"
+        },
+        {
+          "path": "backend/reports/rq2_adjudication_completed/final_adjudication_ledger.csv",
+          "sha256": "c8d386528af1772383fca5b3711f3fb716d964d58989d5a03d416a488e76a88f"
+        },
+        {
+          "path": "backend/reports/rq2_adjudication_completed/final_adjudication_summary.json",
+          "sha256": "52fa02efc331c5b1314951ca02a81cba25535abbb7957ceefadd8cbee60e5fb0"
+        }
+      ],
+      "internal_output_hashes_verified": 2
+    },
+    {
+      "evidence_id": "rq2_final_analysis",
+      "rq": "RQ2",
+      "classification": "complete_exploratory_analysis",
+      "anchor": "backend/reports/rq2_final_analysis/manifest.json",
+      "revisions": {},
+      "counts": {},
+      "selected_public_artifacts": [
+        {
+          "path": "backend/reports/rq2_final_analysis/manifest.json",
+          "sha256": "367926f70dc653d668ec6dab50b539d7dd2275ae84cf137c6b75b6cd9db2d182"
+        },
+        {
+          "path": "backend/reports/rq2_final_analysis/REPORT.md",
+          "sha256": "82ce840b21a63635765e68bb9fe711ce1f85b1e5858dab780b44e7901a692bc8"
+        },
+        {
+          "path": "backend/reports/rq2_final_analysis/rq2_final_analysis.json",
+          "sha256": "f75ddeade9fa9b44a69490c302d80a6550a9a36db02ac0d03b976b99ffb784bb"
+        },
+        {
+          "path": "backend/reports/rq2_final_analysis/rq2_condition_comparisons.csv",
+          "sha256": "2b54949940e95bd025b6b1cd9917967d0b6cd99c5100624a5a4731f19e47e59d"
+        }
+      ],
+      "internal_output_hashes_verified": 2
+    },
+    {
+      "evidence_id": "rq2_format_primary",
+      "rq": "RQ2",
+      "classification": "primary_exploratory_format_matrix_38_of_40",
+      "anchor": "backend/reports/rq2_format_analysis/manifest.json",
+      "revisions": {
+        "git_revision": "0d225aabf6a01ac61d39223df3461e83db1c9170",
+        "software_revision": "b08c17b85053fd3a"
+      },
+      "counts": {
+        "n_runs": 40,
+        "n_ok": 38,
+        "n_error": 2
+      },
+      "selected_public_artifacts": [
+        {
+          "path": "backend/reports/benchmark_format_equivalence_google_gemini35flashlite_20261120/protocol_manifest.json",
+          "sha256": "c0729ab9ba8d42c380fff04208abf816d53a8feeff18882702bc70a53446386d"
+        },
+        {
+          "path": "backend/reports/rq2_format_analysis/manifest.json",
+          "sha256": "6872c716330820461f2de0a61cfb393dca952f64e02a89fc73f9823fa8ac444b"
+        },
+        {
+          "path": "backend/reports/rq2_format_analysis/REPORT.md",
+          "sha256": "b7fb151ff48eb06563224e5b278b913f3647a82dbfa1da756332aaa960153021"
+        },
+        {
+          "path": "backend/reports/rq2_format_analysis/format_summary.csv",
+          "sha256": "0de2c1fe6f1140e4bed7a02f190e42456a3ab340d8366bf2a9aad38fd9d2861a"
+        },
+        {
+          "path": "backend/reports/rq2_format_analysis/format_pairwise_comparisons.csv",
+          "sha256": "8edf9e28f90213fa7067f1062505b5b07106b96b08d6de168a2f98a7cd442400"
+        },
+        {
+          "path": "backend/reports/rq2_format_analysis/rq2_format_analysis.json",
+          "sha256": "a6194b0a79fc3e60d8b0a9c0922725d384ba811047973bfeb3d1c93e420e7b50"
+        }
+      ],
+      "internal_output_hashes_verified": 4
+    },
+    {
+      "evidence_id": "rq2_format_post_recovery",
+      "rq": "RQ2",
+      "classification": "secondary_post_outcome_sensitivity_40_of_40",
+      "anchor": "backend/reports/rq2_format_post_recovery_sensitivity/manifest.json",
+      "revisions": {
+        "primary_git_revision": "0d225aabf6a01ac61d39223df3461e83db1c9170",
+        "recovery_git_revision": "a680691a9f67fa37dc685eff3b3a787ffc288ea9",
+        "software_revision": "b08c17b85053fd3a"
+      },
+      "counts": {
+        "primary_result_preserved": {
+          "n_runs": 40,
+          "n_ok": 38,
+          "n_error": 2
+        },
+        "recovery_overlays": 2,
+        "post_recovery_result": {
+          "n_runs": 40,
+          "n_ok": 40,
+          "n_error": 0
+        }
+      },
+      "selected_public_artifacts": [
+        {
+          "path": "backend/reports/benchmark_format_equivalence_google_gemini35flashlite_selective_recovery_20261120/recovery_manifest.json",
+          "sha256": "edd568088795d64e4f39ba85f2c4f909a3fbe0a061f0d5bc1af22e2fb82de365"
+        },
+        {
+          "path": "backend/reports/rq2_format_post_recovery_sensitivity/manifest.json",
+          "sha256": "17886f499d0cca9ecd89b25bd41088e7f4402edc27136e36cabb4b43f718795f"
+        },
+        {
+          "path": "backend/reports/rq2_format_post_recovery_sensitivity/REPORT.md",
+          "sha256": "f65c33082bad6dedfb7d7d9dbe80416dd6dce57d346875e6941a687d7247f7f5"
+        },
+        {
+          "path": "backend/reports/rq2_format_post_recovery_sensitivity/format_summary_post_recovery.csv",
+          "sha256": "32415af2fc401931f843f818de66c98dbddceed8ecc9e9bd2d54e7af2f74d81e"
+        },
+        {
+          "path": "backend/reports/rq2_format_post_recovery_sensitivity/format_pairwise_post_recovery.csv",
+          "sha256": "69e1e443828e76a88b2aeb445ebcbc0d10566423bcfe0105db630fb227644cd4"
+        },
+        {
+          "path": "backend/reports/rq2_format_post_recovery_sensitivity/rq2_format_post_recovery_sensitivity.json",
+          "sha256": "a80dc0d53bc4afb03b93133fd2c0a1b32e07c2e8d192e6913cefab2bdef5c226"
+        }
+      ],
+      "internal_output_hashes_verified": 4
+    }
+  ],
+  "component_count": 7,
+  "selected_public_artifact_count": 34,
+  "internal_output_hashes_verified": 12,
+  "aggregate_selected_artifacts_sha256": "4423951fbcfb4d350302b33f6483472262e8cebdad74ed53599e7904d1241324",
+  "index_script": {
+    "path": "backend/build_research_evidence_index.py",
+    "normalized_text_sha256": "a8e2b55e1d55fc3dfc1f7587f21d5aab3837593a08bd1d815703029b4914993b"
+  },
+  "privacy": {
+    "private_mapping_artifacts_indexed": false,
+    "raw_participant_exports_indexed": false,
+    "evaluation_timestamps_published": false
+  },
+  "interpretation": "This index proves presence and integrity of selected public evidence; it does not convert exploratory or post-outcome analyses into confirmatory results."
+}

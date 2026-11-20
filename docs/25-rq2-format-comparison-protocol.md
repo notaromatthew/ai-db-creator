@@ -110,3 +110,11 @@ popolamento LLM e senza fallback, ottenendo F1 `0.6667` e query funzionali
 causa degli errori iniziali e non modifica il risultato primario di 38/40.
 Manifesto, hash e limiti sono in
 `backend/reports/benchmark_format_equivalence_google_gemini35flashlite_selective_recovery_20261120/`.
+
+L'analisi secondaria `rq2_format_matrix_post_recovery_sensitivity_v1` applica i
+due overlay solo alle chiavi primarie fallite e verifica configurazione, hash,
+provenienza e `population_mode=llm`. Nell'overlay 40/40 tutte le celle hanno
+successo tecnico 5/5; F1 e query restano rispettivamente `1.0000`/`1.0000` per
+la baseline e `0.6667`/`0.4000` per full-LLM. Tutte le differenze fra formati
+sono nulle. L'output separato è
+`backend/reports/rq2_format_post_recovery_sensitivity/`.

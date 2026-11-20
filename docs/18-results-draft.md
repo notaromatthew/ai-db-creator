@@ -326,6 +326,8 @@ PK (es. righe identiche su tutte le colonne non-PK), non prevista dal protocollo
 | `backend/reports/benchmark_rq1_expert_linked_recovered_20261113/` | Matrice storica RQ1 recuperata, 30 database, rivalutazione RQ2 secondaria e manifesti |
 | `backend/reports/benchmark_format_equivalence_google_gemini35flashlite_20261120/` | Matrice RQ2 per formato congelata: 40 run, manifesti e artefatti grezzi |
 | `backend/analyze_rq2_format_matrix.py` / `backend/reports/rq2_format_analysis/` | Validazione e analisi esplorativa riproducibile del confronto CSV/XLSX/TXT/PDF |
+| `backend/analyze_rq2_format_recovered_sensitivity.py` / `backend/reports/rq2_format_post_recovery_sensitivity/` | Overlay secondario post-recovery 40/40, senza sostituire il risultato primario 38/40 |
+| `backend/build_research_evidence_index.py` / `backend/reports/research_evidence_index/` | Indice finale pubblico RQ1/RQ2: classificazione, hash e controlli privacy degli artefatti conclusi |
 | `backend/recover_expert_linked_matrix.py` | Recupero riproducibile, verifica linkage seed 42, sanitizzazione e rivalutazione offline |
 | `backend/reports/benchmark_aggregates_01.json` / `_05.json` | Aggregati storici originali non recuperati; non necessari per la rivalutazione corrente |
 | `backend/reports/benchmark_t05_full/` | Serie t=0.5 ancora assente; non mescolare con la matrice recuperata |

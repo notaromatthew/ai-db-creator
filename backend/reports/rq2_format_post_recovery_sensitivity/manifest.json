@@ -1,0 +1,15 @@
+{
+  "analysis": "rq2_format_matrix_post_recovery_sensitivity_v1",
+  "status": "complete_secondary_post_outcome",
+  "post_outcome": true,
+  "primary_protocol_sha256": "c0729ab9ba8d42c380fff04208abf816d53a8feeff18882702bc70a53446386d",
+  "recovery_manifest_sha256": "edd568088795d64e4f39ba85f2c4f909a3fbe0a061f0d5bc1af22e2fb82de365",
+  "input_tree_sha256": "d648aff8bfc67df73d2892e53858e956563084b503d9f487d977b6f625cc2e01",
+  "outputs": {
+    "format_summary_post_recovery.csv": "32415af2fc401931f843f818de66c98dbddceed8ecc9e9bd2d54e7af2f74d81e",
+    "format_pairwise_post_recovery.csv": "69e1e443828e76a88b2aeb445ebcbc0d10566423bcfe0105db630fb227644cd4",
+    "rq2_format_post_recovery_sensitivity.json": "a80dc0d53bc4afb03b93133fd2c0a1b32e07c2e8d192e6913cefab2bdef5c226",
+    "REPORT.md": "f65c33082bad6dedfb7d7d9dbe80416dd6dce57d346875e6941a687d7247f7f5"
+  },
+  "interpretation": "technical recoverability only; do not replace or pool with primary outcomes"
+}

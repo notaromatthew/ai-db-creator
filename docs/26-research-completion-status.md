@@ -37,6 +37,8 @@ dai punteggi.
 - analisi esplorativa per formato con confronti esatti e correzione di Holm
 - recovery selettivo separato dei due fallimenti Gemini: 2/2 riusciti senza
   fallback, mantenendo immutato il risultato primario 38/40
+- sensibilità post-recovery riproducibile 40/40: metriche invariate e nessuna
+  differenza osservata fra formati, esplicitamente classificata post-outcome
 
 Gli output finali sono in:
 
@@ -44,6 +46,12 @@ Gli output finali sono in:
 - `backend/reports/rq2_final_analysis/`
 - `docs/21-rq2-primary-results.md`
 - `backend/reports/rq2_format_analysis/`
+- `backend/reports/rq2_format_post_recovery_sensitivity/`
+- `backend/reports/research_evidence_index/`
+
+L'indice finale RQ1/RQ2 classifica sette componenti, registra gli SHA-256 di 34
+artefatti pubblici selezionati e verifica 12 hash interni. Esclude mapping
+privati, export grezzi dei partecipanti e tempi di compilazione.
 
 ### Infrastruttura per RQ0/RQ3/RQ4
 

@@ -171,6 +171,16 @@ recuperabilità tecnica ma non sostituiscono gli outcome: la matrice primaria
 resta 38/40. Nemotron non è stato necessario. Il pacchetto separato è in
 `backend/reports/benchmark_format_equivalence_google_gemini35flashlite_selective_recovery_20261120/`.
 
+L'overlay riproducibile post-recovery produce inoltre una sensibilità secondaria
+completa 40/40. Tutte le celle raggiungono 5/5 successi tecnici, mentre le
+metriche restano invariate: baseline F1 `1.0000` e query `1.0000`; full-LLM F1
+`0.6667` e query `0.4000`, con 0/5 equivalenti in ogni formato. Le differenze
+fra formati sono tutte zero e i confronti Fisher/Holm hanno `p=1.0000`. Questo
+rafforza la robustezza descrittiva delle metriche sul campione osservato, ma è
+un'analisi post-outcome e non trasforma il risultato primario in 40/40. Script,
+manifesto e output sono in `backend/analyze_rq2_format_recovered_sensitivity.py`
+e `backend/reports/rq2_format_post_recovery_sensitivity/`.
+
 ## Analisi statistica esplorativa e adjudication finale
 
 I confronti post-hoc tra condizioni usano i cinque run di ciascuna cella,
@@ -283,8 +293,9 @@ perfetto, ma solo metà delle query funzionali passa in media.
 - I lunghi output Hospital e Library hanno prodotto la maggior parte dei
   fallback; questa è un'osservazione dai log. L'attribuzione causale a lunghezza,
   formato della risposta o limite del client richiede un esperimento separato.
-- L'adjudication umana cieca delle discrepanze critiche e dei conflitti tra F1
-  ed equivalenza funzionale resta necessaria prima del testo definitivo.
+- L'adjudication umana cieca è conclusa su tutte le 1.294 discrepanze; 327
+  disaccordi sono stati risolti mediante consenso e integrati nel risultato
+  finale.
 - L'ordine del runner è bloccato per dataset e condizione. L'esaurimento quota
   ha colpito Hospital `full_llm`, eseguito per ultimo: il suo 0/5 non può essere
   attribuito alla condizione. Una replica richiede quota sufficiente e ordine
@@ -300,9 +311,9 @@ perfetto, ma solo metà delle query funzionali passa in media.
 - Completato: fixture semanticamente equivalente CSV/XLSX/TXT/PDF con 45 fatti,
   validazione automatica e hash congelati in
   `data/datasets/format_equivalence/fixture_manifest.json`.
-- Da eseguire: nuova matrice 4 formati x 2 condizioni x 5 repliche, dopo avere
-  congelato provider, modello e revisione secondo
-  `docs/25-rq2-format-comparison-protocol.md`.
+- Completato: matrice 4 formati x 2 condizioni x 5 repliche con protocollo
+  congelato secondo `docs/25-rq2-format-comparison-protocol.md`; risultato
+  primario 38/40 e recovery selettivo separato 2/2.
 - Completato: pacchetto cieco completo di 1.294 discrepanze, due ordini
   indipendenti, consenso sui 327 disaccordi e mappa privata ricongiunta dopo la
   chiusura; artefatti congelati in
