@@ -557,6 +557,13 @@ consensus phase are now complete. Exact pre-consensus agreement was 967/1,294
 distributions were strongly concentrated on the error category and expected
 agreement was 76.6\%.
 
+A post-outcome selective recovery repeated only the two failed format runs once
+with the same Gemini configuration. Both completed without fallback and matched
+the other successful full-LLM runs (F1 0.6667; functional-query pass rate
+0.4000). Because selection was conditioned on observed failure, these attempts
+demonstrate technical recoverability but do not replace or enter the primary
+38/40 result.
+
 An independent structured-output sensitivity was subsequently preregistered
 and executed over two quota-bounded day blocks with an interleaved schedule.
 All 30 runs completed without fallback under one software revision, OpenRouter

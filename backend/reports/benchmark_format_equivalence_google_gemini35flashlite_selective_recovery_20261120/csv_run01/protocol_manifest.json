@@ -1,0 +1,32 @@
+{
+  "protocol_version": "rq2-format-comparison-v1",
+  "created_at": "2026-11-20T00:33:03.517209+00:00",
+  "git_revision": "a680691a9f67fa37dc685eff3b3a787ffc288ea9",
+  "software_revision": "b08c17b85053fd3a",
+  "datasets": [
+    "format_equivalence"
+  ],
+  "conditions": [
+    "full_llm"
+  ],
+  "source_formats": [
+    "csv"
+  ],
+  "runs_per_cell": 3,
+  "run_indices": [
+    1
+  ],
+  "schedule": "interleaved",
+  "temperature": 0.1,
+  "parallel": 1,
+  "adjudicate": false,
+  "provider": "Google Gemini",
+  "model": "gemini-3.5-flash-lite",
+  "schema_output_contract": "legacy-pydantic-v1",
+  "max_output_tokens": 8192,
+  "timeout_seconds": 120.0,
+  "provider_retries": 0,
+  "max_requests_per_minute": 8,
+  "research_mode": true,
+  "llm_cache_enabled": false
+}

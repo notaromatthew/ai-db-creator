@@ -100,3 +100,13 @@ Artefatti e analisi riproducibile:
 - `backend/reports/benchmark_format_equivalence_google_gemini35flashlite_20261120/`;
 - `backend/analyze_rq2_format_matrix.py`;
 - `backend/reports/rq2_format_analysis/`.
+
+## Recovery selettivo post-outcome
+
+I due fallimenti sono stati successivamente ripetuti una sola volta con la
+stessa configurazione Gemini, in un output separato. Entrambi sono riusciti con
+popolamento LLM e senza fallback, ottenendo F1 `0.6667` e query funzionali
+`0.4000`. La sensibilità dimostra recuperabilità tecnica, non identifica la
+causa degli errori iniziali e non modifica il risultato primario di 38/40.
+Manifesto, hash e limiti sono in
+`backend/reports/benchmark_format_equivalence_google_gemini35flashlite_selective_recovery_20261120/`.

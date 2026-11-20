@@ -23,6 +23,8 @@ logs/
 !backend/reports/benchmark_rq1_expert_linked_recovered_20261113/source_snapshot/projects/**
 !backend/reports/benchmark_format_equivalence_google_gemini35flashlite_20261120/**/*.db
 !backend/reports/benchmark_format_equivalence_google_gemini35flashlite_20261120/**/*.sqlite
+!backend/reports/benchmark_format_equivalence_google_gemini35flashlite_selective_recovery_20261120/**/*.db
+!backend/reports/benchmark_format_equivalence_google_gemini35flashlite_selective_recovery_20261120/**/*.sqlite
 .venv/
 backend/.venv/
 

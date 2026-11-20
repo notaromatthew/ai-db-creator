@@ -1,0 +1,2 @@
+dataset,source_format,condition,run,project_id,status,error,population_mode,global_precision,global_recall,global_f1,total_cells,missing_rows,extra_rows,functional_query_pass_rate,functionally_equivalent
+format_equivalence,xlsx,full_llm,3,f4fddee4-862f-4df3-bbaa-6a06bf42b62f,ok,,llm,0.6667,0.6667,0.6667,68,45,45,0.4,False

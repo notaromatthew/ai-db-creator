@@ -163,6 +163,14 @@ equivalenza generale fra formati. Artefatti e analisi sono in
 `backend/reports/benchmark_format_equivalence_google_gemini35flashlite_20261120/`
 e `backend/reports/rq2_format_analysis/`.
 
+Un recovery selettivo post-outcome ha ripetuto una sola volta i due fallimenti
+con la stessa configurazione Gemini. CSV run 1 e XLSX run 3 sono entrambi
+riusciti senza fallback, con F1 `0.6667` e query funzionali `0.4000`. Poiché la
+selezione è condizionata agli errori osservati, questi tentativi documentano la
+recuperabilità tecnica ma non sostituiscono gli outcome: la matrice primaria
+resta 38/40. Nemotron non è stato necessario. Il pacchetto separato è in
+`backend/reports/benchmark_format_equivalence_google_gemini35flashlite_selective_recovery_20261120/`.
+
 ## Analisi statistica esplorativa e adjudication finale
 
 I confronti post-hoc tra condizioni usano i cinque run di ciascuna cella,

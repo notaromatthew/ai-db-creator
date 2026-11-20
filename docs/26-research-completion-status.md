@@ -35,6 +35,8 @@ dai punteggi.
 - matrice separata CSV/XLSX/TXT/PDF: 40 run pianificati, 38 successi senza
   fallback e due fallimenti di generazione conservati come outcome
 - analisi esplorativa per formato con confronti esatti e correzione di Holm
+- recovery selettivo separato dei due fallimenti Gemini: 2/2 riusciti senza
+  fallback, mantenendo immutato il risultato primario 38/40
 
 Gli output finali sono in:
 

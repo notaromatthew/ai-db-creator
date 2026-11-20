@@ -1,0 +1,51 @@
+{
+  "recovery_type": "selective_failure_sensitivity",
+  "created_at": "2026-11-20",
+  "primary_matrix": "backend/reports/benchmark_format_equivalence_google_gemini35flashlite_20261120",
+  "primary_result_remains": {
+    "n_runs": 40,
+    "ok": 38,
+    "error": 2
+  },
+  "selection_rule": "retry exactly the two primary runs with status=error",
+  "provider": "Google Gemini",
+  "model": "gemini-3.5-flash-lite",
+  "temperature": 0.1,
+  "max_output_tokens": 8192,
+  "timeout_seconds": 120.0,
+  "provider_retries": 0,
+  "research_mode": true,
+  "primary_git_revision": "0d225aabf6a01ac61d39223df3461e83db1c9170",
+  "recovery_git_revision": "a680691a9f67fa37dc685eff3b3a787ffc288ea9",
+  "software_revision": "b08c17b85053fd3a",
+  "alternative_model_used": false,
+  "runs": [
+    {
+      "source_format": "csv",
+      "run_index": 1,
+      "primary_status": "error",
+      "recovery_status": "ok",
+      "population_mode": "llm",
+      "global_f1": 0.6667,
+      "functional_query_pass_rate": 0.4,
+      "functionally_equivalent": false,
+      "primary_run_sha256": "38d3e5635bc2f393b35b0aee9c520a52b7d1c52fdff51132617b18817c0e9f71",
+      "recovery_run_sha256": "55c87ba0f18aaf8dbc2b25fbb6c0f4c1cd3f0111376c43cd3c75bccde0d851bc",
+      "generated_database_sha256": "1865aabef60561dac2724e20883fdafe7a23a99b6346bfdd63b7860951fee16d"
+    },
+    {
+      "source_format": "xlsx",
+      "run_index": 3,
+      "primary_status": "error",
+      "recovery_status": "ok",
+      "population_mode": "llm",
+      "global_f1": 0.6667,
+      "functional_query_pass_rate": 0.4,
+      "functionally_equivalent": false,
+      "primary_run_sha256": "d73ebad9d93364c33ea5424a7c22ce851d1248f374e93040b362413e1e184e87",
+      "recovery_run_sha256": "09f03ceedde8b4df265ef79ad0f3e3e8685ddc1068792b3cd52c3458287df5c9",
+      "generated_database_sha256": "beded564adab9be3cad4b112ff324948620af0507c08e3f586d9203814796bdd"
+    }
+  ],
+  "interpretation": "technical recoverability only; do not replace or pool with primary outcomes"
+}
