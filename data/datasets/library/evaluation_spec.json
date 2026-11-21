@@ -1,12 +1,16 @@
 {
-  "version": "rq2_functional_v1",
+  "version": "rq2_functional_v2",
   "dataset": "library",
-  "status": "frozen_before_regenerated_outcomes",
+  "status": "amended_after_expert_consensus_2026-11-21",
   "natural_keys": {
     "categories": ["name"],
     "members": ["email"],
     "books": ["isbn"],
     "loans": ["member_id", "loan_date", "due_date"]
+  },
+  "business_key_paths": {
+    "loans": ["members.email", "loan_date", "due_date"],
+    "duplicate_policy": "multiset"
   },
   "observable_scope": {
     "tables": {
@@ -23,7 +27,7 @@
         "key_columns": ["isbn"]
       },
       "loans": {
-        "columns": ["loan_date", "due_date"],
+        "columns": ["loan_date", "due_date", "returned_on"],
         "key_columns": ["member_id", "loan_date", "due_date"]
       }
     },
@@ -96,7 +100,7 @@
     },
     {
       "id": "L06",
-      "description": "Numero di prestiti per membro",
+      "description": "Numero di prestiti per membro con almeno un prestito",
       "critical": false,
       "sql": "SELECT m.email, COUNT(*) AS loan_count FROM loans l JOIN members m ON m.member_id = l.member_id GROUP BY m.email",
       "comparison": {"mode": "unordered_rows", "columns": ["email", "loan_count"]}

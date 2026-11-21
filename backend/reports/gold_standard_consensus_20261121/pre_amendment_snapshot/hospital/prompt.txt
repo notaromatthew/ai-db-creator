@@ -1,0 +1,10 @@
+Design a fully normalized relational schema (3NF) for a hospital management system.
+
+Source documents describe: patients, doctors, wards, medications, appointments,
+treatments, prescriptions linking treatments to medications, and invoices
+referencing appointments. Department-to-ward mapping and billing rules are
+described in the operational notes.
+
+Infer tables, primary keys, foreign keys, column names, types, nullability and
+uniqueness constraints from the attached documents. Produce a clean relational
+schema ready to be populated.

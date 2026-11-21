@@ -1,0 +1,138 @@
+{
+  "version": "rq2_functional_v1",
+  "dataset": "university",
+  "status": "frozen_before_regenerated_outcomes",
+  "natural_keys": {
+    "students": ["email"],
+    "courses": ["course_code"],
+    "enrollments": ["student_id", "course_id", "semester"]
+  },
+  "observable_scope": {
+    "tables": {
+      "students": {
+        "columns": ["name", "email"],
+        "key_columns": ["email"],
+        "row_keys": [
+          ["student11@university.example"], ["student12@university.example"],
+          ["student14@university.example"], ["student15@university.example"],
+          ["student16@university.example"], ["student17@university.example"],
+          ["student18@university.example"], ["student21@university.example"],
+          ["student22@university.example"], ["student23@university.example"],
+          ["student24@university.example"], ["student25@university.example"],
+          ["student26@university.example"], ["student27@university.example"],
+          ["student28@university.example"], ["student29@university.example"],
+          ["student3@university.example"], ["student30@university.example"],
+          ["student4@university.example"], ["student6@university.example"],
+          ["student8@university.example"], ["student9@university.example"]
+        ]
+      },
+      "courses": {
+        "columns": ["course_code", "title", "credits"],
+        "key_columns": ["course_code"]
+      },
+      "enrollments": {
+        "columns": ["semester", "grade"],
+        "key_columns": ["student_id", "course_id", "semester"]
+      }
+    },
+    "excluded": {
+      "students_not_in_source": {
+        "reason": "Eight gold students do not occur in any supplied source document."
+      },
+      "enrollments.student_id": {
+        "reason": "Synthetic identifier; row alignment resolves it through students.email."
+      },
+      "enrollments.course_id": {
+        "reason": "Synthetic identifier; row alignment resolves it through courses.course_code."
+      }
+    }
+  },
+  "canonicalization": {
+    "unicode": "NFKC",
+    "text": {"trim": true, "collapse_whitespace": true, "case_sensitive": true},
+    "case_insensitive_columns": ["email", "course_code"],
+    "numeric": {"compare_by_value": true, "absolute_tolerance": 0.0},
+    "date": "YYYY-MM-DD",
+    "datetime": "YYYY-MM-DD HH:MM:SS",
+    "null_equals_empty": false,
+    "ignore_row_order": true
+  },
+  "functional_equivalence": {
+    "critical_query_pass_rate": 1.0,
+    "overall_query_pass_rate": 0.9,
+    "max_critical_integrity_violations": 0,
+    "require_no_missing_or_extra_critical_entities": true
+  },
+  "functional_queries": [
+    {
+      "id": "U01",
+      "description": "Numero di iscrizioni osservabili",
+      "critical": true,
+      "sql": "SELECT COUNT(*) AS enrollment_count FROM enrollments",
+      "comparison": {"mode": "scalar", "columns": ["enrollment_count"]}
+    },
+    {
+      "id": "U02",
+      "description": "Studenti presenti nelle iscrizioni con identità di business",
+      "critical": true,
+      "sql": "SELECT DISTINCT s.email, s.name FROM students s JOIN enrollments e ON e.student_id = s.student_id",
+      "comparison": {"mode": "unordered_rows", "columns": ["email", "name"]}
+    },
+    {
+      "id": "U03",
+      "description": "Catalogo dei corsi effettivamente referenziati",
+      "critical": true,
+      "sql": "SELECT DISTINCT c.course_code, c.title, c.credits FROM courses c JOIN enrollments e ON e.course_id = c.course_id",
+      "comparison": {"mode": "unordered_rows", "columns": ["course_code", "title", "credits"]}
+    },
+    {
+      "id": "U04",
+      "description": "Fatti completi di iscrizione indipendenti dagli ID sintetici",
+      "critical": true,
+      "sql": "SELECT s.email, c.course_code, e.semester, e.grade FROM enrollments e JOIN students s ON s.student_id = e.student_id JOIN courses c ON c.course_id = e.course_id",
+      "comparison": {"mode": "unordered_rows", "columns": ["email", "course_code", "semester", "grade"]}
+    },
+    {
+      "id": "U05",
+      "description": "Numero di iscrizioni per corso",
+      "critical": false,
+      "sql": "SELECT c.course_code, COUNT(*) AS enrollment_count FROM enrollments e JOIN courses c ON c.course_id = e.course_id GROUP BY c.course_code",
+      "comparison": {"mode": "unordered_rows", "columns": ["course_code", "enrollment_count"]}
+    },
+    {
+      "id": "U06",
+      "description": "Numero di iscrizioni per semestre",
+      "critical": false,
+      "sql": "SELECT semester, COUNT(*) AS enrollment_count FROM enrollments GROUP BY semester",
+      "comparison": {"mode": "unordered_rows", "columns": ["semester", "enrollment_count"]}
+    },
+    {
+      "id": "U07",
+      "description": "Carico di corsi per studente osservato",
+      "critical": false,
+      "sql": "SELECT s.email, COUNT(*) AS course_count FROM enrollments e JOIN students s ON s.student_id = e.student_id GROUP BY s.email",
+      "comparison": {"mode": "unordered_rows", "columns": ["email", "course_count"]}
+    },
+    {
+      "id": "U08",
+      "description": "Distribuzione dei voti",
+      "critical": false,
+      "sql": "SELECT grade, COUNT(*) AS grade_count FROM enrollments GROUP BY grade",
+      "comparison": {"mode": "unordered_rows", "columns": ["grade", "grade_count"]}
+    },
+    {
+      "id": "U09",
+      "description": "Crediti associati a ciascun corso referenziato",
+      "critical": false,
+      "sql": "SELECT course_code, credits FROM courses",
+      "comparison": {"mode": "unordered_rows", "columns": ["course_code", "credits"]}
+    },
+    {
+      "id": "U10",
+      "description": "Conteggio degli studenti osservati",
+      "critical": false,
+      "sql": "SELECT COUNT(DISTINCT student_id) AS observed_student_count FROM enrollments",
+      "comparison": {"mode": "scalar", "columns": ["observed_student_count"]}
+    }
+  ]
+}

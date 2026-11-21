@@ -80,13 +80,17 @@ def build() -> None:
         member_id = rng.randint(1, 20)
         loan_date = date(2026, 1, 1) + timedelta(days=rng.randint(0, 180))
         due_date = loan_date + timedelta(days=rng.randint(7, 42))
-        loans.append((loan_id, book_id, member_id, loan_date.isoformat(), due_date.isoformat()))
+        returned_on = None
+        if rng.random() >= 0.2:
+            returned_on = loan_date + timedelta(days=rng.randint(1, 60))
+        loans.append((loan_id, book_id, member_id, loan_date.isoformat(), due_date.isoformat(),
+                      returned_on.isoformat() if returned_on else None))
 
     fines = []
     for fine_id, loan in enumerate(loans, start=1):
-        if rng.random() < 0.35:
+        if loan[5] is not None and loan[5] > loan[4]:
             amount = round(rng.uniform(1.0, 15.0), 2)
-            paid = None if rng.random() < 0.4 else (date.today().isoformat())
+            paid = None if rng.random() < 0.4 else date(2026, 12, 31).isoformat()
             fines.append((fine_id, loan[0], amount, paid))
 
     (HERE / "source").mkdir(parents=True, exist_ok=True)
@@ -106,15 +110,19 @@ def build() -> None:
     for loan in loans:
         loans_by_member.setdefault(loan[2], []).append(loan)
     with (HERE / "source" / "loans_members.csv").open("w", encoding="utf-8", newline="") as output:
-        output.write("member_id,full_name,email,loan_date,due_date\n")
+        output.write("member_id,full_name,email,loan_date,due_date,returned_on\n")
         for member_id, member_loans in loans_by_member.items():
             member = members_rows[member_id - 1]
             for loan in member_loans:
-                output.write(f"{member[0]},{member[1]},{member[2]},{loan[3]},{loan[4]}\n")
+                output.write(
+                    f"{member[0]},{member[1]},{member[2]},{loan[3]},{loan[4]},{loan[5] or ''}\n"
+                )
 
     _write_pdf((HERE / "source" / "description.pdf"))
 
-    conn = sqlite3.connect(str(HERE / "ground_truth.db"))
+    database_path = HERE / "ground_truth.db"
+    database_path.unlink(missing_ok=True)
+    conn = sqlite3.connect(str(database_path))
     conn.executescript("""
         PRAGMA foreign_keys = ON;
         CREATE TABLE categories (
@@ -141,13 +149,14 @@ def build() -> None:
             member_id INTEGER NOT NULL,
             loan_date DATE NOT NULL,
             due_date DATE NOT NULL,
+            returned_on DATE,
             FOREIGN KEY (book_id) REFERENCES books(book_id),
             FOREIGN KEY (member_id) REFERENCES members(member_id)
         );
         CREATE TABLE fines (
             fine_id INTEGER PRIMARY KEY,
-            loan_id INTEGER NOT NULL,
-            amount REAL NOT NULL,
+            loan_id INTEGER NOT NULL UNIQUE,
+            amount NUMERIC(10,2) NOT NULL,
             paid_on DATE,
             FOREIGN KEY (loan_id) REFERENCES loans(loan_id)
         );
@@ -155,7 +164,7 @@ def build() -> None:
     conn.executemany("INSERT INTO categories VALUES (?, ?)", categories)
     conn.executemany("INSERT INTO members VALUES (?, ?, ?, ?)", members_rows)
     conn.executemany("INSERT INTO books VALUES (?, ?, ?, ?, ?)", books_rows)
-    conn.executemany("INSERT INTO loans VALUES (?, ?, ?, ?, ?)", loans)
+    conn.executemany("INSERT INTO loans VALUES (?, ?, ?, ?, ?, ?)", loans)
     conn.executemany("INSERT INTO fines VALUES (?, ?, ?, ?)", fines)
     conn.commit()
     conn.close()
@@ -173,12 +182,13 @@ def _write_pdf(path: Path) -> None:
         "the fine has an amount and, once paid, a payment date. A fine depends on its loan, and "
         "a loan depends on both a member and a book.",
     )
+    path.unlink(missing_ok=True)
     try:
         document = fitz.open()
         page = document.new_page()
         page.insert_textbox(fitz.Rect(50, 50, 545, 792), "\n\n".join(paragraphs),
                             fontsize=11, fontname="helv")
-        document.save(path)
+        document.save(path, no_new_id=True, reproducible=True)
         document.close()
     except Exception:
         (HERE / "source" / "description.txt").write_text("\n\n".join(paragraphs), encoding="utf-8")

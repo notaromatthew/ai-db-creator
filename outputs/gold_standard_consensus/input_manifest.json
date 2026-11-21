@@ -1,0 +1,19 @@
+{
+  "generated_on": "2026-11-21",
+  "inputs": [
+    {
+      "reviewer": "GOLD-A",
+      "source_name": "Valutazione_gold_standard_GOLD-A.xlsx",
+      "archived_path": "outputs/gold_standard_consensus/inputs/Valutazione_gold_standard_GOLD-A.xlsx",
+      "sha256": "afb38e5daa00b50e811da79279270d2d25850984f4fa9c3aff30f40f8a1c8a24",
+      "size_bytes": 26317
+    },
+    {
+      "reviewer": "GOLD-B",
+      "source_name": "Valutazione_gold_standard_GOLD-B.xlsx",
+      "archived_path": "outputs/gold_standard_consensus/inputs/Valutazione_gold_standard_GOLD-B.xlsx",
+      "sha256": "ac5eebe497b71a05554f4a60b99da847bd4dbe75b371a37897466efb52f88645",
+      "size_bytes": 25055
+    }
+  ]
+}

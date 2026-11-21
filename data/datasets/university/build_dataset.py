@@ -2,7 +2,7 @@
 
 Generates three artifacts under ``data/datasets/university/``:
 
-- ``source/enrollments.csv``    denormalised CSV (30 rows) as uploaded by a user
+- ``source/enrollments.csv``    denormalised CSV (45 rows) as uploaded by a user
 - ``source/description.pdf``    two-paragraph domain description
 - ``ground_truth.db``           normalised 3NF SQLite database (gold answer)
 
@@ -10,7 +10,7 @@ The generator uses a fixed random seed so the dataset is byte-for-byte
 reproducible across runs.
 
 Design notes (documented deviation from docs/11, section 1.1):
-- The protocol specifies a 3-column CSV; the initial dataset uses a richer
+- The protocol specifies a 3-column CSV; the dataset uses a richer
   denormalised CSV (7 columns) so that students/courses/enrollments can be
   reconstructed unambiguously from the CSV alone. Trim to 3 columns if strict
   protocol fidelity is required.
@@ -69,7 +69,9 @@ def build() -> None:
 
     _write_pdf((HERE / "source" / "description.pdf"), students, courses)
 
-    conn = sqlite3.connect(str(HERE / "ground_truth.db"))
+    database_path = HERE / "ground_truth.db"
+    database_path.unlink(missing_ok=True)
+    conn = sqlite3.connect(str(database_path))
     conn.executescript("""
         PRAGMA foreign_keys = ON;
         CREATE TABLE students (
@@ -88,7 +90,7 @@ def build() -> None:
             course_id INTEGER NOT NULL,
             semester TEXT NOT NULL,
             grade TEXT NOT NULL,
-            PRIMARY KEY (student_id, course_id),
+            PRIMARY KEY (student_id, course_id, semester),
             FOREIGN KEY (student_id) REFERENCES students(student_id),
             FOREIGN KEY (course_id) REFERENCES courses(course_id)
         );
@@ -112,13 +114,14 @@ def _write_pdf(path: Path, students: list, courses: list) -> None:
         "A student may enroll in several courses and a course may have many enrolled students; "
         "each enrollment is recorded with the semester and the resulting grade.",
     )
+    path.unlink(missing_ok=True)
     try:
         document = fitz.open()
         page = document.new_page()
         rect = fitz.Rect(50, 50, 545, 792)
         content = "\n\n".join(paragraphs)
         page.insert_textbox(rect, content, fontsize=11, fontname="helv")
-        document.save(path)
+        document.save(path, no_new_id=True, reproducible=True)
         document.close()
     except Exception:
         (HERE / "source" / "description.txt").write_text("\n\n".join(paragraphs), encoding="utf-8")

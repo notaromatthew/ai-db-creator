@@ -12,7 +12,7 @@ Il database risultante può essere esplorato tramite un'interfaccia CRUD interat
 
 - **RQ0:** come si confronta il flusso completo AI + Interfaccia con un processo interamente manuale per utenti non esperti?
 - **RQ1:** come si confronta la qualità degli schemi generati via LLM con schemi gold-standard creati a mano, giudicata da esperti di database?
-- **RQ2:** quanto è accurata la generazione automatica dei dati al livello di cella, rispetto a dati di ground truth?
+- **RQ2:** quanto è accurata la generazione automatica dei dati, sia al livello di cella sia per equivalenza funzionale, rispetto a dati di ground truth?
 - **RQ3:** un'interfaccia visuale human-in-the-loop migliora la qualità dello schema rispetto a un approccio solo automatico?
 - **RQ4:** quali pattern di interazione emergono quando utenti non esperti progettano database tramite un'interfaccia LLM?
 
@@ -101,7 +101,7 @@ The resulting database can be explored through an interactive CRUD interface, qu
 
 - **RQ0**: How does a complete AI + Interface workflow compare with a fully manual process for non-expert users?
 - **RQ1**: How does the quality of LLM-generated schemas compare with hand-made gold-standard schemas, judged by database experts?
-- **RQ2**: How accurate is automatic data population at the cell level, measured against ground-truth data?
+- **RQ2**: How accurate is automatic data population at both cell level and functional-equivalence level, measured against ground-truth data?
 - **RQ3**: Does a human-in-the-loop visual interface improve schema quality compared to an automatic-only approach?
 - **RQ4**: What interaction patterns emerge when non-expert users design databases through an LLM-powered interface?
 
@@ -294,7 +294,7 @@ frontend/
 2. **Group A (AI Only)**: system generates schema and population automatically
 3. **Group B (AI + Interface)**: system generates first version; users review and edit via dashboard
 
-The preregistered RQ0 comparison is Manual vs AI + Interface; the preregistered RQ3 comparison is AI-Only vs AI + Interface. See `docs/08-research-notes.md`, `docs/14-usability-pilot-protocol.md`, the pre-collection amendment in `docs/23-study-protocol-amendment-2026-11-18.md`, and the frozen analysis workflow in `docs/19-user-study-analysis.md`. RQ2 observable-scope and functional-equivalence rules are frozen in `docs/20-rq2-functional-equivalence-protocol.md`; the primary execution and its limitations are reported in `docs/21-rq2-primary-results.md`. The recovered matrix that is directly linked to the observed RQ1 ratings is documented separately in `docs/22-rq1-expert-linked-matrix-recovery.md`; it is primary for RQ1 linkage and only a historical secondary analysis for RQ2. The separate three-expert RQ1 panel is reproducible from `backend/analyze_rq1_expert_replication.py`; its pseudonymized canonical input, manifest and results are in `backend/reports/rq1_expert_replication/` and are not pooled with the 45 trained student raters.
+The preregistered RQ0 comparison is Manual vs AI + Interface; the preregistered RQ3 comparison is AI-Only vs AI + Interface. See `docs/08-research-notes.md`, `docs/14-usability-pilot-protocol.md`, the pre-collection amendment in `docs/23-study-protocol-amendment-2026-11-18.md`, and the frozen analysis workflow in `docs/19-user-study-analysis.md`. RQ2 observable-scope and functional-equivalence rules are frozen in `docs/20-rq2-functional-equivalence-protocol.md`; the historical v1 execution and its limitations are reported in `docs/21-rq2-primary-results.md`, while the expert-approved v2 gold-standard amendment is recorded in `docs/26-gold-standard-consensus-amendment-2026-11-21.md`. The recovered matrix that is directly linked to the observed RQ1 ratings is documented separately in `docs/22-rq1-expert-linked-matrix-recovery.md`; it is primary for RQ1 linkage and only a historical secondary analysis for RQ2. The separate three-expert RQ1 panel is reproducible from `backend/analyze_rq1_expert_replication.py`; its pseudonymized canonical input, manifest and results are in `backend/reports/rq1_expert_replication/` and are not pooled with the 45 trained student raters.
 
 ### Raccolta metriche / Metrics
 

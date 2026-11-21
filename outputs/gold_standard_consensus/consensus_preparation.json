@@ -1,0 +1,1987 @@
+{
+  "generated_on": "2026-11-21",
+  "scope": "Technical gold-standard review only; qualification and signed independence forms deferred.",
+  "inputs": [
+    {
+      "reviewer": "GOLD-A",
+      "source_name": "Valutazione_gold_standard_GOLD-A.xlsx",
+      "archived_path": "outputs/gold_standard_consensus/inputs/Valutazione_gold_standard_GOLD-A.xlsx",
+      "sha256": "afb38e5daa00b50e811da79279270d2d25850984f4fa9c3aff30f40f8a1c8a24",
+      "size_bytes": 26317
+    },
+    {
+      "reviewer": "GOLD-B",
+      "source_name": "Valutazione_gold_standard_GOLD-B.xlsx",
+      "archived_path": "outputs/gold_standard_consensus/inputs/Valutazione_gold_standard_GOLD-B.xlsx",
+      "sha256": "ac5eebe497b71a05554f4a60b99da847bd4dbe75b371a37897466efb52f88645",
+      "size_bytes": 25055
+    }
+  ],
+  "summary": {
+    "total_items": 69,
+    "agreement_accept": 44,
+    "needs_consensus": 25,
+    "verdict_disagreements": 13,
+    "status_counts": {
+      "ACCORDO_ACCETTA": 44,
+      "ACCORDO_MODIFICA_DA_FORMULARE": 3,
+      "ACCORDO_MODIFICA_GRAVITA_DIVERSA": 9,
+      "DISACCORDO_VERDETTO": 13
+    },
+    "dataset_counts": {
+      "university": {
+        "total": 23,
+        "agreement_accept": 17,
+        "needs_consensus": 6,
+        "verdict_disagreements": 4
+      },
+      "library": {
+        "total": 23,
+        "agreement_accept": 16,
+        "needs_consensus": 7,
+        "verdict_disagreements": 5
+      },
+      "hospital": {
+        "total": 23,
+        "agreement_accept": 11,
+        "needs_consensus": 12,
+        "verdict_disagreements": 4
+      }
+    },
+    "personal_forms_status": "DEFERRED_BY_USER"
+  },
+  "items": [
+    {
+      "key": "H-D01",
+      "dataset": "hospital",
+      "item_id": "H-D01",
+      "area": "Dati",
+      "artifact": "ground_truth.db",
+      "object": "Integrità referenziale",
+      "criterion": "Il database di ground truth non contiene riferimenti orfani o violazioni dei vincoli dichiarati.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "PRAGMA foreign_key_check vuoto; PK e UNIQUE rispettate.",
+        "notes": "Anomalie semantiche non coperte da vincoli: 124 fatture su 163 con issued_on precedente alla data dell'appuntamento (vedi H-D05)."
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "PRAGMA integrity_check = ok, foreign_key_check senza righe.",
+        "notes": "Integrità SQL distinta dalla coerenza semantica: vedere H-D02."
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "H-D02",
+      "dataset": "hospital",
+      "item_id": "H-D02",
+      "area": "Dati",
+      "artifact": "source/*; ground_truth.db",
+      "object": "Coerenza con le fonti",
+      "criterion": "I dati osservabili nel ground truth corrispondono ai documenti sorgente dopo la canonicalizzazione prevista.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "MODIFICA",
+        "severity": "MAGGIORE",
+        "correction": "Rigenerare ground_truth.db e appointments.csv con ward_id coerente con il dipartimento del medico, oppure eliminare la regola reparto-dipartimento da operational_notes.txt, description.pdf e README.",
+        "rationale": "Il CSV coincide con il DB (100 pazienti, 200 appuntamenti), ma solo 29 appuntamenti su 200 hanno un reparto coerente con la regola delle note (es. appointment 1: Cardiologia in Reparto E, riga 1 di appointments.csv). build_dataset.py assegna ward_id casualmente. Un sistema che applica la regola produce risultati diversi dal gold.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "CRITICA",
+        "correction": "Riconciliare CSV, note e gold; rigenerare dataset versionato dopo chiarimento.",
+        "rationale": "CSV coincidenti con join (100 pazienti, 200 appuntamenti), ma appuntamento 1: Cardiologia/Reparto E anziché A; 171 mismatch. 29 appuntamenti trattati senza fattura, 46 fatture senza trattamento.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_MODIFICA_GRAVITA_DIVERSA",
+      "needs_consensus": true
+    },
+    {
+      "key": "H-D03",
+      "dataset": "hospital",
+      "item_id": "H-D03",
+      "area": "Dati",
+      "artifact": "evaluation_spec.json",
+      "object": "Ambito osservabile",
+      "criterion": "Le inclusioni e le esclusioni dall'ambito osservabile sono motivate e coerenti con le fonti consegnate al sistema.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Esclusioni motivate: treatments, medications, prescriptions e invoices non sono nelle fonti; ID sintetici valutati via H04; doctors e wards inclusi solo se citati (12 e 6, tutti presenti).",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "MAGGIORE",
+        "correction": "Includere verifica mapping osservabile dopo risoluzione conflitto; distinguere fatti letterali da derivabili.",
+        "rationale": "Note espongono mapping, ma evaluation_spec esclude department; conflitto con CSV. Importi e trattamenti non osservabili: esclusione corretta.",
+        "notes": ""
+      },
+      "comparison_status": "DISACCORDO_VERDETTO",
+      "needs_consensus": true
+    },
+    {
+      "key": "H-D04",
+      "dataset": "hospital",
+      "item_id": "H-D04",
+      "area": "Dati",
+      "artifact": "evaluation_spec.json",
+      "object": "Chiavi naturali",
+      "criterion": "Le chiavi naturali consentono un allineamento stabile senza dipendere da identificatori sintetici.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "MODIFICA",
+        "severity": "MAGGIORE",
+        "correction": "Usare (fiscal_code, doctor_name, specialty, scheduled_on) come chiave di appointments (nessun duplicato nel gold) e togliere appointment_id dalle colonne di H04.",
+        "rationale": "natural_keys.appointments = [appointment_id], identificativo sintetico, in contrasto con il criterio. Un DB che rinumera gli appuntamenti fallisce H04 (critica) pur con fatti corretti.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "INCERTO",
+        "severity": "MAGGIORE",
+        "correction": "Fornire doctor_code stabile o dichiarare univocità nome+specialità nella fixture.",
+        "rationale": "Nessun duplicato nelle 12 coppie; omonimi con stessa specialità non distinguibili nel dominio.",
+        "notes": ""
+      },
+      "comparison_status": "DISACCORDO_VERDETTO",
+      "needs_consensus": true
+    },
+    {
+      "key": "H-D05",
+      "dataset": "hospital",
+      "item_id": "H-D05",
+      "area": "Dati",
+      "artifact": "ground_truth.db",
+      "object": "Copertura",
+      "criterion": "Entità e fatti necessari alle query attese sono presenti senza record critici mancanti o estranei.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "MODIFICA",
+        "severity": "MINORE",
+        "correction": "Rimuovere o correggere le fatture senza trattamento e con data anteriore all'appuntamento.",
+        "rationale": "Pazienti, medici, reparti e appuntamenti necessari a H01-H10 sono tutti presenti. Il gold contiene però fatture incoerenti (46 senza trattamento, 124 datate prima dell'appuntamento), fuori ambito osservabile e senza effetto sulle query.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "CRITICA",
+        "correction": "Aggiungere fee e generare fatture esclusivamente per appuntamenti trattati, applicando +15%; correggere reparto.",
+        "rationale": "146 appuntamenti con trattamenti; 29 senza fattura, 46 fatture senza trattamento. build_dataset.py genera importi casuali senza fee.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_MODIFICA_GRAVITA_DIVERSA",
+      "needs_consensus": true
+    },
+    {
+      "key": "H-C01",
+      "dataset": "hospital",
+      "item_id": "H-C01",
+      "area": "Decisione",
+      "artifact": "tutti",
+      "object": "Validità complessiva",
+      "criterion": "Il gold standard del dataset può essere usato come riferimento dopo le eventuali correzioni indicate.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "MODIFICA",
+        "severity": "MAGGIORE",
+        "correction": "Risolvere prima H-S01, H-D02 e H-D04; poi correggere H-S04.",
+        "rationale": "Il conflitto reparto-dipartimento rende non affidabile il risultato atteso della query critica H04.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "CRITICA",
+        "correction": "Sospendere validazione definitiva; riconciliare mapping e fatturazione, versionare fixture e query.",
+        "rationale": "H04 critico riproduce i CSV ma può penalizzare un sistema che segue le note operative; H08 dipende dalla scelta.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_MODIFICA_GRAVITA_DIVERSA",
+      "needs_consensus": true
+    },
+    {
+      "key": "hospital:H01",
+      "dataset": "hospital",
+      "item_id": "H01",
+      "area": "Query",
+      "artifact": "hospital/evaluation_spec.json",
+      "object": "Numero di pazienti osservabili",
+      "criterion": "Numero di pazienti osservabili",
+      "critical": "SI",
+      "sql": "SELECT COUNT(*) AS patient_count FROM patients",
+      "comparison": "scalar: patient_count",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Restituisce 100.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "100 pazienti; stesso conteggio del CSV.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "hospital:H02",
+      "dataset": "hospital",
+      "item_id": "H02",
+      "area": "Query",
+      "artifact": "hospital/evaluation_spec.json",
+      "object": "Anagrafica pazienti per codice fiscale",
+      "criterion": "Anagrafica pazienti per codice fiscale",
+      "critical": "SI",
+      "sql": "SELECT fiscal_code, full_name, birth_date FROM patients",
+      "comparison": "unordered_rows: fiscal_code, full_name, birth_date",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "100 righe, uguali a patients.csv.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "100 tuple codice fiscale/nome/nascita; nessuna differenza rispetto ai pazienti sorgente.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "hospital:H03",
+      "dataset": "hospital",
+      "item_id": "H03",
+      "area": "Query",
+      "artifact": "hospital/evaluation_spec.json",
+      "object": "Numero di appuntamenti osservabili",
+      "criterion": "Numero di appuntamenti osservabili",
+      "critical": "SI",
+      "sql": "SELECT COUNT(*) AS appointment_count FROM appointments",
+      "comparison": "scalar: appointment_count",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Restituisce 200.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "200 appuntamenti: conteggio CSV e DB identico, indipendente dal mapping.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "hospital:H04",
+      "dataset": "hospital",
+      "item_id": "H04",
+      "area": "Query",
+      "artifact": "hospital/evaluation_spec.json",
+      "object": "Appuntamenti ricostruiti senza dipendere dagli ID di medico e reparto",
+      "criterion": "Appuntamenti ricostruiti senza dipendere dagli ID di medico e reparto",
+      "critical": "SI",
+      "sql": "SELECT a.appointment_id, p.fiscal_code, d.full_name AS doctor_name, d.specialty, w.name AS ward_name, a.scheduled_on FROM appointments a JOIN patients p ON p.patient_id = a.patient_id JOIN doctors d ON d.doctor_id = a.doctor_id JOIN wards w ON w.ward_id = a.ward_id",
+      "comparison": "unordered_rows: appointment_id, fiscal_code, doctor_name, specialty, ward_name, scheduled_on",
+      "a": {
+        "verdict": "MODIFICA",
+        "severity": "MAGGIORE",
+        "correction": "Togliere appointment_id e confrontare per (fiscal_code, doctor_name, specialty, scheduled_on); risolvere il conflitto sul reparto (H-D02).",
+        "rationale": "La query critica include appointment_id (sintetico) e ward_name: solo 29 righe su 200 rispettano la regola reparto-dipartimento delle note, quindi il risultato atteso contraddice i documenti.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "CRITICA",
+        "correction": "Prima risolvere conflitto reparto; aggiornare CSV/gold o definire priorità esplicita e congelare nuova query.",
+        "rationale": "200 righe SQL coincidono con CSV, ma 171 violano mapping operativo; esempio appointment_id=1 Cardiologia/Reparto E.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_MODIFICA_GRAVITA_DIVERSA",
+      "needs_consensus": true
+    },
+    {
+      "key": "hospital:H05",
+      "dataset": "hospital",
+      "item_id": "H05",
+      "area": "Query",
+      "artifact": "hospital/evaluation_spec.json",
+      "object": "Medici citati negli appuntamenti",
+      "criterion": "Medici citati negli appuntamenti",
+      "critical": "NO",
+      "sql": "SELECT DISTINCT d.full_name AS doctor_name, d.specialty FROM doctors d JOIN appointments a ON a.doctor_id = d.doctor_id",
+      "comparison": "unordered_rows: doctor_name, specialty",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "12 righe, tutti i medici sono citati.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "12 coppie medico/specialità citate, nessun duplicato sulla coppia.",
+        "notes": "Identità limitata alla fixture."
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "hospital:H06",
+      "dataset": "hospital",
+      "item_id": "H06",
+      "area": "Query",
+      "artifact": "hospital/evaluation_spec.json",
+      "object": "Reparti citati negli appuntamenti",
+      "criterion": "Reparti citati negli appuntamenti",
+      "critical": "NO",
+      "sql": "SELECT DISTINCT w.name AS ward_name FROM wards w JOIN appointments a ON a.ward_id = w.ward_id",
+      "comparison": "unordered_rows: ward_name",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "6 reparti.",
+        "notes": "Dipende dalla soluzione del conflitto in H-D02."
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "6 reparti presenti nel CSV; query verifica inventario, non associazione al medico.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "hospital:H07",
+      "dataset": "hospital",
+      "item_id": "H07",
+      "area": "Query",
+      "artifact": "hospital/evaluation_spec.json",
+      "object": "Numero di appuntamenti per medico",
+      "criterion": "Numero di appuntamenti per medico",
+      "critical": "NO",
+      "sql": "SELECT d.full_name AS doctor_name, d.specialty, COUNT(*) AS appointment_count FROM appointments a JOIN doctors d ON d.doctor_id = a.doctor_id GROUP BY d.full_name, d.specialty",
+      "comparison": "unordered_rows: doctor_name, specialty, appointment_count",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "12 righe; raggruppa per nome e specialità.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "12 gruppi medici, somma 200 appuntamenti; indipendente dai reparti.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "hospital:H08",
+      "dataset": "hospital",
+      "item_id": "H08",
+      "area": "Query",
+      "artifact": "hospital/evaluation_spec.json",
+      "object": "Numero di appuntamenti per reparto",
+      "criterion": "Numero di appuntamenti per reparto",
+      "critical": "NO",
+      "sql": "SELECT w.name AS ward_name, COUNT(*) AS appointment_count FROM appointments a JOIN wards w ON w.ward_id = a.ward_id GROUP BY w.name",
+      "comparison": "unordered_rows: ward_name, appointment_count",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "6 righe.",
+        "notes": "Dipende dalla soluzione del conflitto in H-D02."
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "MAGGIORE",
+        "correction": "Ricalcolare distribuzione dopo riconciliazione mapping; se CSV prevale dichiararlo.",
+        "rationale": "Attuale A=31, B=29, C=42, D=31, E=37, F=30; distribuzione dipende da reparti incompatibili con note.",
+        "notes": ""
+      },
+      "comparison_status": "DISACCORDO_VERDETTO",
+      "needs_consensus": true
+    },
+    {
+      "key": "hospital:H09",
+      "dataset": "hospital",
+      "item_id": "H09",
+      "area": "Query",
+      "artifact": "hospital/evaluation_spec.json",
+      "object": "Numero di appuntamenti per paziente con attività",
+      "criterion": "Numero di appuntamenti per paziente con attività",
+      "critical": "NO",
+      "sql": "SELECT p.fiscal_code, COUNT(*) AS appointment_count FROM appointments a JOIN patients p ON p.patient_id = a.patient_id GROUP BY p.fiscal_code",
+      "comparison": "unordered_rows: fiscal_code, appointment_count",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "86 righe: i pazienti con almeno un appuntamento.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "86 pazienti con attività, conteggi sommano 200; esclusione inattivi esplicita.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "hospital:H10",
+      "dataset": "hospital",
+      "item_id": "H10",
+      "area": "Query",
+      "artifact": "hospital/evaluation_spec.json",
+      "object": "Distribuzione mensile degli appuntamenti",
+      "criterion": "Distribuzione mensile degli appuntamenti",
+      "critical": "NO",
+      "sql": "SELECT substr(scheduled_on, 1, 7) AS month, COUNT(*) AS appointment_count FROM appointments GROUP BY substr(scheduled_on, 1, 7)",
+      "comparison": "unordered_rows: month, appointment_count",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "14 mesi, da 2026-01 a 2027-02.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "14 mesi; substr ISO produce raggruppamento corretto, conteggi sommano 200.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "H-S01",
+      "dataset": "hospital",
+      "item_id": "H-S01",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Normalizzazione",
+      "criterion": "Ogni tabella rispetta la terza forma normale in base alle dipendenze funzionali del dominio.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "MODIFICA",
+        "severity": "MAGGIORE",
+        "correction": "Scegliere un'interpretazione: (a) il reparto dipende dal medico: eliminare appointments.ward_id e collegare doctors al reparto con una FK; (b) il reparto è indipendente: togliere la regola reparto-dipartimento dalle note. Eliminare in ogni caso la ridondanza doctors.department = specialty.",
+        "rationale": "Gold dichiarato 3NF ma doctors.department è identico a specialty in 12/12 righe e ripete wards.department senza FK. Il README definisce il reparto derivabile dal dipartimento del medico (dipendenza transitiva), mentre il description.pdf lo tratta come attributo dell'appuntamento.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "CRITICA",
+        "correction": "Normalizzare specialità/dipartimento/reparto: tabella di mapping e FK; derivare reparto da medico se vincolo obbligatorio.",
+        "rationale": "doctors.specialty determina department; department determina ward. appointments conserva ward_id ridondante se mapping vincolante.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_MODIFICA_GRAVITA_DIVERSA",
+      "needs_consensus": true
+    },
+    {
+      "key": "H-S02",
+      "dataset": "hospital",
+      "item_id": "H-S02",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Chiavi primarie",
+      "criterion": "Ogni tabella ha una chiave primaria corretta e sufficiente a identificare i record.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "PK surrogate su tutte le 8 tabelle.",
+        "notes": "prescriptions non ha unicità sulla coppia (vedi H-S06)."
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Otto PK singole; appointment_id è anche identificatore sorgente.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "H-S03",
+      "dataset": "hospital",
+      "item_id": "H-S03",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Chiavi esterne",
+      "criterion": "Le chiavi esterne referenziano tabelle e colonne esistenti e modellano relazioni corrette.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "7 FK valide verso tabelle e colonne esistenti.",
+        "notes": "Il tipo many_to_many assegnato alle righe di prescriptions è non standard: sono due relazioni 1-N dalla tabella ponte."
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "MAGGIORE",
+        "correction": "Collegare doctors al mapping dipartimento/reparto con FK; assicurare coerenza reparto appuntamento.",
+        "rationale": "FK esistenti valide ma doctors.department non referenzia wards.department; 171 mismatch.",
+        "notes": ""
+      },
+      "comparison_status": "DISACCORDO_VERDETTO",
+      "needs_consensus": true
+    },
+    {
+      "key": "H-S04",
+      "dataset": "hospital",
+      "item_id": "H-S04",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Cardinalità",
+      "criterion": "Le cardinalità e le tabelle associative riflettono il dominio descritto nelle fonti.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "MODIFICA",
+        "severity": "MAGGIORE",
+        "correction": "Aggiungere treatments.fee oppure dichiarare invoices.amount non derivabile; UNIQUE su invoices.appointment_id; allineare i dati alla regola di fatturazione.",
+        "rationale": "operational_notes.txt: importo = tariffa del trattamento + 15% e ogni appuntamento con trattamento è fatturato. Nel gold treatments non ha tariffa, 46 fatture riguardano appuntamenti senza trattamenti e 29 appuntamenti con trattamenti non hanno fattura (ground_truth.db).",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "CRITICA",
+        "correction": "Chiarire se appuntamento può avvenire fuori reparto; altrimenti correggere mapping e vincoli.",
+        "rationale": "171/200 appuntamenti hanno reparto diverso da quello del dipartimento; prescriptions è junction con due relazioni 1:N, non due N:M.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_MODIFICA_GRAVITA_DIVERSA",
+      "needs_consensus": true
+    },
+    {
+      "key": "H-S05",
+      "dataset": "hospital",
+      "item_id": "H-S05",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Tipi di dato",
+      "criterion": "I tipi di dato sono adeguati ai valori e alle operazioni previste.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "MODIFICA",
+        "severity": "MINORE",
+        "correction": "invoices.amount come NUMERIC(10,2) o centesimi. Allineare il formato di scheduled_on a YYYY-MM-DD HH:MM:SS.",
+        "rationale": "Importo in REAL. scheduled_on è memorizzato come testo di 16 caratteri (senza secondi), mentre la canonicalizzazione dell'evaluation_spec richiede HH:MM:SS.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "MINORE",
+        "correction": "Usare centesimi INTEGER/DECIMAL per importi; aggiungere fee e standardizzare datetime a secondi.",
+        "rationale": "invoices.amount REAL; scheduled_on memorizzato a minuti; canonicalizzazione richiede secondi.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_MODIFICA_DA_FORMULARE",
+      "needs_consensus": true
+    },
+    {
+      "key": "H-S06",
+      "dataset": "hospital",
+      "item_id": "H-S06",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Vincoli",
+      "criterion": "NOT NULL e UNIQUE sono applicati agli attributi semanticamente obbligatori o univoci.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "MODIFICA",
+        "severity": "MINORE",
+        "correction": "UNIQUE (treatment_id, medication_id) su prescriptions, se una coppia compare una sola volta; UNIQUE su invoices.appointment_id; UNIQUE (full_name, specialty) su doctors.",
+        "rationale": "Chiave naturale doctors dichiarata in evaluation_spec.json ma non imposta. prescriptions ha 14 coppie (trattamento, farmaco) ripetute, una con dosaggio identico (treatment 132, medication 7).",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "MAGGIORE",
+        "correction": "Vincolare mapping, tariffa positiva e regola fatture; chiarire unicità prescrizione (treatment_id, medication_id) e identità medico.",
+        "rationale": "14 coppie trattamento/farmaco ripetute; nome+specialità non vincolati UNIQUE; mancano vincoli billing.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_MODIFICA_GRAVITA_DIVERSA",
+      "needs_consensus": true
+    },
+    {
+      "key": "H-S07",
+      "dataset": "hospital",
+      "item_id": "H-S07",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Nomi",
+      "criterion": "Tabelle e colonne hanno nomi chiari, coerenti e in snake_case.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Nomi in snake_case e coerenti.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Nomi delle otto tabelle e colonne coerenti in snake_case.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "L-D01",
+      "dataset": "library",
+      "item_id": "L-D01",
+      "area": "Dati",
+      "artifact": "ground_truth.db",
+      "object": "Integrità referenziale",
+      "criterion": "Il database di ground truth non contiene riferimenti orfani o violazioni dei vincoli dichiarati.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "PRAGMA foreign_key_check vuoto; due_date >= loan_date in tutti i 60 prestiti; nessun prestito precedente a joined_on.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "PRAGMA integrity_check = ok; foreign_key_check senza violazioni.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "L-D02",
+      "dataset": "library",
+      "item_id": "L-D02",
+      "area": "Dati",
+      "artifact": "source/*; ground_truth.db",
+      "object": "Coerenza con le fonti",
+      "criterion": "I dati osservabili nel ground truth corrispondono ai documenti sorgente dopo la canonicalizzazione prevista.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "members (20), books con categoria (50) e loans (60: membro, loan_date, due_date) coincidono con i CSV in source.",
+        "notes": "ISBN: solo 3 su 50 hanno cifra di controllo ISBN-13 valida; sono sintetici e non influenzano le query. README dice multe \"~60%\" dei prestiti: sono 24/60 (40%), il builder usa 0,35."
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Confronti multinsieme con members.csv (20), books.csv (50), loans_members.csv (60): zero differenze.",
+        "notes": "Le 24 multe e i book_id dei prestiti non sono osservabili."
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "L-D03",
+      "dataset": "library",
+      "item_id": "L-D03",
+      "area": "Dati",
+      "artifact": "evaluation_spec.json",
+      "object": "Ambito osservabile",
+      "criterion": "Le inclusioni e le esclusioni dall'ambito osservabile sono motivate e coerenti con le fonti consegnate al sistema.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Esclusi loans.book_id (assente da loans_members.csv), fines e ID sintetici, con motivazioni coerenti con le fonti.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "MAGGIORE",
+        "correction": "Esplicitare come rappresentare prestiti senza libro noto: FK nullable nello staging o vista osservabile; escludere placeholder dalla decisione.",
+        "rationale": "book_id è NOT NULL ma non compare in loans_members.csv; la baseline non può popolare prestiti fedelmente senza inventare.",
+        "notes": ""
+      },
+      "comparison_status": "DISACCORDO_VERDETTO",
+      "needs_consensus": true
+    },
+    {
+      "key": "L-D04",
+      "dataset": "library",
+      "item_id": "L-D04",
+      "area": "Dati",
+      "artifact": "evaluation_spec.json",
+      "object": "Chiavi naturali",
+      "criterion": "Le chiavi naturali consentono un allineamento stabile senza dipendere da identificatori sintetici.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Chiavi: categories.name, members.email, books.isbn; loans (member_id, loan_date, due_date) con member_id risolto via email. Nessuna chiave duplicata nei 60 prestiti.",
+        "notes": "Consigliato dichiarare esplicitamente la forma (email, loan_date, due_date). La chiave non distingue due prestiti dello stesso membro con le stesse date per libri diversi: nei dati non accade."
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "MAGGIORE",
+        "correction": "Definire confronto multinsieme email/loan_date/due_date o fornire loan_id/ISBN sorgente.",
+        "rationale": "La terna è unica nelle 60 righe ma due prestiti diversi possono avere stesso membro e date; non è chiave stabile nel dominio.",
+        "notes": ""
+      },
+      "comparison_status": "DISACCORDO_VERDETTO",
+      "needs_consensus": true
+    },
+    {
+      "key": "L-D05",
+      "dataset": "library",
+      "item_id": "L-D05",
+      "area": "Dati",
+      "artifact": "ground_truth.db",
+      "object": "Copertura",
+      "criterion": "Entità e fatti necessari alle query attese sono presenti senza record critici mancanti o estranei.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "10 categorie usate, 20 membri, 50 libri e 60 prestiti presenti; fines esclusa dall'ambito.",
+        "notes": "Un membro non ha prestiti: coerente con i CSV."
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "20 membri, 50 libri, 10 categorie, 60 prestiti osservabili coprono tutte le query.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "L-C01",
+      "dataset": "library",
+      "item_id": "L-C01",
+      "area": "Decisione",
+      "artifact": "tutti",
+      "object": "Validità complessiva",
+      "criterion": "Il gold standard del dataset può essere usato come riferimento dopo le eventuali correzioni indicate.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Utilizzabile dopo le correzioni minori in L-S05 e L-S06.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "MAGGIORE",
+        "correction": "Rendere compatibile lo schema con osservabilità parziale e chiarire vincoli multe.",
+        "rationale": "Query utilizzabili sullo scope osservato; baseline con FK obbligatoria non osservabile rischia dati inventati.",
+        "notes": ""
+      },
+      "comparison_status": "DISACCORDO_VERDETTO",
+      "needs_consensus": true
+    },
+    {
+      "key": "library:L01",
+      "dataset": "library",
+      "item_id": "L01",
+      "area": "Query",
+      "artifact": "library/evaluation_spec.json",
+      "object": "Numero di membri osservabili",
+      "criterion": "Numero di membri osservabili",
+      "critical": "SI",
+      "sql": "SELECT COUNT(*) AS member_count FROM members",
+      "comparison": "scalar: member_count",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Restituisce 20.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "20 membri, stesso conteggio del CSV; scalar.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "library:L02",
+      "dataset": "library",
+      "item_id": "L02",
+      "area": "Query",
+      "artifact": "library/evaluation_spec.json",
+      "object": "Anagrafica dei membri per email",
+      "criterion": "Anagrafica dei membri per email",
+      "critical": "SI",
+      "sql": "SELECT email, full_name, joined_on FROM members",
+      "comparison": "unordered_rows: email, full_name, joined_on",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "20 righe, uguali a members.csv.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "20 tuple email/nome/data, corrispondenza esatta ai dati sorgente.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "library:L03",
+      "dataset": "library",
+      "item_id": "L03",
+      "area": "Query",
+      "artifact": "library/evaluation_spec.json",
+      "object": "Catalogo dei libri e categoria per chiave ISBN",
+      "criterion": "Catalogo dei libri e categoria per chiave ISBN",
+      "critical": "SI",
+      "sql": "SELECT b.isbn, b.title, b.author, c.name AS category_name FROM books b JOIN categories c ON c.category_id = b.category_id",
+      "comparison": "unordered_rows: isbn, title, author, category_name",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "50 righe con isbn e categoria; join sulla categoria corretto.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "50 libri con categoria: join verificato contro books.csv, nessuna differenza.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "library:L04",
+      "dataset": "library",
+      "item_id": "L04",
+      "area": "Query",
+      "artifact": "library/evaluation_spec.json",
+      "object": "Prestiti osservabili senza associazione al libro non fornita",
+      "criterion": "Prestiti osservabili senza associazione al libro non fornita",
+      "critical": "SI",
+      "sql": "SELECT m.email, l.loan_date, l.due_date FROM loans l JOIN members m ON m.member_id = l.member_id",
+      "comparison": "unordered_rows: email, loan_date, due_date",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "60 righe senza book_id, in linea con l'esclusione dichiarata.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "60 tuple email/data/scadenza coincidenti col CSV; libro non fornito.",
+        "notes": "Confrontare come multinsieme, non insieme."
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "library:L05",
+      "dataset": "library",
+      "item_id": "L05",
+      "area": "Query",
+      "artifact": "library/evaluation_spec.json",
+      "object": "Numero di libri per categoria",
+      "criterion": "Numero di libri per categoria",
+      "critical": "NO",
+      "sql": "SELECT c.name AS category_name, COUNT(*) AS book_count FROM books b JOIN categories c ON c.category_id = b.category_id GROUP BY c.name",
+      "comparison": "unordered_rows: category_name, book_count",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "10 righe.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "10 gruppi categorie; somma 50 libri.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "library:L06",
+      "dataset": "library",
+      "item_id": "L06",
+      "area": "Query",
+      "artifact": "library/evaluation_spec.json",
+      "object": "Numero di prestiti per membro",
+      "criterion": "Numero di prestiti per membro",
+      "critical": "NO",
+      "sql": "SELECT m.email, COUNT(*) AS loan_count FROM loans l JOIN members m ON m.member_id = l.member_id GROUP BY m.email",
+      "comparison": "unordered_rows: email, loan_count",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "19 righe: un membro non ha prestiti, per scelta del conteggio.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "MINORE",
+        "correction": "Specificare membri con almeno un prestito, oppure LEFT JOIN e COUNT(l.loan_id) includendo zero.",
+        "rationale": "SQL restituisce 19 membri su 20: un membro inattivo escluso dalla descrizione generica.",
+        "notes": ""
+      },
+      "comparison_status": "DISACCORDO_VERDETTO",
+      "needs_consensus": true
+    },
+    {
+      "key": "library:L07",
+      "dataset": "library",
+      "item_id": "L07",
+      "area": "Query",
+      "artifact": "library/evaluation_spec.json",
+      "object": "Durata prevista dei prestiti",
+      "criterion": "Durata prevista dei prestiti",
+      "critical": "NO",
+      "sql": "SELECT m.email, l.loan_date, l.due_date, CAST(julianday(l.due_date) - julianday(l.loan_date) AS INTEGER) AS duration_days FROM loans l JOIN members m ON m.member_id = l.member_id",
+      "comparison": "unordered_rows: email, loan_date, due_date, duration_days",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "60 righe; usa julianday di SQLite, adeguato ai DB generati in SQLite.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "60 righe; julianday calcola differenza intera su date ISO giornaliere.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "library:L08",
+      "dataset": "library",
+      "item_id": "L08",
+      "area": "Query",
+      "artifact": "library/evaluation_spec.json",
+      "object": "Elenco delle categorie osservabili",
+      "criterion": "Elenco delle categorie osservabili",
+      "critical": "NO",
+      "sql": "SELECT name AS category_name FROM categories",
+      "comparison": "unordered_rows: category_name",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "10 categorie.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "10 categorie tutte osservabili nei libri; confronto senza ordine.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "library:L09",
+      "dataset": "library",
+      "item_id": "L09",
+      "area": "Query",
+      "artifact": "library/evaluation_spec.json",
+      "object": "Numero complessivo di prestiti osservabili",
+      "criterion": "Numero complessivo di prestiti osservabili",
+      "critical": "NO",
+      "sql": "SELECT COUNT(*) AS loan_count FROM loans",
+      "comparison": "scalar: loan_count",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Restituisce 60.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "COUNT(*) = 60; coincide con loans_members.csv.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "library:L10",
+      "dataset": "library",
+      "item_id": "L10",
+      "area": "Query",
+      "artifact": "library/evaluation_spec.json",
+      "object": "Numero complessivo di libri osservabili",
+      "criterion": "Numero complessivo di libri osservabili",
+      "critical": "NO",
+      "sql": "SELECT COUNT(*) AS book_count FROM books",
+      "comparison": "scalar: book_count",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Restituisce 50.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "COUNT(*) = 50; coincide con books.csv.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "L-S01",
+      "dataset": "library",
+      "item_id": "L-S01",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Normalizzazione",
+      "criterion": "Ogni tabella rispetta la terza forma normale in base alle dipendenze funzionali del dominio.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "categories, members, books, loans, fines: nessuna dipendenza transitiva; category_name denormalizzato solo nel CSV.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Categorie, libri, membri, prestiti e multe separati; nessuna dipendenza transitiva necessaria.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "L-S02",
+      "dataset": "library",
+      "item_id": "L-S02",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Chiavi primarie",
+      "criterion": "Ogni tabella ha una chiave primaria corretta e sufficiente a identificare i record.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "PK surrogate su tutte le tabelle; unicità naturale garantita da UNIQUE su name, email, isbn.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "PK singole identificano tutti i record; ISBN/email sono chiavi alternative.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "L-S03",
+      "dataset": "library",
+      "item_id": "L-S03",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Chiavi esterne",
+      "criterion": "Le chiavi esterne referenziano tabelle e colonne esistenti e modellano relazioni corrette.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "4 FK corrette (books.category_id, loans.book_id, loans.member_id, fines.loan_id).",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Quattro FK valide: libri-categorie, prestiti-libri/membri, multe-prestiti.",
+        "notes": "book_id non osservabile nei prestiti sorgente."
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "L-S04",
+      "dataset": "library",
+      "item_id": "L-S04",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Cardinalità",
+      "criterion": "Le cardinalità e le tabelle associative riflettono il dominio descritto nelle fonti.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Cardinalità coerenti con description.pdf (categoria 1-N libri, membro e libro 1-N prestiti, prestito 1-N multe).",
+        "notes": "Il dominio parla di multa per restituzione tardiva ma non esiste una data di restituzione: la tardività non è derivabile. È un limite della descrizione, non del gold."
+      },
+      "b": {
+        "verdict": "INCERTO",
+        "severity": "MINORE",
+        "correction": "Chiarire se può esistere più di una multa per prestito; se no UNIQUE(loan_id).",
+        "rationale": "description.pdf parla di una multa; gold consente N multe. Non è esplicita la politica di accumulo.",
+        "notes": ""
+      },
+      "comparison_status": "DISACCORDO_VERDETTO",
+      "needs_consensus": true
+    },
+    {
+      "key": "L-S05",
+      "dataset": "library",
+      "item_id": "L-S05",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Tipi di dato",
+      "criterion": "I tipi di dato sono adeguati ai valori e alle operazioni previste.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "MODIFICA",
+        "severity": "MINORE",
+        "correction": "fines.amount come NUMERIC(10,2) oppure intero in centesimi.",
+        "rationale": "Importo monetario in REAL (virgola mobile) in gold_schema.json e nel DDL di build_dataset.py.",
+        "notes": "Le date DATE sono memorizzate come testo ISO in SQLite: accettabile."
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "MINORE",
+        "correction": "Importi in centesimi INTEGER, oppure DECIMAL con arrotondamento; definire date ISO.",
+        "rationale": "REAL può introdurre approssimazioni monetarie; date hanno semantica corretta.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_MODIFICA_DA_FORMULARE",
+      "needs_consensus": true
+    },
+    {
+      "key": "L-S06",
+      "dataset": "library",
+      "item_id": "L-S06",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Vincoli",
+      "criterion": "NOT NULL e UNIQUE sono applicati agli attributi semanticamente obbligatori o univoci.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "MODIFICA",
+        "severity": "MINORE",
+        "correction": "UNIQUE su fines.loan_id se la regola è una multa per prestito; altrimenti dichiarare la cardinalità 1-N.",
+        "rationale": "Il description.pdf dice \"a fine is applied to that loan\" (singolare) e i dati hanno 24 multe su 24 prestiti distinti, ma il vincolo non è dichiarato.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "MAGGIORE",
+        "correction": "Aggiungere return_date nullable e vincoli temporali; amount > 0; definire regola multa.",
+        "rationale": "Il dominio lega la multa a restituzione in ritardo, ma loans non conserva return_date; il generatore assegna multe casualmente.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_MODIFICA_GRAVITA_DIVERSA",
+      "needs_consensus": true
+    },
+    {
+      "key": "L-S07",
+      "dataset": "library",
+      "item_id": "L-S07",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Nomi",
+      "criterion": "Tabelle e colonne hanno nomi chiari, coerenti e in snake_case.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Nomi in snake_case e coerenti.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Nomi coerenti in snake_case.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "U-D01",
+      "dataset": "university",
+      "item_id": "U-D01",
+      "area": "Dati",
+      "artifact": "ground_truth.db",
+      "object": "Integrità referenziale",
+      "criterion": "Il database di ground truth non contiene riferimenti orfani o violazioni dei vincoli dichiarati.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "PRAGMA foreign_key_check vuoto su ground_truth.db; nessun orfano, PK e UNIQUE rispettate.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "PRAGMA integrity_check = ok; foreign_key_check restituisce zero righe.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "U-D02",
+      "dataset": "university",
+      "item_id": "U-D02",
+      "area": "Dati",
+      "artifact": "source/*; ground_truth.db",
+      "object": "Coerenza con le fonti",
+      "criterion": "I dati osservabili nel ground truth corrispondono ai documenti sorgente dopo la canonicalizzazione prevista.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Le 45 righe di source/enrollments.csv coincidono con il join students-courses-enrollments del ground truth su email, nome, codice, titolo, crediti, semestre, voto. Semestri e scala 18-30/30L/NS coerenti con description.pdf.",
+        "notes": "Documentazione incoerente (non dei dati): README dice CSV da 30 righe e 9 colonne gold, docs/11 dice 30 righe e 10 colonne; i file reali hanno 45 righe e 11 colonne."
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Confronto multinsieme CSV con join students/courses/enrollments: 45 righe, zero differenze.",
+        "notes": "README: 30 righe indicato erroneamente; sono 45."
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "U-D03",
+      "dataset": "university",
+      "item_id": "U-D03",
+      "area": "Dati",
+      "artifact": "evaluation_spec.json",
+      "object": "Ambito osservabile",
+      "criterion": "Le inclusioni e le esclusioni dall'ambito osservabile sono motivate e coerenti con le fonti consegnate al sistema.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "row_keys di students (22) coincidono con le email presenti nel CSV; gli 8 studenti esclusi non compaiono in nessun documento; courses (8) e enrollments (45) tutti osservabili.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "evaluation_spec circoscrive 22 studenti, 8 corsi, 45 iscrizioni. Otto studenti non osservabili esclusi.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "U-D04",
+      "dataset": "university",
+      "item_id": "U-D04",
+      "area": "Dati",
+      "artifact": "evaluation_spec.json",
+      "object": "Chiavi naturali",
+      "criterion": "Le chiavi naturali consentono un allineamento stabile senza dipendere da identificatori sintetici.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "MODIFICA",
+        "severity": "MINORE",
+        "correction": "(1) In natural_keys.enrollments dichiarare la forma business (email studente, course_code, semester) invece di student_id/course_id. (2) Correggere column_alias.json: la mappatura \"enrollments.course_id\" -> \"id\" è incoerente (probabile \"courses\": {\"course_id\": \"id\"}).",
+        "rationale": "Le chiavi dichiarate per enrollments contengono ID sintetici; l'allineamento via email e course_code è descritto solo in \"excluded\". column_alias.json mappa students.student_id a \"id\" ma enrollments.course_id a \"id\", asimmetrico e non spiegato.",
+        "notes": "Non ho il codice del runner: l'effetto reale dell'alias non è verificabile."
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Email, course_code e terna risolta tramite FK; nessun duplicato sulle chiavi dichiarate.",
+        "notes": ""
+      },
+      "comparison_status": "DISACCORDO_VERDETTO",
+      "needs_consensus": true
+    },
+    {
+      "key": "U-D05",
+      "dataset": "university",
+      "item_id": "U-D05",
+      "area": "Dati",
+      "artifact": "ground_truth.db",
+      "object": "Copertura",
+      "criterion": "Entità e fatti necessari alle query attese sono presenti senza record critici mancanti o estranei.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Tutti gli 8 corsi sono referenziati; 22 studenti osservati con iscrizioni; i 45 fatti necessari a U01-U10 sono presenti, nessun record estraneo.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "45 fatti, 22 studenti osservati, 8 corsi; tutti presenti e ricostruibili.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "U-C01",
+      "dataset": "university",
+      "item_id": "U-C01",
+      "area": "Decisione",
+      "artifact": "tutti",
+      "object": "Validità complessiva",
+      "criterion": "Il gold standard del dataset può essere usato come riferimento dopo le eventuali correzioni indicate.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Utilizzabile dopo le correzioni minori indicate in U-S02, U-D04 e U09.",
+        "notes": "Dati e fonti coincidono."
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "MAGGIORE",
+        "correction": "Allineare PK e chiave di business; aggiornare DDL, JSON e documentazione.",
+        "rationale": "RQ2 osservabile utilizzabile sui 45 fatti, ma schema generale richiede correzione della storicità.",
+        "notes": ""
+      },
+      "comparison_status": "DISACCORDO_VERDETTO",
+      "needs_consensus": true
+    },
+    {
+      "key": "university:U01",
+      "dataset": "university",
+      "item_id": "U01",
+      "area": "Query",
+      "artifact": "university/evaluation_spec.json",
+      "object": "Numero di iscrizioni osservabili",
+      "criterion": "Numero di iscrizioni osservabili",
+      "critical": "SI",
+      "sql": "SELECT COUNT(*) AS enrollment_count FROM enrollments",
+      "comparison": "scalar: enrollment_count",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Restituisce 45, uguale alle righe del CSV.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "45 iscrizioni; COUNT(*) coincide con le 45 righe CSV. Scalar appropriato.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "university:U02",
+      "dataset": "university",
+      "item_id": "U02",
+      "area": "Query",
+      "artifact": "university/evaluation_spec.json",
+      "object": "Studenti presenti nelle iscrizioni con identità di business",
+      "criterion": "Studenti presenti nelle iscrizioni con identità di business",
+      "critical": "SI",
+      "sql": "SELECT DISTINCT s.email, s.name FROM students s JOIN enrollments e ON e.student_id = s.student_id",
+      "comparison": "unordered_rows: email, name",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "22 righe, coincidono con le email osservabili; email nella chiave perché i nomi non sono univoci.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "22 coppie email/nome distinte dal CSV; join limita agli studenti osservabili.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "university:U03",
+      "dataset": "university",
+      "item_id": "U03",
+      "area": "Query",
+      "artifact": "university/evaluation_spec.json",
+      "object": "Catalogo dei corsi effettivamente referenziati",
+      "criterion": "Catalogo dei corsi effettivamente referenziati",
+      "critical": "SI",
+      "sql": "SELECT DISTINCT c.course_code, c.title, c.credits FROM courses c JOIN enrollments e ON e.course_id = c.course_id",
+      "comparison": "unordered_rows: course_code, title, credits",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "8 corsi, tutti referenziati.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "8 corsi distinti con codice/titolo/crediti; coincide col catalogo osservato.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "university:U04",
+      "dataset": "university",
+      "item_id": "U04",
+      "area": "Query",
+      "artifact": "university/evaluation_spec.json",
+      "object": "Fatti completi di iscrizione indipendenti dagli ID sintetici",
+      "criterion": "Fatti completi di iscrizione indipendenti dagli ID sintetici",
+      "critical": "SI",
+      "sql": "SELECT s.email, c.course_code, e.semester, e.grade FROM enrollments e JOIN students s ON s.student_id = e.student_id JOIN courses c ON c.course_id = e.course_id",
+      "comparison": "unordered_rows: email, course_code, semester, grade",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "45 righe, indipendenti dagli ID sintetici.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "45 tuple email/codice/semestre/voto; confronto multinsieme CSV senza differenze.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "university:U05",
+      "dataset": "university",
+      "item_id": "U05",
+      "area": "Query",
+      "artifact": "university/evaluation_spec.json",
+      "object": "Numero di iscrizioni per corso",
+      "criterion": "Numero di iscrizioni per corso",
+      "critical": "NO",
+      "sql": "SELECT c.course_code, COUNT(*) AS enrollment_count FROM enrollments e JOIN courses c ON c.course_id = e.course_id GROUP BY c.course_code",
+      "comparison": "unordered_rows: course_code, enrollment_count",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "8 righe; join corretto.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "8 gruppi; conteggi per corso sommano 45.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "university:U06",
+      "dataset": "university",
+      "item_id": "U06",
+      "area": "Query",
+      "artifact": "university/evaluation_spec.json",
+      "object": "Numero di iscrizioni per semestre",
+      "criterion": "Numero di iscrizioni per semestre",
+      "critical": "NO",
+      "sql": "SELECT semester, COUNT(*) AS enrollment_count FROM enrollments GROUP BY semester",
+      "comparison": "unordered_rows: semester, enrollment_count",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "2 semestri (2026-01 e 2026-02).",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "2026-01: 25; 2026-02: 20. Totale 45.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "university:U07",
+      "dataset": "university",
+      "item_id": "U07",
+      "area": "Query",
+      "artifact": "university/evaluation_spec.json",
+      "object": "Carico di corsi per studente osservato",
+      "criterion": "Carico di corsi per studente osservato",
+      "critical": "NO",
+      "sql": "SELECT s.email, COUNT(*) AS course_count FROM enrollments e JOIN students s ON s.student_id = e.student_id GROUP BY s.email",
+      "comparison": "unordered_rows: email, course_count",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "22 righe; raggruppa per email.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "22 gruppi, somma 45; misura iscrizioni, non necessariamente corsi distinti.",
+        "notes": "Rinominare descrizione in carico di iscrizioni."
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "university:U08",
+      "dataset": "university",
+      "item_id": "U08",
+      "area": "Query",
+      "artifact": "university/evaluation_spec.json",
+      "object": "Distribuzione dei voti",
+      "criterion": "Distribuzione dei voti",
+      "critical": "NO",
+      "sql": "SELECT grade, COUNT(*) AS grade_count FROM enrollments GROUP BY grade",
+      "comparison": "unordered_rows: grade, grade_count",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "12 valori di voto incluso 30L e NS.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "12 categorie di voto; COUNT per grade somma 45; TEXT preserva NS/30L.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "university:U09",
+      "dataset": "university",
+      "item_id": "U09",
+      "area": "Query",
+      "artifact": "university/evaluation_spec.json",
+      "object": "Crediti associati a ciascun corso referenziato",
+      "criterion": "Crediti associati a ciascun corso referenziato",
+      "critical": "NO",
+      "sql": "SELECT course_code, credits FROM courses",
+      "comparison": "unordered_rows: course_code, credits",
+      "a": {
+        "verdict": "MODIFICA",
+        "severity": "MINORE",
+        "correction": "Aggiungere JOIN con enrollments o EXISTS, oppure cambiare la descrizione in \"Crediti per ciascun corso\".",
+        "rationale": "La descrizione parla di corsi referenziati ma l'SQL legge tutta courses. Sul gold i due insiemi coincidono (8 corsi), con un DB generato con corsi extra no.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "MINORE",
+        "correction": "Usare SELECT DISTINCT c.course_code,c.credits FROM courses c JOIN enrollments e ON e.course_id=c.course_id.",
+        "rationale": "Attuale query legge tutti i corsi; oggi sono 8 e tutti referenziati, ma descrizione limita a quelli osservati.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_MODIFICA_DA_FORMULARE",
+      "needs_consensus": true
+    },
+    {
+      "key": "university:U10",
+      "dataset": "university",
+      "item_id": "U10",
+      "area": "Query",
+      "artifact": "university/evaluation_spec.json",
+      "object": "Conteggio degli studenti osservati",
+      "criterion": "Conteggio degli studenti osservati",
+      "critical": "NO",
+      "sql": "SELECT COUNT(DISTINCT student_id) AS observed_student_count FROM enrollments",
+      "comparison": "scalar: observed_student_count",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Restituisce 22.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "COUNT DISTINCT student_id = 22; coerente con email univoca e join osservabile.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "U-S01",
+      "dataset": "university",
+      "item_id": "U-S01",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Normalizzazione",
+      "criterion": "Ogni tabella rispetta la terza forma normale in base alle dipendenze funzionali del dominio.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "students, courses, enrollments: nessuna dipendenza transitiva; gold_schema.json, 3 tabelle.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "students e courses separano anagrafiche e iscrizioni; nessuna dipendenza transitiva rilevata nei fatti osservati.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "U-S02",
+      "dataset": "university",
+      "item_id": "U-S02",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Chiavi primarie",
+      "criterion": "Ogni tabella ha una chiave primaria corretta e sufficiente a identificare i record.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "MODIFICA",
+        "severity": "MINORE",
+        "correction": "PRIMARY KEY (student_id, course_id, semester) in enrollments (gold_schema.json e build_dataset.py).",
+        "rationale": "enrollments ha PK (student_id, course_id) ma la chiave naturale in evaluation_spec.json include semester e la descrizione dice che gli studenti si iscrivono \"each semester\": un nuovo tentativo dello stesso corso in un altro semestre violerebbe la PK. Nessun duplicato nei 45 record, quindi nessun impatto sui dati attuali.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "MAGGIORE",
+        "correction": "PK (student_id, course_id, semester), oppure documentare impossibilità di ripetere un corso.",
+        "rationale": "gold_schema e DDL usano la coppia; evaluation_spec usa la terna. Il dominio registra iscrizioni per semestre.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_MODIFICA_GRAVITA_DIVERSA",
+      "needs_consensus": true
+    },
+    {
+      "key": "U-S03",
+      "dataset": "university",
+      "item_id": "U-S03",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Chiavi esterne",
+      "criterion": "Le chiavi esterne referenziano tabelle e colonne esistenti e modellano relazioni corrette.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "FK enrollments.student_id -> students e enrollments.course_id -> courses; tabelle e colonne esistenti, relazioni coerenti con il dominio.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Le due FK di enrollments puntano alle PK di students e courses.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "U-S04",
+      "dataset": "university",
+      "item_id": "U-S04",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Cardinalità",
+      "criterion": "Le cardinalità e le tabelle associative riflettono il dominio descritto nelle fonti.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Relazione molti-a-molti studenti-corsi risolta da enrollments con semestre e voto, come nel description.pdf.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "MAGGIORE",
+        "correction": "Consentire iscrizioni allo stesso corso in semestri diversi.",
+        "rationale": "La relazione N:M è corretta, ma la PK attuale vieta la ripetizione nel tempo.",
+        "notes": ""
+      },
+      "comparison_status": "DISACCORDO_VERDETTO",
+      "needs_consensus": true
+    },
+    {
+      "key": "U-S05",
+      "dataset": "university",
+      "item_id": "U-S05",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Tipi di dato",
+      "criterion": "I tipi di dato sono adeguati ai valori e alle operazioni previste.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "grade TEXT è necessario per 30L e NS; semester TEXT (YYYY-MM) e credits INTEGER adeguati.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "INTEGER per crediti e ID; TEXT per semestre e grade, inclusi 30L e NS.",
+        "notes": "Correggere gli esempi A/B+ nella descrizione del voto."
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    },
+    {
+      "key": "U-S06",
+      "dataset": "university",
+      "item_id": "U-S06",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Vincoli",
+      "criterion": "NOT NULL e UNIQUE sono applicati agli attributi semanticamente obbligatori o univoci.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "NOT NULL su tutti gli attributi richiesti; UNIQUE su email e course_code. name correttamente non univoco (student3, 6, 7 sono tutti \"Francesca Colombo\").",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "MODIFICA",
+        "severity": "MINORE",
+        "correction": "Aggiungere CHECK credits > 0 e dominio grade/semester; esplicitare formato.",
+        "rationale": "NOT NULL e UNIQUE email/course_code presenti; il DDL non verifica dominio dei valori.",
+        "notes": ""
+      },
+      "comparison_status": "DISACCORDO_VERDETTO",
+      "needs_consensus": true
+    },
+    {
+      "key": "U-S07",
+      "dataset": "university",
+      "item_id": "U-S07",
+      "area": "Schema",
+      "artifact": "gold_schema.json",
+      "object": "Nomi",
+      "criterion": "Tabelle e colonne hanno nomi chiari, coerenti e in snake_case.",
+      "critical": "",
+      "sql": "",
+      "comparison": "",
+      "a": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Nomi in snake_case, chiari e coerenti.",
+        "notes": ""
+      },
+      "b": {
+        "verdict": "ACCETTA",
+        "severity": "N/A",
+        "correction": "",
+        "rationale": "Nomi coerenti in snake_case; grade e semester descrivono attributi del fatto.",
+        "notes": ""
+      },
+      "comparison_status": "ACCORDO_ACCETTA",
+      "needs_consensus": false
+    }
+  ]
+}

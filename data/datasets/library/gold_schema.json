@@ -69,7 +69,10 @@
          "default_value": null, "description": "Data del prestito"},
         {"name": "due_date", "data_type": "DATE", "is_primary_key": false, "is_foreign_key": false,
          "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
-         "default_value": null, "description": "Data prevista di restituzione"}
+         "default_value": null, "description": "Data prevista di restituzione"},
+        {"name": "returned_on", "data_type": "DATE", "is_primary_key": false, "is_foreign_key": false,
+         "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": false,
+         "default_value": null, "description": "Data effettiva di restituzione (NULL se non restituito)"}
       ]
     },
     {
@@ -80,9 +83,9 @@
          "foreign_key_table": null, "foreign_key_column": null, "is_unique": true, "is_not_null": true,
          "default_value": null, "description": "Identificativo unico della multa"},
         {"name": "loan_id", "data_type": "INTEGER", "is_primary_key": false, "is_foreign_key": true,
-         "foreign_key_table": "loans", "foreign_key_column": "loan_id", "is_unique": false,
+         "foreign_key_table": "loans", "foreign_key_column": "loan_id", "is_unique": true,
          "is_not_null": true, "default_value": null, "description": "Prestito a cui è associata la multa"},
-        {"name": "amount", "data_type": "REAL", "is_primary_key": false, "is_foreign_key": false,
+        {"name": "amount", "data_type": "NUMERIC(10,2)", "is_primary_key": false, "is_foreign_key": false,
          "foreign_key_table": null, "foreign_key_column": null, "is_unique": false, "is_not_null": true,
          "default_value": null, "description": "Importo della multa in euro"},
         {"name": "paid_on", "data_type": "DATE", "is_primary_key": false, "is_foreign_key": false,
@@ -95,7 +98,7 @@
     {"type": "one_to_many", "from_table": "books", "from_column": "category_id", "to_table": "categories", "to_column": "category_id"},
     {"type": "one_to_many", "from_table": "loans", "from_column": "member_id", "to_table": "members", "to_column": "member_id"},
     {"type": "one_to_many", "from_table": "loans", "from_column": "book_id", "to_table": "books", "to_column": "book_id"},
-    {"type": "one_to_many", "from_table": "fines", "from_column": "loan_id", "to_table": "loans", "to_column": "loan_id"}
+    {"type": "one_to_one", "from_table": "fines", "from_column": "loan_id", "to_table": "loans", "to_column": "loan_id"}
   ],
   "description": "Biblioteca pubblica: categorie, libri, iscritti, prestiti e multe."
 }

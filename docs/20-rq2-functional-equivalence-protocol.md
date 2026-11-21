@@ -1,5 +1,12 @@
 # Protocollo RQ2: accuratezza osservabile ed equivalenza funzionale
 
+> **Emendamento del 21 novembre 2026.** I due valutatori indipendenti dei
+> gold standard hanno raggiunto il consenso su 25 elementi. Dataset e query
+> sono passati a `rq2_functional_v2`. Gli output precedenti restano risultati
+> storici degli artefatti v1 e non devono essere aggregati con risultati v2.
+> Razionale, snapshot pre-emendamento e consenso tecnico sono conservati in
+> `backend/reports/gold_standard_consensus_20261121/`.
+
 ## Stato e finalità
 
 Questo documento congela la semantica dell'analisi RQ2 prima della

@@ -4,9 +4,9 @@
 
 | File | Descrizione |
 |---|---|
-| `gold_schema.json` | Gold-standard `NormalizedSchema`: 3 tabelle, 9 colonne, 2 FK |
+| `gold_schema.json` | Gold-standard `NormalizedSchema`: 3 tabelle, 11 colonne, 2 FK |
 | `ground_truth.db` | Database SQLite normalizzato (3NF) con i valori di riferimento |
-| `source/enrollments.csv` | CSV **denormalizzato** (30 righe) come verrebbe caricato dall'utente |
+| `source/enrollments.csv` | CSV **denormalizzato** (45 righe) come verrebbe caricato dall'utente |
 | `source/description.pdf` | Descrizione del dominio in due paragrafi |
 | `build_dataset.py` | Generatore riproducibile (seed fisso `20260803`) |
 
@@ -14,7 +14,12 @@
 
 - **students** (30): `student_id`, `name`, `email`
 - **courses** (8): `course_id`, `course_code`, `title`, `credits`
-- **enrollments** (45): `student_id`+`course_id` (PK composita), `semester`, `grade`
+- **enrollments** (45): `student_id`+`course_id`+`semester` (PK composita), `grade`
+
+La PK include `semester`, così uno studente può ripetere lo stesso corso in
+semestri diversi. Ai fini dell'allineamento RQ2 la chiave business è
+`email` + `course_code` + `semester`; gli ID sintetici vengono risolti tramite
+le rispettive tabelle anagrafiche.
 
 ## Deviazione documentata dal protocollo (`docs/11`, §1.1)
 

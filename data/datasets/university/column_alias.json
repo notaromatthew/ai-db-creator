@@ -2,7 +2,7 @@
   "students": {
     "student_id": "id"
   },
-  "enrollments": {
+  "courses": {
     "course_id": "id"
   }
 }

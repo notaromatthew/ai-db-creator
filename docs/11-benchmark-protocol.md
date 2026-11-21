@@ -16,10 +16,10 @@ Three datasets of increasing complexity are used to evaluate schema generation q
 | **Number of tables** | 3 |
 | **Tables** | `students`, `courses`, `enrollments` |
 | **Relationships** | 2 (one-to-many: student → enrollments, course → enrollments) |
-| **Source documents** | 1 PDF description (2 paragraphs), 1 CSV file (30 rows, 3 columns) |
+| **Source documents** | 1 PDF description (2 paragraphs), 1 CSV file (45 rows, 7 columns) |
 | **Gold-standard tables** | 3 |
-| **Gold-standard columns** | 10 total |
-| **NOT NULL columns** | 6 |
+| **Gold-standard columns** | 11 total |
+| **NOT NULL columns** | 11 |
 | **Foreign keys** | 2 |
 | **Complexity features** | Single junction table, no transitive dependencies, obvious PKs |
 
@@ -31,10 +31,10 @@ Three datasets of increasing complexity are used to evaluate schema generation q
 | **Number of tables** | 5 |
 | **Tables** | `members`, `books`, `categories`, `loans`, `fines` |
 | **Relationships** | 4 (book → category, member → loans, book → loans, loan → fines) |
-| **Source documents** | 1 PDF description (1 page), 2 CSV files (books: 50 rows, members: 20 rows) |
+| **Source documents** | 1 PDF description (1 page), 3 CSV files (books: 50 rows, members: 20 rows, loans: 60 rows) |
 | **Gold-standard tables** | 5 |
-| **Gold-standard columns** | 22 total |
-| **NOT NULL columns** | 14 |
+| **Gold-standard columns** | 21 total |
+| **NOT NULL columns** | 19 |
 | **Foreign keys** | 4 |
 | **Complexity features** | Implicit relationship (fine depends on loan which depends on member and book), date logic for overdue calculation |
 
@@ -48,10 +48,10 @@ Three datasets of increasing complexity are used to evaluate schema generation q
 | **Relationships** | 7+ (including many-to-many: treatments ↔ medications via prescriptions) |
 | **Source documents** | 1 PDF description (3 pages), 2 CSV files (patients: 100 rows, appointments: 200 rows), 1 TXT file with operational notes |
 | **Gold-standard tables** | 8 |
-| **Gold-standard columns** | 42 total |
-| **NOT NULL columns** | 28 |
+| **Gold-standard columns** | 30 total |
+| **NOT NULL columns** | 30 |
 | **Foreign keys** | 7 |
-| **Complexity features** | Many-to-many with junction table, multi-column FKs, cyclic references (invoice references appointment which references patient), implicit entities (ward assignment inferred from doctor's department) |
+| **Complexity features** | Junction table, doctor-to-ward assignment, treatment pricing and one invoice per treated appointment |
 
 ---
 

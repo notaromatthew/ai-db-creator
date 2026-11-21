@@ -15,17 +15,17 @@
 ## Contenuto
 
 - **patients** (100), **doctors** (12), **wards** (6), **medications** (10)
-- **appointments** (200), **treatments** (250)
-- **prescriptions** (300) — junction many-to-many trattamenti↔farmaci
-- **invoices** (~160) — fattura riferita all'appuntamento (riferimento ciclico)
+- **appointments** (200), con reparto derivato dal medico; **treatments** (250) con tariffa
+- **prescriptions** (300) — tabella ponte con due relazioni one-to-many
+- **invoices** — una per ogni appuntamento con almeno un trattamento, importo pari alla somma delle tariffe +15%
 
 ## Deviazione documentata dal protocollo (`docs/11`, §1.3)
 
 - Medici e farmaci sono forniti implicitamente nella descrizione/note piuttosto
   che in CSV separati.
-- 37 colonne vs le 42 previste dal protocollo (scope iniziale). L'assegnazione
-  del reparto è esplicita nel gold-schema ma anche derivabile dal dipartimento
-  del medico (entità implicita, esercizio di normalizzazione).
+- 30 colonne vs le 42 previste dal protocollo iniziale. Il medico contiene
+  `ward_id`; `appointments` non duplica il reparto. La chiave business degli
+  appuntamenti usa codice fiscale, nome/specialità del medico e data-ora.
 
 ## Uso del valutatore RQ2
 

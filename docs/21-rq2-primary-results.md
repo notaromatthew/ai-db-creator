@@ -1,5 +1,10 @@
 # Pilot tecnico RQ2 e stato della matrice corretta — 5 novembre 2026
 
+> **Risultati storici v1.** Questi output precedono l'emendamento dei gold
+> standard approvato il 21 novembre 2026. Restano una traccia di audit per
+> `rq2_functional_v1`, ma non sono risultati correnti v2. Le stime RQ2 finali
+> sugli artefatti emendati richiedono una nuova matrice completa.
+
 > **Stato:** questo documento non contiene ancora risultati primari confermativi.
 > La prima matrice completa ha rivelato un'incompatibilità del client con le
 > risposte Gemini a blocchi ed è conservata come pilot tecnico. La matrice v2 è

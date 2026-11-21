@@ -1,12 +1,16 @@
 {
-  "version": "rq2_functional_v1",
+  "version": "rq2_functional_v2",
   "dataset": "hospital",
-  "status": "frozen_before_regenerated_outcomes",
+  "status": "amended_after_expert_consensus_2026-11-21",
   "natural_keys": {
     "patients": ["fiscal_code"],
     "doctors": ["full_name", "specialty"],
     "wards": ["name"],
-    "appointments": ["appointment_id"]
+    "appointments": ["patient_id", "doctor_id", "scheduled_on"]
+  },
+  "business_key_paths": {
+    "appointments": ["patients.fiscal_code", "doctors.full_name", "doctors.specialty", "scheduled_on"],
+    "doctors": ["full_name", "specialty"]
   },
   "observable_scope": {
     "tables": {
@@ -23,13 +27,13 @@
         "key_columns": ["name"]
       },
       "appointments": {
-        "columns": ["appointment_id", "scheduled_on"],
-        "key_columns": ["appointment_id"]
+        "columns": ["scheduled_on"],
+        "key_columns": ["patient_id", "doctor_id", "scheduled_on"]
       }
     },
     "excluded": {
-      "doctors.department": {
-        "reason": "The source states specialty and an English department-to-ward rule, while the gold stores a separate Italian department value."
+      "doctors.ward_id": {
+        "reason": "Synthetic identifier; the doctor-to-ward relationship is evaluated through ward names in functional queries H04, H06 and H08."
       },
       "wards.department": {
         "reason": "The exact stored department representation is not supplied as a row-level source value."
@@ -38,9 +42,6 @@
         "reason": "Synthetic identifier; the relationship is evaluated by functional query H04."
       },
       "appointments.doctor_id": {
-        "reason": "Synthetic identifier; the relationship is evaluated by functional query H04."
-      },
-      "appointments.ward_id": {
         "reason": "Synthetic identifier; the relationship is evaluated by functional query H04."
       },
       "treatments": {
@@ -61,7 +62,7 @@
     "unicode": "NFKC",
     "text": {"trim": true, "collapse_whitespace": true, "case_sensitive": true},
     "case_insensitive_columns": ["fiscal_code"],
-    "numeric": {"compare_by_value": true, "absolute_tolerance": 0.0},
+    "numeric": {"compare_by_value": true, "absolute_tolerance": 0.005},
     "date": "YYYY-MM-DD",
     "datetime": "YYYY-MM-DD HH:MM:SS",
     "null_equals_empty": false,
@@ -99,8 +100,8 @@
       "id": "H04",
       "description": "Appuntamenti ricostruiti senza dipendere dagli ID di medico e reparto",
       "critical": true,
-      "sql": "SELECT a.appointment_id, p.fiscal_code, d.full_name AS doctor_name, d.specialty, w.name AS ward_name, a.scheduled_on FROM appointments a JOIN patients p ON p.patient_id = a.patient_id JOIN doctors d ON d.doctor_id = a.doctor_id JOIN wards w ON w.ward_id = a.ward_id",
-      "comparison": {"mode": "unordered_rows", "columns": ["appointment_id", "fiscal_code", "doctor_name", "specialty", "ward_name", "scheduled_on"]}
+      "sql": "SELECT p.fiscal_code, d.full_name AS doctor_name, d.specialty, w.name AS ward_name, a.scheduled_on FROM appointments a JOIN patients p ON p.patient_id = a.patient_id JOIN doctors d ON d.doctor_id = a.doctor_id JOIN wards w ON w.ward_id = d.ward_id",
+      "comparison": {"mode": "unordered_rows", "columns": ["fiscal_code", "doctor_name", "specialty", "ward_name", "scheduled_on"]}
     },
     {
       "id": "H05",
@@ -113,7 +114,7 @@
       "id": "H06",
       "description": "Reparti citati negli appuntamenti",
       "critical": false,
-      "sql": "SELECT DISTINCT w.name AS ward_name FROM wards w JOIN appointments a ON a.ward_id = w.ward_id",
+      "sql": "SELECT DISTINCT w.name AS ward_name FROM wards w JOIN doctors d ON d.ward_id = w.ward_id JOIN appointments a ON a.doctor_id = d.doctor_id",
       "comparison": {"mode": "unordered_rows", "columns": ["ward_name"]}
     },
     {
@@ -127,7 +128,7 @@
       "id": "H08",
       "description": "Numero di appuntamenti per reparto",
       "critical": false,
-      "sql": "SELECT w.name AS ward_name, COUNT(*) AS appointment_count FROM appointments a JOIN wards w ON w.ward_id = a.ward_id GROUP BY w.name",
+      "sql": "SELECT w.name AS ward_name, COUNT(*) AS appointment_count FROM appointments a JOIN doctors d ON d.doctor_id = a.doctor_id JOIN wards w ON w.ward_id = d.ward_id GROUP BY w.name",
       "comparison": {"mode": "unordered_rows", "columns": ["ward_name", "appointment_count"]}
     },
     {

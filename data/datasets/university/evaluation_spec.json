@@ -1,11 +1,14 @@
 {
-  "version": "rq2_functional_v1",
+  "version": "rq2_functional_v2",
   "dataset": "university",
-  "status": "frozen_before_regenerated_outcomes",
+  "status": "amended_after_expert_consensus_2026-11-21",
   "natural_keys": {
     "students": ["email"],
     "courses": ["course_code"],
     "enrollments": ["student_id", "course_id", "semester"]
+  },
+  "business_key_paths": {
+    "enrollments": ["students.email", "courses.course_code", "semester"]
   },
   "observable_scope": {
     "tables": {
@@ -124,7 +127,7 @@
       "id": "U09",
       "description": "Crediti associati a ciascun corso referenziato",
       "critical": false,
-      "sql": "SELECT course_code, credits FROM courses",
+      "sql": "SELECT DISTINCT c.course_code, c.credits FROM courses c JOIN enrollments e ON e.course_id = c.course_id",
       "comparison": {"mode": "unordered_rows", "columns": ["course_code", "credits"]}
     },
     {

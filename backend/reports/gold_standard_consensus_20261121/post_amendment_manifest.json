@@ -1,0 +1,203 @@
+{
+  "artifact_version": "rq2_functional_v2",
+  "amendment_date": "2026-11-21",
+  "technical_consensus_status": "COMPLETE",
+  "personal_qualification_forms_status": "DEFERRED_BY_USER",
+  "source_workbook_sha256": "2bcb3fe620bcc7c2be5f7806dcda01c5fcf31083e18c889be7d6d73beb84a5a9",
+  "pre_amendment_snapshot": "backend/reports/gold_standard_consensus_20261121/pre_amendment_snapshot",
+  "comparability": "v2 artifacts require a complete new benchmark matrix; v1 results remain historical",
+  "artifacts": [
+    {
+      "dataset": "university",
+      "path": "data/datasets/university/__pycache__/build_dataset.cpython-312.pyc",
+      "size_bytes": 7687,
+      "sha256": "35e29f126ed8519591097311d46b679faddc2c6e289b3791496cf9584e3d5def"
+    },
+    {
+      "dataset": "university",
+      "path": "data/datasets/university/build_dataset.py",
+      "size_bytes": 5918,
+      "sha256": "0721fa99de71b78b651dc8bdc5e6f15d96cb166e9981f0592374eef0899b11c0"
+    },
+    {
+      "dataset": "university",
+      "path": "data/datasets/university/column_alias.json",
+      "size_bytes": 97,
+      "sha256": "2af20fe4a8827280b0cdc959895974a4369d805856d99bb093a5b41367c3ada0"
+    },
+    {
+      "dataset": "university",
+      "path": "data/datasets/university/evaluation_spec.json",
+      "size_bytes": 5981,
+      "sha256": "f435b25fccc451c491ae37b788c9963be2eb2685cbd0c933e775ff06460eed9b"
+    },
+    {
+      "dataset": "university",
+      "path": "data/datasets/university/gold_schema.json",
+      "size_bytes": 5208,
+      "sha256": "955b1cb455894849bea9410ce944b2522e0b50784c9b080d51c7176ac770a777"
+    },
+    {
+      "dataset": "university",
+      "path": "data/datasets/university/ground_truth.db",
+      "size_bytes": 28672,
+      "sha256": "2ee297b58cbaac52e2732aaa91e9cc4dc23ffbbea16ac9c67794f5f9a25ad81c"
+    },
+    {
+      "dataset": "university",
+      "path": "data/datasets/university/prompt.txt",
+      "size_bytes": 455,
+      "sha256": "98d24713d6722da0fef0a6c8f44d8779a37949d5adb2a3a381adab5fa33c25cc"
+    },
+    {
+      "dataset": "university",
+      "path": "data/datasets/university/README.md",
+      "size_bytes": 1810,
+      "sha256": "88182715a0295da8da2927c75940989560ea1b5399d8a9dc05e1f29c42d7244f"
+    },
+    {
+      "dataset": "university",
+      "path": "data/datasets/university/source/description.pdf",
+      "size_bytes": 1295,
+      "sha256": "b879dedb86735023cb4c89fd29f65726709da241b351c2817641dd6a0e576622"
+    },
+    {
+      "dataset": "university",
+      "path": "data/datasets/university/source/enrollments.csv",
+      "size_bytes": 3556,
+      "sha256": "08ab314bea0962bb2a1877e507b74c396ad64d37f76ea13800e6ad83cfc2a51d"
+    },
+    {
+      "dataset": "library",
+      "path": "data/datasets/library/__pycache__/build_dataset.cpython-312.pyc",
+      "size_bytes": 12098,
+      "sha256": "b42ab6cc8bddcfac11b33bfa21ae0c4b2e294da1dad467d9ea361a663543aefe"
+    },
+    {
+      "dataset": "library",
+      "path": "data/datasets/library/build_dataset.py",
+      "size_bytes": 9089,
+      "sha256": "9667db6da0786c721a6eabd1ebe86e304498adfe30e7243bbf9217f10326bab5"
+    },
+    {
+      "dataset": "library",
+      "path": "data/datasets/library/evaluation_spec.json",
+      "size_bytes": 5192,
+      "sha256": "2a3785207a9c21a2b3fd66b0fde7f0ca2a68481821ca2fd238737d1310e2f26c"
+    },
+    {
+      "dataset": "library",
+      "path": "data/datasets/library/gold_schema.json",
+      "size_bytes": 7336,
+      "sha256": "c192334af1511542c738d51d66869a1c9faebf535180016290147e6763cce188"
+    },
+    {
+      "dataset": "library",
+      "path": "data/datasets/library/ground_truth.db",
+      "size_bytes": 40960,
+      "sha256": "0160478a27f0a9114a61ad93893b0d39e67595ca1323d65dfadb4592906ccaed"
+    },
+    {
+      "dataset": "library",
+      "path": "data/datasets/library/prompt.txt",
+      "size_bytes": 465,
+      "sha256": "4c225fdf35dc0f93fc0348d7cef91a004dc6f40f13caad8ecf082dde52593f9c"
+    },
+    {
+      "dataset": "library",
+      "path": "data/datasets/library/README.md",
+      "size_bytes": 1827,
+      "sha256": "a5faddb25700517fad3d5cf4462718b0436876f5166f9bbf74e7eeecddda40c6"
+    },
+    {
+      "dataset": "library",
+      "path": "data/datasets/library/source/books.csv",
+      "size_bytes": 3215,
+      "sha256": "52ee4e97e0177f9984823321823530ebfb0da446dc7eb7215821f675970e093c"
+    },
+    {
+      "dataset": "library",
+      "path": "data/datasets/library/source/description.pdf",
+      "size_bytes": 1247,
+      "sha256": "f679813bec7aa4b92a5ff4625d3a8dca7106fc596af2af3b3b79120f996546f5"
+    },
+    {
+      "dataset": "library",
+      "path": "data/datasets/library/source/loans_members.csv",
+      "size_bytes": 4161,
+      "sha256": "4fa2c5845f798c26d4746789bc05a1e973298c0710ffb77007e22145f352e5ef"
+    },
+    {
+      "dataset": "library",
+      "path": "data/datasets/library/source/members.csv",
+      "size_bytes": 1014,
+      "sha256": "12634df10d79f235f24465fb4edcee6c7b14c4fc80f775033f8066b1ed7541d2"
+    },
+    {
+      "dataset": "hospital",
+      "path": "data/datasets/hospital/__pycache__/build_dataset.cpython-312.pyc",
+      "size_bytes": 15431,
+      "sha256": "016756bc07cf97c644e36c5c35670d47848142cb3f8c6c1394404a16b1a969b0"
+    },
+    {
+      "dataset": "hospital",
+      "path": "data/datasets/hospital/build_dataset.py",
+      "size_bytes": 12897,
+      "sha256": "d6e1f8bbbcb0a3ec70f236c9e828637ebf54dc9af3b9296bdb806df773910d50"
+    },
+    {
+      "dataset": "hospital",
+      "path": "data/datasets/hospital/evaluation_spec.json",
+      "size_bytes": 6329,
+      "sha256": "4afaf6abc67716307bf76d67365011a08c50fcd5c24cf1fc8026859ce3c4fda8"
+    },
+    {
+      "dataset": "hospital",
+      "path": "data/datasets/hospital/gold_schema.json",
+      "size_bytes": 10901,
+      "sha256": "ec868933faf76755430bb193d6dfa7790868cc9f7f2ecd6e5a2e8ab555c6515f"
+    },
+    {
+      "dataset": "hospital",
+      "path": "data/datasets/hospital/ground_truth.db",
+      "size_bytes": 114688,
+      "sha256": "fe235c17716418e23deeff9598cf0db54b568f38e6cec9c44d9bea982e920766"
+    },
+    {
+      "dataset": "hospital",
+      "path": "data/datasets/hospital/prompt.txt",
+      "size_bytes": 549,
+      "sha256": "503e6228f33594da3ab2d460c3258ed6d66219e20ac874780b72860a358b1523"
+    },
+    {
+      "dataset": "hospital",
+      "path": "data/datasets/hospital/README.md",
+      "size_bytes": 1856,
+      "sha256": "3b0177dced6ea829fa96b6cd81e2e5ea8fde2a9cd0208a7247cb656afb3b0c8b"
+    },
+    {
+      "dataset": "hospital",
+      "path": "data/datasets/hospital/source/appointments.csv",
+      "size_bytes": 13509,
+      "sha256": "c8e4bcd119b41b8a1cd231e96ee7c64d2b511a61f21dfb59ef1bfef0da705e3b"
+    },
+    {
+      "dataset": "hospital",
+      "path": "data/datasets/hospital/source/description.pdf",
+      "size_bytes": 2428,
+      "sha256": "fab5d677f7a9562d6ed10fdc3d60ca5f6c6f3e5eec11b07a40288338d6e3df54"
+    },
+    {
+      "dataset": "hospital",
+      "path": "data/datasets/hospital/source/operational_notes.txt",
+      "size_bytes": 575,
+      "sha256": "c5cfa67d457c7099a18574d4237d939a32894a4a5ec30571682c70bacf904aad"
+    },
+    {
+      "dataset": "hospital",
+      "path": "data/datasets/hospital/source/patients.csv",
+      "size_bytes": 4057,
+      "sha256": "eee7287f111848350704d21d7ab9dedebb19b3d249d1807d49debf8bff5deaef"
+    }
+  ]
+}

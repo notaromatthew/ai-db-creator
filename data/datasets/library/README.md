@@ -17,14 +17,14 @@
 - **categories** (10): `category_id`, `name`
 - **members** (20): `member_id`, `full_name`, `email`, `joined_on`
 - **books** (50): `book_id`, `isbn`, `title`, `author`, `category_id`
-- **loans** (60): `loan_id`, `book_id`, `member_id`, `loan_date`, `due_date`
-- **fines** (variabile, ~60% dei prestiti): `fine_id`, `loan_id`, `amount`, `paid_on`
+- **loans** (60): `loan_id`, `book_id`, `member_id`, `loan_date`, `due_date`, `returned_on`
+- **fines**: al massimo una per prestito, solo quando `returned_on > due_date`
 
 ## Deviazione documentata dal protocollo (`docs/11`, §1.2)
 
-- Il protocollo descrive prestiti e multe derivabili dal ritardo; qui prestiti e
-  multe sono generati a tempo di record per popolare la ground-truth. Un CSV
-  denormalizzato `loans_members.csv` esercita la ricostruzione one-to-many.
+- Il protocollo descrive prestiti e multe derivabili dal ritardo. Il CSV
+  denormalizzato `loans_members.csv` include `returned_on`; il builder genera
+  una multa soltanto per i prestiti restituiti dopo `due_date`.
 - `category_name` nella CSV dei libri è denormalizzato (il gold-schema usa
   `category_id`), per testare la risoluzione semantica.
 

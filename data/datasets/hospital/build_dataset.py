@@ -11,9 +11,9 @@ Artifacts under ``data/datasets/hospital/``:
 Fixed random seed for byte-for-byte reproducibility.
 
 Design notes (documented deviation from docs/11, section 1.3):
-- The protocol lists 8 tables and 42 columns; this implementation covers the 8
-  tables with 37 columns. Ward assignment is explicit in the gold schema and is
-  additionally derivable from doctor department (implicit-entity exercise).
+- The protocol lists 8 tables. This consensus-amended implementation covers 30
+  columns. Each doctor references one ward, so an appointment inherits its ward
+  without storing a redundant ``ward_id``.
 - doctors/medications are provided implicitly in the description and notes
   rather than in separate CSVs, matching the protocol's input document set.
 """
@@ -45,6 +45,18 @@ TREATMENT_DESCRIPTIONS = [
     "Visita specialistica", "Ecografia", "Radiografia", "Analisi del sangue", "Elettrocardiogramma",
     "Risonanza magnetica", "TAC", "Fisioterapia", "Infusione endovenosa", "Biopsia",
 ]
+TREATMENT_FEES = {
+    "Visita specialistica": 90.00,
+    "Ecografia": 120.00,
+    "Radiografia": 75.00,
+    "Analisi del sangue": 45.00,
+    "Elettrocardiogramma": 80.00,
+    "Risonanza magnetica": 300.00,
+    "TAC": 250.00,
+    "Fisioterapia": 60.00,
+    "Infusione endovenosa": 110.00,
+    "Biopsia": 220.00,
+}
 DOSAGES = ["1 cp al giorno", "2 cp al giorno", "1 cp ogni 8 ore", "10 ml ogni 12 ore",
            "1 bustina al giorno", "500 mg ogni 6 ore"]
 
@@ -70,15 +82,15 @@ def build() -> None:
         birth = date(1940, 1, 1) + timedelta(days=rng.randint(0, 26000))
         patients.append((patient_id, fiscal, name, birth.isoformat()))
 
+    wards = [(wid, WARD_NAMES[wid - 1], DEPARTMENTS[(wid - 1) % len(DEPARTMENTS)])
+             for wid in range(1, len(WARD_NAMES) + 1)]
+
     doctors = []
     for doctor_id in range(1, 13):
         name = f"Dr. {rng.choice(FIRST_NAMES)} {rng.choice(LAST_NAMES)}"
         specialty = SPECIALTIES[(doctor_id - 1) % len(SPECIALTIES)]
-        department = DEPARTMENTS[(doctor_id - 1) % len(DEPARTMENTS)]
-        doctors.append((doctor_id, name, specialty, department))
-
-    wards = [(wid, WARD_NAMES[wid - 1], DEPARTMENTS[(wid - 1) % len(DEPARTMENTS)])
-             for wid in range(1, len(WARD_NAMES) + 1)]
+        ward_id = ((doctor_id - 1) % len(wards)) + 1
+        doctors.append((doctor_id, name, specialty, ward_id))
 
     medications = [(mid, name, ingredient) for mid, (name, ingredient) in enumerate(MEDICATIONS, start=1)]
 
@@ -86,29 +98,39 @@ def build() -> None:
     for appointment_id in range(1, 201):
         patient_id = rng.randint(1, 100)
         doctor_id = rng.randint(1, len(doctors))
-        ward_id = rng.randint(1, len(wards))
+        rng.randint(1, len(wards))  # Preserve the pre-amendment random stream.
         scheduled = datetime(2026, 1, 1, 8, 0) + timedelta(minutes=rng.randint(0, 420 * 24 * 60))
-        appointments.append((appointment_id, patient_id, doctor_id, ward_id, scheduled.strftime("%Y-%m-%d %H:%M")))
+        appointments.append((appointment_id, patient_id, doctor_id,
+                             scheduled.strftime("%Y-%m-%d %H:%M:%S")))
 
     treatments = []
     for treatment_id in range(1, 251):
         appointment_id = rng.randint(1, 200)
         description = rng.choice(TREATMENT_DESCRIPTIONS)
-        treatments.append((treatment_id, appointment_id, description))
+        treatments.append((treatment_id, appointment_id, description, TREATMENT_FEES[description]))
 
     prescriptions = []
-    for prescription_id in range(1, 301):
+    prescription_keys = set()
+    while len(prescriptions) < 300:
         treatment_id = rng.randint(1, 250)
         medication_id = rng.randint(1, len(medications))
         dosage = rng.choice(DOSAGES)
-        prescriptions.append((prescription_id, treatment_id, medication_id, dosage))
+        key = (treatment_id, medication_id, dosage)
+        if key in prescription_keys:
+            continue
+        prescription_keys.add(key)
+        prescriptions.append((len(prescriptions) + 1, treatment_id, medication_id, dosage))
 
+    treatment_fees_by_appointment = {}
+    for _, appointment_id, _, fee in treatments:
+        treatment_fees_by_appointment.setdefault(appointment_id, 0.0)
+        treatment_fees_by_appointment[appointment_id] += fee
+    appointment_dates = {row[0]: datetime.fromisoformat(row[3]).date() for row in appointments}
     invoices = []
-    for invoice_id, appointment_id in enumerate(range(1, 201), start=1):
-        if rng.random() < 0.8:
-            amount = round(rng.uniform(40.0, 900.0), 2)
-            issued = date(2026, 1, 1) + timedelta(days=rng.randint(0, 180))
-            invoices.append((invoice_id, appointment_id, amount, issued.isoformat()))
+    for invoice_id, appointment_id in enumerate(sorted(treatment_fees_by_appointment), start=1):
+        amount = round(treatment_fees_by_appointment[appointment_id] * 1.15, 2)
+        issued = appointment_dates[appointment_id] + timedelta(days=rng.randint(1, 30))
+        invoices.append((invoice_id, appointment_id, amount, issued.isoformat()))
 
     (HERE / "source").mkdir(parents=True, exist_ok=True)
 
@@ -121,8 +143,8 @@ def build() -> None:
         output.write("appointment_id,patient_id,doctor_name,specialty,ward_name,scheduled_on\n")
         for appt in appointments:
             doctor = doctors[appt[2] - 1]
-            ward = wards[appt[3] - 1]
-            output.write(f"{appt[0]},{appt[1]},{doctor[1]},{doctor[2]},{ward[1]},{appt[4]}\n")
+            ward = wards[doctor[3] - 1]
+            output.write(f"{appt[0]},{appt[1]},{doctor[1]},{doctor[2]},{ward[1]},{appt[3]}\n")
 
     notes = (
         "OPERATIONAL NOTES\n"
@@ -140,7 +162,9 @@ def build() -> None:
 
     _write_pdf((HERE / "source" / "description.pdf"))
 
-    conn = sqlite3.connect(str(HERE / "ground_truth.db"))
+    database_path = HERE / "ground_truth.db"
+    database_path.unlink(missing_ok=True)
+    conn = sqlite3.connect(str(database_path))
     conn.executescript("""
         PRAGMA foreign_keys = ON;
         CREATE TABLE patients (
@@ -153,7 +177,9 @@ def build() -> None:
             doctor_id INTEGER PRIMARY KEY,
             full_name TEXT NOT NULL,
             specialty TEXT NOT NULL,
-            department TEXT NOT NULL
+            ward_id INTEGER NOT NULL,
+            UNIQUE (full_name, specialty),
+            FOREIGN KEY (ward_id) REFERENCES wards(ward_id)
         );
         CREATE TABLE wards (
             ward_id INTEGER PRIMARY KEY,
@@ -164,16 +190,15 @@ def build() -> None:
             appointment_id INTEGER PRIMARY KEY,
             patient_id INTEGER NOT NULL,
             doctor_id INTEGER NOT NULL,
-            ward_id INTEGER NOT NULL,
             scheduled_on DATETIME NOT NULL,
             FOREIGN KEY (patient_id) REFERENCES patients(patient_id),
-            FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id),
-            FOREIGN KEY (ward_id) REFERENCES wards(ward_id)
+            FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id)
         );
         CREATE TABLE treatments (
             treatment_id INTEGER PRIMARY KEY,
             appointment_id INTEGER NOT NULL,
             description TEXT NOT NULL,
+            fee NUMERIC(10,2) NOT NULL,
             FOREIGN KEY (appointment_id) REFERENCES appointments(appointment_id)
         );
         CREATE TABLE medications (
@@ -186,23 +211,24 @@ def build() -> None:
             treatment_id INTEGER NOT NULL,
             medication_id INTEGER NOT NULL,
             dosage TEXT NOT NULL,
+            UNIQUE (treatment_id, medication_id, dosage),
             FOREIGN KEY (treatment_id) REFERENCES treatments(treatment_id),
             FOREIGN KEY (medication_id) REFERENCES medications(medication_id)
         );
         CREATE TABLE invoices (
             invoice_id INTEGER PRIMARY KEY,
-            appointment_id INTEGER NOT NULL,
-            amount REAL NOT NULL,
+            appointment_id INTEGER NOT NULL UNIQUE,
+            amount NUMERIC(10,2) NOT NULL,
             issued_on DATE NOT NULL,
             FOREIGN KEY (appointment_id) REFERENCES appointments(appointment_id)
         );
     """)
     conn.executemany("INSERT INTO patients VALUES (?, ?, ?, ?)", patients)
-    conn.executemany("INSERT INTO doctors VALUES (?, ?, ?, ?)", doctors)
     conn.executemany("INSERT INTO wards VALUES (?, ?, ?)", wards)
+    conn.executemany("INSERT INTO doctors VALUES (?, ?, ?, ?)", doctors)
     conn.executemany("INSERT INTO medications VALUES (?, ?, ?)", medications)
-    conn.executemany("INSERT INTO appointments VALUES (?, ?, ?, ?, ?)", appointments)
-    conn.executemany("INSERT INTO treatments VALUES (?, ?, ?)", treatments)
+    conn.executemany("INSERT INTO appointments VALUES (?, ?, ?, ?)", appointments)
+    conn.executemany("INSERT INTO treatments VALUES (?, ?, ?, ?)", treatments)
     conn.executemany("INSERT INTO prescriptions VALUES (?, ?, ?, ?)", prescriptions)
     conn.executemany("INSERT INTO invoices VALUES (?, ?, ?, ?)", invoices)
     conn.commit()
@@ -216,8 +242,9 @@ def _write_pdf(path: Path) -> None:
         "Each patient is registered with a unique fiscal code, a full name and a date of birth. "
         "Doctors are specialists in one of six departments (Cardiology, Neurology, Orthopedics, "
         "Pediatrics, Dermatology, Gynecology); each department maps to a dedicated ward (Reparto A "
-        "to F). An appointment links a patient, a doctor and a ward, and records the scheduled "
-        "date and time.",
+        "to F). Each doctor is assigned to the ward for the doctor's specialty. An appointment "
+        "links a patient to a doctor and records the scheduled date and time; its ward is the "
+        "doctor's ward.",
         "During an appointment one or more clinical treatments may be performed (for example a "
         "specialist visit, an ultrasound, a blood test or an ECG). Every treatment is billed: the "
         "invoice records the appointment, the amount and the issue date. Treatments may require "
@@ -228,12 +255,13 @@ def _write_pdf(path: Path) -> None:
         "the invoicing rule (treatment fee plus 15% co-payment). These notes are part of the "
         "document set given to the population system.",
     )
+    path.unlink(missing_ok=True)
     try:
         document = fitz.open()
         for text in pages:
             page = document.new_page()
             page.insert_textbox(fitz.Rect(50, 50, 545, 792), text, fontsize=11, fontname="helv")
-        document.save(path)
+        document.save(path, no_new_id=True, reproducible=True)
         document.close()
     except Exception:
         (HERE / "source" / "description.txt").write_text("\n\n".join(pages), encoding="utf-8")

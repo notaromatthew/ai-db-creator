@@ -127,7 +127,7 @@
         {
           "name": "semester",
           "data_type": "TEXT",
-          "is_primary_key": false,
+          "is_primary_key": true,
           "is_foreign_key": false,
           "foreign_key_table": null,
           "foreign_key_column": null,
@@ -146,7 +146,7 @@
           "is_unique": false,
           "is_not_null": true,
           "default_value": null,
-          "description": "Voto conseguito (es. A, B+, 28/30)"
+          "description": "Voto conseguito nella scala italiana (18-30, 30L o NS)"
         }
       ]
     }

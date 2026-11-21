@@ -51,6 +51,81 @@ def test_gold_against_itself_is_perfect_in_observable_scope(dataset):
     assert functional_result["functionally_equivalent"] is True
 
 
+@pytest.mark.parametrize("dataset", ["university", "library", "hospital"])
+def test_consensus_amended_gold_databases_have_integrity(dataset):
+    with connect_database(DATASETS / dataset / "ground_truth.db") as connection:
+        assert connection.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
+        assert connection.execute("PRAGMA foreign_key_check").fetchall() == []
+
+
+def test_university_consensus_amendments_are_materialized():
+    with connect_database(DATASETS / "university" / "ground_truth.db") as connection:
+        primary_key = {
+            row[1]: row[5]
+            for row in connection.execute("PRAGMA table_info(enrollments)")
+            if row[5]
+        }
+        assert primary_key == {"student_id": 1, "course_id": 2, "semester": 3}
+
+        spec, _ = load_evaluation_spec(DATASETS / "university")
+        u09 = next(query for query in spec["functional_queries"] if query["id"] == "U09")
+        assert "JOIN enrollments" in u09["sql"]
+
+
+def test_library_consensus_amendments_are_materialized():
+    with connect_database(DATASETS / "library" / "ground_truth.db") as connection:
+        assert connection.execute(
+            "SELECT COUNT(*) FROM fines f JOIN loans l ON l.loan_id = f.loan_id "
+            "WHERE l.returned_on IS NULL OR l.returned_on <= l.due_date"
+        ).fetchone()[0] == 0
+        assert connection.execute(
+            "SELECT COUNT(*) FROM (SELECT loan_id FROM fines GROUP BY loan_id HAVING COUNT(*) > 1)"
+        ).fetchone()[0] == 0
+        assert connection.execute(
+            "SELECT type FROM pragma_table_info('fines') WHERE name = 'amount'"
+        ).fetchone()[0].upper() == "NUMERIC(10,2)"
+
+
+def test_hospital_consensus_amendments_are_materialized():
+    with connect_database(DATASETS / "hospital" / "ground_truth.db") as connection:
+        appointment_columns = {
+            row[1] for row in connection.execute("PRAGMA table_info(appointments)")
+        }
+        assert "ward_id" not in appointment_columns
+        assert connection.execute(
+            "SELECT COUNT(*) FROM (SELECT full_name, specialty FROM doctors "
+            "GROUP BY full_name, specialty HAVING COUNT(*) > 1)"
+        ).fetchone()[0] == 0
+        assert connection.execute(
+            "SELECT COUNT(*) FROM (SELECT treatment_id, medication_id, dosage "
+            "FROM prescriptions GROUP BY treatment_id, medication_id, dosage "
+            "HAVING COUNT(*) > 1)"
+        ).fetchone()[0] == 0
+
+        treated = connection.execute(
+            "SELECT COUNT(DISTINCT appointment_id) FROM treatments"
+        ).fetchone()[0]
+        assert connection.execute("SELECT COUNT(*) FROM invoices").fetchone()[0] == treated
+        assert connection.execute(
+            "SELECT COUNT(*) FROM invoices i LEFT JOIN treatments t "
+            "ON t.appointment_id = i.appointment_id WHERE t.treatment_id IS NULL"
+        ).fetchone()[0] == 0
+        assert connection.execute(
+            "SELECT COUNT(*) FROM ("
+            "SELECT i.appointment_id FROM invoices i JOIN treatments t "
+            "ON t.appointment_id = i.appointment_id GROUP BY i.appointment_id, i.amount "
+            "HAVING ABS(i.amount - ROUND(SUM(t.fee) * 1.15, 2)) > 0.005)"
+        ).fetchone()[0] == 0
+        assert connection.execute(
+            "SELECT COUNT(*) FROM invoices i JOIN appointments a "
+            "ON a.appointment_id = i.appointment_id "
+            "WHERE datetime(i.issued_on) < datetime(a.scheduled_on)"
+        ).fetchone()[0] == 0
+        assert connection.execute(
+            "SELECT COUNT(*) FROM appointments WHERE length(scheduled_on) <> 19"
+        ).fetchone()[0] == 0
+
+
 def test_evaluation_spec_rejects_mutating_and_duplicate_queries(tmp_path):
     spec = {
         "functional_queries": [

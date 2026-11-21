@@ -1,0 +1,171 @@
+{
+  "tables": [
+    {
+      "name": "students",
+      "description": "Anagrafica degli studenti iscritti",
+      "columns": [
+        {
+          "name": "student_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": true,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Identificativo unico dello studente"
+        },
+        {
+          "name": "name",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Nome e cognome dello studente"
+        },
+        {
+          "name": "email",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": true,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Email istituzionale dello studente"
+        }
+      ]
+    },
+    {
+      "name": "courses",
+      "description": "Catalogo dei corsi offerti",
+      "columns": [
+        {
+          "name": "course_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": true,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Identificativo unico del corso"
+        },
+        {
+          "name": "course_code",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": true,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Codice del corso (es. CS-101)"
+        },
+        {
+          "name": "title",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Titolo del corso"
+        },
+        {
+          "name": "credits",
+          "data_type": "INTEGER",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Numero di crediti del corso"
+        }
+      ]
+    },
+    {
+      "name": "enrollments",
+      "description": "Iscrizioni degli studenti ai corsi",
+      "columns": [
+        {
+          "name": "student_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": true,
+          "foreign_key_table": "students",
+          "foreign_key_column": "student_id",
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Studente iscritto"
+        },
+        {
+          "name": "course_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": true,
+          "foreign_key_table": "courses",
+          "foreign_key_column": "course_id",
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Corso scelto"
+        },
+        {
+          "name": "semester",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Semestre di iscrizione (es. 2026-01)"
+        },
+        {
+          "name": "grade",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Voto conseguito (es. A, B+, 28/30)"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "type": "one_to_many",
+      "from_table": "enrollments",
+      "from_column": "student_id",
+      "to_table": "students",
+      "to_column": "student_id"
+    },
+    {
+      "type": "one_to_many",
+      "from_table": "enrollments",
+      "from_column": "course_id",
+      "to_table": "courses",
+      "to_column": "course_id"
+    }
+  ],
+  "description": "Sistema di iscrizione agli esami universitari: studenti, corsi e iscrizioni."
+}
