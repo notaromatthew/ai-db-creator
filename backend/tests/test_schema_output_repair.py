@@ -34,7 +34,7 @@ class RejectingParser:
 
 def test_generate_schema_repairs_one_embedded_json_object(monkeypatch):
     raw = RawMessage("Result:\n```json\n" + __import__("json").dumps(VALID_SCHEMA) + "\n```")
-    monkeypatch.setattr(llm, "_get_llm", lambda **_kwargs: object())
+    monkeypatch.setattr(llm, "_get_llm", lambda **_kwargs: (lambda value: value))
     monkeypatch.setattr(llm.settings, "llm_provider", "openrouter")
     monkeypatch.setattr(llm.settings, "openrouter_schema_json_mode", True)
 
@@ -65,7 +65,7 @@ def test_generate_schema_rejects_unrepairable_output_without_logging_raw(
     monkeypatch, content, category
 ):
     raw = RawMessage(content)
-    monkeypatch.setattr(llm, "_get_llm", lambda **_kwargs: object())
+    monkeypatch.setattr(llm, "_get_llm", lambda **_kwargs: (lambda value: value))
     monkeypatch.setattr(llm.settings, "llm_provider", "openrouter")
     monkeypatch.setattr(llm.settings, "openrouter_schema_json_mode", True)
 
@@ -87,7 +87,7 @@ def test_generate_schema_rejects_unrepairable_output_without_logging_raw(
 
 def test_legacy_contract_does_not_attempt_repair(monkeypatch):
     raw = RawMessage(__import__("json").dumps(VALID_SCHEMA))
-    monkeypatch.setattr(llm, "_get_llm", lambda **_kwargs: object())
+    monkeypatch.setattr(llm, "_get_llm", lambda **_kwargs: (lambda value: value))
     monkeypatch.setattr(llm.settings, "llm_provider", "openrouter")
     monkeypatch.setattr(llm.settings, "openrouter_schema_json_mode", False)
 

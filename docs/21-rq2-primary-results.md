@@ -5,16 +5,59 @@
 > `rq2_functional_v1`, ma non sono risultati correnti v2. Le stime RQ2 finali
 > sugli artefatti emendati richiedono una nuova matrice completa.
 
-> **Stato:** questo documento non contiene ancora risultati primari confermativi.
-> La prima matrice completa ha rivelato un'incompatibilità del client con le
-> risposte Gemini a blocchi ed è conservata come pilot tecnico. La matrice v2 è
-> completa (30/30), ma la quota del provider si è esaurita durante la ripresa
-> dei run finali e confonde Hospital `full_llm` con l'ordine di esecuzione.
+> **Stato:** la matrice post-consenso `rq2_functional_v2` è completa (30/30)
+> ed è la stima primaria corrente per i gold standard emendati. L'analisi resta
+> esplorativa: cinque repliche per cella, un'unica sessione del provider e
+> nessuna separazione sperimentale dell'effetto temporale. Le matrici precedenti
+> rimangono pilot o sensibilità storiche v1.
 >
 > La matrice storica collegata alle valutazioni RQ1 è stata successivamente
 > recuperata, ma non sostituisce le matrici RQ2 di questo documento. Per RQ2 è
 > classificata come rivalutazione storica secondaria perché priva dei manifesti
 > originari per-run; vedere `docs/22-rq1-expert-linked-matrix-recovery.md`.
+
+## Matrice primaria post-consenso `rq2_functional_v2` — 21 novembre 2026
+
+Dopo il consenso GOLD-A/GOLD-B sono stati rigenerati e versionati schema, dati,
+fonti e query attese dei tre dataset. La nuova matrice usa Google Gemini
+Developer API, `gemini-3.5-flash-lite`, temperatura `0.1`, sorgenti `combined`,
+concorrenza 1, limite 8 richieste/minuto e ordine interleaved. Tutti i 30 run
+sono terminati con `population_mode=llm`: zero errori, zero run non valutabili e
+zero fallback.
+
+| Dataset | Condizione | n | Precision | Recall | F1 | Query funzionali | Equivalenti |
+|---|---|---:|---:|---:|---:|---:|---:|
+| University | baseline | 5 | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 5/5 |
+| University | full_llm | 5 | 0.7000 | 0.6697 | 0.6721 | 0.4000 | 0/5 |
+| Library | baseline | 5 | 0.7500 | 0.7429 | 0.7464 | 0.3000 | 0/5 |
+| Library | full_llm | 5 | 0.7500 | 0.7188 | 0.7333 | 0.2000 | 0/5 |
+| Hospital | baseline | 5 | 0.5000 | 0.4296 | 0.4475 | 0.0600 | 0/5 |
+| Hospital | full_llm | 5 | 0.3000 | 0.2663 | 0.2819 | 0.0000 | 0/5 |
+
+Nei confronti esplorativi `full_llm - baseline`, la differenza media F1 è
+`-0.3279` per University, `-0.0131` per Library e `-0.1656` per Hospital. Dopo
+correzione di Holm sui sei test F1/query, University F1 e query e Library F1 e
+query hanno `p=0.0476`; Hospital non raggiunge la soglia (`p` corretti da
+`0.8889` a `1.0000`). Con cinque repliche e valori spesso identici, questi test
+descrivono la matrice osservata e non dimostrano generalizzabilità.
+
+La verifica di integrità ha controllato 30 manifesti, 195 hash di artefatto,
+100 hash sorgente e 30 hash delle specifiche di valutazione senza discrepanze;
+la scansione non ha trovato segreti nei report. Tutti i run registrano la
+revisione Git `d1aa66620f16668771a16f911cc8b0555ce928d3` e una configurazione
+omogenea. Il flag `research_mode` è `false`: nel runner offline è registrato nel
+manifesto ma non modifica generazione o popolamento; l'assenza di fallback è
+verificata separatamente per ogni run. Il campo storico `protocol_version`
+del runner conserva l'etichetta `rq2-format-comparison-v1`, ma questa matrice
+usa esclusivamente `source_format=combined` sui tre dataset principali e non è
+un esperimento tra formati; l'ambito effettivo è fissato dagli altri campi del
+manifesto e dalla versione `rq2_functional_v2` delle specifiche.
+
+Matrice e report sono in
+`backend/reports/benchmark_rq2_v2_google_gemini35flashlite_t01_20261121/`;
+l'analisi statistica riproducibile è in
+`backend/reports/rq2_v2_analysis_20261121/`. Questi risultati non devono essere
+aggregati con v1, perché l'emendamento ha modificato gold standard e query.
 
 ## Pilot OpenRouter del 6 novembre 2026
 

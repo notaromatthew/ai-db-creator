@@ -1,4 +1,5 @@
 """Rafforzamenti della revisione: quota atomica, un solo lavoro attivo, annullamento, ACL del lavoro."""
+import os
 import threading
 
 import pytest
@@ -96,9 +97,11 @@ def test_concurrent_job_creation_allows_only_one_active_job(client, project, mon
         session.close()
 
 
-def test_job_is_dropped_and_quota_not_consumed_when_quota_denies(client, project):
+def test_job_is_dropped_and_quota_not_consumed_when_quota_denies(client, project, monkeypatch):
     c, _ = client
     pid = project["id"]
+    monkeypatch.setattr(tasks, "dispatch_job", lambda _job_id: "thread")
+    monkeypatch.setattr("app.api.routes.job_tasks.dispatch_job", lambda _job_id: "thread")
     ensure_user({"sub": "test-user", "username": "test-user"})
     set_quota("test-user", 0)
     response = c.post(f"/api/projects/{pid}/jobs", json={"kind": "schema", "prompt": "x"})
@@ -217,8 +220,8 @@ def test_members_see_only_their_own_history_and_jobs_without_internal_ids(client
     assert "u-editor" not in raw.replace("domanda di u-editor", "") and "u-viewer" not in raw.replace("domanda di u-viewer", "")
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX backup script requires a POSIX filesystem and PATH")
 def test_backup_script_never_puts_the_password_on_the_command_line(tmp_path):
-    import os
     import subprocess
     from pathlib import Path
     script = Path(__file__).resolve().parents[2] / "scripts" / "ops_pg_backup.sh"

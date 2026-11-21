@@ -1,0 +1,170 @@
+{
+  "hospital/baseline": {
+    "dataset": "hospital",
+    "condition": "baseline",
+    "n_runs_total": 5,
+    "n_runs_f1": 5,
+    "per_run_f1": [
+      0.2341,
+      0.724,
+      0.2341,
+      0.8114,
+      0.2341
+    ],
+    "mean_f1": 0.4475,
+    "mean_precision": 0.5,
+    "mean_recall": 0.4296,
+    "f1_observed_range": [
+      0.2341,
+      0.8114
+    ],
+    "mean_cells": 240.8,
+    "mean_missing_rows": 230.8,
+    "mean_extra_rows": 0.0,
+    "mean_duplicate_rate": 0.0,
+    "adj_schema_eq": null,
+    "adj_value_acc": null,
+    "adj_completeness": null,
+    "n_adjudicated": 0
+  },
+  "hospital/full_llm": {
+    "dataset": "hospital",
+    "condition": "full_llm",
+    "n_runs_total": 5,
+    "n_runs_f1": 5,
+    "per_run_f1": [
+      0.2341,
+      0.2341,
+      0.2341,
+      0.4731,
+      0.2341
+    ],
+    "mean_f1": 0.2819,
+    "mean_precision": 0.3,
+    "mean_recall": 0.2663,
+    "f1_observed_range": [
+      0.2341,
+      0.4731
+    ],
+    "mean_cells": 206.4,
+    "mean_missing_rows": 248.4,
+    "mean_extra_rows": 2.4,
+    "mean_duplicate_rate": 0.0,
+    "adj_schema_eq": null,
+    "adj_value_acc": null,
+    "adj_completeness": null,
+    "n_adjudicated": 0
+  },
+  "library/baseline": {
+    "dataset": "library",
+    "condition": "baseline",
+    "n_runs_total": 5,
+    "n_runs_f1": 5,
+    "per_run_f1": [
+      0.7464,
+      0.7464,
+      0.7464,
+      0.7464,
+      0.7464
+    ],
+    "mean_f1": 0.7464,
+    "mean_precision": 0.75,
+    "mean_recall": 0.7429,
+    "f1_observed_range": [
+      0.7464,
+      0.7464
+    ],
+    "mean_cells": 208.0,
+    "mean_missing_rows": 64.0,
+    "mean_extra_rows": 0.0,
+    "mean_duplicate_rate": 0.0,
+    "adj_schema_eq": null,
+    "adj_value_acc": null,
+    "adj_completeness": null,
+    "n_adjudicated": 0
+  },
+  "library/full_llm": {
+    "dataset": "library",
+    "condition": "full_llm",
+    "n_runs_total": 5,
+    "n_runs_f1": 5,
+    "per_run_f1": [
+      0.7333,
+      0.7333,
+      0.7333,
+      0.7333,
+      0.7333
+    ],
+    "mean_f1": 0.7333,
+    "mean_precision": 0.75,
+    "mean_recall": 0.7188,
+    "f1_observed_range": [
+      0.7333,
+      0.7333
+    ],
+    "mean_cells": 202.0,
+    "mean_missing_rows": 66.0,
+    "mean_extra_rows": 0.0,
+    "mean_duplicate_rate": 0.0,
+    "adj_schema_eq": null,
+    "adj_value_acc": null,
+    "adj_completeness": null,
+    "n_adjudicated": 0
+  },
+  "university/baseline": {
+    "dataset": "university",
+    "condition": "baseline",
+    "n_runs_total": 5,
+    "n_runs_f1": 5,
+    "per_run_f1": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "mean_f1": 1.0,
+    "mean_precision": 1.0,
+    "mean_recall": 1.0,
+    "f1_observed_range": [
+      1.0,
+      1.0
+    ],
+    "mean_cells": 158.0,
+    "mean_missing_rows": 0.0,
+    "mean_extra_rows": 0.0,
+    "mean_duplicate_rate": 0.0,
+    "adj_schema_eq": null,
+    "adj_value_acc": null,
+    "adj_completeness": null,
+    "n_adjudicated": 0
+  },
+  "university/full_llm": {
+    "dataset": "university",
+    "condition": "full_llm",
+    "n_runs_total": 5,
+    "n_runs_f1": 5,
+    "per_run_f1": [
+      0.6939,
+      0.6667,
+      0.6667,
+      0.6667,
+      0.6667
+    ],
+    "mean_f1": 0.6721,
+    "mean_precision": 0.7,
+    "mean_recall": 0.6697,
+    "f1_observed_range": [
+      0.6667,
+      0.6939
+    ],
+    "mean_cells": 68.8,
+    "mean_missing_rows": 44.6,
+    "mean_extra_rows": 44.6,
+    "mean_duplicate_rate": 0.0,
+    "adj_schema_eq": null,
+    "adj_value_acc": null,
+    "adj_completeness": null,
+    "n_adjudicated": 0
+  }
+}

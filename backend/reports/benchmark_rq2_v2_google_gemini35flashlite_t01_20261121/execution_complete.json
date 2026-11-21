@@ -1,0 +1,108 @@
+{
+  "label": "rq2_functional_v2_complete_matrix",
+  "date": "2026-11-21",
+  "protocol_manifest": "protocol_manifest.json",
+  "planned_runs": 30,
+  "completed_runs": 30,
+  "ok": 30,
+  "error": 0,
+  "not_evaluable": 0,
+  "fallback": 0,
+  "success_rate": 1.0,
+  "cells": [
+    {
+      "dataset": "hospital",
+      "condition": "baseline",
+      "n": 5,
+      "mean_precision": 0.5,
+      "mean_recall": 0.4296,
+      "mean_f1": 0.4475,
+      "mean_functional_query_pass_rate": 0.06,
+      "functionally_equivalent": 0,
+      "mean_missing_rows": 230.8,
+      "mean_extra_rows": 0.0
+    },
+    {
+      "dataset": "hospital",
+      "condition": "full_llm",
+      "n": 5,
+      "mean_precision": 0.3,
+      "mean_recall": 0.2663,
+      "mean_f1": 0.2819,
+      "mean_functional_query_pass_rate": 0.0,
+      "functionally_equivalent": 0,
+      "mean_missing_rows": 248.4,
+      "mean_extra_rows": 2.4
+    },
+    {
+      "dataset": "library",
+      "condition": "baseline",
+      "n": 5,
+      "mean_precision": 0.75,
+      "mean_recall": 0.7429,
+      "mean_f1": 0.7464,
+      "mean_functional_query_pass_rate": 0.3,
+      "functionally_equivalent": 0,
+      "mean_missing_rows": 64.0,
+      "mean_extra_rows": 0.0
+    },
+    {
+      "dataset": "library",
+      "condition": "full_llm",
+      "n": 5,
+      "mean_precision": 0.75,
+      "mean_recall": 0.7188,
+      "mean_f1": 0.7333,
+      "mean_functional_query_pass_rate": 0.2,
+      "functionally_equivalent": 0,
+      "mean_missing_rows": 66.0,
+      "mean_extra_rows": 0.0
+    },
+    {
+      "dataset": "university",
+      "condition": "baseline",
+      "n": 5,
+      "mean_precision": 1.0,
+      "mean_recall": 1.0,
+      "mean_f1": 1.0,
+      "mean_functional_query_pass_rate": 1.0,
+      "functionally_equivalent": 5,
+      "mean_missing_rows": 0.0,
+      "mean_extra_rows": 0.0
+    },
+    {
+      "dataset": "university",
+      "condition": "full_llm",
+      "n": 5,
+      "mean_precision": 0.7,
+      "mean_recall": 0.6697,
+      "mean_f1": 0.6721,
+      "mean_functional_query_pass_rate": 0.4,
+      "functionally_equivalent": 0,
+      "mean_missing_rows": 44.6,
+      "mean_extra_rows": 44.6
+    }
+  ],
+  "provenance": {
+    "git_revision": "d1aa66620f16668771a16f911cc8b0555ce928d3",
+    "software_revision": "b08c17b85053fd3a",
+    "provider": "Google Gemini",
+    "model": "gemini-3.5-flash-lite",
+    "temperature": 0.1,
+    "schema_output_contract": "legacy-pydantic-v1",
+    "source_format": "combined",
+    "research_mode": false,
+    "schedule": "interleaved"
+  },
+  "integrity": {
+    "manifests": 30,
+    "artifact_hashes_checked": 195,
+    "artifact_hash_failures": 0,
+    "source_hashes_checked": 100,
+    "source_hash_failures": 0,
+    "evaluation_spec_hashes_checked": 30,
+    "evaluation_spec_hash_failures": 0,
+    "secret_files": 0
+  },
+  "comparability": "Primary v2 matrix for the consensus-amended gold standards. Do not pool with v1 matrices."
+}

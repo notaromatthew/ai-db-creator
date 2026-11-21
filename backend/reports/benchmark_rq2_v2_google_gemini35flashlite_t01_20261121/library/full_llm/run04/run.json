@@ -1,0 +1,68 @@
+{
+  "dataset": "library",
+  "condition": "full_llm",
+  "run": 4,
+  "source_format": "combined",
+  "project_id": "76e43d8a-1398-4b4c-a0a9-7004f1c7404e",
+  "status": "ok",
+  "temperature": 0.1,
+  "global_precision": 0.75,
+  "global_recall": 0.7188,
+  "global_f1": 0.7333,
+  "total_cells": 202,
+  "missing_rows": 66,
+  "extra_rows": 0,
+  "functional_query_pass_rate": 0.2,
+  "functionally_equivalent": false,
+  "population_mode": "llm",
+  "alignment": {
+    "tables": {
+      "categories": "categories",
+      "members": "members",
+      "books": "books",
+      "loans": "loans",
+      "fines": "fines"
+    },
+    "columns": {
+      "categories": {
+        "category_id": "category_id",
+        "name": "category_name"
+      },
+      "members": {
+        "member_id": "member_id",
+        "full_name": "full_name",
+        "email": "email",
+        "joined_on": "joined_on"
+      },
+      "books": {
+        "book_id": "book_id",
+        "isbn": "isbn",
+        "title": "title",
+        "author": "author",
+        "category_id": "category_id"
+      },
+      "loans": {
+        "loan_id": "loan_id",
+        "book_id": "book_id",
+        "member_id": "member_id",
+        "loan_date": "loan_date",
+        "due_date": "due_date",
+        "returned_on": "returned_on"
+      },
+      "fines": {
+        "fine_id": "fine_id",
+        "loan_id": "loan_id",
+        "amount": "amount"
+      }
+    },
+    "unmatched_tables": [],
+    "unmatched_columns": {
+      "fines": [
+        "paid_on"
+      ]
+    },
+    "via_registry": []
+  },
+  "adjudication": null,
+  "error": null
+}

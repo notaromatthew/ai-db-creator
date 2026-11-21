@@ -63,5 +63,6 @@ proceduralmente incompleta fino all'archiviazione di entrambe le schede firmate.
 L'emendamento modifica schemi, dati generati e risultati attesi. Costituisce
 quindi una nuova versione degli artefatti sperimentali. I risultati v1 devono
 restare etichettati come storici e non possono sostituire o essere aggregati ai
-risultati v2. Prima di aggiornare le stime RQ2 occorre una nuova matrice v2
-completa.
+risultati v2. La nuova matrice v2 completa è stata eseguita il 21 novembre 2026
+ed è archiviata in
+`backend/reports/benchmark_rq2_v2_google_gemini35flashlite_t01_20261121/`.

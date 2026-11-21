@@ -1,0 +1,43 @@
+{
+  "analysis": "rq2_functional_v2_exploratory",
+  "bootstrap_seed": 20261121,
+  "inputs": {
+    "execution_complete.json": "9df2f19ab98b75710daf850dffe069ab6dd2ecde504cba071b2313329bd434b8",
+    "run_records": {
+      "hospital/baseline/run01/run.json": "d73733a2991c0915f31b39ac3ced6468918964b4d5294ce4a4e23677511c938f",
+      "hospital/baseline/run02/run.json": "5f6be9c7530211ef2382be9f50a401e9a4dd828c247fb70ce7048aca1a82fd96",
+      "hospital/baseline/run03/run.json": "f4b0bafd1621ef7c9703ffda9edb5e9d848c39b32bf6e8c74bb8186bdcd7dfea",
+      "hospital/baseline/run04/run.json": "caa782022fb5013642e7a4517646586c0c4aeaf936cdbb998734e8fb19dd80f6",
+      "hospital/baseline/run05/run.json": "4fb510305ea07f33f468e63d1bd1c346bb950f52a6ec7d5314645598bbfc9ebe",
+      "hospital/full_llm/run01/run.json": "92fb2794176b51d4aff96b32123221735447282c04e344a8e6723c6c861bcf5e",
+      "hospital/full_llm/run02/run.json": "350ff56cfb4a81644aa0098d8d11df2c05898a2b14ccf2674f1a7d8ea3324555",
+      "hospital/full_llm/run03/run.json": "f4bd818cd5fd83a306df1c6bba1e0a5adcfd393ea490d07b09fd5e4fafed3987",
+      "hospital/full_llm/run04/run.json": "32e415e11a1fc324db84bf2045fa183f827269ef89e11904921056ac5f37841e",
+      "hospital/full_llm/run05/run.json": "278e3587e5bd4a576708508f093e01d39b0f3d02d3a94297f6fc9751d0c83ecf",
+      "library/baseline/run01/run.json": "c48223d890a3520c32102d26e06973c92514f6967852c77a94cd40059e650296",
+      "library/baseline/run02/run.json": "ea09823c1f003fd2768eb5bdf48d68830b6750aad0cbbcfeb44c355350d48b4a",
+      "library/baseline/run03/run.json": "6f44c9d1aaf798ed09b902351c99e4ff87b0ec2f161e512248a59ab15bdbffda",
+      "library/baseline/run04/run.json": "747412e02c8238640a51a4a497568546cf73ab12758f68fd21c092a68de95c62",
+      "library/baseline/run05/run.json": "dde1a7480e432e113f5bd2b54320710324e801470a971bd5ad2472c13b468cd7",
+      "library/full_llm/run01/run.json": "b111d1d561caccfb68e1fa45a8ef4530db6a52972646ac47591bb6b98e5b8bcc",
+      "library/full_llm/run02/run.json": "25f7c3e827463db7188b0a138fd00da42e0a1326b73fa2901f7144dd4b8e02d4",
+      "library/full_llm/run03/run.json": "a4268c714537e44142779049ceb10e72043ab4d81080a7cd7f9ed4ab62500c2c",
+      "library/full_llm/run04/run.json": "05a6cdefec04ecad1d3e70e83880720b99a210dba2097cefee3ac9c60a1b3f10",
+      "library/full_llm/run05/run.json": "4db43d96831b3edcd9aabf28d776dc4c0bf1adb728c480c98c31b2c0b953e318",
+      "university/baseline/run01/run.json": "acbf33ddc7c130433365b51733a37048925386e250be31c3e1caaa57f0533257",
+      "university/baseline/run02/run.json": "c8517b0e75c86abbb92f551ec661d8d49e1dcbda76bc63516229d9e6269b79fb",
+      "university/baseline/run03/run.json": "92dcb30d5cccaf0227d2f8df1cc9b1bad70b24fb026337b01fcfe5fad60dcfd3",
+      "university/baseline/run04/run.json": "ad2fa601f1e5a0a1423ae3b621850f1533baa137576cd67fef053b0d03777af9",
+      "university/baseline/run05/run.json": "fc829747182c2d9dbbe4863a538e109cd6da98da64f3744be489c4e418b0bde7",
+      "university/full_llm/run01/run.json": "0a75075bce027eb7eddfd5a54ccd42e8b388cab976d62ea130369f1ab811356f",
+      "university/full_llm/run02/run.json": "f238d2d1342a85140c5ac7ae18fb26b7331ace6c6ad5c9c5dedf0f62635e7b4b",
+      "university/full_llm/run03/run.json": "1e8efbc4139453bd674bc357e770c425c205668abd5141d1dbbedcceec4ad28b",
+      "university/full_llm/run04/run.json": "f1e83e721f441be9dde7eed291be8dd5cb6f032825067268d6a1ed2e07214b76",
+      "university/full_llm/run05/run.json": "7150e12af6a619805e6560b5b4e018ccde8b06f3ab65f99e7a7129cc57d0f6dc"
+    }
+  },
+  "outputs": {
+    "rq2_v2_analysis.json": "1d84f0c52e9accf2293f242a5ef15bf4e96e7c7878db070d557f367b632298a3",
+    "rq2_v2_condition_comparisons.csv": "385373d65013605f29a4cd199459fc54fdf2167479e9197e82cbdce4b7320709"
+  }
+}

@@ -49,7 +49,36 @@ EVIDENCE_SPECS = (
         ),
     ),
     EvidenceSpec(
-        "rq2_structured_matrix", "RQ2", "complete_exploratory_matrix",
+        "rq2_gold_standard_consensus_v2", "RQ2", "expert_consensus_current_gold_standard",
+        "backend/reports/gold_standard_consensus_20261121/post_amendment_manifest.json",
+        (
+            "backend/reports/gold_standard_consensus_20261121/post_amendment_manifest.json",
+            "backend/reports/gold_standard_consensus_20261121/consensus_decisions.json",
+            "docs/26-gold-standard-consensus-amendment-2026-11-21.md",
+        ),
+    ),
+    EvidenceSpec(
+        "rq2_v2_primary_matrix", "RQ2", "primary_current_exploratory_matrix",
+        "backend/reports/benchmark_rq2_v2_google_gemini35flashlite_t01_20261121/execution_complete.json",
+        (
+            "backend/reports/benchmark_rq2_v2_google_gemini35flashlite_t01_20261121/execution_complete.json",
+            "backend/reports/benchmark_rq2_v2_google_gemini35flashlite_t01_20261121/protocol_manifest.json",
+            "backend/reports/benchmark_rq2_v2_google_gemini35flashlite_t01_20261121/REPORT.md",
+            "backend/reports/benchmark_rq2_v2_google_gemini35flashlite_t01_20261121/aggregates.json",
+        ),
+    ),
+    EvidenceSpec(
+        "rq2_v2_analysis", "RQ2", "primary_current_exploratory_analysis",
+        "backend/reports/rq2_v2_analysis_20261121/manifest.json",
+        (
+            "backend/reports/rq2_v2_analysis_20261121/manifest.json",
+            "backend/reports/rq2_v2_analysis_20261121/rq2_v2_analysis.json",
+            "backend/reports/rq2_v2_analysis_20261121/rq2_v2_condition_comparisons.csv",
+        ),
+        (("backend/reports/rq2_v2_analysis_20261121/manifest.json", "outputs"),),
+    ),
+    EvidenceSpec(
+        "rq2_structured_matrix", "RQ2", "historical_v1_complete_exploratory_matrix",
         "backend/reports/benchmark_openrouter_nemotron35_supervl_structured_twoday_t01_m16384_20261107/execution_complete.json",
         (
             "backend/reports/benchmark_openrouter_nemotron35_supervl_structured_twoday_t01_m16384_20261107/execution_complete.json",
@@ -59,7 +88,7 @@ EVIDENCE_SPECS = (
         ),
     ),
     EvidenceSpec(
-        "rq2_human_adjudication", "RQ2", "observed_blinded_consensus",
+        "rq2_human_adjudication", "RQ2", "historical_v1_observed_blinded_consensus",
         "backend/reports/rq2_adjudication_completed/final_manifest.json",
         (
             "backend/reports/rq2_adjudication_completed/final_manifest.json",
@@ -70,7 +99,7 @@ EVIDENCE_SPECS = (
         (("backend/reports/rq2_adjudication_completed/final_manifest.json", "outputs"),),
     ),
     EvidenceSpec(
-        "rq2_final_analysis", "RQ2", "complete_exploratory_analysis",
+        "rq2_final_analysis", "RQ2", "historical_v1_complete_exploratory_analysis",
         "backend/reports/rq2_final_analysis/manifest.json",
         (
             "backend/reports/rq2_final_analysis/manifest.json",
@@ -158,8 +187,14 @@ def _lookup(payload: dict, dotted: str):
 def _revision_metadata(evidence_id: str, anchor: dict, repo_root: Path) -> dict:
     if evidence_id in {"rq1_student_panel", "rq1_expert_replication"}:
         return {"software_revision": anchor.get("software_revision")}
-    if evidence_id == "rq2_structured_matrix":
+    if evidence_id in {"rq2_structured_matrix", "rq2_v2_primary_matrix"}:
         return {"software_revision": _lookup(anchor, "provenance.software_revision")}
+    if evidence_id == "rq2_v2_analysis":
+        matrix = _read_json(repo_root / "backend/reports/benchmark_rq2_v2_google_gemini35flashlite_t01_20261121/execution_complete.json")
+        return {
+            "git_revision": _lookup(matrix, "provenance.git_revision"),
+            "software_revision": _lookup(matrix, "provenance.software_revision"),
+        }
     if evidence_id == "rq2_format_primary":
         protocol = _read_json(repo_root / "backend/reports/benchmark_format_equivalence_google_gemini35flashlite_20261120/protocol_manifest.json")
         return {"git_revision": protocol.get("git_revision"), "software_revision": protocol.get("software_revision")}
@@ -176,8 +211,17 @@ def _revision_metadata(evidence_id: str, anchor: dict, repo_root: Path) -> dict:
 def _counts(evidence_id: str, anchor: dict, repo_root: Path) -> dict:
     if evidence_id in {"rq1_student_panel", "rq1_expert_replication"}:
         return {key: anchor.get(key) for key in ("n_evaluators", "n_schemas", "n_ratings")}
-    if evidence_id == "rq2_structured_matrix":
+    if evidence_id in {"rq2_structured_matrix", "rq2_v2_primary_matrix"}:
         return {key: anchor.get(key) for key in ("planned_runs", "ok", "error", "fallback")}
+    if evidence_id == "rq2_gold_standard_consensus_v2":
+        decisions = _read_json(repo_root / "backend/reports/gold_standard_consensus_20261121/consensus_decisions.json")
+        return {
+            "decision_count": decisions.get("decision_count"),
+            "technical_consensus_status": decisions.get("technical_consensus_status"),
+        }
+    if evidence_id == "rq2_v2_analysis":
+        result = _read_json(repo_root / "backend/reports/rq2_v2_analysis_20261121/rq2_v2_analysis.json")
+        return {"run_count": result.get("run_count")}
     if evidence_id == "rq2_human_adjudication":
         summary = _read_json(repo_root / "backend/reports/rq2_adjudication_completed/final_adjudication_summary.json")
         return {key: summary.get(key) for key in ("item_count", "independent_agreement_count", "consensus_count")}
@@ -239,9 +283,9 @@ def build_index(repo_root: Path, output_dir: Path, specs=EVIDENCE_SPECS) -> dict
         })
     script_path = Path(__file__).resolve()
     manifest = {
-        "index_version": "rq1-rq2-evidence-index-v1",
+        "index_version": "rq1-rq2-evidence-index-v2",
         "status": "complete_automated_evidence_index",
-        "scope": "RQ1 and RQ2 completed evidence only; RQ0, RQ3 and RQ4 excluded pending participant data",
+        "scope": "RQ1 and RQ2 evidence, with consensus-amended RQ2 v2 current and v1 explicitly historical; RQ0, RQ3 and RQ4 excluded pending participant data",
         "components": components,
         "component_count": len(components),
         "selected_public_artifact_count": sum(len(item["selected_public_artifacts"]) for item in components),
@@ -276,6 +320,7 @@ def build_index(repo_root: Path, output_dir: Path, specs=EVIDENCE_SPECS) -> dict
     lines.extend([
         "",
         "L'indice non include mapping privati, export grezzi dei partecipanti o tempi di compilazione. "
+        "La matrice RQ2 v2 post-consenso è l'evidenza corrente; le matrici v1 restano storiche. "
         "La matrice per formato resta primaria a 38/40; l'overlay 40/40 è una sensibilità secondaria post-outcome.",
         "",
         "RQ0, RQ3 e RQ4 non sono inclusi perché richiedono dati osservati da partecipanti.",

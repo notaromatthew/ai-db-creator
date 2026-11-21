@@ -1,0 +1,64 @@
+{
+  "software_revision": "b08c17b85053fd3a",
+  "research_mode": false,
+  "dataset": "hospital",
+  "dataset_hash": "f7d49db4de4853ea0107a6d82c246037656d292ca139f40ef29456baf211179c",
+  "condition": "baseline",
+  "provider": "Google Gemini",
+  "model": "gemini-3.5-flash-lite",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 2,
+  "created_at": "2026-11-21T22:46:49.070163+00:00",
+  "source_format": "combined",
+  "source_files": [
+    {
+      "path": "source/appointments.csv",
+      "sha256": "c8e4bcd119b41b8a1cd231e96ee7c64d2b511a61f21dfb59ef1bfef0da705e3b"
+    },
+    {
+      "path": "source/description.pdf",
+      "sha256": "fab5d677f7a9562d6ed10fdc3d60ca5f6c6f3e5eec11b07a40288338d6e3df54"
+    },
+    {
+      "path": "source/operational_notes.txt",
+      "sha256": "c5cfa67d457c7099a18574d4237d939a32894a4a5ec30571682c70bacf904aad"
+    },
+    {
+      "path": "source/patients.csv",
+      "sha256": "eee7287f111848350704d21d7ab9dedebb19b3d249d1807d49debf8bff5deaef"
+    }
+  ],
+  "evaluation_spec_hash": "4afaf6abc67716307bf76d67365011a08c50fcd5c24cf1fc8026859ce3c4fda8",
+  "project_id": "dfe189d3-f5b0-443d-b9ad-89a024b3934f",
+  "schema_output_contract": "legacy-pydantic-v1",
+  "status": "ok",
+  "artifacts": {
+    "generated_database": {
+      "path": "generated.db",
+      "sha256": "d43597c33904f5d19bef04fb8d11e6a1735536165f511149220c66022c151044"
+    },
+    "generated_schema": {
+      "path": "generated_schema.json",
+      "sha256": "d9518320054118848538f7ebaea9d7ebc63c4f073e26bd7e9d9960589c4c4da4"
+    },
+    "evaluation": {
+      "path": "evaluation.json",
+      "sha256": "8d98f0253e2f7aaa0d515d50d9fba2a5f4aa5e97557968a63de2e5e2d48c9fa4"
+    },
+    "cell_discrepancies": {
+      "path": "cell_discrepancies.csv",
+      "sha256": "1f89766e58ed8e5dfaea8c2e4d62ac97147cd4c1cd7b61bce452e88d609ca1aa"
+    },
+    "functional_query_results": {
+      "path": "functional_query_results.json",
+      "sha256": "05c4b5628e6f7bad7783d388ad586453dd9b15d8d7717f327a793fa8126f45e4"
+    },
+    "run_record": {
+      "path": "run.json",
+      "sha256": "5f6be9c7530211ef2382be9f50a401e9a4dd828c247fb70ce7048aca1a82fd96"
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
-  "index_version": "rq1-rq2-evidence-index-v1",
+  "index_version": "rq1-rq2-evidence-index-v2",
   "status": "complete_automated_evidence_index",
-  "scope": "RQ1 and RQ2 completed evidence only; RQ0, RQ3 and RQ4 excluded pending participant data",
+  "scope": "RQ1 and RQ2 evidence, with consensus-amended RQ2 v2 current and v1 explicitly historical; RQ0, RQ3 and RQ4 excluded pending participant data",
   "components": [
     {
       "evidence_id": "rq1_student_panel",
@@ -78,9 +78,97 @@
       "internal_output_hashes_verified": 0
     },
     {
+      "evidence_id": "rq2_gold_standard_consensus_v2",
+      "rq": "RQ2",
+      "classification": "expert_consensus_current_gold_standard",
+      "anchor": "backend/reports/gold_standard_consensus_20261121/post_amendment_manifest.json",
+      "revisions": {},
+      "counts": {
+        "decision_count": 25,
+        "technical_consensus_status": "COMPLETE"
+      },
+      "selected_public_artifacts": [
+        {
+          "path": "backend/reports/gold_standard_consensus_20261121/post_amendment_manifest.json",
+          "sha256": "f643b7d4ab1384507460f8ba75044dbbcdbc9ee9ad680558e2a327405922a352"
+        },
+        {
+          "path": "backend/reports/gold_standard_consensus_20261121/consensus_decisions.json",
+          "sha256": "9c0a8fa1dc2f6ea5bf372e33929df79af7eb8962627762a72868566f0914f274"
+        },
+        {
+          "path": "docs/26-gold-standard-consensus-amendment-2026-11-21.md",
+          "sha256": "590999f764d2897a522e647520a0af1e6fee651ed75b1171d917fc941128b2a0"
+        }
+      ],
+      "internal_output_hashes_verified": 0
+    },
+    {
+      "evidence_id": "rq2_v2_primary_matrix",
+      "rq": "RQ2",
+      "classification": "primary_current_exploratory_matrix",
+      "anchor": "backend/reports/benchmark_rq2_v2_google_gemini35flashlite_t01_20261121/execution_complete.json",
+      "revisions": {
+        "software_revision": "b08c17b85053fd3a"
+      },
+      "counts": {
+        "planned_runs": 30,
+        "ok": 30,
+        "error": 0,
+        "fallback": 0
+      },
+      "selected_public_artifacts": [
+        {
+          "path": "backend/reports/benchmark_rq2_v2_google_gemini35flashlite_t01_20261121/execution_complete.json",
+          "sha256": "9df2f19ab98b75710daf850dffe069ab6dd2ecde504cba071b2313329bd434b8"
+        },
+        {
+          "path": "backend/reports/benchmark_rq2_v2_google_gemini35flashlite_t01_20261121/protocol_manifest.json",
+          "sha256": "6e8a41ddcec3001d9ea189137a085d3c045b1f9df865f687c32c1cfd53edfb3c"
+        },
+        {
+          "path": "backend/reports/benchmark_rq2_v2_google_gemini35flashlite_t01_20261121/REPORT.md",
+          "sha256": "d2b469b54893fc0c9d84251bda422a032e2c3ea4055e7b02aadb4e04bfa03456"
+        },
+        {
+          "path": "backend/reports/benchmark_rq2_v2_google_gemini35flashlite_t01_20261121/aggregates.json",
+          "sha256": "bc583039daab8485c6a3dfb9f67b784f91a7ea1aadb5e899e86864f7005213b2"
+        }
+      ],
+      "internal_output_hashes_verified": 0
+    },
+    {
+      "evidence_id": "rq2_v2_analysis",
+      "rq": "RQ2",
+      "classification": "primary_current_exploratory_analysis",
+      "anchor": "backend/reports/rq2_v2_analysis_20261121/manifest.json",
+      "revisions": {
+        "git_revision": "d1aa66620f16668771a16f911cc8b0555ce928d3",
+        "software_revision": "b08c17b85053fd3a"
+      },
+      "counts": {
+        "run_count": 30
+      },
+      "selected_public_artifacts": [
+        {
+          "path": "backend/reports/rq2_v2_analysis_20261121/manifest.json",
+          "sha256": "5d1cc215012ba713b812bfee0102b8f3bcec993d684dd4cb6649b1b063fd6a64"
+        },
+        {
+          "path": "backend/reports/rq2_v2_analysis_20261121/rq2_v2_analysis.json",
+          "sha256": "1d84f0c52e9accf2293f242a5ef15bf4e96e7c7878db070d557f367b632298a3"
+        },
+        {
+          "path": "backend/reports/rq2_v2_analysis_20261121/rq2_v2_condition_comparisons.csv",
+          "sha256": "385373d65013605f29a4cd199459fc54fdf2167479e9197e82cbdce4b7320709"
+        }
+      ],
+      "internal_output_hashes_verified": 2
+    },
+    {
       "evidence_id": "rq2_structured_matrix",
       "rq": "RQ2",
-      "classification": "complete_exploratory_matrix",
+      "classification": "historical_v1_complete_exploratory_matrix",
       "anchor": "backend/reports/benchmark_openrouter_nemotron35_supervl_structured_twoday_t01_m16384_20261107/execution_complete.json",
       "revisions": {
         "software_revision": "84bf74b33c54bbcb"
@@ -114,7 +202,7 @@
     {
       "evidence_id": "rq2_human_adjudication",
       "rq": "RQ2",
-      "classification": "observed_blinded_consensus",
+      "classification": "historical_v1_observed_blinded_consensus",
       "anchor": "backend/reports/rq2_adjudication_completed/final_manifest.json",
       "revisions": {},
       "counts": {
@@ -145,7 +233,7 @@
     {
       "evidence_id": "rq2_final_analysis",
       "rq": "RQ2",
-      "classification": "complete_exploratory_analysis",
+      "classification": "historical_v1_complete_exploratory_analysis",
       "anchor": "backend/reports/rq2_final_analysis/manifest.json",
       "revisions": {},
       "counts": {},
@@ -263,13 +351,13 @@
       "internal_output_hashes_verified": 4
     }
   ],
-  "component_count": 7,
-  "selected_public_artifact_count": 34,
-  "internal_output_hashes_verified": 12,
-  "aggregate_selected_artifacts_sha256": "4423951fbcfb4d350302b33f6483472262e8cebdad74ed53599e7904d1241324",
+  "component_count": 10,
+  "selected_public_artifact_count": 44,
+  "internal_output_hashes_verified": 14,
+  "aggregate_selected_artifacts_sha256": "74a9b2875c2f751b6f737d3c04a206aa834bed28928c23d7a770d4c2403a5144",
   "index_script": {
     "path": "backend/build_research_evidence_index.py",
-    "normalized_text_sha256": "a8e2b55e1d55fc3dfc1f7587f21d5aab3837593a08bd1d815703029b4914993b"
+    "normalized_text_sha256": "440dd5a0bb1ff7f685369ef7423aa6a561a18cd7b9fac6e059f6e4dac2e3c763"
   },
   "privacy": {
     "private_mapping_artifacts_indexed": false,

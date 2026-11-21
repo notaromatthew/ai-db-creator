@@ -1,0 +1,317 @@
+{
+  "tables": [
+    {
+      "name": "categories",
+      "columns": [
+        {
+          "name": "category_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Primary key for categories"
+        },
+        {
+          "name": "category_name",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": true,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Name of the book category"
+        }
+      ],
+      "description": "Book categories such as Fiction, Science, etc."
+    },
+    {
+      "name": "books",
+      "columns": [
+        {
+          "name": "book_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Primary key for books"
+        },
+        {
+          "name": "isbn",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": true,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "ISBN number of the book"
+        },
+        {
+          "name": "title",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Title of the book"
+        },
+        {
+          "name": "author",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Author of the book"
+        },
+        {
+          "name": "category_id",
+          "data_type": "INTEGER",
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_key_table": "categories",
+          "foreign_key_column": "category_id",
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Foreign key referencing categories"
+        }
+      ],
+      "description": "Library books catalog"
+    },
+    {
+      "name": "members",
+      "columns": [
+        {
+          "name": "member_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Primary key for members"
+        },
+        {
+          "name": "full_name",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Full name of the member"
+        },
+        {
+          "name": "email",
+          "data_type": "TEXT",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": true,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Email address of the member"
+        },
+        {
+          "name": "joined_on",
+          "data_type": "DATE",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Date the member enrolled"
+        }
+      ],
+      "description": "Registered library members"
+    },
+    {
+      "name": "loans",
+      "columns": [
+        {
+          "name": "loan_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Primary key for loans"
+        },
+        {
+          "name": "member_id",
+          "data_type": "INTEGER",
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_key_table": "members",
+          "foreign_key_column": "member_id",
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Member who borrowed the book"
+        },
+        {
+          "name": "book_id",
+          "data_type": "INTEGER",
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_key_table": "books",
+          "foreign_key_column": "book_id",
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Book being borrowed"
+        },
+        {
+          "name": "loan_date",
+          "data_type": "DATE",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Date the book was loaned"
+        },
+        {
+          "name": "due_date",
+          "data_type": "DATE",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Due date for the book return"
+        },
+        {
+          "name": "returned_on",
+          "data_type": "DATE",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": false,
+          "default_value": null,
+          "description": "Date the book was actually returned"
+        }
+      ],
+      "description": "Book loan transactions to members"
+    },
+    {
+      "name": "fines",
+      "columns": [
+        {
+          "name": "fine_id",
+          "data_type": "INTEGER",
+          "is_primary_key": true,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Primary key for fines"
+        },
+        {
+          "name": "loan_id",
+          "data_type": "INTEGER",
+          "is_primary_key": false,
+          "is_foreign_key": true,
+          "foreign_key_table": "loans",
+          "foreign_key_column": "loan_id",
+          "is_unique": true,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Loan associated with the fine"
+        },
+        {
+          "name": "amount",
+          "data_type": "REAL",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": true,
+          "default_value": null,
+          "description": "Fine amount"
+        },
+        {
+          "name": "payment_date",
+          "data_type": "DATE",
+          "is_primary_key": false,
+          "is_foreign_key": false,
+          "foreign_key_table": null,
+          "foreign_key_column": null,
+          "is_unique": false,
+          "is_not_null": false,
+          "default_value": null,
+          "description": "Date when the fine was paid"
+        }
+      ],
+      "description": "Fines applied to overdue loans"
+    }
+  ],
+  "relationships": [
+    {
+      "type": "one_to_many",
+      "from_table": "categories",
+      "from_column": "category_id",
+      "to_table": "books",
+      "to_column": "category_id"
+    },
+    {
+      "type": "one_to_many",
+      "from_table": "members",
+      "from_column": "member_id",
+      "to_table": "loans",
+      "to_column": "member_id"
+    },
+    {
+      "type": "one_to_many",
+      "from_table": "books",
+      "from_column": "book_id",
+      "to_table": "loans",
+      "to_column": "book_id"
+    },
+    {
+      "type": "one_to_one",
+      "from_table": "loans",
+      "from_column": "loan_id",
+      "to_table": "fines",
+      "to_column": "loan_id"
+    }
+  ],
+  "description": "3NF normalized database schema for a library management system handling categories, books, members, loans, and fines."
+}

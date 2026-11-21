@@ -1,0 +1,332 @@
+{
+  "analysis": "rq2_functional_v2_exploratory",
+  "status": "complete_exploratory",
+  "matrix": "benchmark_rq2_v2_google_gemini35flashlite_t01_20261121",
+  "run_count": 30,
+  "bootstrap_seed": 20261121,
+  "limitations": [
+    "Five runs per dataset-condition cell; inference is exploratory.",
+    "All runs were executed in one provider session, so provider-time drift is not independently estimable.",
+    "The v2 gold standards differ from v1; results must not be pooled across versions."
+  ],
+  "cells": {
+    "hospital | baseline": {
+      "global_precision": {
+        "n": 5,
+        "mean": 0.5,
+        "median": 0.25,
+        "sd": 0.3535533905932738,
+        "min": 0.25,
+        "max": 1.0
+      },
+      "global_recall": {
+        "n": 5,
+        "mean": 0.42960000000000004,
+        "median": 0.22,
+        "sd": 0.28846715584274063,
+        "min": 0.22,
+        "max": 0.785
+      },
+      "global_f1": {
+        "n": 5,
+        "mean": 0.44753999999999994,
+        "median": 0.2341,
+        "sd": 0.29389374440433397,
+        "min": 0.2341,
+        "max": 0.8114
+      },
+      "functional_query_pass_rate": {
+        "n": 5,
+        "mean": 0.06,
+        "median": 0.0,
+        "sd": 0.1341640786499874,
+        "min": 0.0,
+        "max": 0.3
+      },
+      "functionally_equivalent_count": 0
+    },
+    "hospital | full_llm": {
+      "global_precision": {
+        "n": 5,
+        "mean": 0.3,
+        "median": 0.25,
+        "sd": 0.11180339887498948,
+        "min": 0.25,
+        "max": 0.5
+      },
+      "global_recall": {
+        "n": 5,
+        "mean": 0.26627999999999996,
+        "median": 0.22,
+        "sd": 0.10348522599869028,
+        "min": 0.22,
+        "max": 0.4514
+      },
+      "global_f1": {
+        "n": 5,
+        "mean": 0.2819,
+        "median": 0.2341,
+        "sd": 0.10688404932448996,
+        "min": 0.2341,
+        "max": 0.4731
+      },
+      "functional_query_pass_rate": {
+        "n": 5,
+        "mean": 0.0,
+        "median": 0.0,
+        "sd": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "functionally_equivalent_count": 0
+    },
+    "library | baseline": {
+      "global_precision": {
+        "n": 5,
+        "mean": 0.75,
+        "median": 0.75,
+        "sd": 0.0,
+        "min": 0.75,
+        "max": 0.75
+      },
+      "global_recall": {
+        "n": 5,
+        "mean": 0.7429,
+        "median": 0.7429,
+        "sd": 0.0,
+        "min": 0.7429,
+        "max": 0.7429
+      },
+      "global_f1": {
+        "n": 5,
+        "mean": 0.7464,
+        "median": 0.7464,
+        "sd": 0.0,
+        "min": 0.7464,
+        "max": 0.7464
+      },
+      "functional_query_pass_rate": {
+        "n": 5,
+        "mean": 0.3,
+        "median": 0.3,
+        "sd": 0.0,
+        "min": 0.3,
+        "max": 0.3
+      },
+      "functionally_equivalent_count": 0
+    },
+    "library | full_llm": {
+      "global_precision": {
+        "n": 5,
+        "mean": 0.75,
+        "median": 0.75,
+        "sd": 0.0,
+        "min": 0.75,
+        "max": 0.75
+      },
+      "global_recall": {
+        "n": 5,
+        "mean": 0.7188,
+        "median": 0.7188,
+        "sd": 0.0,
+        "min": 0.7188,
+        "max": 0.7188
+      },
+      "global_f1": {
+        "n": 5,
+        "mean": 0.7333,
+        "median": 0.7333,
+        "sd": 0.0,
+        "min": 0.7333,
+        "max": 0.7333
+      },
+      "functional_query_pass_rate": {
+        "n": 5,
+        "mean": 0.2,
+        "median": 0.2,
+        "sd": 0.0,
+        "min": 0.2,
+        "max": 0.2
+      },
+      "functionally_equivalent_count": 0
+    },
+    "university | baseline": {
+      "global_precision": {
+        "n": 5,
+        "mean": 1.0,
+        "median": 1.0,
+        "sd": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "global_recall": {
+        "n": 5,
+        "mean": 1.0,
+        "median": 1.0,
+        "sd": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "global_f1": {
+        "n": 5,
+        "mean": 1.0,
+        "median": 1.0,
+        "sd": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "functional_query_pass_rate": {
+        "n": 5,
+        "mean": 1.0,
+        "median": 1.0,
+        "sd": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "functionally_equivalent_count": 5
+    },
+    "university | full_llm": {
+      "global_precision": {
+        "n": 5,
+        "mean": 0.70002,
+        "median": 0.6667,
+        "sd": 0.07450578501029304,
+        "min": 0.6667,
+        "max": 0.8333
+      },
+      "global_recall": {
+        "n": 5,
+        "mean": 0.66966,
+        "median": 0.6667,
+        "sd": 0.0066187612133993936,
+        "min": 0.6667,
+        "max": 0.6815
+      },
+      "global_f1": {
+        "n": 5,
+        "mean": 0.67214,
+        "median": 0.6667,
+        "sd": 0.012164209797598857,
+        "min": 0.6667,
+        "max": 0.6939
+      },
+      "functional_query_pass_rate": {
+        "n": 5,
+        "mean": 0.4,
+        "median": 0.4,
+        "sd": 0.0,
+        "min": 0.4,
+        "max": 0.4
+      },
+      "functionally_equivalent_count": 0
+    }
+  },
+  "condition_comparisons": [
+    {
+      "dataset": "hospital",
+      "metric": "global_f1",
+      "baseline_mean": 0.44753999999999994,
+      "full_llm_mean": 0.2819,
+      "mean_difference_full_llm_minus_baseline": -0.16563999999999995,
+      "bootstrap_95_ci_mean_difference": [
+        -0.42688,
+        0.047799999999999954
+      ],
+      "hedges_g": -0.6765691067334366,
+      "exact_permutation_p": 0.4444444444444444,
+      "holm_adjusted_p_across_six_exploratory_tests": 0.8888888888888888
+    },
+    {
+      "dataset": "hospital",
+      "metric": "functional_query_pass_rate",
+      "baseline_mean": 0.06,
+      "full_llm_mean": 0.0,
+      "mean_difference_full_llm_minus_baseline": -0.06,
+      "bootstrap_95_ci_mean_difference": [
+        -0.18,
+        0.0
+      ],
+      "hedges_g": -0.5712501579659007,
+      "exact_permutation_p": 1.0,
+      "holm_adjusted_p_across_six_exploratory_tests": 1.0
+    },
+    {
+      "dataset": "library",
+      "metric": "global_f1",
+      "baseline_mean": 0.7464,
+      "full_llm_mean": 0.7333,
+      "mean_difference_full_llm_minus_baseline": -0.0131,
+      "bootstrap_95_ci_mean_difference": [
+        -0.0131,
+        -0.0131
+      ],
+      "hedges_g": null,
+      "exact_permutation_p": 0.007936507936507936,
+      "holm_adjusted_p_across_six_exploratory_tests": 0.047619047619047616
+    },
+    {
+      "dataset": "library",
+      "metric": "functional_query_pass_rate",
+      "baseline_mean": 0.3,
+      "full_llm_mean": 0.2,
+      "mean_difference_full_llm_minus_baseline": -0.09999999999999998,
+      "bootstrap_95_ci_mean_difference": [
+        -0.09999999999999998,
+        -0.09999999999999998
+      ],
+      "hedges_g": null,
+      "exact_permutation_p": 0.007936507936507936,
+      "holm_adjusted_p_across_six_exploratory_tests": 0.047619047619047616
+    },
+    {
+      "dataset": "university",
+      "metric": "global_f1",
+      "baseline_mean": 1.0,
+      "full_llm_mean": 0.67214,
+      "mean_difference_full_llm_minus_baseline": -0.32786000000000004,
+      "bootstrap_95_ci_mean_difference": [
+        -0.33330000000000004,
+        -0.31698000000000004
+      ],
+      "hedges_g": -34.42832293946695,
+      "exact_permutation_p": 0.007936507936507936,
+      "holm_adjusted_p_across_six_exploratory_tests": 0.047619047619047616
+    },
+    {
+      "dataset": "university",
+      "metric": "functional_query_pass_rate",
+      "baseline_mean": 1.0,
+      "full_llm_mean": 0.4,
+      "mean_difference_full_llm_minus_baseline": -0.6,
+      "bootstrap_95_ci_mean_difference": [
+        -0.6,
+        -0.6
+      ],
+      "hedges_g": null,
+      "exact_permutation_p": 0.007936507936507936,
+      "holm_adjusted_p_across_six_exploratory_tests": 0.047619047619047616
+    }
+  ],
+  "f1_functional_query_correlations": {
+    "all_runs": {
+      "n": 30,
+      "spearman_rho": 0.7446341759275182,
+      "two_sided_p": 2.3751893317015877e-06
+    },
+    "hospital": {
+      "n": 10,
+      "spearman_rho": 0.6425294053171791,
+      "two_sided_p": 0.045125935446807174
+    },
+    "library": {
+      "n": 10,
+      "spearman_rho": 1.0,
+      "two_sided_p": 0.0
+    },
+    "university": {
+      "n": 10,
+      "spearman_rho": 0.9622504486493763,
+      "two_sided_p": 8.488181527628513e-06
+    }
+  }
+}

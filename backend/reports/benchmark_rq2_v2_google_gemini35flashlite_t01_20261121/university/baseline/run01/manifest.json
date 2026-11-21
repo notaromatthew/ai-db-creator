@@ -1,0 +1,56 @@
+{
+  "software_revision": "b08c17b85053fd3a",
+  "research_mode": false,
+  "dataset": "university",
+  "dataset_hash": "667e0ec95e4e6505f7238a57dfe0292af43eca8882cb1a610854f44bedbd0392",
+  "condition": "baseline",
+  "provider": "Google Gemini",
+  "model": "gemini-3.5-flash-lite",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 1,
+  "created_at": "2026-11-21T22:44:31.701525+00:00",
+  "source_format": "combined",
+  "source_files": [
+    {
+      "path": "source/description.pdf",
+      "sha256": "b879dedb86735023cb4c89fd29f65726709da241b351c2817641dd6a0e576622"
+    },
+    {
+      "path": "source/enrollments.csv",
+      "sha256": "08ab314bea0962bb2a1877e507b74c396ad64d37f76ea13800e6ad83cfc2a51d"
+    }
+  ],
+  "evaluation_spec_hash": "f435b25fccc451c491ae37b788c9963be2eb2685cbd0c933e775ff06460eed9b",
+  "project_id": "6c1eae53-62cd-4265-a63e-9bb6e3838265",
+  "schema_output_contract": "legacy-pydantic-v1",
+  "status": "ok",
+  "artifacts": {
+    "generated_database": {
+      "path": "generated.db",
+      "sha256": "c308b2833237f8b6555f6bed8e2eeba54b9e70115ce59d572b0b87c6fa2b9ac7"
+    },
+    "generated_schema": {
+      "path": "generated_schema.json",
+      "sha256": "a0720c5c3eec3eece40cd05dfa28136ffd2ae47196d6eee76fe6f12cf9674bca"
+    },
+    "evaluation": {
+      "path": "evaluation.json",
+      "sha256": "7b33af157fb441967d5b768bda678f14fc33ee4a9ffaec14b5d8287e618ca097"
+    },
+    "cell_discrepancies": {
+      "path": "cell_discrepancies.csv",
+      "sha256": "b15ec385eefe7a2cce549022b6086c56a23fff3fe4c06ca2a9ddef0642b494a0"
+    },
+    "functional_query_results": {
+      "path": "functional_query_results.json",
+      "sha256": "5f0815fbab19196f386ccd355eb733191ae53412d19a1a8f2fe3dcb61ed39e45"
+    },
+    "run_record": {
+      "path": "run.json",
+      "sha256": "acbf33ddc7c130433365b51733a37048925386e250be31c3e1caaa57f0533257"
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "software_revision": "b08c17b85053fd3a",
+  "research_mode": false,
+  "dataset": "university",
+  "dataset_hash": "667e0ec95e4e6505f7238a57dfe0292af43eca8882cb1a610854f44bedbd0392",
+  "condition": "full_llm",
+  "provider": "Google Gemini",
+  "model": "gemini-3.5-flash-lite",
+  "parameters": {
+    "temperature": 0.1
+  },
+  "prompts_hash": "459f03add9b5b250f8dc6d2771f7941adebae26977c9ada5c88e399550ffd79e",
+  "run_index": 1,
+  "created_at": "2026-11-21T22:44:24.205171+00:00",
+  "source_format": "combined",
+  "source_files": [
+    {
+      "path": "source/description.pdf",
+      "sha256": "b879dedb86735023cb4c89fd29f65726709da241b351c2817641dd6a0e576622"
+    },
+    {
+      "path": "source/enrollments.csv",
+      "sha256": "08ab314bea0962bb2a1877e507b74c396ad64d37f76ea13800e6ad83cfc2a51d"
+    }
+  ],
+  "evaluation_spec_hash": "f435b25fccc451c491ae37b788c9963be2eb2685cbd0c933e775ff06460eed9b",
+  "project_id": "1285608f-c16d-4d76-a868-a1fa2600ce3b",
+  "schema_output_contract": "legacy-pydantic-v1",
+  "status": "ok",
+  "artifacts": {
+    "generated_database": {
+      "path": "generated.db",
+      "sha256": "6f8baabed18095a92c13ce3917ef57816ce2e407a7d481d5d3ffeaafb01b61de"
+    },
+    "generated_schema": {
+      "path": "generated_schema.json",
+      "sha256": "2ad3ee49c979881ec8ff7c80b48983a4fcfb755410c9bedd3351f6ef5836468a"
+    },
+    "evaluation": {
+      "path": "evaluation.json",
+      "sha256": "96fc489c27527ebc0de6ff34143044e8ac85d0c82c7a0123ed8e804d56bb5bd5"
+    },
+    "cell_discrepancies": {
+      "path": "cell_discrepancies.csv",
+      "sha256": "f5aebe446a6b8d395d250e4ccec176a67adced8b4d8f2a10d3eff13f8cb71eac"
+    },
+    "alignment": {
+      "path": "alignment.json",
+      "sha256": "cca1fada48b2aed9c322e76165048429923ee552efdc66b656f537da9527e196"
+    },
+    "functional_query_results": {
+      "path": "functional_query_results.json",
+      "sha256": "cb30a76ba2c8797c012c491dc96bdb39788e9dcfd5b9fe10347dad341c1e12e8"
+    },
+    "run_record": {
+      "path": "run.json",
+      "sha256": "0a75075bce027eb7eddfd5a54ccd42e8b388cab976d62ea130369f1ab811356f"
+    }
+  }
+}

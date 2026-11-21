@@ -1,0 +1,6 @@
+dataset,source_format,condition,run,project_id,status,error,population_mode,global_precision,global_recall,global_f1,total_cells,missing_rows,extra_rows,functional_query_pass_rate,functionally_equivalent
+university,combined,full_llm,1,1285608f-c16d-4d76-a868-a1fa2600ce3b,ok,,llm,0.8333,0.6815,0.6939,72,43,43,0.4,False
+university,combined,full_llm,2,481bd69f-6aa2-4ef0-a644-034c72b6cf43,ok,,llm,0.6667,0.6667,0.6667,68,45,45,0.4,False
+university,combined,full_llm,3,d3ede34c-749f-478c-9f94-3eb167bb34d4,ok,,llm,0.6667,0.6667,0.6667,68,45,45,0.4,False
+university,combined,full_llm,4,169e712c-b7ac-4a07-a4b8-25494cc7a1f8,ok,,llm,0.6667,0.6667,0.6667,68,45,45,0.4,False
+university,combined,full_llm,5,232f0cc5-e481-4aa5-8b85-42fbdf30a340,ok,,llm,0.6667,0.6667,0.6667,68,45,45,0.4,False

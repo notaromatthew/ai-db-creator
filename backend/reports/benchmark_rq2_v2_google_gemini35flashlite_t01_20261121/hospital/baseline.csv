@@ -1,0 +1,6 @@
+dataset,source_format,condition,run,project_id,status,error,population_mode,global_precision,global_recall,global_f1,total_cells,missing_rows,extra_rows,functional_query_pass_rate,functionally_equivalent
+hospital,combined,baseline,1,e583987d-9779-41b5-add9-1582d71129f5,ok,,llm,0.25,0.22,0.2341,213,247,0,0.0,False
+hospital,combined,baseline,2,dfe189d3-f5b0-443d-b9ad-89a024b3934f,ok,,llm,0.75,0.703,0.724,207,241,0,0.0,False
+hospital,combined,baseline,3,d52884d9-820b-4f11-b18f-a8a9e38f94f7,ok,,llm,0.25,0.22,0.2341,213,247,0,0.0,False
+hospital,combined,baseline,4,3a2e73a4-cdb5-4d32-9910-86a94946fd73,ok,,llm,1.0,0.785,0.8114,358,172,0,0.3,False
+hospital,combined,baseline,5,c55d20ea-2d54-4783-8511-dcd881e4a592,ok,,llm,0.25,0.22,0.2341,213,247,0,0.0,False

@@ -1,0 +1,39 @@
+{
+  "protocol_version": "rq2-format-comparison-v1",
+  "created_at": "2026-11-21T22:43:56.286147+00:00",
+  "git_revision": "d1aa66620f16668771a16f911cc8b0555ce928d3",
+  "software_revision": "b08c17b85053fd3a",
+  "datasets": [
+    "university",
+    "library",
+    "hospital"
+  ],
+  "conditions": [
+    "full_llm",
+    "baseline"
+  ],
+  "source_formats": [
+    "combined"
+  ],
+  "runs_per_cell": 5,
+  "run_indices": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "schedule": "interleaved",
+  "temperature": 0.1,
+  "parallel": 1,
+  "adjudicate": false,
+  "provider": "Google Gemini",
+  "model": "gemini-3.5-flash-lite",
+  "schema_output_contract": "legacy-pydantic-v1",
+  "max_output_tokens": 4096,
+  "timeout_seconds": 120.0,
+  "provider_retries": 2,
+  "max_requests_per_minute": 8,
+  "research_mode": false,
+  "llm_cache_enabled": false
+}
