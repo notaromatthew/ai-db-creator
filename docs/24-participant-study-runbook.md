@@ -1,6 +1,10 @@
 # Runbook operativo del pilot e dello studio RQ0/RQ3/RQ4
 
-Stato: materiali tecnici pronti; raccolta con persone non ancora eseguita.
+Stato al 22 novembre 2026: materiali tecnici pronti e controlli automatici
+pre-pilot superati; pilot e raccolta con persone non ancora eseguiti. La
+verifica automatica comprende 25 test backend dedicati, 17 test frontend del
+flusso studio e una build frontend di produzione. Questi controlli non
+sostituiscono il pilot formativo con 5–8 persone.
 
 Questo runbook traduce il protocollo nei controlli che il coordinatore deve
 eseguire. Non sostituisce il consenso informato e non autorizza la creazione di

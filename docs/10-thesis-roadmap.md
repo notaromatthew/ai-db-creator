@@ -83,7 +83,7 @@ Observed analyses and provenance are stored in `backend/reports/rq1_analysis/`. 
 
 ---
 
-## Phase 4: Automated Population Accuracy Measurement (RQ2) (Partially completed)
+## Phase 4: Automated Population Accuracy Measurement (RQ2) (Completed, exploratory)
 
 **Timeline:** Month 7–8 (4 weeks overlap with Phase 3)
 
@@ -106,6 +106,13 @@ The audit in `docs/20-rq2-functional-equivalence-protocol.md` records that the
 current bundles contain no XLSX variants and that several gold rows or columns
 are not present in any source document. Historical full-gold F1 must not be
 presented as primary extraction accuracy.
+
+The consensus-amended `rq2_functional_v2` matrix is complete: 30/30 runs,
+five per dataset-condition cell, all with LLM population and no fallback. The
+current results, integrity checks and limitations are reported in
+`docs/21-rq2-primary-results.md`. The format-isolated experiment is also
+complete as a separate exploratory analysis (38/40 primary runs, plus a
+clearly separated 40/40 post-recovery sensitivity).
 
 ### Success Criteria
 - Overall cell-level F1 ≥ 0.85 on CSV/Excel sources

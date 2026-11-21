@@ -124,36 +124,34 @@ una scelta prestazionale: deriva dall'assenza dei manifesti originari per-run.
 Risultati, hash e limitazioni sono in
 `docs/22-rq1-expert-linked-matrix-recovery.md`.
 
-### Matrice verificata `schema-json-v2` — 7–8 novembre 2026
+### Matrice corrente post-consenso `rq2_functional_v2` — 21 novembre 2026
 
-La nuova matrice completa contiene 30/30 run riusciti, cinque per ciascuna
-coppia dataset/condizione, zero fallback e una sola revisione software. È stata
-eseguita in due blocchi preregistrati di 15 run con OpenRouter,
-`nvidia/nemotron-3.5-super-vl:free`, temperatura `0.1`, sorgenti `combined` e
-contratto `schema-json-v2`. Tutti i 195 hash artefatto, 100 hash sorgente e 30
-hash delle specifiche di valutazione sono stati ricalcolati senza discrepanze.
+Dopo il consenso GOLD-A/GOLD-B è stata eseguita una nuova matrice completa sui
+gold standard emendati: 30/30 run riusciti, cinque per ciascuna coppia
+dataset/condizione, zero fallback e una sola configurazione. Il provider è
+Google Gemini, modello `gemini-3.5-flash-lite`, temperatura `0.1`, sorgenti
+`combined` e ordine interleaved. Tutti i 195 hash artefatto, 100 hash sorgente
+e 30 hash delle specifiche di valutazione sono stati ricalcolati senza
+discrepanze.
 
 | Dataset | Condizione | n | Precision | Recall | F1 | Query funzionali |
 |---|---|---:|---:|---:|---:|---:|
-| University | baseline | 5 | 0.9983 | 0.9402 | 0.9638 | 0.4400 |
-| University | full_llm | 5 | 0.6667 | 0.6636 | 0.6651 | 0.3600 |
-| Library | baseline | 5 | 0.9500 | 0.9213 | 0.9348 | 0.6200 |
-| Library | full_llm | 5 | 1.0000 | 0.9713 | 0.9848 | 0.4000 |
-| Hospital | baseline | 5 | 0.9996 | 0.9312 | 0.9496 | 0.4200 |
-| Hospital | full_llm | 5 | 0.6496 | 0.6364 | 0.6427 | 0.2000 |
+| University | baseline | 5 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| University | full_llm | 5 | 0.7000 | 0.6697 | 0.6721 | 0.4000 |
+| Library | baseline | 5 | 0.7500 | 0.7429 | 0.7464 | 0.3000 |
+| Library | full_llm | 5 | 0.7500 | 0.7188 | 0.7333 | 0.2000 |
+| Hospital | baseline | 5 | 0.5000 | 0.4296 | 0.4475 | 0.0600 |
+| Hospital | full_llm | 5 | 0.3000 | 0.2663 | 0.2819 | 0.0000 |
 
-Il successo tecnico è completo, ma l'equivalenza funzionale resta parziale.
-Inoltre il giorno 2 presenta F1 inferiore in quattro celle su sei; con 2–3 run
-per giorno/cella è un segnale descrittivo di possibile deriva del provider, non
-una stima causale. La matrice usa sorgenti congiunte e non consente ancora il
-confronto causale fra formati. La fixture equivalente CSV/XLSX/TXT/PDF è stata
-ora congelata e validata, ma la matrice separata da 40 run non è stata ancora
-eseguita. L'adjudication cieca delle 1.294 discrepanze è stata completata da due
-revisori indipendenti, seguita dal consenso sui 327 disaccordi. Il ledger finale
-contiene 967 errori, 4 equivalenze funzionali, 12 casi ambigui nel gold standard
-e 311 casi non determinabili dagli artefatti ciechi. Risultati e manifesti sono
-in `backend/reports/rq2_adjudication_completed/` e
-`backend/reports/rq2_final_analysis/`.
+Il successo tecnico è completo, ma solo University baseline raggiunge
+l'equivalenza funzionale in tutti i run. La matrice usa sorgenti congiunte e
+non identifica un effetto causale del formato; tale domanda è trattata dal
+distinto esperimento CSV/XLSX/TXT/PDF, completo a 38/40 nella matrice primaria
+e 40/40 nella sensibilità post-recovery. La precedente matrice OpenRouter e la
+relativa adjudication cieca restano evidenze storiche v1 e non sono aggregate
+ai risultati post-consenso. Matrice, analisi e provenienza correnti sono in
+`backend/reports/benchmark_rq2_v2_google_gemini35flashlite_t01_20261121/` e
+`backend/reports/rq2_v2_analysis_20261121/`.
 
 ### Serie storica non verificata — non usare per le conclusioni
 
