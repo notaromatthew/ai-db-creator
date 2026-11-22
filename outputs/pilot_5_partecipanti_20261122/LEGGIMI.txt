@@ -1,0 +1,18 @@
+KIT PILOT AI DB CREATOR - 5 PARTECIPANTI
+
+Contenuto
+- Kit_operativo_pilot_5_partecipanti.docx: manuale, script, istruzioni dei tre bracci, checklist e criteri di uscita.
+- Registro_pilot_5_partecipanti.xlsx: registro compilabile per sessioni, checklist, problemi, deviazioni ed esito.
+- MANIFEST_SHA256.txt: hash dei file consegnati.
+
+Uso
+1. Leggere il manuale prima della prima sessione.
+2. Compilare il registro senza inserire nomi, email, credenziali, IP o testo grezzo di chat e query.
+3. Usare gli ID PILOT-01 - PILOT-05.
+4. Non cambiare manualmente braccio o dataset dopo l'assegnazione automatica.
+5. Non somministrare NASA-TLX o SUS.
+6. Escludere i dati del pilot dall'analisi confermativa.
+7. Dopo la quinta sessione, verificare il foglio Esito pilot e completare la decisione umana.
+
+Copertura dei bracci
+Devono essere osservati manual, ai_only e ai_interface. Se le cinque assegnazioni automatiche non coprono tutti i bracci, il pilot non supera il gate e serve una sessione aggiuntiva.
