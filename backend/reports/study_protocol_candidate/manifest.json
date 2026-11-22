@@ -8,8 +8,8 @@
     "ai_interface"
   ],
   "analysis_entrypoint": "backend/analyze_user_study.py",
-  "git_revision": "0e0866b5c5c561ce15890d2ac959c17a55a18505",
-  "working_tree_dirty": true,
+  "git_revision": "9499dba9a060c90188d49a09c21d0595b3c56dda",
+  "working_tree_dirty": false,
   "files": {
     "docs/13-data-governance.md": "5a19f539c5c2e47e4a69d9651b17a0f7c4badb45008b916c65592e37cc08eaa5",
     "docs/14-usability-pilot-protocol.md": "1ef1a5bd74b8e0e68712ae155a646212939838daeae9e60152048785e72da9cf",

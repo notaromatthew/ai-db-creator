@@ -1,0 +1,65 @@
+{
+  "audit": "participant_study_automated_pre_pilot_v1",
+  "created_at": "2026-11-22T03:32:30.268505+00:00",
+  "status": "automated_pre_pilot_ready",
+  "protocol_status": "candidate_pre_pilot_not_final",
+  "protocol_git_revision": "9499dba9a060c90188d49a09c21d0595b3c56dda",
+  "protocol_manifest_sha256": "ff13c66a817a4099278304da6c99df6fdef385bfcad12f66d5389a4c95a23364",
+  "questionnaires_collected": false,
+  "participant_data_generated": false,
+  "human_pilot_status": "not_started",
+  "main_study_status": "not_started",
+  "checks": {
+    "protocol_hashes": {
+      "passed": true,
+      "checked": 12,
+      "failures": []
+    },
+    "backend_study_tests": {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "tests/test_user_study_analysis.py",
+        "tests/test_study_protocol_freeze.py",
+        "tests/test_research_study.py",
+        "tests/test_interaction_logger.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "summary": "25 passed"
+    },
+    "frontend_study_tests": {
+      "command": [
+        "npm.cmd",
+        "run",
+        "test",
+        "--",
+        "--run",
+        "src/pages/StudyPage.test.tsx",
+        "src/pages/research/ResearchPage.test.tsx"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "summary": "Tests  17 passed (17)"
+    },
+    "frontend_production_build": {
+      "command": [
+        "npm.cmd",
+        "run",
+        "build"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "summary": "built in 1.36s"
+    }
+  },
+  "human_exit_criteria": [
+    "Archive the institutional communication, if available.",
+    "Run the formative pilot with 5-8 eligible people.",
+    "Resolve and document all blocking or high-severity pilot issues.",
+    "Approve the final instructions for all three arms.",
+    "Freeze the final protocol before recruiting the main sample."
+  ]
+}
