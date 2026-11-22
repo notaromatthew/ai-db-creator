@@ -1,0 +1,24 @@
+KIT STUDIO PRINCIPALE AI DB CREATOR
+TARGET 34 CASI COMPLETI PER BRACCIO
+
+Numerosita
+- 34 casi validi manual
+- 34 casi validi ai_only
+- 34 casi validi ai_interface
+- 102 casi analizzabili totali
+- 114 slot operativi disponibili per compensare ritiri, esclusioni e mancati completamenti
+
+Contenuto
+- Manuale_operativo_studio_34_per_braccio.docx
+- Registro_studio_principale_34_per_braccio.xlsx
+- Valutazione_cieca_outcome_102_casi.xlsx
+- MANIFEST_SHA256.txt
+
+Regole essenziali
+1. Avviare lo studio soltanto dopo il superamento formale del pilot.
+2. Non riassegnare manualmente braccio o dataset.
+3. Non osservare confronti di outcome tra bracci prima del data lock.
+4. Non inserire nomi, contatti, credenziali, IP o testo grezzo di chat e query.
+5. Non somministrare NASA-TLX o SUS.
+6. Non condividere il registro operativo con i valutatori ciechi.
+7. Eseguire l'analisi soltanto dopo 34 casi validi per ogni braccio e chiusura dei registri.
