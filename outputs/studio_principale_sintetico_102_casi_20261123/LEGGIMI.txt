@@ -1,0 +1,23 @@
+STUDIO PRINCIPALE E VALUTAZIONE CIECA — DATI SINTETICI
+
+I due fogli contengono esclusivamente dati simulati per collaudare il flusso operativo.
+Non descrivono partecipanti, sessioni, valutazioni esperte o consensi realmente raccolti.
+Non possono essere usati nel paper, nell'analisi statistica, nel data lock reale o come prova del completamento dello studio.
+
+Contenuto della simulazione:
+- 102 casi validi: 34 manual, 34 ai_only e 34 ai_interface;
+- 34 casi per ciascuno dei dataset university, library e hospital;
+- 12 slot di riserva lasciati inutilizzati;
+- 102 valutazioni cieche sintetiche complete;
+- giudizi A e B, consenso, task success ed errore residuo simulati;
+- un problema tecnico sintetico di severità bassa già chiuso;
+- nessuna deviazione aperta;
+- approvazioni umane del data lock lasciate intenzionalmente non decise.
+
+Usi consentiti:
+- collaudo di formule, convalide e gate automatici;
+- dimostrazione del percorso di compilazione;
+- formazione di coordinatore, responsabile dati e valutatori;
+- test delle procedure di esportazione e analisi su dati non reali.
+
+Per la ricerca occorre sostituire integralmente questi valori con osservazioni ottenute dalle sessioni reali e dalle valutazioni indipendenti previste dal protocollo.
