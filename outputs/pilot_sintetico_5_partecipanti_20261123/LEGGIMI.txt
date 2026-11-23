@@ -1,0 +1,13 @@
+PILOT SINTETICO DI COLLAUDO
+
+Questo materiale contiene esclusivamente dati simulati.
+Non descrive persone reali, sessioni realmente svolte o osservazioni sperimentali.
+Non può essere usato come evidenza, risultato del pilot, dato per il paper o autorizzazione ad avviare lo studio principale.
+
+Scopo consentito:
+- verificare il flusso di compilazione;
+- verificare formule, convalide e gate automatico;
+- mostrare come distribuire cinque sessioni fra bracci e dataset;
+- addestrare il facilitatore all'uso del registro.
+
+Per il pilot scientifico occorre compilare una nuova copia vuota durante cinque sessioni reali, mantenendo solo identificativi pseudonimi.
