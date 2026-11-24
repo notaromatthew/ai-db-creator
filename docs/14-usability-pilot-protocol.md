@@ -7,7 +7,7 @@ Run a formative pilot before the confirmatory RQ0/RQ3 experiment to identify usa
 ## Sample
 
 - Recruit 5–8 people who meet the final non-expert inclusion criteria.
-- Include a mix of technical confidence, age, and prior spreadsheet experience.
+- Include a mix of technical confidence and prior spreadsheet experience.
 - Assign at least one participant to each of Manual, AI-Only, and AI + Interface; use the remaining participants on the condition with the greatest procedural uncertainty.
 
 ## Session
@@ -32,6 +32,6 @@ The confirmatory study may start only when:
 
 ## Change Control
 
-Maintain a pilot issue log with severity, affected condition, evidence, resolution, and verification. Freeze the application version, prompt version, datasets and instructions after the exit review. Any later material change requires a documented amendment and a renewed check of institutional requirements.
+Maintain a pilot issue log with severity, affected condition, evidence, resolution, and verification. Freeze the application version, prompt version, datasets and instructions after the exit review. Any later material change requires a documented amendment and a renewed check of the applicable requirements.
 
-The exclusion of the questionnaires and the reported institutional determination are documented in `docs/23-study-protocol-amendment-2026-11-18.md`.
+The exclusion of the questionnaires is documented in `docs/23-study-protocol-amendment-2026-11-18.md`.

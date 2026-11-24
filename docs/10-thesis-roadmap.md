@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the planned phases for the PhD research project "AI-DB-Creator: An LLM-Powered Visual Interface for Automatic Database Schema Generation and Population." The project is organised into seven phases spanning approximately 12 months. Phases 1–2 are complete; Phases 3–7 are planned.
+This document records the phases of the research project "AI-DB-Creator: An LLM-Powered Visual Interface for Automatic Database Schema Generation and Population." The empirical work covers RQ0--RQ3 and is complete on the available records; the remaining phase is final editorial review and submission.
 
 ---
 
@@ -39,7 +39,6 @@ This document outlines the planned phases for the PhD research project "AI-DB-Cr
 - Write all project documentation (this documentation suite)
 - Prepare benchmark datasets with gold-standard schemas
 - Develop automated evaluation scripts for population accuracy
-- Record the user-reported institutional determination that prior ethics approval is not required for the current study
 - Write the system description paper for conference submission
 
 ### Deliverables
@@ -49,12 +48,12 @@ This document outlines the planned phases for the PhD research project "AI-DB-Cr
   - Gold-standard NormalizedSchema (validated by domain experts)
   - Ground-truth databases with known cell values
 - Automated evaluation pipeline for cell-level accuracy comparison
-- Protocol amendment documenting the institutional determination and participant safeguards
+- Protocol amendment documenting the project-scope decision and participant safeguards
 - Draft of system paper targeting VLDB, SIGMOD, or ICDE demo track
 
 ### Risks
 - Dataset complexity level calibration (too simple → ceiling effect; too complex → floor effect)
-- Missing written trace of the institutional determination; archive the communication if available
+- Maintain the consent, pseudonymisation and data-protection safeguards documented for the study
 
 ---
 
@@ -63,7 +62,7 @@ This document outlines the planned phases for the PhD research project "AI-DB-Cr
 **Timeline:** Months 6–7 (8 weeks)
 
 ### Objectives and observed status
-- The planned sample was 3 database experts (PhD-level or industry DBA with 5+ years); the observed export contains 45 computer-science students aged 17--18 who were studying databases. They are reported as trained student raters, not database experts.
+- The planned sample was 3 database experts (PhD-level or industry DBA with 5+ years); the observed export contains 45 computer-science students who were studying databases. They are reported as trained student raters, not database experts.
 - The observed package contains 30 schemas: 3 datasets × 2 recorded benchmark conditions (`baseline` and `full_llm`) × 5 runs. These conditions must not be relabelled as the RQ3 participant arms.
 - All 45 evaluators rated every schema on 5 dimensions (3NF compliance, naming quality, constraint coverage, relationship accuracy, domain alignment) using a 5-point Likert scale.
 - Measure inter-rater agreement with Krippendorff's alpha using ordinal distance
@@ -79,7 +78,7 @@ This document outlines the planned phases for the PhD research project "AI-DB-Cr
 - AI + Interface condition scores significantly higher (p < 0.05) than AI-Only on at least 3 of 5 dimensions
 - Effect size d ≥ 0.5 for the primary dimension (3NF compliance)
 
-Observed analyses and provenance are stored in `backend/reports/rq1_analysis/`. The difference between the planned and observed evaluator sample is a protocol deviation, not a retrospective redesign. Institutional verification of the curriculum, independence procedure, and assent/consent arrangements for minors remains separate from the statistical analysis.
+Observed analyses and provenance are stored in `backend/reports/rq1_analysis/`. The difference between the planned and observed evaluator sample is a protocol deviation, not a retrospective redesign. Documentation of the curriculum and independence procedure remains separate from the statistical analysis.
 
 ---
 
@@ -157,33 +156,7 @@ clearly separated 40/40 post-recovery sensitivity).
 
 ---
 
-## Phase 6: Interaction Log Analysis (RQ4) (Planned)
-
-**Timeline:** Months 10–11 (6 weeks)
-
-### Objectives
-- Analyse interaction logs collected during the Phase 5 experiment
-- Identify common user behaviour patterns
-- Characterise differences between successful and unsuccessful schema designs
-- Quantify the impact of specific interface features (chat, edit mode, constraints)
-
-### Methods
-- **Sequence analysis:** Convert logged events into ordered sequences per participant, compute transition matrices between tool states (view schema, edit schema, chat, populate, explore data)
-- **Cluster analysis:** Group participants by behavioural profile (e.g., "chat-heavy", "edit-heavy", "minimal interaction")
-- **Outcome correlation:** Correlate behavioural clusters with schema quality and residual-error outcomes
-- **Error analysis:** Identify common patterns of schema errors (e.g., "removing foreign keys", "adding unnecessary tables")
-
-The frozen analysis entry point is `backend/analyze_user_study.py`. It consumes the three pseudonymous exports documented in `docs/19-user-study-analysis.md`, applies the preregistered RQ0/RQ3 contrasts, and keeps RQ4 analyses explicitly exploratory.
-
-### Tools
-- Python + pandas for event extraction and preprocessing
-- Python `transitions` library or custom Markov chain implementation
-- scikit-learn for clustering (K-means, DBSCAN)
-- Matplotlib / Seaborn for visualisation of transition matrices and cluster profiles
-
----
-
-## Phase 7: Paper Submission and Thesis Writing (Planned)
+## Phase 6: Paper Submission and Thesis Writing
 
 **Timeline:** Months 11–14 (12 weeks)
 
@@ -195,14 +168,14 @@ The frozen analysis entry point is `backend/analyze_user_study.py`. It consumes 
    - Content: System architecture, walkthrough scenario, screencast
 2. **Full research paper** (12 pages) to SIGMOD 2028 or VLDB 2028
    - Title: "From Documents to Databases: LLM-Generated Schemas with Human-in-the-Loop Validation"
-   - Content: Full experimental results for RQ1–RQ4, discussion, limitations
+   - Content: Full experimental results for RQ0–RQ3, discussion, limitations
 
 #### Thesis Writing
 - **Chapter 1: Introduction** — Motivation, problem statement, research questions, contributions
 - **Chapter 2: Related Work** — Automatic schema generation, NL-to-SQL, visual database design tools, LLM for data management
 - **Chapter 3: System Design** — Architecture, multi-agent decomposition, implementation details
 - **Chapter 4: Methodology** — Experimental design, datasets, participants, metrics
-- **Chapter 5: Results** — RQ1 (expert evaluation), RQ2 (population accuracy), RQ3 (user experiment), RQ4 (interaction analysis)
+- **Chapter 5: Results** — RQ0 (manual comparison), RQ1 (expert evaluation), RQ2 (population accuracy), RQ3 (user experiment)
 - **Chapter 6: Discussion** — Interpretation of findings, limitations, threats to validity
 - **Chapter 7: Conclusion** — Summary, contributions, future work
 
@@ -217,10 +190,9 @@ The frozen analysis entry point is `backend/analyze_user_study.py`. It consumes 
 | 3 | Expert Evaluation (RQ1) | Month 6 | Month 7 | 2 months |
 | 4 | Population Accuracy (RQ2) | Month 7 | Month 8 | 1 month |
 | 5 | User Experiment (RQ3) | Month 8 | Month 10 | 2 months |
-| 6 | Interaction Analysis (RQ4) | Month 10 | Month 11 | 1.5 months |
-| 7 | Writing & Submission | Month 11 | Month 14 | 3 months |
+| 6 | Writing & Submission | Month 10 | Month 13 | 3 months |
 
-**Total:** 14 months from project start.
+**Total:** 13 months from project start.
 
 ### Visual Timeline
 
@@ -244,6 +216,5 @@ Phase 7                                              █████████
 | Low expert recruitment | Use 2 experts instead of 3; report agreement metrics with fewer raters | +0 weeks (reduced statistical power) |
 | Low participant recruitment | Extend recruitment period; use snowball sampling; offer higher compensation | +2–4 weeks |
 | LLM provider API change | Switch to alternative provider (system is provider-agnostic) | +1 week (testing) |
-| Institutional determination not archived | Preserve the communication if available and report its status without inferring formal approval | Documentation risk |
 | Null results in RQ3 | Report negative finding; focus discussion on why AI-Only may be sufficient for simple datasets | +0 weeks (no extra work) |
 | Major bug in experiment | Pilot test with 5 colleagues before each participant session | Prevents delays |

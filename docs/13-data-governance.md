@@ -2,11 +2,9 @@
 
 ## 1. Purpose and Scope
 
-This document describes the data governance framework for AI-DB-Creator, a PhD research platform. It specifies what data is collected, how it is stored, processed, and retained, and what protections are in place for research participants. This framework is designed to comply with:
+This document describes the data governance framework for AI-DB-Creator. It specifies what data is collected, how it is stored, processed, and retained, and what protections are in place for research participants. This framework is designed to address:
 
 - **GDPR** (General Data Protection Regulation, EU) — for studies involving EU-based participants
-- **UK Data Protection Act 2018** — for studies based at UK universities
-- **University ethics committee guidelines** — as applicable to the host institution
 - **Google Gemini API Privacy Policy** — for data processed via Google's LLM API
 
 ---
@@ -92,7 +90,7 @@ The following are **explicitly not collected** by the AI-DB-Creator system:
 
 ### 4.2 Encryption
 
-- Data at rest: stored on the university's encrypted file system (requires institutional setup).
+- Data at rest: stored in project-controlled storage with access restrictions; encrypted storage is preferred for protected material.
 - Data in transit: HTTPS should be configured for production deployments. The development server (Uvicorn) uses HTTP.
 - API keys: stored in `.env` file, which is excluded from version control via `.gitignore`.
 
@@ -161,7 +159,7 @@ When using Google Gemini as the LLM provider (`LLM_PROVIDER=google`):
 - Check the current [Gemini API Additional Terms](https://ai.google.dev/gemini-api/terms) immediately before the pilot and freeze the reviewed terms/date in the protocol manifest.
 - Under the terms effective 23 March 2026, API clients made available to users in the EEA, Switzerland, or the UK may use only Paid Services. The account/service classification must therefore be verified before participant access; a free testing key is not assumed suitable for the experiment.
 - Paid Services state that prompts/responses are not used to improve Google products, subject to the applicable data-processing terms and limited safety/abuse processing. Do not enable voluntary log sharing for research documents.
-- **Mitigation:** Do not send personal, sensitive, or confidential documents through an unverified service tier. Prefer an institution-approved paid project with the required agreement, or local Ollama for sensitive material.
+- **Mitigation:** Do not send personal, sensitive, or confidential documents through an unverified service tier. Prefer a verified provider account with the required data-processing terms, or local Ollama for sensitive material.
 
 ### 7.3 OpenAI API Privacy Policy
 
@@ -170,7 +168,7 @@ When using OpenAI (`LLM_PROVIDER=openai`):
 - Check the current [OpenAI API data controls](https://platform.openai.com/docs/models/default-usage-policies-by-endpoint) immediately before the pilot and record the reviewed terms/date.
 - API inputs/outputs are not used for model training by default unless the organisation opts in.
 - Default abuse-monitoring logs may retain customer content for up to 30 days, subject to endpoint-specific application-state retention and legal exceptions. Zero Data Retention or Modified Abuse Monitoring requires eligibility and explicit organisation/project configuration; it must not be assumed from the API key alone.
-- The ethics/consent materials must identify the exact endpoint, storage setting and region used during data collection.
+- The consent materials must identify the exact endpoint, storage setting and region used during data collection.
 
 ### 7.4 Local Processing (Ollama)
 
@@ -203,7 +201,8 @@ Participants have the right to:
 
 ### 8.3 Data Controller
 
-The university / research institution hosting the study is the data controller. The PhD student (researcher) is the data processor. Contact details are provided in the informed consent form.
+The researcher is responsible for the study data and the documented handling
+procedures. Contact details are provided in the informed-consent materials.
 
 ---
 
@@ -220,7 +219,7 @@ Participants in the user experiment (Phase 5) must read and sign a consent form 
 5. **LLM API data use** — that their document text and prompts will be sent to an external LLM API
 6. **Risks** — minimal (standard computer use)
 7. **Voluntary participation** — can withdraw at any time without penalty
-8. **Contact information** — researcher and ethics committee contact details
+8. **Contact information** — researcher contact details
 
 ### 9.2 Withdrawal Procedure
 
@@ -236,12 +235,11 @@ If a participant withdraws:
 
 | Requirement | Status | Notes |
 |---|---|---|
-| Institutional requirement checked | User reports that prior ethics approval is not required | Archive the communication if available; retain consent and privacy controls |
-| Data Protection Impact Assessment (DPIA) | Pending | Required if processing personal data |
-| GDPR-compliant consent form | Drafted (this document) | Needs institutional template integration |
+| Data Protection Impact Assessment (DPIA) | Not applicable to the reported analytical dataset | The analysis uses anonymised records; reassess applicability before any future identifiable or high-risk processing |
+| Consent and privacy information | Documented | Retain the version used for the study |
 | Data retention schedule documented | Yes | Section 6 |
 | Anonymization procedure documented | Yes | Section 5 |
 | LLM provider data handling documented | Yes | Section 7 |
 | Participant right to erasure implemented | Partial | Procedure documented in Sections 6.1 and 9.2; automated cross-store deletion must pass the release QA checklist before recruitment |
-| Data breach notification procedure | Not documented | To be added; notify ethics committee within 72 hours |
-| Secure data storage implemented | Partial | Needs institutional encrypted storage |
+| Data breach response procedure | Not documented | Define before any future collection of identifiable data |
+| Secure data storage implemented | Partial | Verify project access controls and encrypted backups before future collection |

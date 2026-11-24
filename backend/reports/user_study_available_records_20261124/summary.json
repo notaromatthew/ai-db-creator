@@ -1,0 +1,261 @@
+{
+  "source_statement": "The analysis is based on the available completed records.",
+  "inputs": {
+    "participants": {
+      "path": "outputs\\ods_statici_20261124\\Registro_studio_principale_102_casi_STATICO.ods",
+      "sha256": "faaae884f732b7933798df85d8e648d19fd279674191a5f999ae22479217b7e0"
+    },
+    "blind_ratings": {
+      "path": "outputs\\ods_statici_20261124\\Valutazione_cieca_102_casi_STATICA.ods",
+      "sha256": "108861896e5b250a78c8f571f827fc84ea3c0a0caa837a46548e8ab111df0065"
+    }
+  },
+  "seed": 20261103,
+  "bootstrap_repetitions": 5000,
+  "included_records": 102,
+  "excluded_records": {
+    "not_valid": 12
+  },
+  "descriptives": {
+    "manual": {
+      "n": 34,
+      "datasets": {
+        "university": 12,
+        "library": 11,
+        "hospital": 11
+      },
+      "task_success_n": 34,
+      "task_success_rate": 1.0,
+      "schema_quality": {
+        "mean": 4.970588235294118,
+        "sd": 0.17149858514250885,
+        "median": 5.0,
+        "minimum": 4.0,
+        "maximum": 5.0
+      },
+      "residual_error_rate": {
+        "mean": 0.019705882352941177,
+        "sd": 0.007064762801416988,
+        "median": 0.02,
+        "minimum": 0.01,
+        "maximum": 0.03
+      },
+      "duration_minutes": {
+        "mean": 39.94117647058823,
+        "sd": 1.4129525602833977,
+        "median": 40.0,
+        "minimum": 38.0,
+        "maximum": 42.0
+      }
+    },
+    "ai_only": {
+      "n": 34,
+      "datasets": {
+        "library": 12,
+        "hospital": 11,
+        "university": 11
+      },
+      "task_success_n": 34,
+      "task_success_rate": 1.0,
+      "schema_quality": {
+        "mean": 4.970588235294118,
+        "sd": 0.17149858514250885,
+        "median": 5.0,
+        "minimum": 4.0,
+        "maximum": 5.0
+      },
+      "residual_error_rate": {
+        "mean": 0.01985294117647059,
+        "sd": 0.007228446972399989,
+        "median": 0.02,
+        "minimum": 0.01,
+        "maximum": 0.03
+      },
+      "duration_minutes": {
+        "mean": 28.558823529411764,
+        "sd": 1.1332756617391004,
+        "median": 29.0,
+        "minimum": 27.0,
+        "maximum": 30.0
+      }
+    },
+    "ai_interface": {
+      "n": 34,
+      "datasets": {
+        "hospital": 12,
+        "university": 11,
+        "library": 11
+      },
+      "task_success_n": 34,
+      "task_success_rate": 1.0,
+      "schema_quality": {
+        "mean": 5.0,
+        "sd": 0.0,
+        "median": 5.0,
+        "minimum": 5.0,
+        "maximum": 5.0
+      },
+      "residual_error_rate": {
+        "mean": 0.02,
+        "sd": 0.007282190812544192,
+        "median": 0.02,
+        "minimum": 0.01,
+        "maximum": 0.03
+      },
+      "duration_minutes": {
+        "mean": 26.441176470588236,
+        "sd": 1.1332756617391004,
+        "median": 26.0,
+        "minimum": 25.0,
+        "maximum": 28.0
+      }
+    }
+  },
+  "contrasts": [
+    {
+      "first_arm": "manual",
+      "second_arm": "ai_interface",
+      "outcome": "schema_quality",
+      "first_mean": 4.970588235294118,
+      "second_mean": 5.0,
+      "mean_difference": -0.02941176470588225,
+      "mean_difference_ci95": [
+        -0.08823529411764675,
+        0.0
+      ],
+      "cohen_d": -0.2425356250363321,
+      "cohen_d_ci95": [
+        -0.4334233351773754,
+        0.0
+      ],
+      "welch_t": -0.9999999999999964,
+      "welch_df": 33.0,
+      "p_value": 0.3245871274888571,
+      "holm_p_value": 1.0,
+      "research_question": "RQ0",
+      "primary_outcome": true
+    },
+    {
+      "first_arm": "manual",
+      "second_arm": "ai_interface",
+      "outcome": "residual_error_rate",
+      "first_mean": 0.019705882352941177,
+      "second_mean": 0.02,
+      "mean_difference": -0.0002941176470588232,
+      "mean_difference_ci95": [
+        -0.0036764705882352915,
+        0.003088235294117645
+      ],
+      "cohen_d": -0.04099600308453934,
+      "cohen_d_ci95": [
+        -0.5310974581726986,
+        0.4291530503946353
+      ],
+      "welch_t": -0.1690308509457031,
+      "welch_df": 65.9394495412844,
+      "p_value": 0.8662898327644162,
+      "holm_p_value": 1.0,
+      "research_question": "RQ0",
+      "primary_outcome": true
+    },
+    {
+      "first_arm": "manual",
+      "second_arm": "ai_interface",
+      "outcome": "duration_minutes",
+      "first_mean": 39.94117647058823,
+      "second_mean": 26.441176470588236,
+      "mean_difference": 13.499999999999996,
+      "mean_difference_ci95": [
+        12.882352941176475,
+        14.088235294117652
+      ],
+      "cohen_d": 10.54052605359678,
+      "cohen_d_ci95": [
+        9.624218928081138,
+        12.14896621645323
+      ],
+      "welch_t": 43.45970226855441,
+      "welch_df": 63.030308365523304,
+      "p_value": 1.0520058738502437e-48,
+      "holm_p_value": null,
+      "research_question": "RQ0",
+      "primary_outcome": false
+    },
+    {
+      "first_arm": "ai_only",
+      "second_arm": "ai_interface",
+      "outcome": "schema_quality",
+      "first_mean": 4.970588235294118,
+      "second_mean": 5.0,
+      "mean_difference": -0.02941176470588225,
+      "mean_difference_ci95": [
+        -0.08823529411764675,
+        0.0
+      ],
+      "cohen_d": -0.2425356250363321,
+      "cohen_d_ci95": [
+        -0.4334233351773754,
+        0.0
+      ],
+      "welch_t": -0.9999999999999964,
+      "welch_df": 33.0,
+      "p_value": 0.3245871274888571,
+      "holm_p_value": 1.0,
+      "research_question": "RQ3",
+      "primary_outcome": true
+    },
+    {
+      "first_arm": "ai_only",
+      "second_arm": "ai_interface",
+      "outcome": "residual_error_rate",
+      "first_mean": 0.01985294117647059,
+      "second_mean": 0.02,
+      "mean_difference": -0.00014705882352940985,
+      "mean_difference_ci95": [
+        -0.0035294117647058816,
+        0.0032352941176470584
+      ],
+      "cohen_d": -0.020268966403501745,
+      "cohen_d_ci95": [
+        -0.49068279172639356,
+        0.4577075214060561
+      ],
+      "welch_t": -0.08357108940373341,
+      "welch_df": 65.99637879951716,
+      "p_value": 0.9336504298363364,
+      "holm_p_value": 1.0,
+      "research_question": "RQ3",
+      "primary_outcome": true
+    },
+    {
+      "first_arm": "ai_only",
+      "second_arm": "ai_interface",
+      "outcome": "duration_minutes",
+      "first_mean": 28.558823529411764,
+      "second_mean": 26.441176470588236,
+      "mean_difference": 2.117647058823529,
+      "mean_difference_ci95": [
+        1.5882352941176485,
+        2.647058823529413
+      ],
+      "cohen_d": 1.868607197982028,
+      "cohen_d_ci95": [
+        1.4006893944277399,
+        2.480645503695216
+      ],
+      "welch_t": 7.704464850069353,
+      "welch_df": 66.0,
+      "p_value": 8.950780767046276e-11,
+      "holm_p_value": null,
+      "research_question": "RQ3",
+      "primary_outcome": false
+    }
+  ],
+  "blind_rating_agreement": {
+    "exact_n": 86,
+    "total_n": 102,
+    "exact_rate": 0.8431372549019608,
+    "rater_a_mean": 4.892156862745098,
+    "rater_b_mean": 4.911764705882353
+  }
+}

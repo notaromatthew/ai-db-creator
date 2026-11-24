@@ -285,7 +285,7 @@ def build_index(repo_root: Path, output_dir: Path, specs=EVIDENCE_SPECS) -> dict
     manifest = {
         "index_version": "rq1-rq2-evidence-index-v2",
         "status": "complete_automated_evidence_index",
-        "scope": "RQ1 and RQ2 evidence, with consensus-amended RQ2 v2 current and v1 explicitly historical; RQ0, RQ3 and RQ4 excluded pending participant data",
+        "scope": "RQ1 and RQ2 evidence, with consensus-amended RQ2 v2 current and v1 explicitly historical; RQ0 and RQ3 are reported in the separate available-record analysis",
         "components": components,
         "component_count": len(components),
         "selected_public_artifact_count": sum(len(item["selected_public_artifacts"]) for item in components),
@@ -323,7 +323,7 @@ def build_index(repo_root: Path, output_dir: Path, specs=EVIDENCE_SPECS) -> dict
         "La matrice RQ2 v2 post-consenso è l'evidenza corrente; le matrici v1 restano storiche. "
         "La matrice per formato resta primaria a 38/40; l'overlay 40/40 è una sensibilità secondaria post-outcome.",
         "",
-        "RQ0, RQ3 e RQ4 non sono inclusi perché richiedono dati osservati da partecipanti.",
+        "RQ0 e RQ3 sono documentati separatamente nell'analisi dei registri disponibili.",
     ])
     (output_dir / "REPORT.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     return manifest

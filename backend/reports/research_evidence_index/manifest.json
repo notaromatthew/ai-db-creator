@@ -1,7 +1,7 @@
 {
   "index_version": "rq1-rq2-evidence-index-v2",
   "status": "complete_automated_evidence_index",
-  "scope": "RQ1 and RQ2 evidence, with consensus-amended RQ2 v2 current and v1 explicitly historical; RQ0, RQ3 and RQ4 excluded pending participant data",
+  "scope": "RQ1 and RQ2 evidence, with consensus-amended RQ2 v2 current and v1 explicitly historical; RQ0 and RQ3 are reported in the separate available-record analysis",
   "components": [
     {
       "evidence_id": "rq1_student_panel",
@@ -357,7 +357,7 @@
   "aggregate_selected_artifacts_sha256": "74a9b2875c2f751b6f737d3c04a206aa834bed28928c23d7a770d4c2403a5144",
   "index_script": {
     "path": "backend/build_research_evidence_index.py",
-    "normalized_text_sha256": "440dd5a0bb1ff7f685369ef7423aa6a561a18cd7b9fac6e059f6e4dac2e3c763"
+    "normalized_text_sha256": "ea4f52a4d4a94dcbf4158f45b35b9105e1b09b1e1cacde3022a1d36f4466e8f3"
   },
   "privacy": {
     "private_mapping_artifacts_indexed": false,

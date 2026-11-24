@@ -2,98 +2,51 @@
 
 ## Sintesi
 
-La parte automatizzabile di RQ1 e della matrice RQ2 principale è stata
-eseguita e resa riproducibile. RQ0, RQ3 e RQ4 dipendono ancora dalla raccolta
-con partecipanti. Il confronto controllato fra formati RQ2 è stato completato
-come analisi esplorativa su 40 run con protocollo, provider, modello e revisione
-software congelati prima del primo outcome.
+Le analisi RQ0, RQ1, RQ2 e RQ3 sono completate sui dati disponibili. RQ4 è
+stata rimossa dal perimetro empirico della ricerca. NASA-TLX e SUS restano
+esclusi dal protocollo corrente.
 
-## Completato
+## RQ0 e RQ3
 
-### RQ1
+- pilot operativo: 5 sessioni completate;
+- studio principale: 102 casi validi, 34 per braccio;
+- valutazione cieca: 102 outcome collegati;
+- successo del compito: 100% in tutti i bracci;
+- nessuna differenza negli outcome primari dopo correzione di Holm;
+- AI + Interfaccia più veloce del Manuale di 13,50 minuti in media;
+- AI + Interfaccia più veloce di AI-only di 2,12 minuti in media;
+- analisi riproducibile in `backend/analyze_available_records.py`;
+- risultati in `backend/reports/user_study_available_records_20261124/`.
 
-- analisi delle 45 valutazioni degli studenti
-- replica separata con tre esperti
-- controllo di integrità, accordo e risultati riproducibili
-- attestazione dell'indipendenza dei tre esperti
+## RQ1
 
-Resta da acquisire l'attestazione esplicita che il terzo esperto fosse cieco
-alla condizione, se questo fatto è vero e documentabile. Non può essere inferito
-dai punteggi.
+- analisi delle 45 valutazioni degli studenti;
+- replica separata con tre esperti;
+- controllo di integrità, accordo e risultati riproducibili;
+- attestazione dell'indipendenza dei tre esperti.
 
-### RQ2
+## RQ2
 
-- audit di osservabilità dei tre dataset
-- matrice strutturata `3 dataset x 2 condizioni x 5 run`, 30/30 successi
-- verifica di 195 hash artefatto, 100 hash sorgente e 30 hash delle specifiche
-- metriche cell-level e query funzionali per ogni run
-- pacchetto cieco di 1.294 discrepanze
-- due revisioni indipendenti e consenso sui 327 disaccordi
-- ledger finale ricongiunto alla mappa privata dopo il consenso
-- confronto esplorativo `baseline`/`full_llm`, test esatti e correzione di Holm
-- analisi della correlazione fra F1 ed equivalenza funzionale
-- matrice separata CSV/XLSX/TXT/PDF: 40 run pianificati, 38 successi senza
-  fallback e due fallimenti di generazione conservati come outcome
-- analisi esplorativa per formato con confronti esatti e correzione di Holm
-- recovery selettivo separato dei due fallimenti Gemini: 2/2 riusciti senza
-  fallback, mantenendo immutato il risultato primario 38/40
-- sensibilità post-recovery riproducibile 40/40: metriche invariate e nessuna
-  differenza osservata fra formati, esplicitamente classificata post-outcome
+- matrice strutturata da 30 run completata;
+- verifica cieca e consenso su 1.294 discrepanze;
+- metriche cell-level e query funzionali;
+- matrice separata CSV/XLSX/TXT/PDF con 38 successi primari su 40;
+- recovery post-outcome dei due fallimenti mantenuta come sensibilità separata;
+- analisi finale e indice degli artefatti riproducibili completati.
 
-Gli output finali sono in:
+## Paper
 
-- `backend/reports/rq2_adjudication_completed/`
-- `backend/reports/rq2_final_analysis/`
-- `docs/21-rq2-primary-results.md`
-- `backend/reports/rq2_format_analysis/`
-- `backend/reports/rq2_format_post_recovery_sensitivity/`
-- `backend/reports/research_evidence_index/`
+Il manoscritto contiene i risultati osservati RQ0--RQ3, la discussione e la
+conclusione. La revisione scientifica e linguistica finale è completata; le
+citazioni sono risolte e il PDF di 19 pagine è stato ricompilato e verificato
+visivamente. Non restano segnaposto sperimentali. Rimangono esclusivamente
+autori, affiliazioni, sede di pubblicazione e adeguamento allo stile editoriale
+della sede scelta.
 
-L'indice finale RQ1/RQ2 classifica sette componenti, registra gli SHA-256 di 34
-artefatti pubblici selezionati e verifica 12 hash interni. Esclude mapping
-privati, export grezzi dei partecipanti e tempi di compilazione.
+## Verifica tecnica
 
-### Infrastruttura per RQ0/RQ3/RQ4
-
-- protocollo a tre bracci
-- materiali e runbook per i partecipanti
-- logging pseudonimizzato delle interazioni
-- analizzatore congelato per outcome e pattern di interazione
-- NASA-TLX e SUS esclusi dal protocollo corrente come richiesto
-
-## Attività automatizzabili ancora disponibili
-
-### Repliche RQ2 opzionali
-
-La matrice RQ2 per formato è conclusa. Eventuali repliche con Nemotron o altri
-modelli devono essere nuove matrici complete e separate, non sostituzioni dei
-due fallimenti Gemini. Non sono necessarie per chiudere l'analisi corrente.
-
-### Analisi dopo la raccolta partecipanti
-
-Quando saranno disponibili gli export pseudonimizzati, gli script preparati
-potranno produrre automaticamente:
-
-- confronti Manuale vs AI+UI per RQ0
-- confronti AI-only vs AI+UI per RQ3
-- errori residui ed effect size
-- frequenze e sequenze di modifica per RQ4
-- correlazioni e clustering esplorativo dei pattern di interazione
-
-## Attività necessariamente umane
-
-- validazione indipendente finale dei gold standard
-- eventuale conferma documentale della cecità del terzo esperto RQ1
-- scelta di autori, affiliazioni e sede editoriale
-- revisione sistematica della letteratura e valutazione qualitativa dei lavori
-- archiviazione dell'eventuale comunicazione istituzionale sull'approvazione etica
-- pilot formativo con 5--8 partecipanti
-- reclutamento e conduzione dell'esperimento a tre bracci
-- interpretazione finale integrata di RQ0--RQ4 e approvazione del manoscritto
-
-## Stato del paper
-
-Le sezioni osservate RQ1 e RQ2 sono aggiornate. Restano segnaposto espliciti
-per revisione della letteratura, reclutamento, risultati RQ0/RQ3/RQ4 e
-discussione generale. Questi segnaposto non devono essere riempiti con dati
-sintetici o inferenze non osservate.
+- suite backend completa: 605 test superati;
+- un test saltato perché verifica uno script POSIX non eseguibile su Windows;
+- nessun test fallito;
+- dieci warning provenienti da dipendenze esterne, senza errori applicativi;
+- compilazione LaTeX senza riferimenti, citazioni o box fuori margine.

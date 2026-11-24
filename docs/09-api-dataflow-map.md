@@ -103,7 +103,7 @@
 | `POST` | `/api/study/participants/{id}/nasa-tlx` | Store validated Raw NASA-TLX |
 | `POST` | `/api/study/participants/{id}/sus` | Store validated SUS responses and score |
 | `POST` | `/api/study/participants/{id}/withdraw` | Erase responses, telemetry linkage, and demographics |
-| `GET` | `/api/study/admin/export?kind=interactions` | Export combined task and granular application events for RQ4 |
+| `GET` | `/api/study/admin/export?kind=interactions` | Export combined task and granular application events for technical telemetry |
 
 During an active study session the frontend attaches `X-Study-Participant` and
 `X-Study-Arm` to application calls and includes the same pseudonymous context

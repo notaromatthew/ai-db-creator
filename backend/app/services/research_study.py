@@ -30,7 +30,6 @@ CONSENT_VERSION = "1.0"
 TARGET_PER_ARM = 34
 STEPS = ("task", "debrief", "done")
 
-AGE_BANDS = ("18-24", "25-34", "35-44", "45-54", "55+")
 ROLES = ("studente", "sviluppatore", "analista", "docente", "altro")
 EVENT_TYPES = ("task_start", "task_end", "schema_edit", "schema_export", "help_request", "page_view",
                "ai_prompt_sent", "ai_schema_accepted", "error")
@@ -87,9 +86,6 @@ def clean_demographics(raw) -> dict:
     if not isinstance(raw, dict):
         raise StudyError("Compila il questionario iniziale.")
     out = {}
-    if raw.get("age_band") not in AGE_BANDS:
-        raise StudyError("Scegli la tua fascia di eta'.")
-    out["age_band"] = raw["age_band"]
     if raw.get("role") not in ROLES:
         raise StudyError("Scegli il tuo ruolo.")
     out["role"] = raw["role"]
@@ -447,11 +443,11 @@ def export_csv(kind: str) -> str:
                 got = responses.get(p.id, {})
                 rows.append({"participant_id": p.id, "arm": p.arm, "consent_version": p.consent_version or "",
                              "step": p.step, "completed": p.completed_at is not None,
-                             "withdrawn": p.withdrawn_at is not None, "age_band": demo.get("age_band", ""),
+                             "withdrawn": p.withdrawn_at is not None,
                              "role": demo.get("role", ""), "db_experience": demo.get("db_experience", ""),
                              "ai_experience": demo.get("ai_experience", ""),
                              "schema_hash": got.get("schema", {}).get("schema_hash", "")})
-            return _csv(["participant_id", "arm", "consent_version", "step", "completed", "withdrawn", "age_band", "role",
+            return _csv(["participant_id", "arm", "consent_version", "step", "completed", "withdrawn", "role",
                          "db_experience", "ai_experience", "schema_hash"], rows)
         raise StudyError("Tipo di esportazione non valido.")
     finally:

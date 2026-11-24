@@ -3,7 +3,7 @@ import { api } from '@/api/client'
 import ManualSchemaEditor from './research/ManualSchemaEditor'
 import { writeStudyContext } from '@/research/studyContext'
 import {
-  AGE_BANDS, ARM_TASK, CONSENT_VERSION, INFORMATIVA, ROLES, TASK_BRIEF,
+  ARM_TASK, CONSENT_VERSION, INFORMATIVA, ROLES, TASK_BRIEF,
 } from './research/studyTexts'
 
 type Stage = 'loading' | 'consent' | 'demo' | 'code' | 'task' | 'debrief' | 'done' | 'withdrawn'
@@ -31,7 +31,7 @@ export default function StudyPage(_props: { lang?: 'it' | 'en' }) {
   const [busy, setBusy] = useState(false)
   const [read, setRead] = useState(false)
   const [voluntary, setVoluntary] = useState(false)
-  const [demo, setDemo] = useState({ age_band: '', role: '', db_experience: 0, ai_experience: 0 })
+  const [demo, setDemo] = useState({ role: '', db_experience: 0, ai_experience: 0 })
   const [saved, setSaved] = useState(false)
   const started = useRef(false)
 
@@ -95,7 +95,7 @@ export default function StudyPage(_props: { lang?: 'it' | 'en' }) {
     if (r) { writeSession(null); writeStudyContext(null); setStage('withdrawn') }
   }
 
-  const demoOk = !!demo.age_band && !!demo.role && demo.db_experience > 0 && demo.ai_experience > 0
+  const demoOk = !!demo.role && demo.db_experience > 0 && demo.ai_experience > 0
   const stepIndex = STEP_ORDER.indexOf(stage)
 
   return (
@@ -141,11 +141,6 @@ export default function StudyPage(_props: { lang?: 'it' | 'en' }) {
         <section className="glass flex flex-col gap-4 p-6" aria-labelledby="demo-h">
           <h2 id="demo-h" className="text-lg font-semibold">Qualche domanda su di te</h2>
           <p className="text-sm text-tecnia-muted dark:text-slate-300">Servono solo a descrivere il gruppo di partecipanti. Non chiediamo nome né email.</p>
-          <label className="flex flex-col gap-1 text-sm font-semibold">La tua fascia di età
-            <select className="rounded-xl border border-tecnia-line bg-white/80 px-3 py-2 font-normal dark:bg-slate-900" value={demo.age_band} onChange={(e) => setDemo({ ...demo, age_band: e.target.value })}>
-              <option value="">Scegli…</option>{AGE_BANDS.map((a) => <option key={a}>{a}</option>)}
-            </select>
-          </label>
           <label className="flex flex-col gap-1 text-sm font-semibold">Il tuo ruolo
             <select className="rounded-xl border border-tecnia-line bg-white/80 px-3 py-2 font-normal dark:bg-slate-900" value={demo.role} onChange={(e) => setDemo({ ...demo, role: e.target.value })}>
               <option value="">Scegli…</option>{ROLES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-11-24 - Chiusura analisi RQ0/RQ3 e rimozione RQ4
+
+- Rimossa RQ4 dal perimetro empirico corrente, mantenendo il logging come funzionalità tecnica della piattaforma.
+- Analizzati 102 casi validi dai registri disponibili, con 34 casi per ciascun braccio.
+- Congelati descrittive, contrasti Welch, correzione di Holm, effect size e intervalli bootstrap in `backend/reports/user_study_available_records_20261124/`.
+- Osservata qualità finale equivalente fra i bracci e una riduzione del tempo medio per AI + Interfaccia rispetto a Manuale e AI-only.
+- Sostituiti nel paper i segnaposto RQ0/RQ3 con risultati, discussione e conclusione; riallineata la documentazione metodologica.
+
 ## 2026-11-18 - Emendamento pre-raccolta RQ0/RQ3/RQ4
 
 - Registrata come determinazione istituzionale riferita dall'utente la comunicazione che l'approvazione etica preventiva non è richiesta per lo studio corrente; consenso, ritiro e minimizzazione dei dati restano invariati.

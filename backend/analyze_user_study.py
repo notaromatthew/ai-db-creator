@@ -1,4 +1,4 @@
-"""Reproducible RQ0/RQ3/RQ4 analysis from pseudonymous study exports."""
+"""Legacy telemetry analysis retained for prior protocol revisions."""
 from __future__ import annotations
 
 import argparse

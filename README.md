@@ -14,7 +14,6 @@ Il database risultante può essere esplorato tramite un'interfaccia CRUD interat
 - **RQ1:** come si confronta la qualità degli schemi generati via LLM con schemi gold-standard creati a mano, giudicata da esperti di database?
 - **RQ2:** quanto è accurata la generazione automatica dei dati, sia al livello di cella sia per equivalenza funzionale, rispetto a dati di ground truth?
 - **RQ3:** un'interfaccia visuale human-in-the-loop migliora la qualità dello schema rispetto a un approccio solo automatico?
-- **RQ4:** quali pattern di interazione emergono quando utenti non esperti progettano database tramite un'interfaccia LLM?
 
 Il sistema supporta un esperimento controllato tra soggetti a tre bracci: **Manuale**, **AI-Only** e **AI + Interfaccia**. Manuale vs AI + Interfaccia risponde a RQ0; AI-Only vs AI + Interfaccia isola il contributo human-in-the-loop per RQ3.
 
@@ -103,7 +102,6 @@ The resulting database can be explored through an interactive CRUD interface, qu
 - **RQ1**: How does the quality of LLM-generated schemas compare with hand-made gold-standard schemas, judged by database experts?
 - **RQ2**: How accurate is automatic data population at both cell level and functional-equivalence level, measured against ground-truth data?
 - **RQ3**: Does a human-in-the-loop visual interface improve schema quality compared to an automatic-only approach?
-- **RQ4**: What interaction patterns emerge when non-expert users design databases through an LLM-powered interface?
 
 The system supports a three-arm between-subjects controlled experiment: **Manual, AI-Only, and AI + Interface**. Manual vs AI + Interface answers RQ0; AI-Only vs AI + Interface isolates the human-in-the-loop contribution for RQ3.
 
@@ -300,7 +298,7 @@ The preregistered RQ0 comparison is Manual vs AI + Interface; the preregistered 
 
 - Schema quality: 3NF validation, relationship F1
 - Data quality: precision/recall, duplicate rate
-- Interaction logs: column renames, constraint additions, ignored suggestions
+- Objective user-study outcomes: schema quality, residual error, task success, and completion time
 - Optional legacy survey endpoints remain in the platform, but NASA-TLX and SUS are disabled and excluded from the current research protocol.
 
 ## Documentazione bilingue / Bilingual documentation

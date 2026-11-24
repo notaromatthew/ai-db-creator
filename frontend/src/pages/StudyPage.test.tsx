@@ -38,7 +38,6 @@ async function consentAndEnroll() {
   await userEvent.click(next)
   const start = await screen.findByRole('button', { name: 'Inizia lo studio' })
   expect(start).toBeDisabled()
-  await userEvent.selectOptions(screen.getByLabelText('La tua fascia di età'), '25-34')
   await userEvent.selectOptions(screen.getByLabelText('Il tuo ruolo'), 'studente')
   const radios = screen.getAllByRole('radio')
   await userEvent.click(radios[2]) // esperienza database = 3
@@ -59,7 +58,7 @@ describe('StudyPage (percorso del partecipante)', () => {
     await consentAndEnroll()
     expect(api.post).toHaveBeenCalledWith('/study/participants', {
       consent: true, consent_version: '1.0',
-      demographics: { age_band: '25-34', role: 'studente', db_experience: 3, ai_experience: 5 },
+      demographics: { role: 'studente', db_experience: 3, ai_experience: 5 },
     })
     expect(await screen.findByLabelText('Codice di ritiro')).toHaveTextContent('AB12C-D34EF')
     expect(JSON.parse(localStorage.getItem('aidb.study.context.v1') || '{}')).toEqual({ participant_id: 'abc123', arm: 'ai_only' })

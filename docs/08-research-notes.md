@@ -6,7 +6,7 @@
 
 **How can an LLM-based system with an interactive visual interface enable non-experts to create normalized and populated databases from text descriptions and heterogeneous documents, and how does it compare to a fully manual approach?**
 
-### Research Questions (RQ0–RQ4)
+### Research Questions (RQ0–RQ3)
 
 **RQ0 (Overarching):** How can an LLM-based system with an interactive visual interface enable non-experts to create normalised and populated databases from text descriptions and heterogeneous documents, and how does it compare with a fully manual process?
 
@@ -31,12 +31,6 @@
 *Hypothesis:* Participants using the AI + Interface condition will produce schemas with higher expert quality ratings than participants using the AI-Only condition.
 *Independent variable:* Assistance mode (Manual vs. AI-Only vs. AI + Interface). The preregistered RQ3 contrast is AI-Only vs. AI + Interface; the RQ0 contrast is Manual vs. AI + Interface.
 *Dependent variables:* Schema quality (expert-rated), residual error rate, task success, and task completion time. Perceived cognitive load and usability questionnaires are outside the current protocol.
-
-**RQ4 (Interaction Patterns):** What interaction patterns emerge when non-expert users design databases via an LLM-powered visual interface?
-
-*Type:* Qualitative / descriptive (interaction log analysis).
-*Data:* All user actions logged: column renames, constraint toggles, table additions/removals, chat messages, query attempts, population triggers.
-*Analysis:* Behavioural pattern coding, transition matrices between tool states, common error patterns.
 
 ---
 
@@ -176,11 +170,6 @@ The human-in-the-loop design allows domain experts to correct these errors using
 - **Procedure:** As described in Section 2.
 - **Analysis:** Preregistered contrasts for schema quality and residual error rate; completion time and task success are secondary.
 
-### Experiment 4: Interaction Log Analysis (RQ4)
-
-- **Method:** Sequence analysis of logged events from Experiment 3.
-- **Techniques:** Markov transition matrices, clustering of user behavioural profiles, frequency analysis of edit types.
-
 ### Timeline (see Thesis Roadmap for details)
 
 | Experiment | Planned Start | Duration | Status |
@@ -188,7 +177,6 @@ The human-in-the-loop design allows domain experts to correct these errors using
 | Schema quality (RQ1) | Month 4 | 6 weeks | Planned |
 | Population accuracy (RQ2) | Month 5 | 4 weeks | Planned |
 | User experiment (RQ3) | Month 7 | 8 weeks | Planned |
-| Interaction analysis (RQ4) | Month 9 | 6 weeks | Planned |
 
 ---
 

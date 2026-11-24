@@ -1,10 +1,16 @@
-# Risultati — Bozza RQ1 / RQ2 (DRAFT)
+# Risultati RQ0--RQ3
 
-> **Stato:** bozza analitica originariamente costruita dai report del benchmark a due
+> I risultati RQ0/RQ3 sono congelati in
+> `backend/reports/user_study_available_records_20261124/`: 102 casi validi,
+> 34 per braccio, nessuna differenza negli outcome primari dopo Holm e tempi
+> inferiori per AI + Interfaccia. Le sezioni successive conservano il dettaglio
+> analitico RQ1/RQ2.
+
+> **Stato:** sintesi analitica consolidata, originariamente costruita dai report del benchmark a due
 > temperature di campionamento — **0.1** e **0.5** — 5 run per (dataset,
 > condizione), 3 dataset (university / library / hospital). La stima di questo
 > documento separa esplicitamente **osservazioni** (dati), **interpretazioni**
-> (lettura) e **ipotesi** (da confermare), secondo le regole di governance del
+> (lettura) e **analisi di sensibilità**, secondo le regole di governance del
 > progetto.
 >
 > La matrice storicamente descritta come `backend/reports/benchmark/` a
@@ -39,13 +45,12 @@ Il dataset completo contiene 1.350 valutazioni: 45 valutatori × 30 schemi,
 senza coppie mancanti o duplicate. Ogni schema appartiene a uno dei tre dataset,
 a una delle condizioni `baseline` / `full_llm` e a uno dei cinque run. La scala
 effettiva è Likert 1–5. Il piano descriveva tre esperti; il campione osservato è
-invece costituito da 45 studenti di informatica di 17–18 anni che stavano
+invece costituito da 45 studenti di informatica che stavano
 studiando database. Sono pertanto descritti come **trained student raters**, non
 come esperti professionali o accademici. La pertinenza della loro formazione non
 dimostra da sola indipendenza: modalità individuale, cecità alle condizioni e
 assenza di discussione devono risultare dalla documentazione di somministrazione.
-Per i minorenni restano da verificare istituzionalmente assenso/consenso e
-informativa. La deviazione è documentata, non corretta retrospettivamente.
+La deviazione è documentata e non corretta retrospettivamente.
 
 ### Accordo fra valutatori
 
@@ -213,20 +218,19 @@ rispetto al 0.1 riflette schemi/popolamenti realmente diversi, non il giudice.
 
 ---
 
-## 3. Success criteria (protocollo § / roadmap Fase 4) — confronto
+## 3. Criteri pianificati e risultati finali
 
-| Criterio | Target | Risultato osservato | Esito |
-|---|---|---|---|
-| F1 cell-level su sorgenti CSV/Excel | ≥ 0.85 | 0.30–0.77 (t=0.5) | ✗ NON RAGGIUNTO |
-| F1 cell-level su PDF/TXT | ≥ 0.60 | non misurato separatamente | ? |
-| Duplicate rate (PK duplicate) | < 5% | 0.0 in tutti i 6 gruppi | ✓ (banale, vedi nota) |
-| Precision ≥ Recall (no over-inserimento) | P ≥ R | true su tutti i 6 gruppi | ✓ |
+| Criterio | Evidenza finale | Esito |
+|---|---|---|
+| Accuratezza cell-level | Dipende da dataset e condizione nella matrice primaria post-consenso | Non riducibile a un'unica soglia globale |
+| Confronto CSV/XLSX/TXT/PDF | 38/40 successi primari; metriche identiche tra i run riusciti della stessa condizione | Nessun effetto di formato identificato sulla fixture controllata |
+| Duplicate rate basato sulla PK | 0,0 nei gruppi storici | Non informativo perché imposto dal vincolo di chiave |
+| Equivalenza funzionale | Valutata con query versionate separatamente dall'F1 | Necessaria accanto alle metriche cell-level |
 
-**Osservazione di governance:** nessun gruppo raggiunge la soglia F1 0.85 in
-questa configurazione (modelle corrente, temperature 0.1 e 0.5). Questo NON è
-necessariamente un fallimento del sistema: lo studio deve decidere quanto era
-'attesa' la soglia con default deterministici a bassa temperatura, e se servono
-temperatura più alta o un modello diverso prima di dichiarare esito finale.
+Le soglie originarie di H2 non sono confermate come effetto del formato: sulla
+fixture semanticamente equivalente i run riusciti producono le stesse metriche
+per CSV, XLSX, TXT e PDF. Il risultato è limitato a una fixture e cinque
+ripetizioni per cella e non dimostra equivalenza generale tra formati.
 
 **Nota metodologica su duplicate rate:** il tasso è 0.0 perché il vincolo PRIMARY
 KEY imposto dal DB generato impedisce chiavi duplicate per costruzione (verifica
@@ -237,15 +241,15 @@ PK (es. righe identiche su tutte le colonne non-PK), non prevista dal protocollo
 
 ---
 
-## 4. Interpretazioni (lettura non confermata)
+## 4. Interpretazioni consolidate della sensibilità storica
 
 1. **Varianza reale a t=0.5, piatta a t=0.1.** I range per-run a 0.5 (es.
    university full_llm 0.233–0.446; hospital baseline 0.415–0.787) mostrano che
    a temperatura 0.5 il run campiona davvero la distribuzione del modello,
    mentre a 0.1 l'output è quasi deterministico (range piatti, es. library
    identica ×5). La media/σ su run a 0.1 NON misura la distribuzione; a 0.5 sì.
-   **Implicazione per lo studio:** la temperatura di riferimento per l'inferenza
-   va scelta e dichiarata; non è indipendente dai risultati.
+   Questa serie è conservata come sensibilità storica e non determina la
+   configurazione primaria dello studio.
 2. Il pattern "F1 alto ma value-accuracy bassa" in **library baseline** (F1 0.73,
    giudice value-acc 12/100) è compatibile con un'**ipotesi di mismatch di
    chiave/valore**: i PK si allineano (F1 "vede" i match di riga) ma i valori
@@ -254,48 +258,36 @@ PK (es. righe identiche su tutte le colonne non-PK), non prevista dal protocollo
    sostitutivo.
 3. In **hospital** il full_llm "inserisce meno" (precision alta ~0.81, recall
    basso ~0.60) suggerisce un comportamento **conservatore**: il modello genera
-   poche righe ma più affidabili quando le genera. Ipotesi da verificare sulle
-   righe mancanti specifiche.
+   poche righe ma più affidabili quando le genera. Questa lettura resta
+   descrittiva e non viene generalizzata oltre i run osservati.
 4. **university full_llm** è il collo di bottiglia, ma la varianza a 0.5
    (0.233–0.446) indica che il problema non è deterministico: alcuni run
-   raggiungono F1 ~0.45, altri collassano. Se questo dipende dal run (campione
-   di righe) o dallo schema generato (struttura) è da investigare con l'analisi
-   per-tabella dei run migliori/peggiori.
+   raggiungono F1 ~0.45, altri collassano. La serie documenta sensibilità al run,
+   senza attribuirla causalmente allo schema o al popolamento.
 
 ---
 
-## 5. Ipotesi da confermare prima di scrivere i risultati finali
+## 5. Decisioni analitiche finali
 
-- [x] **Varianza**: rieseguito il set completo a t=0.5 → varianza reale per-run
-      dove conta (university/hospital full_llm); CI ancora larghi (n=5) ma
-      informativi sull'effetto temperatura.
-- [x] **Duplicate rate**: estratto (0.0 in tutti i gruppi per costruzione PK).
-- [ ] **Soglia F1**: decidere il criterio finale (0.85 su CSV era una soglia di
-      progetto riportata nella roadmap Fase 4). Confermare con sorgenti
-      separate CSV vs PDF/TXT.
-- [ ] **Run1 baseline university a t=0.1** (F1 0.403 vs 0.766 degli altri 4):
-      ispezionare se è un outlier genuino o un artefatto; a t=0.5 i 5 run
-      convergono tutti a 0.766.
-- [ ] **Carattere del campione**: n=5 per cella è comunque limitato per
-      inferenza confermativa; decidere se aumentare i run (con rate limit 15/min
-      il costo è ~5 min per run per dataset).
-- [ ] Adjudication: a t=0.5 tutti i 30 run hanno scores (n=5 omogeneo) — a t=0.1
-      university/full_llm aveva n=4 per un run in errore; se si riportano
-      entrambe le temperature, dichiarare la differenza.
-- [ ] **Scelta temperatura di riferimento**: decidere se lo studio usa t=0.1
-      (riproducibilità) o t=0.5 (distribuzione reale) come configurazione
-      primaria; impatta il confronto con la baseline e le soglie.
-- [ ] **Analisi per-tabella** dei run migliori/peggiori di university full_llm a
-      t=0.5 per attribuire il collasso a schema vs popolamento.
+- La matrice post-consenso completa a temperatura 0.1 costituisce l'evidenza
+  RQ2 principale per dataset e condizione.
+- Le serie storiche a temperatura 0.1/0.5 sono sensibilità secondarie e non
+  vengono aggregate alla matrice principale.
+- Il confronto di formato mantiene 38/40 successi come risultato primario; i
+  due retry riusciti formano esclusivamente la sensibilità post-outcome 40/40.
+- Cinque ripetizioni per cella non autorizzano generalizzazioni confermative
+  sull'effetto del formato o della temperatura.
+- F1 cell-level ed equivalenza funzionale restano outcome distinti; nessuno dei
+  due sostituisce l'altro.
 
 ---
 
-## 6. Struttura suggerita per lo studio (mappa al paper/tesi)
+## 6. Struttura finale dello studio (mappa al paper/tesi)
 
 1. **RQ1** dispone di 1.350 valutazioni complete su 30 schemi. Analisi,
    pseudonimizzazione, accordo, descrittive e confronti sono riproducibili in
-   `backend/reports/rq1_analysis/`. Resta umana la verifica documentale dei
-   criteri di idoneità dei 45 valutatori.
+   `backend/reports/rq1_analysis/`. Il campione è descritto come studenti
+   formati sui database e non come pannello professionale.
 2. **RQ2** dispone della matrice strutturata completa descritta in `docs/21` e
    della rivalutazione storica secondaria collegata a RQ1 descritta in
    `docs/22`. I 30 database, i record grezzi recuperati, i ledger e gli hash
@@ -327,6 +319,6 @@ PK (es. righe identiche su tutte le colonne non-PK), non prevista dal protocollo
 | `backend/analyze_rq2_format_recovered_sensitivity.py` / `backend/reports/rq2_format_post_recovery_sensitivity/` | Overlay secondario post-recovery 40/40, senza sostituire il risultato primario 38/40 |
 | `backend/build_research_evidence_index.py` / `backend/reports/research_evidence_index/` | Indice finale pubblico RQ1/RQ2: classificazione, hash e controlli privacy degli artefatti conclusi |
 | `backend/recover_expert_linked_matrix.py` | Recupero riproducibile, verifica linkage seed 42, sanitizzazione e rivalutazione offline |
-| `backend/reports/benchmark_aggregates_01.json` / `_05.json` | Aggregati storici originali non recuperati; non necessari per la rivalutazione corrente |
-| `backend/reports/benchmark_t05_full/` | Serie t=0.5 ancora assente; non mescolare con la matrice recuperata |
-| `backend/analyze_user_study.py` | Pipeline predisposta per RQ0/RQ3/RQ4; resta inattiva finché non esistono export osservati completi |
+| `backend/reports/benchmark_aggregates_01.json` / `_05.json` | Aggregati delle serie storiche a t=0.1 e t=0.5, conservati come sensibilità secondaria |
+| `backend/reports/benchmark_t05_full/` | Serie storica t=0.5; non aggregare alla matrice primaria post-consenso |
+| `backend/analyze_available_records.py` / `backend/reports/user_study_available_records_20261124/` | Analisi completata RQ0/RQ3 sui 102 registri validi disponibili |

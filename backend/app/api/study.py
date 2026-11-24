@@ -31,7 +31,7 @@ def _run(fn, *args):
 
 @router.get("/info", dependencies=PARTICIPANT)
 def info():
-    return {"consent_version": study.CONSENT_VERSION, "age_bands": study.AGE_BANDS, "roles": study.ROLES,
+    return {"consent_version": study.CONSENT_VERSION, "roles": study.ROLES,
             "questionnaires_enabled": False}
 
 

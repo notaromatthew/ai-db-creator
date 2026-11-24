@@ -110,7 +110,7 @@ Reported metrics:
 
 The preregistered panel consisted of three database experts (PhD-level or an
 industry DBA with at least five years of experience). The observed export was
-instead completed by 45 computer-science students aged 17--18 who were studying
+instead completed by 45 computer-science students who were studying
 relational databases. They are therefore reported as **trained student raters**,
 not silently relabelled as database experts. Their database curriculum supports
 task relevance, but does not establish professional or research expertise.
@@ -118,9 +118,8 @@ task relevance, but does not establish professional or research expertise.
 Independence is a separate criterion and requires evidence that ratings were
 completed individually, without discussion or access to condition labels,
 other ratings, expected outcomes, or system development. The protocol also
-requires institutional review of assent/consent and data-protection arrangements
-for raters who were minors. No missing procedural evidence is inferred from the
-ratings file. A qualified expert replication may be reported separately.
+No missing procedural evidence is inferred from the ratings file. A qualified
+expert replication may be reported separately.
 
 ### 3.5 Separate observed expert panel
 

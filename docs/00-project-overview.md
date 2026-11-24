@@ -54,7 +54,7 @@ Users can describe the data they want in plain language (e.g., "Show me all stud
 The system computes schema quality metrics (3NF compliance score, relationship precision/recall/F1), data quality metrics (duplicate counts, record counts), and logs all user interactions for research analysis.
 
 ### 4.8 Survey Integration
-The platform retains optional NASA-TLX and SUS components for possible future studies. They are disabled and are not part of the current RQ0/RQ3/RQ4 protocol.
+The platform retains optional NASA-TLX and SUS components for possible future studies. They are disabled and are not part of the current RQ0/RQ3 protocol.
 
 ## 5. Technology Stack
 
@@ -101,7 +101,6 @@ AI-DB-Creator is **not a commercial product**. It is a **PhD research platform**
 - **RQ1:** How does the quality of LLM-generated schemas compare to manually created gold-standard schemas, as judged by database experts?
 - **RQ2:** How accurate is LLM-driven automatic data population at the cell level, measured against ground-truth data?
 - **RQ3:** Does a human-in-the-loop visual interface improve schema quality compared to an automatic-only approach?
-- **RQ4:** What interaction patterns emerge when non-expert users design databases via an LLM-powered interface?
 
 The system supports a **three-arm between-subjects controlled experiment**: Manual, AI-Only, and AI + Interface. Manual vs. AI + Interface answers the overarching RQ0 comparison; AI-Only vs. AI + Interface isolates the human-in-the-loop contribution for RQ3.
 

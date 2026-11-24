@@ -12,7 +12,7 @@ from app.core.auth import get_current_user
 from app.main import app
 from app.models.database import AdminAuditLog, StudyEvent, StudyParticipant, StudyResponse, get_session, init_db
 
-DEMO = {"age_band": "25-34", "role": "studente", "db_experience": 3, "ai_experience": 4}
+DEMO = {"role": "studente", "db_experience": 3, "ai_experience": 4}
 TLX = {k: 40 for k in ("mental_demand", "physical_demand", "temporal_demand", "performance", "effort", "frustration")}
 SUS = [4, 2, 4, 2, 4, 2, 4, 2, 4, 2]
 
@@ -59,9 +59,8 @@ def test_consent_and_demographics_are_required(study):
     assert enroll(c, consent=False).status_code == 422
     assert enroll(c, consent="true").status_code == 422
     assert enroll(c, consent_version="0.1").status_code == 422
-    assert enroll(c, demographics={**DEMO, "age_band": "9"}).status_code == 422
     assert enroll(c, demographics={**DEMO, "db_experience": 6}).status_code == 422
-    assert enroll(c, demographics={"age_band": "25-34"}).status_code == 422
+    assert enroll(c, demographics={"role": "studente"}).status_code == 422
     assert enroll(c, demographics=None).status_code == 422
     r = enroll(c)
     assert r.status_code == 201

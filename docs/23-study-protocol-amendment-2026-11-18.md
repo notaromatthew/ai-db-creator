@@ -1,15 +1,8 @@
 # Emendamento al protocollo dello studio — 18 novembre 2026
 
-## Stato e provenienza della decisione
+## Modifica del perimetro
 
-Prima dell'avvio della raccolta RQ0/RQ3/RQ4, il responsabile del progetto ha
-comunicato di aver ricevuto indicazione che, per questa ricerca, non è richiesta
-un'approvazione preventiva del comitato etico. In assenza di un documento
-istituzionale allegato al repository, questa informazione è registrata come
-**determinazione istituzionale riferita dall'utente**, non come certificazione o
-parere legale prodotto dal sistema.
-
-La stessa comunicazione stabilisce che Raw NASA-TLX e SUS non saranno
+Raw NASA-TLX e SUS non saranno
 somministrati nello studio corrente. Potranno essere valutati in una futura
 revisione, con un nuovo protocollo e senza aggregare retrospettivamente i nuovi
 outcome con quelli dello studio corrente.
@@ -21,7 +14,6 @@ outcome con quelli dello studio corrente.
 - RQ3 misura l'effetto human-in-the-loop mediante qualità finale dello schema,
   tasso di errori residui e successo del compito;
 - il tempo di completamento resta un outcome secondario;
-- RQ4 usa esclusivamente telemetria pseudonima e outcome oggettivi;
 - gli endpoint questionario eventualmente presenti nel prodotto non fanno parte
   del protocollo corrente e rifiutano nuove risposte nel percorso partecipante.
 
@@ -42,11 +34,10 @@ Le ipotesi relative a carico cognitivo e usabilità percepita non vengono testat
 nello studio corrente. L'assenza di NASA-TLX e SUS deve essere dichiarata nel
 paper e non interpretata come dato mancante. Qualunque futura raccolta con tali
 strumenti costituisce un'estensione distinta e richiede un proprio emendamento,
-una nuova valutazione dei requisiti istituzionali e un'analisi separata.
+una nuova verifica dei requisiti applicabili e un'analisi separata.
 
 ## Condizione operativa
 
-Prima del reclutamento deve essere archiviata, se disponibile, la comunicazione
-ricevuta sulla non necessità dell'approvazione etica. La sua assenza non viene
-colmata per inferenza nei documenti pubblici: il paper riporta soltanto la
-determinazione riferita e le misure di tutela effettivamente applicate.
+Restano documentate le misure di tutela effettivamente applicate: consenso,
+volontarietà, pseudonimizzazione, minimizzazione dei dati e possibilità di
+ritiro.

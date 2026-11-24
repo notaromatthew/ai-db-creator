@@ -32,7 +32,7 @@ Confidence is evidence about the mapping method, not a calibrated probability of
 
 ## Artifact Freeze
 
-Before confirmatory data collection, freeze and identify:
+The confirmatory package freezes and identifies:
 
 1. application release;
 2. environment and dependency lockfiles;
@@ -58,20 +58,18 @@ The planned protocol named three experts, whereas the observed export contains
 45 evaluators. This is retained as a protocol deviation. Eligibility evidence
 must be reviewed separately before the term “expert” is used confirmatorily.
 
-## RQ0/RQ3/RQ4 Participant Analysis
+## RQ0/RQ3 Participant Analysis
 
-The participant-study target is 34 completed cases in each of the Manual,
+The participant study contains 34 completed cases in each of the Manual,
 AI-Only, and AI + Interface arms. The application propagates only the random
 participant ID and assigned arm across the study and app tabs. The backend
 enforces arm restrictions for instrumented calls and records participant IDs in
 run metadata without exporting account identifiers or withdrawal codes.
 
-`backend/analyze_user_study.py` validates the three frozen exports, derives task
-duration, applies the two preregistered contrasts, corrects the four primary
-tests with Holm, and keeps RQ4 pattern, correlation, and clustering analyses
-exploratory. Its manifest records input hashes, seed, bootstrap count, arm
-counts, and the multiplicity family. Withdrawal also removes global interaction
-events linked to the participant.
+`backend/analyze_available_records.py` validates the static participant and
+blinded-outcome registers, derives task duration, applies the two prespecified
+contrasts, and corrects the four primary tests with Holm. Its output records
+input hashes, seed, bootstrap count, arm counts, and the multiplicity family.
 
 ## Secret Handling
 

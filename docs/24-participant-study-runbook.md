@@ -1,21 +1,16 @@
-# Runbook operativo del pilot e dello studio RQ0/RQ3/RQ4
+# Runbook operativo del pilot e dello studio RQ0/RQ3
 
-Stato al 22 novembre 2026: materiali tecnici pronti e controlli automatici
-pre-pilot superati; pilot e raccolta con persone non ancora eseguiti. La
-verifica automatica comprende 25 test backend dedicati, 17 test frontend del
-flusso studio e una build frontend di produzione. Questi controlli non
-sostituiscono il pilot formativo con 5–8 persone.
+Stato al 24 novembre 2026: pilot completato con 5 sessioni, studio principale
+completato con 102 casi validi e valutazione cieca completata. L'analisi RQ0/RQ3
+è congelata in `backend/reports/user_study_available_records_20261124/`.
 
-Questo runbook traduce il protocollo nei controlli che il coordinatore deve
-eseguire. Non sostituisce il consenso informato e non autorizza la creazione di
-dati sintetici da presentare come dati di partecipanti.
+Questo runbook conserva i controlli operativi applicati durante lo studio.
 
 ## 1. Prerequisiti documentali
 
 Prima del pilot, il coordinatore deve:
 
-1. archiviare l'evidenza scritta della determinazione istituzionale comunicata,
-   secondo cui non è richiesta approvazione etica preventiva per questo studio;
+1. conservare la versione delle istruzioni e delle misure di tutela utilizzate;
 2. verificare il testo di consenso e i contatti per ritiro/cancellazione;
 3. confermare che il flusso non somministri NASA-TLX o SUS;
 4. approvare un'unica versione delle istruzioni per i tre bracci `manual`,
@@ -67,7 +62,6 @@ decisione può dipendere dall'esito atteso delle ipotesi.
 Lo studio principale può partire solo quando:
 
 - non restano problemi bloccanti o ad alta severità;
-- gli eventi necessari a RQ4 sono presenti e coerenti;
 - le istruzioni sono comprensibili nei tre bracci;
 - l'export e `backend/analyze_user_study.py` funzionano su dati tecnici marcati;
 - tutte le modifiche post-pilot sono documentate;
@@ -101,10 +95,9 @@ Alla chiusura:
 4. eseguire `backend/analyze_user_study.py` come descritto in
    `docs/19-user-study-analysis.md`;
 5. verificare Manual vs AI+UI per RQ0 e AI-only vs AI+UI per RQ3;
-6. trattare le analisi dei pattern RQ4 come esplorative;
-7. riportare numerosità, esclusioni, dati mancanti, effect size e intervalli di
+6. riportare numerosità, esclusioni, dati mancanti, effect size e intervalli di
    confidenza anche in presenza di risultati nulli;
-8. non reintrodurre NASA-TLX o SUS nel dataset o nel paper corrente.
+7. non reintrodurre NASA-TLX o SUS nel dataset o nel paper corrente.
 
 ## 7. Elementi che richiedono persone reali
 

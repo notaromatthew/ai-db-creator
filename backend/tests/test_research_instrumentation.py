@@ -33,7 +33,7 @@ def test_combined_export_and_withdrawal_cover_app_telemetry(tmp_path):
         interaction_logger.persist_path = tmp_path / "interactions.json"
         interaction_logger.events = []
         participant = research_study.enroll(True, research_study.CONSENT_VERSION, {
-            "age_band": "25-34", "role": "studente", "db_experience": 2, "ai_experience": 3,
+            "role": "studente", "db_experience": 2, "ai_experience": 3,
         }, research_study.account_hash("account-a"))
         pid = participant["participant_id"]
         research_study.add_event(pid, participant["code"], "task_start", {})

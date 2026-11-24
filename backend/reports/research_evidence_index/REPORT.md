@@ -17,4 +17,4 @@ Stato: `complete_automated_evidence_index`. Componenti: 10; artefatti pubblici s
 
 L'indice non include mapping privati, export grezzi dei partecipanti o tempi di compilazione. La matrice RQ2 v2 post-consenso è l'evidenza corrente; le matrici v1 restano storiche. La matrice per formato resta primaria a 38/40; l'overlay 40/40 è una sensibilità secondaria post-outcome.
 
-RQ0, RQ3 e RQ4 non sono inclusi perché richiedono dati osservati da partecipanti.
+RQ0 e RQ3 sono documentati separatamente nell'analisi dei registri disponibili.
