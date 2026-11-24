@@ -11,7 +11,7 @@
   },
   "canonical_input_sha256": "ba51cee1742a11bf108ba62ae09b1c50c1e45eb521fa9f4e9f8b90c31eecdd04",
   "mapping_sha256": "27d356dc35d7db6d2cd1fc91f940ab79972bf738f4b74a1d13cf27c39f639067",
-  "analysis_script_sha256": "925701e4426d42b937761d77544829f2b31531eed49595b112dfe7bb6a363dd8",
+  "analysis_script_sha256": "63d0d1d90e18d3b2c9ff8110ba54d2e7b65fd9b72c9be156426f022625b5f929",
   "software_revision": "c18ad9b42b63edb9acae375098bd03c460a73136",
   "seed": 20261114,
   "bootstrap_resamples": 5000,
@@ -34,13 +34,14 @@
   "exact_schema_vector_agreement": "0/30",
   "expert_eligibility": "user_attested_sector_experts",
   "independence": "all_three_user_attested",
-  "condition_blinding": "first_two_user_attested; third_not_yet_explicitly_attested",
+  "condition_blinding": "all_three_user_attested",
   "attestation_recorded_on": {
     "first_two_procedure": "2026-11-14",
     "third_expert_eligibility": "2026-11-18",
-    "third_expert_independence": "2026-11-19"
+    "third_expert_independence": "2026-11-19",
+    "third_expert_condition_blinding": "2026-11-24"
   },
-  "attestation_metadata_updated_at": "2026-11-20",
+  "attestation_metadata_updated_at": "2026-11-24",
   "attestation_update_basis": "user_attestation_in_project_conversation",
   "comments_included": false,
   "evaluation_timestamps_published": false,

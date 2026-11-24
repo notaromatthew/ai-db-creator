@@ -130,9 +130,9 @@ first two experts worked individually, without discussion or access to one
 another's scores, and were blind to the `baseline` / `full_llm` labels. On 18
 November the user supplied the third expert's completed ratings and identified
 the rater as an expert; the third rater's independence was subsequently
-attested by the user, while condition blindness
-remains to be attested explicitly. These are procedural statements, not
-properties inferred from the scores.
+attested by the user, and condition blindness was explicitly confirmed by the
+user on 24 November 2026. These are procedural statements, not properties
+inferred from the scores or an independent administration record.
 
 Ordinal Krippendorff's alpha remains the primary agreement statistic,
 accompanied by exact and adjacent agreement. The condition comparison aggregates

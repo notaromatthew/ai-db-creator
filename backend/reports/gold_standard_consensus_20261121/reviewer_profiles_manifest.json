@@ -1,0 +1,45 @@
+{
+  "artifact_version": "gold_standard_reviewer_profiles_v1",
+  "verification_date": "2026-11-24",
+  "status": "COMPLETE_RETROSPECTIVE_RESTRICTED_STORAGE",
+  "technical_consensus_date": "2026-11-21",
+  "timing_note": "Both signed forms are dated 2026-11-24 and were archived after the technical consensus. They document retrospective attestations and do not establish contemporaneous pre-review completion.",
+  "privacy": {
+    "public_repository_contains_personal_data": false,
+    "signed_pdfs_storage": "local_restricted_gitignored",
+    "public_manifest_contains": [
+      "pseudonym",
+      "verification status",
+      "signature presence",
+      "independence confirmation",
+      "file size",
+      "sha256"
+    ]
+  },
+  "reviewers": [
+    {
+      "reviewer": "GOLD-A",
+      "document_date": "2026-11-24",
+      "timing_relative_to_consensus": "retrospective_after_consensus",
+      "qualification_information_present": true,
+      "database_experience_information_present": true,
+      "independence_confirmed": true,
+      "signature_present": true,
+      "page_count": 2,
+      "size_bytes": 639946,
+      "sha256": "f40309303cbad176146d71d179e1629d3a5b0f4a0506bfe661e489b4d5aa8bc9"
+    },
+    {
+      "reviewer": "GOLD-B",
+      "document_date": "2026-11-24",
+      "timing_relative_to_consensus": "retrospective_after_consensus",
+      "qualification_information_present": true,
+      "database_experience_information_present": true,
+      "independence_confirmed": true,
+      "signature_present": true,
+      "page_count": 2,
+      "size_bytes": 318450,
+      "sha256": "b5a62c97f389b5f2ae88269b2533c0c5629b2cc996150ca2c018e2b9e662f126"
+    }
+  ]
+}

@@ -1,12 +1,12 @@
 # Indice finale delle evidenze RQ1/RQ2
 
-Stato: `complete_automated_evidence_index`. Componenti: 10; artefatti pubblici selezionati: 44.
+Stato: `complete_automated_evidence_index`. Componenti: 10; artefatti pubblici selezionati: 45.
 
 | Evidenza | RQ | Classificazione | Artefatti | Hash interni verificati |
 |---|---|---|---:|---:|
 | `rq1_student_panel` | RQ1 | `observed_primary_panel` | 5 | 0 |
 | `rq1_expert_replication` | RQ1 | `observed_secondary_independent_panel` | 5 | 0 |
-| `rq2_gold_standard_consensus_v2` | RQ2 | `expert_consensus_current_gold_standard` | 3 | 0 |
+| `rq2_gold_standard_consensus_v2` | RQ2 | `expert_consensus_current_gold_standard` | 4 | 0 |
 | `rq2_v2_primary_matrix` | RQ2 | `primary_current_exploratory_matrix` | 4 | 0 |
 | `rq2_v2_analysis` | RQ2 | `primary_current_exploratory_analysis` | 3 | 2 |
 | `rq2_structured_matrix` | RQ2 | `historical_v1_complete_exploratory_matrix` | 4 | 0 |

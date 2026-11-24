@@ -5,7 +5,8 @@
     "GOLD-B"
   ],
   "technical_consensus_status": "COMPLETE",
-  "personal_qualification_forms_status": "DEFERRED_BY_USER",
+  "personal_qualification_forms_status": "COMPLETE_RETROSPECTIVE_RESTRICTED_STORAGE",
+  "reviewer_profiles_manifest": "backend/reports/gold_standard_consensus_20261121/reviewer_profiles_manifest.json",
   "source_workbook": "backend/reports/gold_standard_consensus_20261121/Consenso_gold_standard_GOLD-A_GOLD-B.xlsx",
   "source_workbook_sha256": "2bcb3fe620bcc7c2be5f7806dcda01c5fcf31083e18c889be7d6d73beb84a5a9",
   "decision_count": 25,

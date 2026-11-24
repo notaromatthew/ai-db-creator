@@ -454,10 +454,11 @@ A separate panel was subsequently completed by the three planned sector
 experts. The user attested that the first two worked individually, without
 discussion or access to one another's scores, and were blind to the condition
 labels. The third rater was identified by the user as an expert, and the user's
-attestation confirms that rater's independence; condition blindness was not
-documented. These procedural facts are recorded as user attestations rather than
-inferred from the ratings. The panel is analysed separately from the 45 trained
-student raters.
+attestation confirms that rater's independence. On 24 November 2026 the user
+also explicitly confirmed that the third rater was blind to the condition
+labels. These procedural facts are recorded as user attestations rather than
+inferred from the ratings or an independent administration record. The panel is
+analysed separately from the 45 trained student raters.
 
 \subsubsection{RQ2 — Population accuracy metrics}
 \begin{itemize}
@@ -767,7 +768,7 @@ Research events are persisted as sanitised JSON records and exported per project
 \label{sec:threats}
 
 \subsection{Internal validity}
-The primary internal threat is the quality of the gold standard. If the gold-standard schemas or population data contain errors, all metrics will be biased. Two independent experts reviewed each gold standard and resolved discrepancies through a recorded consensus procedure.
+The primary internal threat is the quality of the gold standard. If the gold-standard schemas or population data contain errors, all metrics will be biased. Two independent experts reviewed each gold standard and resolved discrepancies through a recorded consensus procedure. Their signed qualification and independence forms were archived after the technical consensus and are therefore retrospective attestations rather than contemporaneous pre-review records.
 
 A second threat is LLM non-determinism. The same prompt may produce different schemas or populations across runs. Mitigation: exposed decoding parameters are fixed per task (schema generation currently uses temperature $0.1$; mapping/extraction uses $0.0$ where supported), exact configuration and input hashes are logged, and repeated runs are reported as distributions. Provider-side hidden revisions remain a reproducibility limitation.
 

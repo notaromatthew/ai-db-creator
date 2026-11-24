@@ -56,11 +56,11 @@
       "selected_public_artifacts": [
         {
           "path": "backend/reports/rq1_expert_replication/manifest.json",
-          "sha256": "e95f622f06975ac0ae32fd4d72e996a0cf376b25da61e28338293382a98080ce"
+          "sha256": "de3392e499da01ac26464997b98d6212e358f08d088efdfe38a6937616c91cc3"
         },
         {
           "path": "backend/reports/rq1_expert_replication/REPORT.md",
-          "sha256": "431b59fed2f84c04b84070fe1cbace0cb9f6de20b03df3639dd0c2983b610c21"
+          "sha256": "fb7e013ddda6236a798ea5e5a4a75dc0958661b65900ef1269aecf0472211c50"
         },
         {
           "path": "backend/reports/rq1_expert_replication/descriptive_summary.csv",
@@ -85,20 +85,25 @@
       "revisions": {},
       "counts": {
         "decision_count": 25,
-        "technical_consensus_status": "COMPLETE"
+        "technical_consensus_status": "COMPLETE",
+        "personal_qualification_forms_status": "COMPLETE_RETROSPECTIVE_RESTRICTED_STORAGE"
       },
       "selected_public_artifacts": [
         {
           "path": "backend/reports/gold_standard_consensus_20261121/post_amendment_manifest.json",
-          "sha256": "f643b7d4ab1384507460f8ba75044dbbcdbc9ee9ad680558e2a327405922a352"
+          "sha256": "6dec0b0365aa228e01f7758e3bbdde6692470d2d4377f03d8276efe80dcd8122"
         },
         {
           "path": "backend/reports/gold_standard_consensus_20261121/consensus_decisions.json",
-          "sha256": "9c0a8fa1dc2f6ea5bf372e33929df79af7eb8962627762a72868566f0914f274"
+          "sha256": "f6deecbdc1306aa634651ccbe91a9dda53f0f20ae53924bc88971fb498abb9c0"
+        },
+        {
+          "path": "backend/reports/gold_standard_consensus_20261121/reviewer_profiles_manifest.json",
+          "sha256": "d4218df9c1714b09acbfc5167f4cd107fcf6d7ce246b3269676fb33365f8cc41"
         },
         {
           "path": "docs/26-gold-standard-consensus-amendment-2026-11-21.md",
-          "sha256": "590999f764d2897a522e647520a0af1e6fee651ed75b1171d917fc941128b2a0"
+          "sha256": "24d3f5821fa1764c134ce84bf5818955ddcedaae5f67395429bdfe687c0ef900"
         }
       ],
       "internal_output_hashes_verified": 0
@@ -352,12 +357,12 @@
     }
   ],
   "component_count": 10,
-  "selected_public_artifact_count": 44,
+  "selected_public_artifact_count": 45,
   "internal_output_hashes_verified": 14,
-  "aggregate_selected_artifacts_sha256": "74a9b2875c2f751b6f737d3c04a206aa834bed28928c23d7a770d4c2403a5144",
+  "aggregate_selected_artifacts_sha256": "facdc40eb836e1cdebd6255f7470d88e0b98cf4e47fe7053a7ad9858b5ea0c6b",
   "index_script": {
     "path": "backend/build_research_evidence_index.py",
-    "normalized_text_sha256": "ea4f52a4d4a94dcbf4158f45b35b9105e1b09b1e1cacde3022a1d36f4466e8f3"
+    "normalized_text_sha256": "bf9402bda2297a3e8bdb75578468108d175806f0d5e32f666e99a71121d7aaa2"
   },
   "privacy": {
     "private_mapping_artifacts_indexed": false,

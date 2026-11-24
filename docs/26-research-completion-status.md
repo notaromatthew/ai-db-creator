@@ -23,10 +23,15 @@ esclusi dal protocollo corrente.
 - analisi delle 45 valutazioni degli studenti;
 - replica separata con tre esperti;
 - controllo di integrità, accordo e risultati riproducibili;
-- attestazione dell'indipendenza dei tre esperti.
+- attestazione dell'indipendenza dei tre esperti;
+- cecità alle condizioni del terzo esperto confermata dall'utente il 24
+  novembre 2026 e registrata come attestazione procedurale.
 
 ## RQ2
 
+- validazione dei gold standard completata da GOLD-A e GOLD-B, con schede
+  firmate retrospettive conservate in archivio ristretto, hash pubblici
+  verificabili e deviazione temporale documentata;
 - matrice strutturata da 30 run completata;
 - verifica cieca e consenso su 1.294 discrepanze;
 - metriche cell-level e query funzionali;

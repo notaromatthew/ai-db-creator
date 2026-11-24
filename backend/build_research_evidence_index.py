@@ -54,6 +54,7 @@ EVIDENCE_SPECS = (
         (
             "backend/reports/gold_standard_consensus_20261121/post_amendment_manifest.json",
             "backend/reports/gold_standard_consensus_20261121/consensus_decisions.json",
+            "backend/reports/gold_standard_consensus_20261121/reviewer_profiles_manifest.json",
             "docs/26-gold-standard-consensus-amendment-2026-11-21.md",
         ),
     ),
@@ -218,6 +219,7 @@ def _counts(evidence_id: str, anchor: dict, repo_root: Path) -> dict:
         return {
             "decision_count": decisions.get("decision_count"),
             "technical_consensus_status": decisions.get("technical_consensus_status"),
+            "personal_qualification_forms_status": decisions.get("personal_qualification_forms_status"),
         }
     if evidence_id == "rq2_v2_analysis":
         result = _read_json(repo_root / "backend/reports/rq2_v2_analysis_20261121/rq2_v2_analysis.json")

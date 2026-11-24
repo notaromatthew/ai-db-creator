@@ -95,9 +95,10 @@ numerosità pianificata è quindi raggiunta. Per i primi due esperti, compilazio
 individuale senza confronto o accesso ai punteggi reciproci e cecità alle
 etichette di condizione sono state attestate dall'utente il 14 novembre 2026.
 Il terzo valutatore è stato identificato dall'utente come esperto il 18 novembre;
-la sua indipendenza è stata confermata dall'utente il 19 novembre 2026. La
-cecità del terzo esperto alle condizioni non è invece documentata e resta una
-limitazione procedurale esplicita.
+la sua indipendenza è stata confermata dall'utente il 19 novembre 2026 e la
+cecità alle condizioni è stata confermata esplicitamente dall'utente il 24
+novembre 2026. Le conferme restano attestazioni dell'utente e non evidenza
+ricavata dai punteggi o da un registro indipendente di somministrazione.
 
 L'accordo esatto è 20/150 celle e 0/30 vettori-schema; quello adiacente
 complessivo è 63,3%. L'alpha ordinale complessivo è 0,054 (IC bootstrap 95%

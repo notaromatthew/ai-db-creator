@@ -7,9 +7,21 @@ attese dei dataset University, Library e Hospital. Il successivo foglio di
 consenso contiene 25 decisioni finali, ciascuna con motivazione, conferma di
 entrambi i valutatori e data del 21 novembre 2026.
 
-Le schede con qualifiche, dichiarazione d'indipendenza e firma saranno aggiunte
-successivamente. Le decisioni tecniche sono registrate, ma la validazione resta
-proceduralmente incompleta fino all'archiviazione di entrambe le schede firmate.
+Le schede con qualifiche, dichiarazione d'indipendenza e firma di GOLD-A e
+GOLD-B sono state ricevute e verificate il 24 novembre 2026. Entrambi i
+valutatori hanno confermato integralmente la dichiarazione d'indipendenza e
+firmato il proprio modulo. I PDF, contenendo dati personali e firme, sono
+conservati in archivio locale ad accesso ristretto e non sono pubblicati nel
+repository. Il manifesto pubblico registra pseudonimi, stato, dimensioni e hash
+SHA-256 senza esporre dati identificativi. La validazione procedurale dei gold
+standard è pertanto completa.
+
+Le schede sono datate 24 novembre 2026, tre giorni dopo il consenso tecnico
+del 21 novembre. Sono quindi attestazioni retrospettive archiviate dopo la
+revisione, non evidenza contemporanea della compilazione preventiva prevista
+dal modulo. Questa deviazione temporale è conservata nel manifesto e limita
+soltanto la forza della prova procedurale, non il contenuto delle 25 decisioni
+di consenso già registrate.
 
 ## Provenienza
 
@@ -17,6 +29,7 @@ proceduralmente incompleta fino all'archiviazione di entrambe le schede firmate.
 - SHA-256: `2bcb3fe620bcc7c2be5f7806dcda01c5fcf31083e18c889be7d6d73beb84a5a9`
 - Snapshot precedente: `backend/reports/gold_standard_consensus_20261121/pre_amendment_snapshot/`
 - Versione emendata: `rq2_functional_v2`
+- Manifesto delle schede: `backend/reports/gold_standard_consensus_20261121/reviewer_profiles_manifest.json`
 
 ## Modifiche approvate
 

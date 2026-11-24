@@ -5,7 +5,7 @@
 - Replica osservata separata dalle 1.350 valutazioni dei 45 trained student raters; nessun pooling.
 - Il protocollo pianificava 3 esperti; il pannello osservato ne contiene 3.
 - Per i primi due esperti, indipendenza, assenza di confronto/accesso ai punteggi reciproci e cecità alle condizioni sono attestazioni dell'utente, non inferenze dai dati.
-- Per il terzo esperto idoneità e indipendenza sono attestate dall'utente; la cecità alle condizioni resta da confermare esplicitamente.
+- Per il terzo esperto idoneità, indipendenza e cecità alle condizioni sono attestate dall'utente; la conferma esplicita della cecità è stata registrata il 24 novembre 2026.
 - L'accordo esatto osservato è 20/150 celle e 0/30 vettori-schema.
 
 ## Accordo
@@ -31,4 +31,4 @@ L'unità è lo schema (15 per condizione); i 3 giudizi sono aggregati per schema
 | d4_relationships | 4.000 | 4.533 | 0.533 | [0.178, 0.911] | 0.0670 | 0.974 |
 | d5_domain | 4.000 | 4.533 | 0.533 | [0.178, 0.912] | 0.0670 | 0.974 |
 
-Il pannello raggiunge la numerosità pianificata di tre esperti, resta separato dal campione studentesco ed è attestato come indipendente. L'evidenza procedurale sulla cecità alle condizioni del terzo esperto deve essere completata prima di descrivere l'intero pannello come cieco alle condizioni.
+Il pannello raggiunge la numerosità pianificata di tre esperti, resta separato dal campione studentesco ed è attestato dall'utente come indipendente e cieco alle condizioni. Queste attestazioni descrivono la procedura dichiarata dall'utente e non sono inferite dai punteggi né supportate da un registro di somministrazione indipendente.
