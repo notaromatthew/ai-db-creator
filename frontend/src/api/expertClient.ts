@@ -159,7 +159,19 @@ export const expertApi = {
     return res.json()
   },
 
-  getExportCsvUrl(adminKey: string): string {
-    return `${getApiBase()}/api/admin/expert-evaluations/export?admin_key=${encodeURIComponent(adminKey)}`
+  async downloadExportCsv(adminKey: string): Promise<void> {
+    const res = await fetch(`${getApiBase()}/api/admin/expert-evaluations/export`, {
+      headers: { 'X-Admin-Key': adminKey },
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: 'Esportazione non autorizzata' }))
+      throw new Error(err.detail || 'Esportazione non autorizzata')
+    }
+    const url = URL.createObjectURL(await res.blob())
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'expert_ratings_export.csv'
+    link.click()
+    URL.revokeObjectURL(url)
   },
 }

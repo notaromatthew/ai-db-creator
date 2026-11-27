@@ -43,6 +43,7 @@ services:
       DEFAULT_ADMIN_PASSWORD: ${DEFAULT_ADMIN_PASSWORD:-aidbadmin}
       DEFAULT_ADMIN_EMAIL: ${DEFAULT_ADMIN_EMAIL:-aidbadmin@tecnia.local}
       FIRST_ADMIN_EMAIL: ${FIRST_ADMIN_EMAIL:-}
+      ADMIN_SECRET_KEY: ${ADMIN_SECRET_KEY:-}
       REDIS_URL: redis://redis:6379/0
       DATABASE_URL: sqlite:////app/data/app.db
       RESEARCH_MODE: ${RESEARCH_MODE:-false}

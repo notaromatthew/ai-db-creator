@@ -87,7 +87,7 @@ class Settings(BaseSettings):
     cors_allow_origin_regex: str = r"https?://.*"
 
     # Expert Review (RQ1) & Administration
-    admin_secret_key: str = "admin123"
+    admin_secret_key: str = ""
     expert_package_dir: str = str(Path(__file__).parent.parent / "reports" / "rq1_expert_package")
 
     # SonarQube

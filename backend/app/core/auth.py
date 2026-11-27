@@ -1,7 +1,10 @@
 from fastapi import Request, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from jose import jwt, JWTError
+import json
+
 import httpx
+import jwt
+from jwt.algorithms import RSAAlgorithm
 from app.config import settings
 from app.utils.logger import log
 from typing import Optional
@@ -68,10 +71,10 @@ async def get_current_user(
 
         claims = jwt.decode(
             token,
-            key,
+            RSAAlgorithm.from_jwk(json.dumps(key)),
             algorithms=["RS256"],
-            audience="account",
-            options={"verify_aud": False, "verify_iss": False}
+            options={"verify_aud": False, "verify_iss": False},
+            leeway=30,
         )
         validate_claims(claims)
 

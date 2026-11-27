@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-11-27 - Correzioni di sicurezza (revisione del repository)
+
+- Chiave amministratore della valutazione esperti: rimosso il valore predefinito `admin123`. `ADMIN_SECRET_KEY` deve essere impostata; se è vuota il pannello amministratore resta disattivato. Confronto a tempo costante, chiave accettata solo nell'intestazione `X-Admin-Key` (non più nell'URL), blocco temporaneo dopo 10 tentativi falliti in 15 minuti per indirizzo (HTTP 429). L'esportazione CSV del frontend scarica ora con l'intestazione.
+- Endpoint `/api/expert/*` (elenco e dettaglio schemi, valutazioni proprie, invio): ora richiedono il login. Con l'autenticazione attiva l'identità del valutatore è `preferred_username` del token; il campo `evaluator_name` inviato dal client è ignorato. Con l'autenticazione disattivata (sviluppo e test) resta il nome inviato. Chi valuta deve quindi avere un account; le valutazioni già raccolte non vengono modificate.
+- Dipendenze: `python-multipart` 0.0.12 -> 0.0.32; sostituito `python-jose` 3.3.0 con PyJWT 2.15.0 per la verifica dei token (resta `RS256` obbligatorio, con tolleranza di 30 secondi sull'orologio).
+- Nessuna modifica a prompt, metriche o popolazione degli esperimenti.
+
 ## 2026-11-24 - Chiusura analisi RQ0/RQ3 e rimozione RQ4
 
 - Rimossa RQ4 dal perimetro empirico corrente, mantenendo il logging come funzionalità tecnica della piattaforma.

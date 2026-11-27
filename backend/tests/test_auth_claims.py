@@ -4,7 +4,8 @@ import time
 import pytest
 from fastapi import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials
-from jose import jwk, jwt
+import jwt
+from jwt.algorithms import RSAAlgorithm
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
 
@@ -25,9 +26,9 @@ def keys(monkeypatch):
     private = rsa.generate_private_key(public_exponent=65537, key_size=2048)
     pem = private.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.PKCS8,
                                 serialization.NoEncryption()).decode()
-    public = jwk.RSAKey(algorithm="RS256", key=private.public_key().public_bytes(
-        serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo).decode()).to_dict()
+    public = RSAAlgorithm.to_jwk(private.public_key(), as_dict=True)
     public["kid"] = "k1"
+    public["alg"] = "RS256"
 
     async def fake_jwks(force=False):
         return {"keys": [public]}

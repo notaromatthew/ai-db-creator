@@ -7,8 +7,12 @@ and aggregates statistical results for researchers/administrators.
 from __future__ import annotations
 
 import csv
+import hmac
 import io
 import re
+import threading
+import time
+from collections import defaultdict, deque
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -23,6 +27,8 @@ from app.utils.logger import log
 class ExpertEvaluationService:
     def __init__(self, package_dir: Optional[str] = None):
         self.package_dir = Path(package_dir or settings.expert_package_dir)
+        self._admin_failures: Dict[str, deque] = defaultdict(deque)
+        self._admin_lock = threading.Lock()
         if not self.package_dir.is_absolute():
             self.package_dir = (Path(__file__).resolve().parent.parent.parent / self.package_dir).resolve()
         self._schemas_cache: Dict[str, Dict[str, Any]] = {}
@@ -286,10 +292,32 @@ class ExpertEvaluationService:
                 for r in rows
             ]
 
+    ADMIN_MAX_FAILURES = 10
+    ADMIN_WINDOW_SECONDS = 900
+
     def verify_admin_key(self, key: str) -> bool:
-        """Verify admin password or key against configured admin_secret_key."""
-        expected = (settings.admin_secret_key or "admin123").strip()
-        return bool(key and key.strip() == expected)
+        """Constant-time check against ADMIN_SECRET_KEY; always False when no key is configured."""
+        expected = (settings.admin_secret_key or "").strip()
+        if not expected or not key:
+            return False
+        return hmac.compare_digest(key.strip().encode("utf-8"), expected.encode("utf-8"))
+
+    def admin_attempts_blocked(self, client_id: str) -> bool:
+        """True when this client already failed ADMIN_MAX_FAILURES times in the last ADMIN_WINDOW_SECONDS."""
+        with self._admin_lock:
+            attempts = self._admin_failures[client_id]
+            cutoff = time.monotonic() - self.ADMIN_WINDOW_SECONDS
+            while attempts and attempts[0] < cutoff:
+                attempts.popleft()
+            return len(attempts) >= self.ADMIN_MAX_FAILURES
+
+    def record_admin_failure(self, client_id: str) -> None:
+        with self._admin_lock:
+            self._admin_failures[client_id].append(time.monotonic())
+
+    def clear_admin_failures(self, client_id: str) -> None:
+        with self._admin_lock:
+            self._admin_failures.pop(client_id, None)
 
     def get_admin_dashboard_data(self) -> Dict[str, Any]:
         """Compile unblinded evaluations and research statistics for admin view."""

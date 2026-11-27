@@ -1,9 +1,32 @@
 from fastapi.testclient import TestClient
+from app.config import settings
+from app.core.auth import get_current_user
 from app.main import app
 from app.services.expert_evaluation_service import expert_service
 import pytest
 
 client = TestClient(app)
+ADMIN_KEY = "test-admin-key"
+
+PAYLOAD = {
+    "evaluator_name": "TestExpert_Alpha",
+    "schema_code": "S01",
+    "d1_3nf": 5,
+    "d2_naming": 4,
+    "d3_constraints": 5,
+    "d4_relationships": 4,
+    "d5_domain": 5,
+}
+
+
+@pytest.fixture(autouse=True)
+def expert_env(monkeypatch):
+    monkeypatch.setattr(settings, "enable_auth", False)
+    monkeypatch.setattr(settings, "admin_secret_key", ADMIN_KEY)
+    expert_service._admin_failures.clear()
+    yield
+    app.dependency_overrides.pop(get_current_user, None)
+    expert_service._admin_failures.clear()
 
 
 def test_list_expert_schemas():
@@ -85,7 +108,7 @@ def test_admin_verify_and_dashboard():
     assert verify_bad.status_code == 401
 
     # Valid password
-    verify_good = client.post("/api/admin/verify", json={"admin_key": "admin123"})
+    verify_good = client.post("/api/admin/verify", json={"admin_key": ADMIN_KEY})
     assert verify_good.status_code == 200
     assert verify_good.json()["valid"] is True
 
@@ -94,7 +117,7 @@ def test_admin_verify_and_dashboard():
     assert dash_unauth.status_code == 401
 
     # Authorized dashboard request
-    dash_auth = client.get("/api/admin/expert-evaluations", headers={"X-Admin-Key": "admin123"})
+    dash_auth = client.get("/api/admin/expert-evaluations", headers={"X-Admin-Key": ADMIN_KEY})
     assert dash_auth.status_code == 200
     dash_data = dash_auth.json()
     assert dash_data["total_schemas"] == 30
@@ -105,7 +128,45 @@ def test_admin_verify_and_dashboard():
     assert "evaluator_progress" in dash_data
 
     # Export CSV
-    export_resp = client.get("/api/admin/expert-evaluations/export", headers={"X-Admin-Key": "admin123"})
+    export_resp = client.get("/api/admin/expert-evaluations/export", headers={"X-Admin-Key": ADMIN_KEY})
     assert export_resp.status_code == 200
     assert "text/csv" in export_resp.headers["content-type"]
     assert "evaluator,code,dataset,condition" in export_resp.text
+
+
+def test_expert_endpoints_require_login(monkeypatch):
+    monkeypatch.setattr(settings, "enable_auth", True)
+    assert client.get("/api/expert/schemas").status_code == 401
+    assert client.get("/api/expert/schemas/S01").status_code == 401
+    assert client.get("/api/expert/evaluations/my").status_code == 401
+    assert client.post("/api/expert/evaluations", json=PAYLOAD).status_code == 401
+
+
+def test_evaluator_identity_comes_from_the_token(monkeypatch):
+    monkeypatch.setattr(settings, "enable_auth", True)
+    app.dependency_overrides[get_current_user] = lambda: {"sub": "u-1", "username": "alice"}
+    response = client.post("/api/expert/evaluations", json={**PAYLOAD, "evaluator_name": "mallory"})
+    assert response.status_code == 200
+    assert response.json()["evaluator_name"] == "alice"
+    mine = client.get("/api/expert/evaluations/my?evaluator_name=mallory")
+    assert mine.status_code == 200
+    assert any(row["schema_code"] == "S01" for row in mine.json())
+
+
+def test_admin_key_is_disabled_when_not_configured(monkeypatch):
+    monkeypatch.setattr(settings, "admin_secret_key", "")
+    assert client.post("/api/admin/verify", json={"admin_key": "admin123"}).status_code == 401
+    assert client.post("/api/admin/verify", json={"admin_key": ""}).status_code == 401
+    assert client.get("/api/admin/expert-evaluations", headers={"X-Admin-Key": "admin123"}).status_code == 401
+
+
+def test_admin_key_is_not_accepted_in_the_query_string():
+    assert client.get(f"/api/admin/expert-evaluations?admin_key={ADMIN_KEY}").status_code == 401
+    assert client.get(f"/api/admin/expert-evaluations/export?admin_key={ADMIN_KEY}").status_code == 401
+
+
+def test_admin_key_attempts_are_throttled():
+    for _ in range(expert_service.ADMIN_MAX_FAILURES):
+        assert client.post("/api/admin/verify", json={"admin_key": "wrong"}).status_code == 401
+    assert client.post("/api/admin/verify", json={"admin_key": ADMIN_KEY}).status_code == 429
+    assert client.get("/api/admin/expert-evaluations", headers={"X-Admin-Key": ADMIN_KEY}).status_code == 429

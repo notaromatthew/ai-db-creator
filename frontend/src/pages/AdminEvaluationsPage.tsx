@@ -118,7 +118,7 @@ export default function AdminEvaluationsPage() {
               className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
             />
             <p className="mt-1 text-[11px] text-slate-400">
-              Predefinita in sviluppo: <code className="font-mono text-slate-600 dark:text-slate-300">admin123</code> (configurabile in .env)
+              Il valore e' impostato dall'amministratore con la variabile ADMIN_SECRET_KEY.
             </p>
           </div>
 
@@ -134,7 +134,13 @@ export default function AdminEvaluationsPage() {
     )
   }
 
-  const exportUrl = expertApi.getExportCsvUrl(adminKey)
+  const handleExport = async () => {
+    try {
+      await expertApi.downloadExportCsv(adminKey)
+    } catch (err: any) {
+      setError(err?.message || 'Esportazione non riuscita.')
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -167,13 +173,13 @@ export default function AdminEvaluationsPage() {
               🔄 Aggiorna Dati
             </button>
 
-            <a
-              href={exportUrl}
-              download="expert_ratings_export.csv"
+            <button
+              type="button"
+              onClick={handleExport}
               className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:from-emerald-700 hover:to-teal-700"
             >
               ⬇️ Esporta CSV Valutazioni
-            </a>
+            </button>
 
             <button
               onClick={handleLogout}

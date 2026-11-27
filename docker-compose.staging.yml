@@ -20,6 +20,7 @@ x-app-env: &app-env
   APP_PUBLIC_URL: ${STAGING_APP_PUBLIC_URL:?imposta STAGING_APP_PUBLIC_URL}
   ENVIRONMENT: production
   ADMIN_ROLE: ${STAGING_ADMIN_ROLE:-aidb-admin}
+  ADMIN_SECRET_KEY: ${STAGING_ADMIN_SECRET_KEY:-}
   DEFAULT_DAILY_AI_QUOTA: ${STAGING_DEFAULT_DAILY_AI_QUOTA:-5}
   DAILY_AI_BUDGET_TOTAL: ${STAGING_DAILY_AI_BUDGET_TOTAL:-50}
   # Gateway Cloud Run (infra/gcp): output gateway_url; la chiave del chiamante sta nei secrets di Coolify
